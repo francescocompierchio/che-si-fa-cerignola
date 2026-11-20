@@ -1,47 +1,72 @@
 [
   {
     "titolo": "Festival della Danza della Capitanata",
+    "title": "Festival della Danza della Capitanata",
     "data": "2026-11-20 17:00",
+    "date": "2026-11-20 17:00",
     "luogo": "Teatro Mercadante, Cerignola",
+    "location": "Teatro Mercadante, Cerignola",
     "descrizione": "Festival di danza con 105 ballerini tra Cerignola, Manfredonia e Foggia.",
+    "description": "Festival di danza con 105 ballerini tra Cerignola, Manfredonia e Foggia.",
     "citta": "Cerignola",
+    "city": "Cerignola",
     "categoria": "Spettacolo",
-    "fonte": "viverecerignola.it"
+    "category": "Spettacolo"
   },
   {
     "titolo": "Bambinella a Palazzo",
+    "title": "Bambinella a Palazzo",
     "data": "2026-11-21 18:00",
+    "date": "2026-11-21 18:00",
     "luogo": "Palazzo Fornari, Piazzale San Rocco, Cerignola",
+    "location": "Palazzo Fornari, Piazzale San Rocco, Cerignola",
     "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
+    "description": "Due giorni per bambini e famiglie per le feste natalizie.",
     "citta": "Cerignola",
+    "city": "Cerignola",
     "categoria": "Famiglie",
-    "fonte": "viverecerignola.it"
+    "category": "Famiglie"
   },
   {
     "titolo": "Natale nelle Quattro Vie",
+    "title": "Natale nelle Quattro Vie",
     "data": "2026-11-21 18:00",
+    "date": "2026-11-21 18:00",
     "luogo": "Viale Roosevelt, Cerignola",
+    "location": "Viale Roosevelt, Cerignola",
     "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre.",
+    "description": "Musica, luminarie e tombolate fino al 6 dicembre.",
     "citta": "Cerignola",
+    "city": "Cerignola",
     "categoria": "Natale",
-    "fonte": "viverecerignola.it"
+    "category": "Natale"
   },
   {
     "titolo": "Mercatino di Autoproduzione e Artigianato",
+    "title": "Mercatino di Autoproduzione e Artigianato",
     "data": "2026-11-22 09:30",
+    "date": "2026-11-22 09:30",
     "luogo": "Piazza Matteotti, Cerignola",
+    "location": "Piazza Matteotti, Cerignola",
     "descrizione": "Stand, uncinetto e laboratori gratuiti.",
+    "description": "Stand, uncinetto e laboratori gratuiti.",
     "citta": "Cerignola",
+    "city": "Cerignola",
     "categoria": "Mercatino",
-    "fonte": "viverecerignola.it"
+    "category": "Mercatino"
   },
   {
     "titolo": "Baratto dei bambini",
+    "title": "Baratto dei bambini",
     "data": "2026-11-22 10:00",
+    "date": "2026-11-22 10:00",
     "luogo": "Piazza Matteotti, Cerignola",
+    "location": "Piazza Matteotti, Cerignola",
     "descrizione": "Scambio di libri e giocattoli per i piu piccoli.",
+    "description": "Scambio di libri e giocattoli per i piu piccoli.",
     "citta": "Cerignola",
+    "city": "Cerignola",
     "categoria": "Famiglie",
-    "fonte": "viverecerignola.it"
+    "category": "Famiglie"
   }
 ]
