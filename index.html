@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Che Si Fa Cerignola</title>
+<style>
+body{font-family:system-ui;margin:0;background:#FFF7ED;color:#1F2937}
+header{background:#C2410C;color:white;padding:22px 16px}
+header h1{margin:0;font-size:26px}header p{margin:6px 0 0;opacity:.9}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+.card{background:white;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.badge{display:inline-block;background:#FEF3C7;color:#92400E;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.btn{display:block;text-align:center;background:#C2410C;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:800;margin:12px 0}
+.btn2{background:#365314}
+input,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #E5E7EB;border-radius:10px;box-sizing:border-box}
+</style></head>
+<body>
+<header><h1>Che Si Fa Cerignola</h1><p>Tutti gli eventi di Cerignola e dintorni, aggiornati ogni ora.</p></header>
+<div class="wrap">
+<a class="btn" href="#pubblica">+ Pubblica il tuo evento - per locali</a>
+<div id="lista"></div>
+<div class="card" id="pubblica"><h3>Pubblica il tuo evento</h3>
+<input id="titolo" placeholder="Titolo evento *">
+<input id="luogo" placeholder="Luogo - es. Teatro Mercadante, Cerignola">
+<input id="data" type="date"><input id="ora" type="time">
+<textarea id="desc" placeholder="Descrizione"></textarea>
+<button class="btn btn2" onclick="pubblica()">Pubblica evento</button>
+<p id="msg"></p></div>
+</div>
+<script>
+let locali = JSON.parse(localStorage.getItem('locali')||'[]');
+async function carica(){
+  let auto=[];
+  try{ let r=await fetch('events.json'); let j=await r.json(); auto=j.events||[]; }catch(e){}
+  let tutti=[...auto, ...locali];
+  let el=document.getElementById('lista');
+  if(!tutti.length){ el.innerHTML='<div class="card">Nessun evento per ora. Torna tra un ora, il robot sta cercando.</div>'; return; }
+  el.innerHTML=tutti.map(e=>'<div class="card"><span class="badge">'+(e.city||'Cerignola')+'</span><h3>'+(e.title||'')+'</h3><p>'+(e.date||'')+' '+(e.time||'')+' - '+(e.place||'')+'</p><p>'+(e.description||'')+'</p></div>').join('');
+}
+function pubblica(){
+  let t=document.getElementById('titolo').value.trim();
+  if(!t){ document.getElementById('msg').innerText='Metti almeno il titolo'; return; }
+  locali.push({title:t, place:document.getElementById('luogo').value, date:document.getElementById('data').value, time:document.getElementById('ora').value, description:document.getElementById('desc').value, city:'Cerignola'});
+  localStorage.setItem('locali', JSON.stringify(locali));
+  document.getElementById('msg').innerText='Pubblicato!';
+  carica();
+}
+carica();
+</script></body></html>
