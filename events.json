@@ -1,9 +1,9 @@
 [
   {
-    "titolo": "Festival della Danza della Capitanata - prima serata",
+    "titolo": "Festival della Danza della Capitanata",
     "data": "2026-11-20 17:00",
     "luogo": "Teatro Mercadante, Cerignola",
-    "descrizione": "Seconda edizione del Festival della Danza della Capitanata, 105 ballerini e 59 esibizioni tra Cerignola, Manfredonia e Foggia.",
+    "descrizione": "Festival di danza con 105 ballerini tra Cerignola, Manfredonia e Foggia.",
     "citta": "Cerignola",
     "categoria": "Spettacolo",
     "fonte": "viverecerignola.it"
@@ -12,7 +12,7 @@
     "titolo": "Bambinella a Palazzo",
     "data": "2026-11-21 18:00",
     "luogo": "Palazzo Fornari, Piazzale San Rocco, Cerignola",
-    "descrizione": "Due giorni per bambini e famiglie per inaugurare le feste natalizie, con musica, creativita e tradizione.",
+    "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
     "citta": "Cerignola",
     "categoria": "Famiglie",
     "fonte": "viverecerignola.it"
@@ -20,8 +20,8 @@
   {
     "titolo": "Natale nelle Quattro Vie",
     "data": "2026-11-21 18:00",
-    "luogo": "Viale Roosevelt, Via Bologna, Via Don Minzoni, Via XXV Aprile, Cerignola",
-    "descrizione": "Tre appuntamenti fino al 6 dicembre tra musica, luminarie, tombolate e studenti, nel quadrilatero cittadino.",
+    "luogo": "Viale Roosevelt, Cerignola",
+    "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre.",
     "citta": "Cerignola",
     "categoria": "Natale",
     "fonte": "viverecerignola.it"
@@ -30,27 +30,18 @@
     "titolo": "Mercatino di Autoproduzione e Artigianato",
     "data": "2026-11-22 09:30",
     "luogo": "Piazza Matteotti, Cerignola",
-    "descrizione": "Prima edizione con stand, uncinetto, fatto a mano e laboratori gratuiti, con patrocinio del Comune di Cerignola.",
+    "descrizione": "Stand, uncinetto e laboratori gratuiti.",
     "citta": "Cerignola",
     "categoria": "Mercatino",
     "fonte": "viverecerignola.it"
   },
   {
-    "titolo": "Baratto dei bambini - scambio libri e giocattoli",
+    "titolo": "Baratto dei bambini",
     "data": "2026-11-22 10:00",
     "luogo": "Piazza Matteotti, Cerignola",
-    "descrizione": "Scambio di libri e giocattoli per i piu piccoli, dentro il Mercatino di Autoproduzione.",
+    "descrizione": "Scambio di libri e giocattoli per i piu piccoli.",
     "citta": "Cerignola",
     "categoria": "Famiglie",
-    "fonte": "viverecerignola.it"
-  },
-  {
-    "titolo": "Gazebo Futuro Nazionale - incontro con i cittadini",
-    "data": "2026-11-21 10:00",
-    "luogo": "Corso Aldo Moro, Cerignola",
-    "descrizione": "Gazebo informativo per incontrare la cittadinanza, raccogliere proposte e segnalazioni.",
-    "citta": "Cerignola",
-    "categoria": "Incontro",
     "fonte": "viverecerignola.it"
   }
 ]
