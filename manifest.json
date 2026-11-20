@@ -1,0 +1,19 @@
+{
+  "name": "Che Si Fa Cerignola",
+  "short_name": "Che Si Fa",
+  "description": "Tutti gli eventi aggiornati a Cerignola e dintorni.",
+  "start_url": "/che-si-fa-cerignola/",
+  "scope": "/che-si-fa-cerignola/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#004aad",
+  "theme_color": "#004aad",
+  "icons": [
+    {
+      "src": "1795175413227~4.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
