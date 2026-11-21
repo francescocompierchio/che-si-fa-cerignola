@@ -1,5 +1,77 @@
 [
   {
+    "citta": "Foggia",
+    "categoria": "Musica",
+    "titolo": "Stagione Concertistica Amici della Musica di Foggia",
+    "dataTesto": "Fino al 15 Dic 2026",
+    "dataInizio": "2026-02-21",
+    "dataFine": "2026-12-15",
+    "luogo": "Teatro Umberto Giordano",
+    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
+    "costo": "A pagamento",
+    "descrizione": "Rassegna cameristica e classica di alto profilo a cura della storica associazione Amici della Musica."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Musica",
+    "titolo": "Stagione Concertistica Orchestra Suoni del Sud 2026",
+    "dataTesto": "Fino al 30 Dic 2026",
+    "dataInizio": "2026-03-06",
+    "dataFine": "2026-12-30",
+    "luogo": "Teatro Umberto Giordano",
+    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
+    "costo": "A pagamento",
+    "descrizione": "I grandi appuntamenti sinfonici e concertistici dell'Orchestra Suoni del Sud nella splendida cornice del Teatro Giordano."
+  },
+  {
+    "citta": "Orta Nova",
+    "categoria": "Musica",
+    "titolo": "Orta Nova Sound Lab",
+    "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
+    "dataInizio": "2026-10-25",
+    "dataFine": "2027-01-24",
+    "luogo": "Orta Nova Sound Lab",
+    "indirizzoMappa": "Orta Nova",
+    "costo": "Ingresso libero",
+    "descrizione": "Iniziativa musicale e laboratoriale volta alla nascita e alla formazione della prima banda cittadina."
+  },
+  {
+    "citta": "Manfredonia",
+    "categoria": "Spettacolo",
+    "titolo": "Sconfina - Nuova Stagione al Teatro Lucio Dalla",
+    "dataTesto": "Dal 1 Nov 2026 al 22 Apr 2027",
+    "dataInizio": "2026-11-01",
+    "dataFine": "2027-04-22",
+    "luogo": "Teatro Comunale Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Un ricco cartellone di spettacoli di prosa, commedia e teatro contemporaneo sul palco cittadino di Manfredonia."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Musica",
+    "titolo": "Foggia Musica Festival 2026: 30 Anni di Bel Canto",
+    "dataTesto": "Dall'11 Nov al 4 Dic 2026",
+    "dataInizio": "2026-11-11",
+    "dataFine": "2026-12-04",
+    "luogo": "Sala del Tribunale a Palazzo Dogana",
+    "indirizzoMappa": "Palazzo Dogana, Piazza XX Settembre, Foggia",
+    "costo": "Ingresso libero",
+    "descrizione": "Cinque imperdibili appuntamenti concertistici gratuiti per celebrare i trent'anni della prestigiosa associazione Bel Canto."
+  },
+  {
+    "citta": "Cerignola",
+    "categoria": "Spettacolo",
+    "titolo": "Stagione Teatrale 2026/2027 al Roma Teatro",
+    "dataTesto": "Dal 14 Nov 2026 al 2 Mag 2027",
+    "dataInizio": "2026-11-14",
+    "dataFine": "2027-05-02",
+    "luogo": "Roma Teatro Cinema E...",
+    "indirizzoMappa": "Roma Teatro Cinema E..., Cerignola",
+    "costo": "A pagamento",
+    "descrizione": "Una prestigiosa rassegna teatrale con grandi interpreti e spettacoli di prosa che animano il cartellone cittadino."
+  },
+  {
     "citta": "San Ferdinando",
     "categoria": "Fiera",
     "titolo": "Fiera Nazionale del Carciofo Mediterraneo",
@@ -106,6 +178,18 @@
     "indirizzoMappa": "Palazzo di Città, Canosa di Puglia",
     "costo": "Ingresso libero",
     "descrizione": "Incontro pubblico contro la violenza di genere."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Incontro",
+    "titolo": "Foggia Festival Sport Story - Undicesima Edizione",
+    "dataTesto": "Dal 24 al 28 Nov 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-28",
+    "luogo": "Biblioteca La Magna Capitana e Piccolo Teatro Impertinente",
+    "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo 1, Foggia",
+    "costo": "Ingresso libero",
+    "descrizione": "Incontri e racconti di sport con grandi ospiti nazionali tra cui Porrà, Pisapia, Bitossi e Usall."
   },
   {
     "citta": "Cerignola",
