@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Serate – Che Si Fa Cerignola</title>
+  <meta name="theme-color" content="#004aad" />
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --text: #161b26;
+      --muted: #556070;
+      --accent: #004aad;
+      --gold: #f5b800;
+      --danger: #dc2626;
+      --ok: #15803d;
+      --border: #dde3ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0 0 36px;
+      line-height: 1.45;
+    }
+    header {
+      background: linear-gradient(135deg, #003580 0%, #004aad 100%);
+      color: #ffffff;
+      padding: 16px;
+      border-bottom: 4px solid var(--gold);
+      margin-bottom: 16px;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    header .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    .back-link {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1.02rem;
+      color: var(--accent);
+    }
+    .presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .preset-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .preset-btn:active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .field {
+      margin-bottom: 11px;
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #ffffff;
+      color: var(--text);
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+    .pin-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pin-row input[type="password"] {
+      max-width: 160px;
+      letter-spacing: 0.15em;
+      font-weight: 700;
+    }
+    .chk-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0;
+      cursor: pointer;
+    }
+    .chk-label input {
+      width: auto;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status-msg {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+    }
+    .status-msg.ok {
+      display: block;
+      background: #dcfce7;
+      color: var(--ok);
+    }
+    .status-msg.err {
+      display: block;
+      background: #fee2e2;
+      color: var(--danger);
+    }
+    .ev-item {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .ev-meta {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .ev-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      margin: 2px 0;
+    }
+    .ev-sub {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    .ev-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-sm {
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-dup {
+      background: #e0e7ff;
+      color: var(--accent);
+    }
+    .btn-del {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Pubblica Serata / Evento</h1>
+      <a class="back-link" href="index.html">Apri App →</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="card">
+      <h2>1. PIN di sicurezza</h2>
+      <div class="pin-row">
+        <input type="password" id="admin-pin" inputmode="numeric" placeholder="PIN" />
+        <label class="chk-label">
+          <input type="checkbox" id="save-pin" checked />
+          Ricorda su questo telefono
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Compila serata o evento</h2>
+      <div class="presets">
+        <button type="button" class="preset-btn" data-preset="baraonda">+ Baraonda</button>
+        <button type="button" class="preset-btn" data-preset="civico10">+ Civico 10</button>
+        <button type="button" class="preset-btn" data-preset="ade">+ ADE Rooftop</button>
+      </div>
+
+      <form id="event-form">
+        <div class="row-2">
+          <div class="field">
+            <label for="citta">Città</label>
+            <input type="text" id="citta" list="lista-citta" value="Cerignola" required />
+            <datalist id="lista-citta">
+              <option value="Cerignola"></option>
+              <option value="Canosa"></option>
+              <option value="San Ferdinando"></option>
+              <option value="Trinitapoli"></option>
+              <option value="Margherita di Savoia"></option>
+              <option value="Orta Nova"></option>
+              <option value="Stornara"></option>
+              <option value="Stornarella"></option>
+              <option value="Carapelle"></option>
+              <option value="Ascoli Satriano"></option>
+              <option value="Foggia"></option>
+              <option value="Barletta"></option>
+              <option value="Trani"></option>
+              <option value="Manfredonia"></option>
+            </datalist>
+          </div>
+          <div class="field">
+            <label for="categoria">Categoria</label>
+            <select id="categoria">
+              <option value="Serate & Locali" selected>Serate &amp; Locali</option>
+              <option value="Musica">Musica</option>
+              <option value="Spettacolo">Spettacolo</option>
+              <option value="Fiera">Fiera</option>
+              <option value="Famiglie">Famiglie</option>
+              <option value="Incontro">Incontro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="titolo">Titolo serata / evento</label>
+          <input type="text" id="titolo" placeholder="Es. Aperitivo & DJ Set · Friday Night" required />
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="luogo">Nome locale / luogo</label>
+            <input type="text" id="luogo" placeholder="Es. Baraonda" required />
+          </div>
+          <div class="field">
+            <label for="costo">Accesso / Costo</label>
+            <input type="text" id="costo" list="lista-costi" value="Ingresso libero" />
+            <datalist id="lista-costi">
+              <option value="Ingresso libero"></option>
+              <option value="Consumazione obbligatoria"></option>
+              <option value="Su prenotazione"></option>
+              <option value="A pagamento"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="indirizzoMappa">Indirizzo per navigatore Google Maps</label>
+          <input type="text" id="indirizzoMappa" placeholder="Es. Via Aurelio Saffi 36, Cerignola" required />
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="dataInizio">Data inizio</label>
+            <input type="date" id="dataInizio" required />
+          </div>
+          <div class="field">
+            <label for="dataFine">Data fine</label>
+            <input type="date" id="dataFine" required />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="oraEvento">Orario inizio (opzionale)</label>
+            <input type="time" id="oraEvento" value="21:30" />
+          </div>
+          <div class="field">
+            <label for="dataTesto">Testo data mostrato in app</label>
+            <input type="text" id="dataTesto" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="descrizione">Descrizione breve</label>
+          <textarea id="descrizione" placeholder="Es. Aperitivo cenato, cocktail selection e DJ set fino a tardi." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-pubblica">Pubblica subito nell'app</button>
+        <div class="status-msg" id="status-msg"></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>3. Serate pubblicate manualmente</h2>
+      <div id="manual-list">Caricamento...</div>
+    </section>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9XXi9bFa6qSFVcQHFc8KgULhK0fxrGfY",
+      authDomain: "chesifa-cerignola.firebaseapp.com",
+      databaseURL: "https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "chesifa-cerignola",
+      storageBucket: "chesifa-cerignola.firebasestorage.app",
+      messagingSenderId: "953544345505",
+      appId: "1:953544345505:web:4ec5aa4d1468975d1e2de0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const pinInput = document.getElementById("admin-pin");
+    const savePinChk = document.getElementById("save-pin");
+    const savedPin = localStorage.getItem("csf_admin_pin");
+    if (savedPin) pinInput.value = savedPin;
+
+    const GIORNI_IT = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+    const MESI_IT = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
+
+    function oggiISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function aggiornaDataTestoAuto() {
+      const ini = document.getElementById("dataInizio").value;
+      const fin = document.getElementById("dataFine").value;
+      const ora = document.getElementById("oraEvento").value;
+      if (!ini) return;
+
+      const d1 = new Date(ini + "T12:00:00");
+      const g1 = GIORNI_IT[d1.getDay()];
+      const str1 = `${g1} ${d1.getDate()} ${MESI_IT[d1.getMonth()]} ${d1.getFullYear()}`;
+
+      let testo = str1;
+      if (fin && fin > ini) {
+        const d2 = new Date(fin + "T12:00:00");
+        testo = `${d1.getDate()}-${d2.getDate()} ${MESI_IT[d2.getMonth()]} ${d2.getFullYear()}`;
+      }
+      if (ora) testo += ` - ${ora}`;
+      document.getElementById("dataTesto").value = testo;
+    }
+
+    const inpIni = document.getElementById("dataInizio");
+    const inpFin = document.getElementById("dataFine");
+    const inpOra = document.getElementById("oraEvento");
+
+    inpIni.value = oggiISO();
+    inpFin.value = oggiISO();
+    aggiornaDataTestoAuto();
+
+    inpIni.addEventListener("change", () => {
+      if (!inpFin.value || inpFin.value < inpIni.value) inpFin.value = inpIni.value;
+      aggiornaDataTestoAuto();
+    });
+    inpFin.addEventListener("change", aggiornaDataTestoAuto);
+    inpOra.addEventListener("change", aggiornaDataTestoAuto);
+
+    const PRESETS = {
+      baraonda: {
+        citta: "Cerignola",
+        categoria: "Serate & Locali",
+        luogo: "Baraonda",
+        indirizzoMappa: "Via Aurelio Saffi 36, Cerignola"
+      },
+      civico10: {
+        citta: "Cerignola",
+        categoria: "Serate & Locali",
+        luogo: "Civico 10 Bistrot",
+        indirizzoMappa: "Via Giovanni Gentile 10, Cerignola"
+      },
+      ade: {
+        citta: "Cerignola",
+        categoria: "Serate & Locali",
+        luogo: "ADE - Rooftop & Luxury Space",
+        indirizzoMappa: "Via Tiro a Segno Km 3, Cerignola"
+      }
+    };
+
+    document.querySelectorAll(".preset-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const p = PRESETS[btn.dataset.preset];
+        if (!p) return;
+        document.getElementById("citta").value = p.citta;
+        document.getElementById("categoria").value = p.categoria;
+        document.getElementById("luogo").value = p.luogo;
+        document.getElementById("indirizzoMappa").value = p.indirizzoMappa;
+      });
+    });
+
+    function mostraStato(testo, tipo) {
+      const box = document.getElementById("status-msg");
+      box.textContent = testo;
+      box.className = "status-msg " + tipo;
+    }
+
+    document.getElementById("event-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        mostraStato("Inserisci prima il tuo PIN segreto in alto.", "err");
+        pinInput.focus();
+        return;
+      }
+
+      if (savePinChk.checked) {
+        localStorage.setItem("csf_admin_pin", pin);
+      } else {
+        localStorage.removeItem("csf_admin_pin");
+      }
+
+      const btn = document.getElementById("btn-pubblica");
+      btn.disabled = true;
+      btn.textContent = "Pubblicazione in corso...";
+
+      const id = `man_${Date.now()}`;
+      const nuovoEvento = {
+        citta: document.getElementById("citta").value.trim(),
+        categoria: document.getElementById("categoria").value,
+        titolo: document.getElementById("titolo").value.trim(),
+        dataTesto: document.getElementById("dataTesto").value.trim(),
+        dataInizio: inpIni.value,
+        dataFine: inpFin.value,
+        luogo: document.getElementById("luogo").value.trim(),
+        indirizzoMappa: document.getElementById("indirizzoMappa").value.trim(),
+        costo: document.getElementById("costo").value.trim() || "Ingresso libero",
+        descrizione: document.getElementById("descrizione").value.trim()
+      };
+
+      const updates = {};
+      updates["authCheck"] = `${pin}_${Date.now()}`;
+      updates[`eventiManuali/${id}`] = nuovoEvento;
+
+      try {
+        await db.ref().update(updates);
+        mostraStato("Serata pubblicata! È già visibile nell'app.", "ok");
+        document.getElementById("titolo").value = "";
+        document.getElementById("descrizione").value = "";
+      } catch (err) {
+        console.error(err);
+        mostraStato("Errore: PIN errato oppure regole Firebase non ancora pubblicate.", "err");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Pubblica subito nell'app";
+      }
+    });
+
+    const manualList = document.getElementById("manual-list");
+    db.ref("eventiManuali").on("value", snap => {
+      manualList.innerHTML = "";
+      const val = snap.val();
+      if (!val) {
+        manualList.textContent = "Nessuna serata manuale pubblicata al momento.";
+        return;
+      }
+
+      const entries = Object.entries(val).sort((a, b) =>
+        (a[1].dataInizio || "").localeCompare(b[1].dataInizio || "")
+      );
+
+      entries.forEach(([id, ev]) => {
+        const box = document.createElement("div");
+        box.className = "ev-item";
+
+        const meta = document.createElement("div");
+        meta.className = "ev-meta";
+        meta.textContent = `${ev.citta} · ${ev.categoria} · ${ev.dataTesto}`;
+
+        const title = document.createElement("div");
+        title.className = "ev-title";
+        title.textContent = ev.titolo;
+
+        const sub = document.createElement("div");
+        sub.className = "ev-sub";
+        sub.textContent = `${ev.luogo} — ${ev.descrizione}`;
+
+        const btns = document.createElement("div");
+        btns.className = "ev-btns";
+
+        const dupBtn = document.createElement("button");
+        dupBtn.type = "button";
+        dupBtn.className = "btn-sm btn-dup";
+        dupBtn.textContent = "Duplica per nuova data";
+        dupBtn.addEventListener("click", () => {
+          document.getElementById("citta").value = ev.citta || "Cerignola";
+          document.getElementById("categoria").value = ev.categoria || "Serate & Locali";
+          document.getElementById("titolo").value = ev.titolo || "";
+          document.getElementById("luogo").value = ev.luogo || "";
+          document.getElementById("indirizzoMappa").value = ev.indirizzoMappa || "";
+          document.getElementById("costo").value = ev.costo || "Ingresso libero";
+          document.getElementById("descrizione").value = ev.descrizione || "";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn-sm btn-del";
+        delBtn.textContent = "Elimina";
+        delBtn.addEventListener("click", async () => {
+          const pin = pinInput.value.trim();
+          if (!pin) {
+            mostraStato("Inserisci il PIN in alto per eliminare un evento.", "err");
+            pinInput.focus();
+            return;
+          }
+          if (!confirm(`Vuoi eliminare "${ev.titolo}"?`)) return;
+          const updates = {};
+          updates["authCheck"] = `${pin}_${Date.now()}`;
+          updates[`eventiManuali/${id}`] = null;
+          try {
+            await db.ref().update(updates);
+          } catch (err) {
+            mostraStato("Impossibile eliminare: controlla il PIN.", "err");
+          }
+        });
+
+        btns.append(dupBtn, delBtn);
+        box.append(meta, title, sub, btns);
+        manualList.appendChild(box);
+      });
+    });
+  </script>
+</body>
+</html>
