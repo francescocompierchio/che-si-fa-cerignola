@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2QBFBHQXQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-M2QBFBHQXQ');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Che Si Fa Cerignola – Eventi a Cerignola e dintorni</title>
+  <meta name="description" content="Tutti gli eventi aggiornati a Cerignola e dintorni: serate nei locali, spettacoli, mercatini, incontri e attività. Un progetto di Francesco Compierchio." />
+  <meta name="author" content="Francesco Compierchio" />
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#004aad" />
+  <link rel="apple-touch-icon" href="1795175413227~4.jpg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Che Si Fa Cerignola" />
+  <meta property="og:description" content="Scopri tutti gli eventi e le serate in programma oggi e nei prossimi giorni a Cerignola, Foggia, Barletta, Trani, Manfredonia e dintorni." />
+  <meta property="og:url" content="https://francescocompierchio.github.io/che-si-fa-cerignola/" />
+  <meta property="og:image" content="https://francescocompierchio.github.io/che-si-fa-cerignola/1795175413227~3.jpg" />
+
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --text: #161b26;
+      --muted: #556070;
+      --accent: #004aad;
+      --gold: #f5b800;
+      --today: #15803d;
+      --today-bg: #dcfce7;
+      --border: #dde3ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0 0 28px;
+      line-height: 1.5;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+    }
+
+    .top-nav-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 13px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .home-btn:active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .nav-city-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #003580 0%, #004aad 100%);
+      color: #ffffff;
+      padding: 18px 16px 18px;
+      border-bottom: 4px solid var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .hero-inner, main, footer {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    main, footer {
+      padding: 0 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 4px;
+      font-size: 1.65rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #dbeafe;
+      font-size: 0.94rem;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .counter {
+      display: inline-block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #161b26;
+      background: var(--gold);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 4px 11px;
+      border-radius: 999px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+    }
+
+    .install-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .install-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .install-sub {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .install-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .install-guide {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .install-guide.open {
+      display: block;
+    }
+
+    .install-guide p {
+      margin: 0 0 6px;
+    }
+
+    .install-guide p:last-child {
+      margin-bottom: 0;
+    }
+
+    .venues-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .venues-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .venues-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .venues-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .venues-list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .venues-list::-webkit-scrollbar { display: none; }
+
+    .venue-card {
+      min-width: 235px;
+      flex: 0 0 auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .venue-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin: 0 0 2px;
+      color: var(--text);
+    }
+
+    .venue-tag {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .venue-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-xs {
+      padding: 6px 11px;
+      font-size: 0.78rem;
+      border-radius: 7px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-ig {
+      background: #e1306c;
+      color: #ffffff;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    details.is-today {
+      border-left: 4px solid var(--today);
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .meta-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .badge-today {
+      background: var(--today-bg);
+      color: var(--today);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    summary h3 {
+      margin: 2px 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.3;
+    }
+
+    .summary-info {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .toggle-hint {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    details[open] .toggle-hint::after { content: "Chiudi ▲"; }
+    details:not([open]) .toggle-hint::after { content: "Tocca per dettagli ▼"; }
+
+    .details-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .details-body p {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+    }
+
+    .access-tag {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-map {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-wa {
+      background: #25d366;
+      color: #ffffff;
+    }
+
+    .btn-soft {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    footer p {
+      margin: 0 0 12px;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .signature {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .signature strong {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav" aria-label="Barra rapida">
+    <div class="top-nav-inner">
+      <button type="button" class="home-btn" id="btn-home">
+        <span>⌂</span>
+        <span>Home</span>
+      </button>
+      <span class="nav-city-label">Cerignola &amp; dintorni</span>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Che Si Fa Cerignola</h1>
+      <p>Eventi e serate a Cerignola, Foggia, Barletta, Trani, Manfredonia e dintorni.</p>
+      <div class="stats-row">
+        <span class="counter" id="event-counter">Caricamento eventi...</span>
+        <span class="live-pill" id="live-pill" style="display:none;">
+          <span class="live-dot"></span>
+          <span><strong id="online-users-count">1</strong> online ora</span>
+        </span>
+        <span class="live-pill" id="visits-pill" style="display:none;">
+          <span>👁 <strong id="total-visits-count">1</strong> visite</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="install-box" id="install-box" aria-label="Installa o condividi l'app">
+      <p class="install-title" id="install-title">Installa l'app sul telefono</p>
+      <p class="install-sub" id="install-sub">Scarica l'app Android oppure salvala sulla schermata home del tuo iPhone.</p>
+
+      <div class="install-btns">
+        <a
+          class="btn btn-map"
+          id="btn-apk-top"
+          href="app-release.apk"
+          download="CheSiFaCerignola.apk"
+        >
+          Scarica App Android
+        </a>
+        <button type="button" class="btn btn-soft" id="btn-toggle-guide">
+          Guida iPhone / Home
+        </button>
+        <button type="button" class="btn btn-wa" id="btn-share-top">
+          Condividi app
+        </button>
+      </div>
+
+      <div class="install-guide" id="install-guide">
+        <p id="guide-android"><strong>Su Android:</strong> tocca <strong>Scarica App Android</strong>, apri il file scaricato e conferma l'installazione.</p>
+        <p id="guide-ios"><strong>Su iPhone (Safari):</strong> tocca il tasto <strong>Condividi</strong> (quadrato con freccia in basso) → scorri e tocca <strong>Aggiungi alla schermata Home</strong>.</p>
+      </div>
+    </section>
+
+    <section class="venues-box" aria-label="Locali e serate a Cerignola">
+      <div class="venues-header">
+        <h2 class="venues-title">Locali &amp; Serate a Cerignola</h2>
+        <span class="venues-sub">Storie &amp; navigatore</span>
+      </div>
+      <div class="venues-list" id="venues-list"></div>
+    </section>
+
+    <input
+      type="search"
+      id="search-input"
+      class="search-box"
+      placeholder="Cerca evento, locale, città o parola chiave..."
+      aria-label="Cerca evento"
+    />
+
+    <div class="filters" id="filters"></div>
+    <div id="events-container"></div>
+  </main>
+
+  <footer>
+    <p>Organizzi un evento o una serata in un locale a Cerignola o dintorni?</p>
+    <div class="footer-actions">
+      <button type="button" class="btn btn-map" id="btn-segnala-evento">
+        Segnala evento / serata
+      </button>
+      <a
+        class="btn btn-soft"
+        id="btn-apk-footer"
+        href="app-release.apk"
+        download="CheSiFaCerignola.apk"
+      >
+        Scarica App Android
+      </a>
+      <button type="button" class="btn btn-wa" id="btn-share-footer">
+        Condividi app
+      </button>
+    </div>
+
+    <div class="signature">
+      Un progetto ideato e curato da <strong>Francesco Compierchio</strong><br />
+      Aggiornamento automatico eventi · Cerignola e dintorni
+    </div>
+  </footer>
+
+  <!-- SDK Firebase per contatore utenti online, visite totali ed eventi manuali live -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+  <script>
+    const APP_URL = "https://francescocompierchio.github.io/che-si-fa-cerignola/";
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroidWebView = isAndroid && /; wv\)/i.test(ua);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    function apriNavigazioneMappa(destinazione) {
+      const q = encodeURIComponent(destinazione);
+      if (isAndroid) {
+        window.location.href = `geo:0,0?q=${q}`;
+      } else if (isIOS) {
+        window.location.href = `https://maps.apple.com/?daddr=${q}`;
+      } else {
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    async function condividiContenuto(titolo, testo, url) {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: titolo, text: testo, url: url });
+          return;
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+        }
+      }
+      const msg = encodeURIComponent(`${testo}\n${url}`);
+      if (isAndroid || isIOS) {
+        window.location.href = `whatsapp://send?text=${msg}`;
+      } else {
+        window.open(`https://wa.me/?text=${msg}`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    function apriSegnalazioneWhatsApp() {
+      const testoSegnalazione = encodeURIComponent(
+        "Ciao, vorrei segnalare un evento o una serata per Che Si Fa Cerignola:\n- Titolo: \n- Data e ora: \n- Locale e città: \n- Costo: \n- Descrizione: "
+      );
+      if (isAndroid || isIOS) {
+        window.location.href = `whatsapp://send?phone=393474181072&text=${testoSegnalazione}`;
+      } else {
+        window.open(`https://wa.me/393474181072?text=${testoSegnalazione}`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    const installBox = document.getElementById("install-box");
+    const btnApkTop = document.getElementById("btn-apk-top");
+    const btnApkFooter = document.getElementById("btn-apk-footer");
+    const btnToggleGuide = document.getElementById("btn-toggle-guide");
+    const installGuide = document.getElementById("install-guide");
+
+    if ((isStandalone || isAndroidWebView) && installBox) {
+      installBox.style.display = "none";
+    } else if (isIOS) {
+      if (btnApkTop) btnApkTop.style.display = "none";
+      if (btnApkFooter) btnApkFooter.style.display = "none";
+      const guideAndroid = document.getElementById("guide-android");
+      if (guideAndroid) guideAndroid.style.display = "none";
+      const installTitle = document.getElementById("install-title");
+      const installSub = document.getElementById("install-sub");
+      if (installTitle) installTitle.textContent = "Aggiungi l'app al tuo iPhone";
+      if (installSub) installSub.textContent = "Apri in Safari, tocca Condividi in basso e scegli Aggiungi a Home.";
+      if (installGuide) installGuide.classList.add("open");
+    }
+
+    if (btnToggleGuide && installGuide) {
+      btnToggleGuide.addEventListener("click", () => {
+        installGuide.classList.toggle("open");
+      });
+    }
+
+    const shareAppAction = () => {
+      condividiContenuto(
+        "Che Si Fa Cerignola",
+        "Scopri tutti gli eventi e le serate a Cerignola e dintorni su Che Si Fa Cerignola:",
+        APP_URL
+      );
+    };
+
+    document.getElementById("btn-share-top").addEventListener("click", shareAppAction);
+    document.getElementById("btn-share-footer").addEventListener("click", shareAppAction);
+    document.getElementById("btn-segnala-evento").addEventListener("click", apriSegnalazioneWhatsApp);
+
+    const LOCALI_CERIGNOLA = [
+      {
+        nome: "Civico 10 Bistrot",
+        tipo: "Aperitivo · Cena & Serate · Cerignola",
+        webUrl: "https://www.instagram.com/civico10bistrot/",
+        mappa: "Via Giovanni Gentile 10, Cerignola"
+      },
+      {
+        nome: "ADE - Rooftop & Luxury Space",
+        tipo: "Ristorante · Eventi & DJ Set · Cerignola",
+        webUrl: "https://www.instagram.com/ade_rooftopluxuryspace/",
+        mappa: "Via Tiro a Segno Km 3, Cerignola"
+      },
+      {
+        nome: "Baraonda",
+        tipo: "Lounge Bar · Wine Shop · Aperitivi & Cene · Cerignola",
+        webUrl: "https://www.instagram.com/baraonda__/",
+        mappa: "Via Aurelio Saffi 36, Cerignola"
+      }
+    ];
+
+    const venuesList = document.getElementById("venues-list");
+    LOCALI_CERIGNOLA.forEach(loc => {
+      const card = document.createElement("div");
+      card.className = "venue-card";
+
+      const name = document.createElement("p");
+      name.className = "venue-name";
+      name.textContent = loc.nome;
+
+      const tag = document.createElement("p");
+      tag.className = "venue-tag";
+      tag.textContent = loc.tipo;
+
+      const actions = document.createElement("div");
+      actions.className = "venue-actions";
+
+      const igBtn = document.createElement("a");
+      igBtn.className = "btn-xs btn-ig";
+      igBtn.href = loc.webUrl;
+      igBtn.target = "_blank";
+      igBtn.rel = "noopener noreferrer";
+      igBtn.textContent = "Instagram / Storie";
+
+      const mapBtn = document.createElement("button");
+      mapBtn.type = "button";
+      mapBtn.className = "btn-xs btn-map";
+      mapBtn.textContent = "Naviga";
+      mapBtn.addEventListener("click", () => apriNavigazioneMappa(loc.mappa));
+
+      actions.append(igBtn, mapBtn);
+      card.append(name, tag, actions);
+      venuesList.appendChild(card);
+    });
+
+    function getDataLocaleOggi() {
+      const now = new Date();
+      const anno = now.getFullYear();
+      const mese = String(now.getMonth() + 1).padStart(2, "0");
+      const giorno = String(now.getDate()).padStart(2, "0");
+      return `${anno}-${mese}-${giorno}`;
+    }
+
+    const oggi = getDataLocaleOggi();
+    let eventiDaJson = [];
+    let eventiDaFirebase = [];
+    let tuttiEventiAttivi = [];
+    let filtroAttivo = "ALL";
+    let queryRicerca = "";
+
+    const container = document.getElementById("events-container");
+    const filtersBar = document.getElementById("filters");
+    const searchInput = document.getElementById("search-input");
+    const counterBadge = document.getElementById("event-counter");
+
+    function aggiornaListaCompleta() {
+      const uniti = [...eventiDaFirebase, ...eventiDaJson];
+      tuttiEventiAttivi = uniti
+        .filter(ev => ev && ev.dataFine && ev.dataFine >= oggi)
+        .sort((a, b) => (a.dataInizio || "").localeCompare(b.dataInizio || ""));
+      costruisciFiltri(tuttiEventiAttivi);
+      renderEventi();
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9XXi9bFa6qSFVcQHFc8KgULhK0fxrGfY",
+      authDomain: "chesifa-cerignola.firebaseapp.com",
+      databaseURL: "https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "chesifa-cerignola",
+      storageBucket: "chesifa-cerignola.firebasestorage.app",
+      messagingSenderId: "953544345505",
+      appId: "1:953544345505:web:4ec5aa4d1468975d1e2de0"
+    };
+
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      const visiteRef = db.ref("statistiche/visiteTotali");
+      if (!sessionStorage.getItem("csf_visitato")) {
+        visiteRef.transaction(curr => (curr || 0) + 1);
+        sessionStorage.setItem("csf_visitato", "1");
+      }
+      visiteRef.on("value", snap => {
+        const tot = snap.val() || 1;
+        document.getElementById("total-visits-count").textContent = tot.toLocaleString("it-IT");
+        document.getElementById("visits-pill").style.display = "inline-flex";
+      });
+
+      const connessioniRef = db.ref("statistiche/utentiOnline");
+      const connectedRef = db.ref(".info/connected");
+      connectedRef.on("value", snap => {
+        if (snap.val() === true) {
+          const miaConnessione = connessioniRef.push();
+          miaConnessione.onDisconnect().remove();
+          miaConnessione.set(true);
+        }
+      });
+      connessioniRef.on("value", snap => {
+        const online = snap.numChildren() || 1;
+        document.getElementById("online-users-count").textContent = online;
+        document.getElementById("live-pill").style.display = "inline-flex";
+      });
+
+      db.ref("eventiManuali").on("value", snap => {
+        const val = snap.val();
+        eventiDaFirebase = val ? Object.values(val) : [];
+        aggiornaListaCompleta();
+      });
+    } catch (e) {
+      console.error("Errore Firebase:", e);
+    }
+
+    document.getElementById("btn-home").addEventListener("click", () => {
+      filtroAttivo = "ALL";
+      queryRicerca = "";
+      searchInput.value = "";
+      document.querySelectorAll(".filter-btn").forEach((b, idx) => {
+        b.classList.toggle("active", idx === 0);
+      });
+      renderEventi();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function costruisciFiltri(eventi) {
+      filtersBar.innerHTML = "";
+      const categorieUniche = [...new Set(eventi.map(e => e.categoria))];
+
+      const bottoniBase = [
+        { id: "ALL", label: "Tutti" },
+        { id: "OGGI", label: "Oggi / In corso" },
+        { id: "CITY:Cerignola", label: "Cerignola" },
+        { id: "CITY:Foggia", label: "Foggia" },
+        { id: "CITY:Barletta", label: "Barletta" },
+        { id: "CITY:Trani", label: "Trani" },
+        { id: "CITY:Manfredonia", label: "Manfredonia" },
+        { id: "DINTORNI", label: "Altri dintorni" },
+        ...categorieUniche.map(cat => ({ id: `CAT:${cat}`, label: cat }))
+      ];
+
+      bottoniBase.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn" + (filtroAttivo === item.id ? " active" : "");
+        btn.textContent = item.label;
+        btn.addEventListener("click", () => {
+          filtroAttivo = item.id;
+          document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderEventi();
+        });
+        filtersBar.appendChild(btn);
+      });
+    }
+
+    function renderEventi() {
+      container.innerHTML = "";
+
+      const cittaPrincipali = ["cerignola", "foggia", "barletta", "trani", "manfredonia"];
+
+      const filtrati = tuttiEventiAttivi.filter(ev => {
+        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const cittaEv = (ev.citta || "").toLowerCase().trim();
+
+        if (filtroAttivo === "OGGI" && !isToday) return false;
+        if (filtroAttivo.startsWith("CITY:")) {
+          const cittaRichiesta = filtroAttivo.replace("CITY:", "").toLowerCase();
+          if (cittaEv !== cittaRichiesta) return false;
+        }
+        if (filtroAttivo === "DINTORNI" && cittaPrincipali.includes(cittaEv)) return false;
+        if (filtroAttivo.startsWith("CAT:")) {
+          const catRichiesta = filtroAttivo.replace("CAT:", "");
+          if (ev.categoria !== catRichiesta) return false;
+        }
+
+        if (queryRicerca.trim() !== "") {
+          const testoCompleto = `${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria}`.toLowerCase();
+          if (!testoCompleto.includes(queryRicerca.toLowerCase().trim())) return false;
+        }
+
+        return true;
+      });
+
+      counterBadge.textContent = `${filtrati.length} ${filtrati.length === 1 ? "evento in programma" : "eventi in programma"}`;
+
+      if (filtrati.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Nessun evento trovato con i filtri selezionati.";
+        container.appendChild(empty);
+        return;
+      }
+
+      filtrati.forEach(ev => {
+        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const details = document.createElement("details");
+        if (isToday) details.classList.add("is-today");
+
+        const summary = document.createElement("summary");
+
+        const metaTop = document.createElement("div");
+        metaTop.className = "meta-top";
+
+        const catSpan = document.createElement("span");
+        catSpan.textContent = `${ev.citta} - ${ev.categoria}`;
+        metaTop.appendChild(catSpan);
+
+        if (isToday) {
+          const badge = document.createElement("span");
+          badge.className = "badge-today";
+          badge.textContent = "OGGI / IN CORSO";
+          metaTop.appendChild(badge);
+        }
+
+        const title = document.createElement("h3");
+        title.textContent = ev.titolo;
+
+        const info = document.createElement("p");
+        info.className = "summary-info";
+        const boldDate = document.createElement("b");
+        boldDate.textContent = ev.dataTesto;
+        info.appendChild(boldDate);
+        info.append(` · ${ev.luogo}`);
+
+        const hint = document.createElement("span");
+        hint.className = "toggle-hint";
+
+        summary.append(metaTop, title, info, hint);
+
+        const body = document.createElement("div");
+        body.className = "details-body";
+
+        const desc = document.createElement("p");
+        desc.textContent = ev.descrizione;
+        body.appendChild(desc);
+
+        if (ev.costo) {
+          const cost = document.createElement("span");
+          cost.className = "access-tag";
+          cost.textContent = `Accesso: ${ev.costo}`;
+          body.appendChild(cost);
+        }
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const mapBtn = document.createElement("button");
+        mapBtn.type = "button";
+        mapBtn.className = "btn btn-map";
+        mapBtn.textContent = "Avvia navigatore";
+        mapBtn.addEventListener("click", () => {
+          apriNavigazioneMappa(ev.indirizzoMappa || `${ev.luogo}, ${ev.citta}`);
+        });
+
+        const waBtn = document.createElement("button");
+        waBtn.type = "button";
+        waBtn.className = "btn btn-wa";
+        waBtn.textContent = "Condividi evento";
+        waBtn.addEventListener("click", () => {
+          condividiContenuto(
+            ev.titolo,
+            `📅 *${ev.titolo}*\n🗓 ${ev.dataTesto}\n📍 ${ev.luogo}\n\nTutti gli eventi su Che Si Fa Cerignola:`,
+            APP_URL
+          );
+        });
+
+        actions.append(mapBtn, waBtn);
+        body.appendChild(actions);
+
+        details.append(summary, body);
+        container.appendChild(details);
+      });
+    }
+
+    searchInput.addEventListener("input", e => {
+      queryRicerca = e.target.value;
+      renderEventi();
+    });
+
+    fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
+      .then(res => {
+        if (!res.ok) throw new Error("Impossibile caricare eventi.json");
+        return res.json();
+      })
+      .then(dati => {
+        eventiDaJson = Array.isArray(dati) ? dati : [];
+        aggiornaListaCompleta();
+      })
+      .catch(err => {
+        console.error(err);
+        aggiornaListaCompleta();
+      });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(err => console.error("SW:", err));
+      });
+    }
+  </script>
+</body>
+</html>
