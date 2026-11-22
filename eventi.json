@@ -10,7 +10,8 @@
     "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
     "costo": "A pagamento",
     "descrizione": "Rassegna concertistica di musica classica e da camera con interpreti di primo piano nella cornice del Teatro Giordano.",
-    "fonteUrl": "https://www.foggiatoday.it/eventi/"
+    "fonteUrl": "https://www.foggiatoday.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Foggia",
@@ -23,7 +24,8 @@
     "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
     "costo": "A pagamento",
     "descrizione": "I grandi appuntamenti sinfonici e concertistici dell'Orchestra Suoni del Sud nella splendida cornice del Teatro Giordano.",
-    "fonteUrl": "https://www.foggiatoday.it/eventi/"
+    "fonteUrl": "https://www.foggiatoday.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Orta Nova",
@@ -36,7 +38,8 @@
     "indirizzoMappa": "Orta Nova",
     "costo": "Ingresso libero",
     "descrizione": "Progetto musicale comunitario e rassegna di concerti dedicati alla nascita della prima banda cittadina.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Foggia",
@@ -49,7 +52,8 @@
     "indirizzoMappa": "Palazzo Dogana, Piazza XX Settembre, Foggia",
     "costo": "Ingresso libero",
     "descrizione": "Cinque imperdibili appuntamenti concertistici gratuiti per celebrare i trent'anni della prestigiosa associazione Bel Canto.",
-    "fonteUrl": "https://www.foggiatoday.it/eventi/"
+    "fonteUrl": "https://www.foggiatoday.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "San Ferdinando",
@@ -62,7 +66,8 @@
     "indirizzoMappa": "Area Fieristica San Ferdinando di Puglia",
     "costo": "Ingresso libero",
     "descrizione": "Fiera con stand, assaggi e prodotti agricoli del territorio.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Cerignola",
@@ -75,7 +80,8 @@
     "indirizzoMappa": "Palazzo Fornari, Cerignola",
     "costo": "Ingresso libero",
     "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Cerignola",
@@ -88,7 +94,8 @@
     "indirizzoMappa": "Viale Roosevelt, Cerignola",
     "costo": "Ingresso libero",
     "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Cerignola",
@@ -101,7 +108,8 @@
     "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
     "costo": "Gratuito",
     "descrizione": "Scambio di libri e giocattoli per i più piccoli.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   },
   {
     "citta": "Cerignola",
@@ -114,6 +122,7 @@
     "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
     "costo": "Ingresso libero",
     "descrizione": "Stand, uncinetto e laboratori gratuiti.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
+    "tipoContenuto": "evento"
   }
 ]
