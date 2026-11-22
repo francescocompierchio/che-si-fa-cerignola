@@ -1,7 +1,7 @@
 [
   {
     "citta": "Foggia",
-    "categoria": "Musica",
+    "categoria": "Musica & Concerti",
     "titolo": "Stagione Concertistica Amici della Musica di Foggia",
     "dataTesto": "Fino al 15 Dic 2026",
     "dataInizio": "2026-02-21",
@@ -9,23 +9,12 @@
     "luogo": "Teatro Umberto Giordano",
     "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
     "costo": "A pagamento",
-    "descrizione": "Rassegna cameristica e classica di alto profilo a cura della storica associazione Amici della Musica."
+    "descrizione": "Rassegna concertistica di musica classica e da camera con interpreti di primo piano nella cornice del Teatro Giordano.",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/"
   },
   {
     "citta": "Foggia",
-    "categoria": "Musica",
-    "titolo": "Amici della Musica di Foggia - Stagione Concertistica 2026",
-    "dataTesto": "Dal 21 Feb al 15 Dic 2026",
-    "dataInizio": "2026-02-21",
-    "dataFine": "2026-12-15",
-    "luogo": "Teatro Umberto Giordano",
-    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
-    "costo": "A pagamento",
-    "descrizione": "Rassegna concertistica di musica classica e da camera con interpreti di primo piano nella cornice del Teatro Giordano."
-  },
-  {
-    "citta": "Foggia",
-    "categoria": "Musica",
+    "categoria": "Musica & Concerti",
     "titolo": "Stagione Concertistica Orchestra Suoni del Sud 2026",
     "dataTesto": "Fino al 30 Dic 2026",
     "dataInizio": "2026-03-06",
@@ -33,23 +22,12 @@
     "luogo": "Teatro Umberto Giordano",
     "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
     "costo": "A pagamento",
-    "descrizione": "I grandi appuntamenti sinfonici e concertistici dell'Orchestra Suoni del Sud nella splendida cornice del Teatro Giordano."
-  },
-  {
-    "citta": "Foggia",
-    "categoria": "Musica",
-    "titolo": "Orchestra Suoni del Sud - Stagione 2026",
-    "dataTesto": "Dal 6 Mar al 30 Dic 2026",
-    "dataInizio": "2026-03-06",
-    "dataFine": "2026-12-30",
-    "luogo": "Teatro Umberto Giordano",
-    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
-    "costo": "A pagamento",
-    "descrizione": "Programma di concerti sinfonici ed esibizioni orchestrali dell'ensemble Suoni del Sud al Teatro Giordano."
+    "descrizione": "I grandi appuntamenti sinfonici e concertistici dell'Orchestra Suoni del Sud nella splendida cornice del Teatro Giordano.",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/"
   },
   {
     "citta": "Orta Nova",
-    "categoria": "Musica",
+    "categoria": "Musica & Concerti",
     "titolo": "Orta Nova Sound Lab",
     "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
     "dataInizio": "2026-10-25",
@@ -57,11 +35,12 @@
     "luogo": "Orta Nova Sound Lab",
     "indirizzoMappa": "Orta Nova",
     "costo": "Ingresso libero",
-    "descrizione": "Iniziativa musicale e laboratoriale volta alla nascita e alla formazione della prima banda cittadina."
+    "descrizione": "Iniziativa musicale e laboratoriale volta alla nascita e alla formazione della prima banda cittadina.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Orta Nova",
-    "categoria": "Musica",
+    "categoria": "Musica & Concerti",
     "titolo": "Orta Nova Sound Lab: Verso la Prima Banda Cittadina",
     "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
     "dataInizio": "2026-10-25",
@@ -69,11 +48,12 @@
     "luogo": "Orta Nova",
     "indirizzoMappa": "Orta Nova",
     "costo": "Ingresso libero",
-    "descrizione": "Progetto musicale comunitario e rassegna di concerti dedicati alla nascita della prima banda cittadina."
+    "descrizione": "Progetto musicale comunitario e rassegna di concerti dedicati alla nascita della prima banda cittadina.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Manfredonia",
-    "categoria": "Spettacolo",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Sconfina - Nuova Stagione al Teatro Lucio Dalla",
     "dataTesto": "Dal 1 Nov 2026 al 22 Apr 2027",
     "dataInizio": "2026-11-01",
@@ -81,23 +61,12 @@
     "luogo": "Teatro Comunale Lucio Dalla",
     "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
     "costo": "A pagamento",
-    "descrizione": "Un ricco cartellone di spettacoli di prosa, commedia e teatro contemporaneo sul palco cittadino di Manfredonia."
-  },
-  {
-    "citta": "Manfredonia",
-    "categoria": "Spettacolo",
-    "titolo": "Sconfina - Stagione Teatrale al Teatro Lucio Dalla",
-    "dataTesto": "Dall'1 Nov 2026 al 22 Apr 2027",
-    "dataInizio": "2026-11-01",
-    "dataFine": "2027-04-22",
-    "luogo": "Teatro Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Cartellone ricco di prosa d'autore, spettacoli contemporanei e grandi interpreti della scena teatrale."
+    "descrizione": "Un ricco cartellone di spettacoli di prosa, commedia e teatro contemporaneo sul palco cittadino di Manfredonia.",
+    "fonteUrl": "https://www.manfredonianews.it/category/eventi/"
   },
   {
     "citta": "Foggia",
-    "categoria": "Musica",
+    "categoria": "Musica & Concerti",
     "titolo": "Foggia Musica Festival 2026: 30 Anni di Bel Canto",
     "dataTesto": "Dall'11 Nov al 4 Dic 2026",
     "dataInizio": "2026-11-11",
@@ -105,11 +74,12 @@
     "luogo": "Sala del Tribunale a Palazzo Dogana",
     "indirizzoMappa": "Palazzo Dogana, Piazza XX Settembre, Foggia",
     "costo": "Ingresso libero",
-    "descrizione": "Cinque imperdibili appuntamenti concertistici gratuiti per celebrare i trent'anni della prestigiosa associazione Bel Canto."
+    "descrizione": "Cinque imperdibili appuntamenti concertistici gratuiti per celebrare i trent'anni della prestigiosa associazione Bel Canto.",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Spettacolo",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Stagione Teatrale 2026/2027 al Roma Teatro",
     "dataTesto": "Dal 14 Nov 2026 al 2 Mag 2027",
     "dataInizio": "2026-11-14",
@@ -117,11 +87,12 @@
     "luogo": "Roma Teatro Cinema E...",
     "indirizzoMappa": "Roma Teatro Cinema E..., Cerignola",
     "costo": "A pagamento",
-    "descrizione": "Una prestigiosa rassegna teatrale con grandi interpreti e spettacoli di prosa che animano il cartellone cittadino."
+    "descrizione": "Una prestigiosa rassegna teatrale con grandi interpreti e spettacoli di prosa che animano il cartellone cittadino.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "San Ferdinando",
-    "categoria": "Fiera",
+    "categoria": "Sagre & Food",
     "titolo": "Fiera Nazionale del Carciofo Mediterraneo",
     "dataTesto": "19-22 Nov 2026",
     "dataInizio": "2026-11-19",
@@ -129,11 +100,12 @@
     "luogo": "San Ferdinando di Puglia",
     "indirizzoMappa": "Area Fieristica San Ferdinando di Puglia",
     "costo": "Ingresso libero",
-    "descrizione": "Fiera con stand, assaggi e prodotti agricoli del territorio."
+    "descrizione": "Fiera con stand, assaggi e prodotti agricoli del territorio.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Famiglie",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Bambinella a Palazzo",
     "dataTesto": "21-22 Nov 2026 - 18:00",
     "dataInizio": "2026-11-21",
@@ -141,23 +113,12 @@
     "luogo": "Palazzo Fornari, Cerignola",
     "indirizzoMappa": "Palazzo Fornari, Cerignola",
     "costo": "Ingresso libero",
-    "descrizione": "Due giorni per bambini e famiglie per le feste natalizie."
+    "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Natale",
-    "titolo": "Natale nelle Quattro Vie",
-    "dataTesto": "Dal 21 Nov al 6 Dic 2026 - 18:00",
-    "dataInizio": "2026-11-21",
-    "dataFine": "2026-12-06",
-    "luogo": "Viale Roosevelt, Cerignola",
-    "indirizzoMappa": "Viale Roosevelt, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre."
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Incontro",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Gazebo Futuro Nazionale",
     "dataTesto": "21-22 Nov 2026 - 10:00",
     "dataInizio": "2026-11-21",
@@ -165,23 +126,25 @@
     "luogo": "Corso Aldo Moro, Cerignola",
     "indirizzoMappa": "Corso Aldo Moro, Cerignola",
     "costo": "Accesso libero",
-    "descrizione": "Punto informativo per incontrare i cittadini e raccogliere proposte."
+    "descrizione": "Punto informativo per incontrare i cittadini e raccogliere proposte.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Mercatino",
-    "titolo": "Mercatino di Autoproduzione e Artigianato",
-    "dataTesto": "22 Nov 2026 - 09:30",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Piazza Matteotti, Cerignola",
-    "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
+    "categoria": "Altro",
+    "titolo": "Natale nelle Quattro Vie",
+    "dataTesto": "Dal 21 Nov al 6 Dic 2026 - 18:00",
+    "dataInizio": "2026-11-21",
+    "dataFine": "2026-12-06",
+    "luogo": "Viale Roosevelt, Cerignola",
+    "indirizzoMappa": "Viale Roosevelt, Cerignola",
     "costo": "Ingresso libero",
-    "descrizione": "Stand, uncinetto e laboratori gratuiti."
+    "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Famiglie",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Baratto dei bambini",
     "dataTesto": "22 Nov 2026 - 10:00",
     "dataInizio": "2026-11-22",
@@ -189,23 +152,12 @@
     "luogo": "Piazza Matteotti, Cerignola",
     "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
     "costo": "Gratuito",
-    "descrizione": "Scambio di libri e giocattoli per i più piccoli."
+    "descrizione": "Scambio di libri e giocattoli per i più piccoli.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Spettacolo",
-    "titolo": "Papero Alfredo",
-    "dataTesto": "22 Nov 2026",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Cerignola (sede da confermare)",
-    "indirizzoMappa": "Cerignola",
-    "costo": "Da verificare",
-    "descrizione": "Spettacolo in programma domenica."
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Incontro",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Giornata contro la violenza sulle donne",
     "dataTesto": "22 Nov 2026 - 18:30",
     "dataInizio": "2026-11-22",
@@ -213,23 +165,38 @@
     "luogo": "Palazzo Fornari, Cerignola",
     "indirizzoMappa": "Palazzo Fornari, Cerignola",
     "costo": "Ingresso libero",
-    "descrizione": "Momento pubblico di sensibilizzazione."
+    "descrizione": "Momento pubblico di sensibilizzazione.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
-    "citta": "Canosa",
-    "categoria": "Incontro",
-    "titolo": "Una rete, molte voci, un unico impegno",
-    "dataTesto": "24 Nov 2026 - 16:00",
-    "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-24",
-    "luogo": "Sala Consiliare, Canosa di Puglia",
-    "indirizzoMappa": "Palazzo di Città, Canosa di Puglia",
+    "citta": "Cerignola",
+    "categoria": "Altro",
+    "titolo": "Mercatino di Autoproduzione e Artigianato",
+    "dataTesto": "22 Nov 2026 - 09:30",
+    "dataInizio": "2026-11-22",
+    "dataFine": "2026-11-22",
+    "luogo": "Piazza Matteotti, Cerignola",
+    "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
     "costo": "Ingresso libero",
-    "descrizione": "Incontro pubblico contro la violenza di genere."
+    "descrizione": "Stand, uncinetto e laboratori gratuiti.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+  },
+  {
+    "citta": "Cerignola",
+    "categoria": "Cultura & Spettacoli",
+    "titolo": "Papero Alfredo",
+    "dataTesto": "22 Nov 2026",
+    "dataInizio": "2026-11-22",
+    "dataFine": "2026-11-22",
+    "luogo": "Cerignola (sede da confermare)",
+    "indirizzoMappa": "Cerignola",
+    "costo": "Da verificare",
+    "descrizione": "Spettacolo in programma domenica.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Foggia",
-    "categoria": "Incontro",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Foggia Festival Sport Story - Undicesima Edizione",
     "dataTesto": "Dal 24 al 28 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -237,23 +204,25 @@
     "luogo": "Biblioteca La Magna Capitana e Piccolo Teatro Impertinente",
     "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo 1, Foggia",
     "costo": "Ingresso libero",
-    "descrizione": "Incontri e racconti di sport con grandi ospiti nazionali tra cui Porrà, Pisapia, Bitossi e Usall."
+    "descrizione": "Cinque giorni di storie, cultura e protagonisti dello sport con ospiti d'eccezione come Porrà, Pisapia, Bitossi e Usall.",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/"
   },
   {
-    "citta": "Foggia",
-    "categoria": "Incontro",
-    "titolo": "Foggia Festival Sport Story - 11ª Edizione",
-    "dataTesto": "Dal 24 al 28 Nov 2026",
+    "citta": "Canosa",
+    "categoria": "Cultura & Spettacoli",
+    "titolo": "Una rete, molte voci, un unico impegno",
+    "dataTesto": "24 Nov 2026 - 16:00",
     "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-28",
-    "luogo": "Biblioteca La Magna Capitana - Piccolo Teatro Impertinente",
-    "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo, Foggia",
+    "dataFine": "2026-11-24",
+    "luogo": "Sala Consiliare, Canosa di Puglia",
+    "indirizzoMappa": "Palazzo di Città, Canosa di Puglia",
     "costo": "Ingresso libero",
-    "descrizione": "Cinque giorni di storie, cultura e protagonisti dello sport con ospiti d'eccezione come Porrà, Pisapia, Bitossi e Usall."
+    "descrizione": "Incontro pubblico contro la violenza di genere.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "Trani",
-    "categoria": "Incontro",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "Trani accoglie Antonia Salzano: testimonianza con la madre di San Carlo Acutis",
     "dataTesto": "Sab 28 Nov 2026",
     "dataInizio": "2026-11-28",
@@ -261,11 +230,12 @@
     "luogo": "Chiesa dello Spirito Santo",
     "indirizzoMappa": "Chiesa dello Spirito Santo, Trani",
     "costo": "Ingresso libero",
-    "descrizione": "Una giornata di testimonianza e riflessione aperta alla comunità con la presenza di Antonia Salzano, madre di San Carlo Acutis."
+    "descrizione": "Una giornata di testimonianza e riflessione aperta alla comunità con la presenza di Antonia Salzano, madre di San Carlo Acutis.",
+    "fonteUrl": "https://www.traniviva.it/eventi/"
   },
   {
     "citta": "Cerignola",
-    "categoria": "Spettacolo",
+    "categoria": "Cultura & Spettacoli",
     "titolo": "L'universo è un materasso",
     "dataTesto": "30 Nov 2026",
     "dataInizio": "2026-11-30",
@@ -273,6 +243,7 @@
     "luogo": "Cerignola (sede da confermare)",
     "indirizzoMappa": "Cerignola",
     "costo": "Da verificare",
-    "descrizione": "Appuntamento teatrale."
+    "descrizione": "Appuntamento teatrale.",
+    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   }
 ]
