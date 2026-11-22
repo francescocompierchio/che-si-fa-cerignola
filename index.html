@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2QBFBHQXQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-M2QBFBHQXQ');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Che Si Fa Cerignola – Eventi a Cerignola e dintorni</title>
+  <meta name="description" content="Tutti gli eventi aggiornati a Cerignola e dintorni: serate nei locali, spettacoli, mercatini, incontri e attività. Un progetto di Francesco Compierchio." />
+  <meta name="author" content="Francesco Compierchio" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://francescocompierchio.github.io/che-si-fa-cerignola/" />
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#004aad" />
+  <link rel="apple-touch-icon" href="1795175413227~4.jpg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Che Si Fa Cerignola" />
+  <meta property="og:description" content="Scopri tutti gli eventi e le serate in programma oggi e nei prossimi giorni a Cerignola, Foggia, Barletta, Trani, Manfredonia e dintorni." />
+  <meta property="og:url" content="https://francescocompierchio.github.io/che-si-fa-cerignola/" />
+  <meta property="og:image" content="https://francescocompierchio.github.io/che-si-fa-cerignola/1795175413227~3.jpg" />
+
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --text: #161b26;
+      --muted: #556070;
+      --accent: #004aad;
+      --gold: #f5b800;
+      --today: #15803d;
+      --today-bg: #dcfce7;
+      --border: #dde3ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0 0 28px;
+      line-height: 1.5;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+    }
+
+    .top-nav-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 13px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .home-btn:active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .nav-share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #25d366;
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 13px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(37, 211, 102, 0.25);
+    }
+
+    .nav-share-btn:active {
+      opacity: 0.9;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #003580 0%, #004aad 100%);
+      color: #ffffff;
+      padding: 16px 16px 16px;
+      border-bottom: 4px solid var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .hero-inner, main, footer {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    main, footer {
+      padding: 0 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 4px;
+      font-size: 1.65rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #dbeafe;
+      font-size: 0.92rem;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .counter {
+      display: inline-block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #161b26;
+      background: var(--gold);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 4px 11px;
+      border-radius: 999px;
+      user-select: none;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+    }
+
+    .install-strip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .install-strip-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .install-strip-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .install-strip-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-strip {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn-strip-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-strip-soft {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-strip-close {
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 4px 6px;
+      cursor: pointer;
+    }
+
+    .install-guide {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .install-guide.open {
+      display: block;
+    }
+
+    .install-guide p {
+      margin: 0 0 4px;
+    }
+
+    .install-guide p:last-child {
+      margin-bottom: 0;
+    }
+
+    .venues-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .venues-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .venues-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .venues-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .venues-search {
+      width: 100%;
+      padding: 8px 11px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      margin-bottom: 10px;
+      outline: none;
+      display: none;
+    }
+
+    .venues-search.visible {
+      display: block;
+    }
+
+    .venues-search:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .venues-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .venue-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
+    }
+
+    .venue-name {
+      font-size: 0.86rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 3px;
+      color: var(--text);
+    }
+
+    .venue-tag {
+      font-size: 0.73rem;
+      line-height: 1.25;
+      color: var(--muted);
+      margin: 0 0 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .venue-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-top: auto;
+    }
+
+    .btn-xs {
+      padding: 6px 4px;
+      font-size: 0.73rem;
+      border-radius: 6px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn-ig {
+      background: #e1306c;
+      color: #ffffff;
+    }
+
+    .venues-toggle-btn {
+      width: 100%;
+      margin-top: 9px;
+      padding: 8px 12px;
+      background: var(--bg);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+
+    .venues-toggle-btn.visible {
+      display: block;
+    }
+
+    .venues-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 10px 6px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    details.is-today {
+      border-left: 4px solid var(--today);
+    }
+
+    details.is-featured {
+      border: 2px solid var(--gold);
+      border-left: 5px solid var(--gold);
+      background: linear-gradient(180deg, #fffbeb 0%, #ffffff 50%);
+      box-shadow: 0 3px 10px rgba(245, 184, 0, 0.16);
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .meta-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .badges-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge-featured {
+      background: var(--gold);
+      color: #161b26;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-today {
+      background: var(--today-bg);
+      color: var(--today);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    summary h3 {
+      margin: 2px 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.3;
+    }
+
+    .summary-info {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .toggle-hint {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    details[open] .toggle-hint::after { content: "Chiudi ▲"; }
+    details:not([open]) .toggle-hint::after { content: "Tocca per dettagli ▼"; }
+
+    .details-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .event-poster {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    .details-body p {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+    }
+
+    .access-tag {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-map {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-wa {
+      background: #25d366;
+      color: #ffffff;
+    }
+
+    .btn-soft {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    footer > p {
+      margin: 0 0 12px;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .author-card {
+      margin-top: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px 16px 14px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      user-select: none;
+    }
+
+    .author-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 4px;
+    }
+
+    .author-name {
+      font-size: 1.06rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0 0 6px;
+    }
+
+    .author-name span {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .author-desc {
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: var(--muted);
+      margin: 0 auto 12px;
+      max-width: 520px;
+    }
+
+    .btn-author-ig {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #d62976 0%, #e1306c 100%);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.83rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      box-shadow: 0 2px 5px rgba(225, 48, 108, 0.22);
+    }
+
+    .btn-author-ig:active {
+      opacity: 0.9;
+    }
+
+    .author-meta {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .author-meta a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* MODALE SEGNALAZIONE EVENTO */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.62);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      text-align: left;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .modal-close {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .m-field {
+      margin-bottom: 10px;
+    }
+
+    .m-field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--text);
+    }
+
+    .m-field input,
+    .m-field select,
+    .m-field textarea {
+      width: 100%;
+      padding: 9px 11px;
+      font-size: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+    }
+
+    .m-field textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .m-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav" aria-label="Barra rapida">
+    <div class="top-nav-inner">
+      <button type="button" class="home-btn" id="btn-home">
+        <span>⌂</span>
+        <span>Home</span>
+      </button>
+      <button type="button" class="nav-share-btn" id="btn-share-nav">
+        <span>Condividi app</span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Che Si Fa Cerignola</h1>
+      <p>Eventi e serate a Cerignola, Foggia, Barletta, Trani, Manfredonia e dintorni.</p>
+      <div class="stats-row">
+        <span class="counter" id="event-counter">Caricamento eventi...</span>
+        <span class="live-pill" id="live-pill" style="display:none;">
+          <span class="live-dot"></span>
+          <span><strong id="online-users-count">1</strong> online ora</span>
+        </span>
+        <span class="live-pill" id="visits-pill" style="display:none;">
+          <span>👁 <strong id="total-visits-count">1</strong> visite</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="install-strip" id="install-box" aria-label="Installa l'app">
+      <div class="install-strip-row">
+        <p class="install-strip-text" id="install-title">📲 Installa l'app sul telefono</p>
+        <div class="install-strip-actions">
+          <a
+            class="btn-strip btn-strip-primary"
+            id="btn-apk-top"
+            href="app-release.apk"
+            download="CheSiFaCerignola.apk"
+          >
+            Scarica App
+          </a>
+          <button type="button" class="btn-strip btn-strip-soft" id="btn-toggle-guide">
+            iPhone
+          </button>
+          <button type="button" class="btn-strip-close" id="btn-close-install" aria-label="Chiudi avviso">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div class="install-guide" id="install-guide">
+        <p id="guide-android"><strong>Android:</strong> tocca <strong>Scarica App</strong> e apri il file scaricato.</p>
+        <p id="guide-ios"><strong>iPhone (Safari):</strong> tocca <strong>Condividi</strong> in basso → <strong>Aggiungi alla schermata Home</strong>.</p>
+      </div>
+    </section>
+
+    <section class="venues-box" aria-label="Locali e serate a Cerignola">
+      <div class="venues-header">
+        <h2 class="venues-title">Locali &amp; Serate a Cerignola</h2>
+        <span class="venues-sub" id="venues-counter">Storie &amp; navigatore</span>
+      </div>
+      <input
+        type="search"
+        id="venues-search"
+        class="venues-search"
+        placeholder="Cerca locale (es. aperitivo, pizzeria, bowling)..."
+        aria-label="Cerca locale"
+      />
+      <div class="venues-list" id="venues-list"></div>
+      <button type="button" class="venues-toggle-btn" id="venues-toggle-btn"></button>
+    </section>
+
+    <input
+      type="search"
+      id="search-input"
+      class="search-box"
+      placeholder="Cerca evento, locale, città o parola chiave..."
+      aria-label="Cerca evento"
+    />
+
+    <div class="filters" id="filters"></div>
+    <div id="events-container"></div>
+  </main>
+
+  <footer>
+    <p>Organizzi un evento o una serata in un locale a Cerignola o dintorni?</p>
+    <div class="footer-actions">
+      <button type="button" class="btn btn-map" id="btn-segnala-evento">
+        Segnala evento / serata
+      </button>
+      <a
+        class="btn btn-soft"
+        id="btn-apk-footer"
+        href="app-release.apk"
+        download="CheSiFaCerignola.apk"
+      >
+        Scarica App Android
+      </a>
+      <button type="button" class="btn btn-wa" id="btn-share-footer">
+        Condividi app
+      </button>
+    </div>
+
+    <div class="author-card" id="author-signature">
+      <p class="author-eyebrow">Ideato e sviluppato da</p>
+      <p class="author-name">Francesco Compierchio <span>· Cerignola</span></p>
+      <p class="author-desc">
+        Progetto indipendente e gratuito nato per raccogliere e valorizzare gli eventi e le serate di Cerignola e dintorni, a servizio della comunità.
+      </p>
+      <a
+        class="btn-author-ig"
+        id="btn-author-ig"
+        href="https://www.instagram.com/francesco_c_92/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Profilo Instagram · @francesco_c_92
+      </a>
+      <div class="author-meta">
+        Aggiornamento automatico eventi · <a href="privacy.html">Privacy &amp; Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALE SEGNALA EVENTO -->
+  <div class="modal-backdrop" id="modal-segnala" role="dialog" aria-modal="true" aria-labelledby="modal-segnala-title">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 id="modal-segnala-title">Segnala Evento / Serata</h2>
+        <button type="button" class="modal-close" id="btn-chiudi-modale" aria-label="Chiudi">✕</button>
+      </div>
+      <p style="font-size:0.83rem; color:var(--muted); margin:0 0 12px;">
+        Compila i dati qui sotto: la segnalazione verrà verificata e pubblicata gratuitamente nell'app.
+      </p>
+      <form id="form-segnalazione-pubblica">
+        <div class="m-field">
+          <label for="seg-titolo">Titolo evento o serata *</label>
+          <input type="text" id="seg-titolo" required placeholder="Es. Aperitivo con DJ Set" />
+        </div>
+        <div class="m-row">
+          <div class="m-field">
+            <label for="seg-citta">Città *</label>
+            <input type="text" id="seg-citta" required value="Cerignola" />
+          </div>
+          <div class="m-field">
+            <label for="seg-categoria">Categoria *</label>
+            <select id="seg-categoria">
+              <option value="Locali & Serate">Locali &amp; Serate</option>
+              <option value="Musica & Concerti">Musica &amp; Concerti</option>
+              <option value="Sagre & Food">Sagre &amp; Food</option>
+              <option value="Cultura & Spettacoli">Cultura &amp; Spettacoli</option>
+              <option value="Sport">Sport</option>
+              <option value="Famiglie & Bambini">Famiglie &amp; Bambini</option>
+              <option value="Altro">Altro</option>
+            </select>
+          </div>
+        </div>
+        <div class="m-row">
+          <div class="m-field">
+            <label for="seg-data">Data *</label>
+            <input type="date" id="seg-data" required />
+          </div>
+          <div class="m-field">
+            <label for="seg-ora">Orario indicativo *</label>
+            <input type="text" id="seg-ora" required placeholder="Es. Ore 21:30" />
+          </div>
+        </div>
+        <div class="m-field">
+          <label for="seg-luogo">Nome locale / luogo e indirizzo *</label>
+          <input type="text" id="seg-luogo" required placeholder="Es. Civico 10 Bistrot, Via G. Gentile" />
+        </div>
+        <div class="m-field">
+          <label for="seg-descrizione">Descrizione breve *</label>
+          <textarea id="seg-descrizione" required placeholder="Programma serata, ospiti, formula ingresso..."></textarea>
+        </div>
+        <div class="m-row">
+          <div class="m-field">
+            <label for="seg-costo">Accesso / Costo</label>
+            <input type="text" id="seg-costo" placeholder="Es. Ingresso libero" />
+          </div>
+          <div class="m-field">
+            <label for="seg-contatto">Tuo IG o WhatsApp (per conferma)</label>
+            <input type="text" id="seg-contatto" placeholder="@locale o numero" />
+          </div>
+        </div>
+        <div class="m-field">
+          <label for="seg-fonte">Link post Instagram / locandina (opzionale)</label>
+          <input type="url" id="seg-fonte" placeholder="https://www.instagram.com/..." />
+        </div>
+
+        <div class="actions" style="margin-top:12px;">
+          <button type="submit" class="btn btn-map" id="btn-invia-segnalazione" style="flex:1;">
+            Invia per pubblicazione
+          </button>
+          <button type="button" class="btn btn-wa" id="btn-segnala-wa-diretto">
+            Oppure via WhatsApp
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SDK Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+  <script>
+    const APP_URL = "https://francescocompierchio.github.io/che-si-fa-cerignola/";
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroidApp = isAndroid && (/; wv\)/i.test(ua) || (document.referrer || "").startsWith("android-app://"));
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    const ADMIN_FLAG_KEY = "csf_escludi_visite";
+    const HIDE_INSTALL_KEY = "csf_nascondi_installa";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("admin") === "1" || urlParams.get("escludi") === "1") {
+      localStorage.setItem(ADMIN_FLAG_KEY, "1");
+    }
+
+    function isDispositivoEscluso() {
+      return (
+        localStorage.getItem(ADMIN_FLAG_KEY) === "1" ||
+        Boolean(localStorage.getItem("csf_admin_pin"))
+      );
+    }
+
+    function getInstagramUrl(username) {
+      const cleanUser = String(username || "").replace(/^@/, "").trim();
+      return cleanUser ? `https://www.instagram.com/${cleanUser}/` : "https://www.instagram.com/";
+    }
+
+    function isSafeHttpUrl(url) {
+      if (!url) return false;
+      try {
+        const u = new URL(String(url).trim());
+        return u.protocol === "http:" || u.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }
+
+    function apriNavigazioneMappa(destinazione) {
+      const q = encodeURIComponent(destinazione);
+      if (isAndroid) {
+        window.location.href = `geo:0,0?q=${q}`;
+      } else if (isIOS) {
+        window.location.href = `https://maps.apple.com/?daddr=${q}`;
+      } else {
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    async function condividiContenuto(titolo, testo, url) {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: titolo, text: testo, url: url });
+          return;
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+        }
+      }
+      const msg = encodeURIComponent(`${testo}\n${url}`);
+      if (isAndroid || isIOS) {
+        window.location.href = `whatsapp://send?text=${msg}`;
+      } else {
+        window.open(`https://wa.me/?text=${msg}`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    function apriSegnalazioneWhatsApp() {
+      const testoSegnalazione = encodeURIComponent(
+        "Ciao, vorrei segnalare un evento o una serata per Che Si Fa Cerignola:\n- Titolo: \n- Data e ora: \n- Locale e città: \n- Costo: \n- Descrizione: "
+      );
+      if (isAndroid || isIOS) {
+        window.location.href = `whatsapp://send?phone=393474181072&text=${testoSegnalazione}`;
+      } else {
+        window.open(`https://wa.me/393474181072?text=${testoSegnalazione}`, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    const installBox = document.getElementById("install-box");
+    const btnApkTop = document.getElementById("btn-apk-top");
+    const btnApkFooter = document.getElementById("btn-apk-footer");
+    const btnToggleGuide = document.getElementById("btn-toggle-guide");
+    const btnCloseInstall = document.getElementById("btn-close-install");
+    const installGuide = document.getElementById("install-guide");
+    const installTitle = document.getElementById("install-title");
+
+    if ((isStandalone || isAndroidApp || isDispositivoEscluso() || localStorage.getItem(HIDE_INSTALL_KEY) === "1") && installBox) {
+      installBox.style.display = "none";
+    } else if (isAndroid) {
+      if (btnToggleGuide) btnToggleGuide.style.display = "none";
+      if (installTitle) installTitle.textContent = "📲 Scarica l'app Android";
+    } else if (isIOS) {
+      if (btnApkTop) btnApkTop.style.display = "none";
+      if (btnApkFooter) btnApkFooter.style.display = "none";
+      const guideAndroid = document.getElementById("guide-android");
+      if (guideAndroid) guideAndroid.style.display = "none";
+      if (installTitle) installTitle.textContent = "📲 Salva l'app su iPhone";
+      if (btnToggleGuide) btnToggleGuide.textContent = "Come fare";
+    }
+
+    if (btnToggleGuide && installGuide) {
+      btnToggleGuide.addEventListener("click", () => {
+        installGuide.classList.toggle("open");
+      });
+    }
+
+    if (btnCloseInstall && installBox) {
+      btnCloseInstall.addEventListener("click", () => {
+        installBox.style.display = "none";
+        localStorage.setItem(HIDE_INSTALL_KEY, "1");
+      });
+    }
+
+    const shareAppAction = () => {
+      condividiContenuto(
+        "Che Si Fa Cerignola",
+        "Scopri tutti gli eventi e le serate a Cerignola e dintorni su Che Si Fa Cerignola:",
+        APP_URL
+      );
+    };
+
+    document.getElementById("btn-share-nav").addEventListener("click", shareAppAction);
+    document.getElementById("btn-share-footer").addEventListener("click", shareAppAction);
+
+    // Locali Cerignola (aggiornati live da Firebase con fallback automatico)
+    const LOCALI_CERIGNOLA_DEFAULT = [
+      {
+        nome: "Civico 10 Bistrot",
+        tipo: "Aperitivo · Cena & Serate",
+        igUser: "civico10bistrot",
+        mappa: "Via Giovanni Gentile 10, Cerignola"
+      },
+      {
+        nome: "ADE - Rooftop & Luxury Space",
+        tipo: "Ristorante · Eventi & DJ Set",
+        igUser: "ade_rooftopluxuryspace",
+        mappa: "Via Tiro a Segno Km 3, Cerignola"
+      },
+      {
+        nome: "Baraonda",
+        tipo: "Lounge Bar · Wine Shop & Cene",
+        igUser: "baraonda__",
+        mappa: "Via Aurelio Saffi 36, Cerignola"
+      },
+      {
+        nome: "Strike Bowling",
+        tipo: "Bowling · Sala Giochi & Serate",
+        igUser: "strikebowling.cerignola",
+        mappa: "Via Tiro a Segno, Cerignola"
+      }
+    ];
+
+    let localiAttivi = [...LOCALI_CERIGNOLA_DEFAULT];
+    const LOCALI_VISIBILI_INIZIALI = 4;
+    let localiEspansi = false;
+    let queryLocali = "";
+
+    const venuesList = document.getElementById("venues-list");
+    const venuesSearch = document.getElementById("venues-search");
+    const venuesToggleBtn = document.getElementById("venues-toggle-btn");
+    const venuesCounter = document.getElementById("venues-counter");
+
+    function renderLocali() {
+      venuesList.innerHTML = "";
+      const totaleLocali = localiAttivi.length;
+      venuesCounter.textContent = `${totaleLocali} locali`;
+
+      const filtrati = localiAttivi.filter(loc => {
+        if (!queryLocali.trim()) return true;
+        const txt = `${loc.nome} ${loc.tipo}`.toLowerCase();
+        return txt.includes(queryLocali.toLowerCase().trim());
+      });
+
+      const daMostrare = (localiEspansi || queryLocali.trim() !== "")
+        ? filtrati
+        : filtrati.slice(0, LOCALI_VISIBILI_INIZIALI);
+
+      if (daMostrare.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "venues-empty";
+        empty.textContent = "Nessun locale trovato con questo nome.";
+        venuesList.appendChild(empty);
+      } else {
+        daMostrare.forEach(loc => {
+          const card = document.createElement("div");
+          card.className = "venue-card";
+
+          const name = document.createElement("p");
+          name.className = "venue-name";
+          name.textContent = loc.nome;
+
+          const tag = document.createElement("p");
+          tag.className = "venue-tag";
+          tag.textContent = loc.tipo;
+
+          const actions = document.createElement("div");
+          actions.className = "venue-actions";
+
+          const igBtn = document.createElement("a");
+          igBtn.className = "btn-xs btn-ig";
+          igBtn.href = getInstagramUrl(loc.igUser);
+          igBtn.target = "_blank";
+          igBtn.rel = "noopener noreferrer";
+          igBtn.textContent = "Instagram";
+
+          const mapBtn = document.createElement("button");
+          mapBtn.type = "button";
+          mapBtn.className = "btn-xs btn-map";
+          mapBtn.textContent = "Naviga";
+          mapBtn.addEventListener("click", () => apriNavigazioneMappa(loc.mappa));
+
+          actions.append(igBtn, mapBtn);
+          card.append(name, tag, actions);
+          venuesList.appendChild(card);
+        });
+      }
+
+      if (totaleLocali > LOCALI_VISIBILI_INIZIALI) {
+        venuesToggleBtn.classList.add("visible");
+        if (localiEspansi) {
+          venuesSearch.classList.add("visible");
+          venuesToggleBtn.textContent = "Riduci elenco locali ▲";
+        } else {
+          venuesSearch.classList.remove("visible");
+          venuesToggleBtn.textContent = `Mostra tutti i locali (${totaleLocali}) ▼`;
+        }
+      } else {
+        venuesToggleBtn.classList.remove("visible");
+        venuesSearch.classList.remove("visible");
+      }
+    }
+
+    venuesToggleBtn.addEventListener("click", () => {
+      localiEspansi = !localiEspansi;
+      if (!localiEspansi) {
+        queryLocali = "";
+        venuesSearch.value = "";
+      }
+      renderLocali();
+    });
+
+    venuesSearch.addEventListener("input", e => {
+      queryLocali = e.target.value;
+      renderLocali();
+    });
+
+    renderLocali();
+
+    function getDataLocaleOggi() {
+      const now = new Date();
+      const anno = now.getFullYear();
+      const mese = String(now.getMonth() + 1).padStart(2, "0");
+      const giorno = String(now.getDate()).padStart(2, "0");
+      return `${anno}-${mese}-${giorno}`;
+    }
+
+    const oggi = getDataLocaleOggi();
+    let eventiDaJson = [];
+    let eventiDaFirebase = [];
+    let tuttiEventiAttivi = [];
+    let filtroAttivo = "ALL";
+    let queryRicerca = "";
+
+    const container = document.getElementById("events-container");
+    const filtersBar = document.getElementById("filters");
+    const searchInput = document.getElementById("search-input");
+    const counterBadge = document.getElementById("event-counter");
+
+    function aggiornaListaCompleta() {
+      const uniti = [...eventiDaFirebase, ...eventiDaJson];
+      tuttiEventiAttivi = uniti
+        .filter(ev => ev && ev.dataFine && ev.dataFine >= oggi)
+        .sort((a, b) => {
+          const evA = a.inEvidenza ? 1 : 0;
+          const evB = b.inEvidenza ? 1 : 0;
+          if (evA !== evB) return evB - evA;
+          return (a.dataInizio || "").localeCompare(b.dataInizio || "");
+        });
+      costruisciFiltri(tuttiEventiAttivi);
+      renderEventi();
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9XXi9bFa6qSFVcQHFc8KgULhK0fxrGfY",
+      authDomain: "chesifa-cerignola.firebaseapp.com",
+      databaseURL: "https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "chesifa-cerignola",
+      storageBucket: "chesifa-cerignola.firebasestorage.app",
+      messagingSenderId: "953544345505",
+      appId: "1:953544345505:web:4ec5aa4d1468975d1e2de0"
+    };
+
+    let dbGlobal = null;
+    let miaConnessioneGlobal = null;
+
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      dbGlobal = db;
+
+      const visiteRef = db.ref("statistiche/visiteTotali");
+      if (!isDispositivoEscluso() && !sessionStorage.getItem("csf_visitato")) {
+        visiteRef.transaction(curr => (curr || 0) + 1);
+        sessionStorage.setItem("csf_visitato", "1");
+        sessionStorage.setItem("csf_contata_ora", "1");
+      }
+
+      visiteRef.on("value", snap => {
+        const tot = snap.val() ?? 0;
+        document.getElementById("total-visits-count").textContent = tot.toLocaleString("it-IT");
+        document.getElementById("visits-pill").style.display = "inline-flex";
+      });
+
+      const connessioniRef = db.ref("statistiche/utentiOnline");
+      const connectedRef = db.ref(".info/connected");
+      connectedRef.on("value", snap => {
+        if (snap.val() === true && !isDispositivoEscluso()) {
+          const miaConnessione = connessioniRef.push();
+          miaConnessione.onDisconnect().remove();
+          miaConnessione.set(true);
+          miaConnessioneGlobal = miaConnessione;
+        }
+      });
+      connessioniRef.on("value", snap => {
+        const reali = snap.numChildren();
+        const online = isDispositivoEscluso() ? reali : Math.max(1, reali);
+        document.getElementById("online-users-count").textContent = online;
+        document.getElementById("live-pill").style.display = "inline-flex";
+      });
+
+      db.ref("eventiManuali").on("value", snap => {
+        const val = snap.val();
+        eventiDaFirebase = val
+          ? Object.values(val).map(ev => ({
+              ...ev,
+              inEvidenza: ev.inEvidenza !== false
+            }))
+          : [];
+        aggiornaListaCompleta();
+      });
+
+      db.ref("localiCerignola").on("value", snap => {
+        const val = snap.val();
+        if (val) {
+          const lista = Object.values(val).filter(l => l && l.nome);
+          if (lista.length > 0) {
+            localiAttivi = lista;
+            renderLocali();
+          }
+        }
+      });
+    } catch (e) {
+      console.error("Errore Firebase:", e);
+    }
+
+    // MODALE SEGNALAZIONE EVENTO
+    const modalSegnala = document.getElementById("modal-segnala");
+    document.getElementById("btn-segnala-evento").addEventListener("click", () => {
+      document.getElementById("seg-data").value = oggi;
+      modalSegnala.classList.add("open");
+    });
+    document.getElementById("btn-chiudi-modale").addEventListener("click", () => {
+      modalSegnala.classList.remove("open");
+    });
+    modalSegnala.addEventListener("click", e => {
+      if (e.target === modalSegnala) modalSegnala.classList.remove("open");
+    });
+    document.getElementById("btn-segnala-wa-diretto").addEventListener("click", apriSegnalazioneWhatsApp);
+
+    document.getElementById("form-segnalazione-pubblica").addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!dbGlobal) {
+        apriSegnalazioneWhatsApp();
+        return;
+      }
+      const btn = document.getElementById("btn-invia-segnalazione");
+      btn.disabled = true;
+      btn.textContent = "Invio in corso...";
+
+      const dataScelta = document.getElementById("seg-data").value || oggi;
+      const oraScelta = document.getElementById("seg-ora").value.trim();
+      const luogoVal = document.getElementById("seg-luogo").value.trim();
+      const cittaVal = document.getElementById("seg-citta").value.trim() || "Cerignola";
+
+      const segnalazione = {
+        titolo: document.getElementById("seg-titolo").value.trim(),
+        citta: cittaVal,
+        categoria: document.getElementById("seg-categoria").value,
+        dataInizio: dataScelta,
+        dataFine: dataScelta,
+        dataTesto: oraScelta ? `${dataScelta} · ${oraScelta}` : dataScelta,
+        luogo: luogoVal,
+        indirizzoMappa: `${luogoVal}, ${cittaVal}`,
+        descrizione: document.getElementById("seg-descrizione").value.trim(),
+        costo: document.getElementById("seg-costo").value.trim(),
+        contatto: document.getElementById("seg-contatto").value.trim(),
+        fonteUrl: document.getElementById("seg-fonte").value.trim(),
+        inviatoIl: new Date().toISOString()
+      };
+
+      try {
+        await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
+        e.target.reset();
+        document.getElementById("seg-citta").value = "Cerignola";
+        modalSegnala.classList.remove("open");
+        alert("Grazie! La segnalazione è stata ricevuta e verrà pubblicata dopo verifica.");
+      } catch (err) {
+        alert("Errore durante l'invio. Puoi comunque inviarla su WhatsApp.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Invia per pubblicazione";
+      }
+    });
+
+    let tapAdminCount = 0;
+    let tapAdminTimer = null;
+
+    function registraToccoAdmin() {
+      tapAdminCount++;
+      clearTimeout(tapAdminTimer);
+      tapAdminTimer = setTimeout(() => {
+        tapAdminCount = 0;
+      }, 2000);
+
+      if (tapAdminCount >= 5) {
+        tapAdminCount = 0;
+        const attualmenteEscluso = localStorage.getItem(ADMIN_FLAG_KEY) === "1";
+        if (!attualmenteEscluso) {
+          localStorage.setItem(ADMIN_FLAG_KEY, "1");
+          if (installBox) installBox.style.display = "none";
+          if (dbGlobal && sessionStorage.getItem("csf_contata_ora") === "1") {
+            dbGlobal.ref("statistiche/visiteTotali").transaction(curr => Math.max(0, (curr || 1) - 1));
+            sessionStorage.removeItem("csf_contata_ora");
+          }
+          if (miaConnessioneGlobal) {
+            miaConnessioneGlobal.remove();
+            miaConnessioneGlobal = null;
+          }
+          alert("Dispositivo Admin attivato: da ora le tue visite non verranno più contate.");
+        } else {
+          localStorage.removeItem(ADMIN_FLAG_KEY);
+          alert("Dispositivo Admin disattivato: questo dispositivo verrà contato di nuovo.");
+        }
+      }
+    }
+
+    document.getElementById("visits-pill").addEventListener("click", registraToccoAdmin);
+    document.getElementById("author-signature").addEventListener("click", registraToccoAdmin);
+
+    document.getElementById("btn-home").addEventListener("click", () => {
+      filtroAttivo = "ALL";
+      queryRicerca = "";
+      searchInput.value = "";
+      localiEspansi = false;
+      queryLocali = "";
+      venuesSearch.value = "";
+      renderLocali();
+      document.querySelectorAll(".filter-btn").forEach((b, idx) => {
+        b.classList.toggle("active", idx === 0);
+      });
+      renderEventi();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function costruisciFiltri(eventi) {
+      filtersBar.innerHTML = "";
+      const categorieUniche = [...new Set(eventi.map(e => e.categoria))];
+
+      const bottoniBase = [
+        { id: "ALL", label: "Tutti" },
+        { id: "OGGI", label: "Oggi / In corso" },
+        { id: "CITY:Cerignola", label: "Cerignola" },
+        { id: "CITY:Foggia", label: "Foggia" },
+        { id: "CITY:Barletta", label: "Barletta" },
+        { id: "CITY:Trani", label: "Trani" },
+        { id: "CITY:Manfredonia", label: "Manfredonia" },
+        { id: "DINTORNI", label: "Altri dintorni" },
+        ...categorieUniche.map(cat => ({ id: `CAT:${cat}`, label: cat }))
+      ];
+
+      bottoniBase.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn" + (filtroAttivo === item.id ? " active" : "");
+        btn.textContent = item.label;
+        btn.addEventListener("click", () => {
+          filtroAttivo = item.id;
+          document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderEventi();
+        });
+        filtersBar.appendChild(btn);
+      });
+    }
+
+    function renderEventi() {
+      container.innerHTML = "";
+
+      const cittaPrincipali = ["cerignola", "foggia", "barletta", "trani", "manfredonia"];
+
+      const filtrati = tuttiEventiAttivi.filter(ev => {
+        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const cittaEv = (ev.citta || "").toLowerCase().trim();
+
+        if (filtroAttivo === "OGGI" && !isToday) return false;
+        if (filtroAttivo.startsWith("CITY:")) {
+          const cittaRichiesta = filtroAttivo.replace("CITY:", "").toLowerCase();
+          if (cittaEv !== cittaRichiesta) return false;
+        }
+        if (filtroAttivo === "DINTORNI" && cittaPrincipali.includes(cittaEv)) return false;
+        if (filtroAttivo.startsWith("CAT:")) {
+          const catRichiesta = filtroAttivo.replace("CAT:", "");
+          if (ev.categoria !== catRichiesta) return false;
+        }
+
+        if (queryRicerca.trim() !== "") {
+          const testoCompleto = `${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria}`.toLowerCase();
+          if (!testoCompleto.includes(queryRicerca.toLowerCase().trim())) return false;
+        }
+
+        return true;
+      });
+
+      counterBadge.textContent = `${filtrati.length} ${filtrati.length === 1 ? "evento in programma" : "eventi in programma"}`;
+
+      if (filtrati.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Nessun evento trovato con i filtri selezionati.";
+        container.appendChild(empty);
+        return;
+      }
+
+      filtrati.forEach(ev => {
+        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const details = document.createElement("details");
+        if (isToday) details.classList.add("is-today");
+        if (ev.inEvidenza) details.classList.add("is-featured");
+
+        const summary = document.createElement("summary");
+
+        const metaTop = document.createElement("div");
+        metaTop.className = "meta-top";
+
+        const catSpan = document.createElement("span");
+        catSpan.textContent = `${ev.citta} - ${ev.categoria}`;
+        metaTop.appendChild(catSpan);
+
+        if (ev.inEvidenza || isToday) {
+          const badgesWrap = document.createElement("div");
+          badgesWrap.className = "badges-wrap";
+
+          if (ev.inEvidenza) {
+            const featBadge = document.createElement("span");
+            featBadge.className = "badge-featured";
+            featBadge.textContent = "★ IN EVIDENZA";
+            badgesWrap.appendChild(featBadge);
+          }
+
+          if (isToday) {
+            const badge = document.createElement("span");
+            badge.className = "badge-today";
+            badge.textContent = "OGGI / IN CORSO";
+            badgesWrap.appendChild(badge);
+          }
+
+          metaTop.appendChild(badgesWrap);
+        }
+
+        const title = document.createElement("h3");
+        title.textContent = ev.titolo;
+
+        const info = document.createElement("p");
+        info.className = "summary-info";
+        const boldDate = document.createElement("b");
+        boldDate.textContent = ev.dataTesto;
+        info.appendChild(boldDate);
+        info.append(` · ${ev.luogo}`);
+
+        const hint = document.createElement("span");
+        hint.className = "toggle-hint";
+
+        summary.append(metaTop, title, info, hint);
+
+        const body = document.createElement("div");
+        body.className = "details-body";
+
+        if (isSafeHttpUrl(ev.locandinaUrl)) {
+          const poster = document.createElement("img");
+          poster.className = "event-poster";
+          poster.src = ev.locandinaUrl.trim();
+          poster.alt = ev.titolo;
+          poster.loading = "lazy";
+          poster.onerror = () => { poster.style.display = "none"; };
+          body.appendChild(poster);
+        }
+
+        const desc = document.createElement("p");
+        desc.textContent = ev.descrizione;
+        body.appendChild(desc);
+
+        if (ev.costo) {
+          const cost = document.createElement("span");
+          cost.className = "access-tag";
+          cost.textContent = `Accesso: ${ev.costo}`;
+          body.appendChild(cost);
+        }
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const mapBtn = document.createElement("button");
+        mapBtn.type = "button";
+        mapBtn.className = "btn btn-map";
+        mapBtn.textContent = "Avvia navigatore";
+        mapBtn.addEventListener("click", () => {
+          apriNavigazioneMappa(ev.indirizzoMappa || `${ev.luogo}, ${ev.citta}`);
+        });
+
+        const waBtn = document.createElement("button");
+        waBtn.type = "button";
+        waBtn.className = "btn btn-wa";
+        waBtn.textContent = "Condividi evento";
+        waBtn.addEventListener("click", () => {
+          condividiContenuto(
+            ev.titolo,
+            `📅 *${ev.titolo}*\n🗓 ${ev.dataTesto}\n📍 ${ev.luogo}\n\nTutti gli eventi su Che Si Fa Cerignola:`,
+            APP_URL
+          );
+        });
+
+        actions.append(mapBtn, waBtn);
+
+        if (isSafeHttpUrl(ev.fonteUrl)) {
+          const srcBtn = document.createElement("a");
+          srcBtn.className = "btn btn-soft";
+          srcBtn.href = ev.fonteUrl.trim();
+          srcBtn.target = "_blank";
+          srcBtn.rel = "noopener noreferrer";
+          srcBtn.textContent = "Fonte ufficiale ↗";
+          actions.appendChild(srcBtn);
+        }
+
+        body.appendChild(actions);
+
+        details.append(summary, body);
+        container.appendChild(details);
+      });
+    }
+
+    searchInput.addEventListener("input", e => {
+      queryRicerca = e.target.value;
+      renderEventi();
+    });
+
+    fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
+      .then(res => {
+        if (!res.ok) throw new Error("Impossibile caricare eventi.json");
+        return res.json();
+      })
+      .then(dati => {
+        eventiDaJson = Array.isArray(dati) ? dati : [];
+        aggiornaListaCompleta();
+      })
+      .catch(err => {
+        console.error(err);
+        aggiornaListaCompleta();
+      });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(err => console.error("SW:", err));
+      });
+    }
+  </script>
+</body>
+</html>
