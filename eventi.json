@@ -39,19 +39,6 @@
     "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
-    "citta": "Manfredonia",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Sconfina - Nuova Stagione al Teatro Lucio Dalla",
-    "dataTesto": "Dal 1 Nov 2026 al 22 Apr 2027",
-    "dataInizio": "2026-11-01",
-    "dataFine": "2027-04-22",
-    "luogo": "Teatro Comunale Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Un ricco cartellone di spettacoli di prosa, commedia e teatro contemporaneo sul palco cittadino di Manfredonia.",
-    "fonteUrl": "https://www.manfredonianews.it/category/eventi/"
-  },
-  {
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
     "titolo": "Foggia Musica Festival 2026: 30 Anni di Bel Canto",
@@ -63,19 +50,6 @@
     "costo": "Ingresso libero",
     "descrizione": "Cinque imperdibili appuntamenti concertistici gratuiti per celebrare i trent'anni della prestigiosa associazione Bel Canto.",
     "fonteUrl": "https://www.foggiatoday.it/eventi/"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Stagione Teatrale 2026/2027 al Roma Teatro",
-    "dataTesto": "Dal 14 Nov 2026 al 2 Mag 2027",
-    "dataInizio": "2026-11-14",
-    "dataFine": "2027-05-02",
-    "luogo": "Roma Teatro Cinema E...",
-    "indirizzoMappa": "Roma Teatro Cinema E..., Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "Una prestigiosa rassegna teatrale con grandi interpreti e spettacoli di prosa che animano il cartellone cittadino.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
     "citta": "San Ferdinando",
@@ -101,19 +75,6 @@
     "indirizzoMappa": "Palazzo Fornari, Cerignola",
     "costo": "Ingresso libero",
     "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Gazebo Futuro Nazionale",
-    "dataTesto": "21-22 Nov 2026 - 10:00",
-    "dataInizio": "2026-11-21",
-    "dataFine": "2026-11-22",
-    "luogo": "Corso Aldo Moro, Cerignola",
-    "indirizzoMappa": "Corso Aldo Moro, Cerignola",
-    "costo": "Accesso libero",
-    "descrizione": "Punto informativo per incontrare i cittadini e raccogliere proposte.",
     "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
@@ -144,19 +105,6 @@
   },
   {
     "citta": "Cerignola",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Giornata contro la violenza sulle donne",
-    "dataTesto": "22 Nov 2026 - 18:30",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Palazzo Fornari, Cerignola",
-    "indirizzoMappa": "Palazzo Fornari, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Momento pubblico di sensibilizzazione.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
-    "citta": "Cerignola",
     "categoria": "Altro",
     "titolo": "Mercatino di Autoproduzione e Artigianato",
     "dataTesto": "22 Nov 2026 - 09:30",
@@ -167,44 +115,5 @@
     "costo": "Ingresso libero",
     "descrizione": "Stand, uncinetto e laboratori gratuiti.",
     "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
-    "citta": "Foggia",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Foggia Festival Sport Story - Undicesima Edizione",
-    "dataTesto": "Dal 24 al 28 Nov 2026",
-    "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-28",
-    "luogo": "Biblioteca La Magna Capitana e Piccolo Teatro Impertinente",
-    "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo 1, Foggia",
-    "costo": "Ingresso libero",
-    "descrizione": "Cinque giorni di storie, cultura e protagonisti dello sport con ospiti d'eccezione come Porrà, Pisapia, Bitossi e Usall.",
-    "fonteUrl": "https://www.foggiatoday.it/eventi/"
-  },
-  {
-    "citta": "Canosa",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Una rete, molte voci, un unico impegno",
-    "dataTesto": "24 Nov 2026 - 16:00",
-    "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-24",
-    "luogo": "Sala Consiliare, Canosa di Puglia",
-    "indirizzoMappa": "Palazzo di Città, Canosa di Puglia",
-    "costo": "Ingresso libero",
-    "descrizione": "Incontro pubblico contro la violenza di genere.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
-    "citta": "Trani",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Trani accoglie Antonia Salzano: testimonianza con la madre di San Carlo Acutis",
-    "dataTesto": "Sab 28 Nov 2026",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-28",
-    "luogo": "Chiesa dello Spirito Santo",
-    "indirizzoMappa": "Chiesa dello Spirito Santo, Trani",
-    "costo": "Ingresso libero",
-    "descrizione": "Una giornata di testimonianza e riflessione aperta alla comunità con la presenza di Antonia Salzano, madre di San Carlo Acutis.",
-    "fonteUrl": "https://www.traniviva.it/eventi/"
   }
 ]
