@@ -14,6 +14,18 @@
   {
     "citta": "Foggia",
     "categoria": "Musica",
+    "titolo": "Amici della Musica di Foggia - Stagione Concertistica 2026",
+    "dataTesto": "Dal 21 Feb al 15 Dic 2026",
+    "dataInizio": "2026-02-21",
+    "dataFine": "2026-12-15",
+    "luogo": "Teatro Umberto Giordano",
+    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
+    "costo": "A pagamento",
+    "descrizione": "Rassegna concertistica di musica classica e da camera con interpreti di primo piano nella cornice del Teatro Giordano."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Musica",
     "titolo": "Stagione Concertistica Orchestra Suoni del Sud 2026",
     "dataTesto": "Fino al 30 Dic 2026",
     "dataInizio": "2026-03-06",
@@ -22,6 +34,18 @@
     "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
     "costo": "A pagamento",
     "descrizione": "I grandi appuntamenti sinfonici e concertistici dell'Orchestra Suoni del Sud nella splendida cornice del Teatro Giordano."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Musica",
+    "titolo": "Orchestra Suoni del Sud - Stagione 2026",
+    "dataTesto": "Dal 6 Mar al 30 Dic 2026",
+    "dataInizio": "2026-03-06",
+    "dataFine": "2026-12-30",
+    "luogo": "Teatro Umberto Giordano",
+    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
+    "costo": "A pagamento",
+    "descrizione": "Programma di concerti sinfonici ed esibizioni orchestrali dell'ensemble Suoni del Sud al Teatro Giordano."
   },
   {
     "citta": "Orta Nova",
@@ -36,6 +60,18 @@
     "descrizione": "Iniziativa musicale e laboratoriale volta alla nascita e alla formazione della prima banda cittadina."
   },
   {
+    "citta": "Orta Nova",
+    "categoria": "Musica",
+    "titolo": "Orta Nova Sound Lab: Verso la Prima Banda Cittadina",
+    "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
+    "dataInizio": "2026-10-25",
+    "dataFine": "2027-01-24",
+    "luogo": "Orta Nova",
+    "indirizzoMappa": "Orta Nova",
+    "costo": "Ingresso libero",
+    "descrizione": "Progetto musicale comunitario e rassegna di concerti dedicati alla nascita della prima banda cittadina."
+  },
+  {
     "citta": "Manfredonia",
     "categoria": "Spettacolo",
     "titolo": "Sconfina - Nuova Stagione al Teatro Lucio Dalla",
@@ -46,6 +82,18 @@
     "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
     "costo": "A pagamento",
     "descrizione": "Un ricco cartellone di spettacoli di prosa, commedia e teatro contemporaneo sul palco cittadino di Manfredonia."
+  },
+  {
+    "citta": "Manfredonia",
+    "categoria": "Spettacolo",
+    "titolo": "Sconfina - Stagione Teatrale al Teatro Lucio Dalla",
+    "dataTesto": "Dall'1 Nov 2026 al 22 Apr 2027",
+    "dataInizio": "2026-11-01",
+    "dataFine": "2027-04-22",
+    "luogo": "Teatro Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Cartellone ricco di prosa d'autore, spettacoli contemporanei e grandi interpreti della scena teatrale."
   },
   {
     "citta": "Foggia",
@@ -190,6 +238,18 @@
     "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo 1, Foggia",
     "costo": "Ingresso libero",
     "descrizione": "Incontri e racconti di sport con grandi ospiti nazionali tra cui Porrà, Pisapia, Bitossi e Usall."
+  },
+  {
+    "citta": "Foggia",
+    "categoria": "Incontro",
+    "titolo": "Foggia Festival Sport Story - 11ª Edizione",
+    "dataTesto": "Dal 24 al 28 Nov 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-28",
+    "luogo": "Biblioteca La Magna Capitana - Piccolo Teatro Impertinente",
+    "indirizzoMappa": "Biblioteca La Magna Capitana, Viale Michelangelo, Foggia",
+    "costo": "Ingresso libero",
+    "descrizione": "Cinque giorni di storie, cultura e protagonisti dello sport con ospiti d'eccezione come Porrà, Pisapia, Bitossi e Usall."
   },
   {
     "citta": "Trani",
