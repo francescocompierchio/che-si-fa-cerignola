@@ -28,24 +28,11 @@
   {
     "citta": "Orta Nova",
     "categoria": "Musica & Concerti",
-    "titolo": "Orta Nova Sound Lab",
-    "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
-    "dataInizio": "2026-10-25",
-    "dataFine": "2027-01-24",
-    "luogo": "Orta Nova Sound Lab",
-    "indirizzoMappa": "Orta Nova",
-    "costo": "Ingresso libero",
-    "descrizione": "Iniziativa musicale e laboratoriale volta alla nascita e alla formazione della prima banda cittadina.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
-    "citta": "Orta Nova",
-    "categoria": "Musica & Concerti",
     "titolo": "Orta Nova Sound Lab: Verso la Prima Banda Cittadina",
     "dataTesto": "Dal 25 Ott 2026 al 24 Gen 2027",
     "dataInizio": "2026-10-25",
     "dataFine": "2027-01-24",
-    "luogo": "Orta Nova",
+    "luogo": "Orta Nova Sound Lab",
     "indirizzoMappa": "Orta Nova",
     "costo": "Ingresso libero",
     "descrizione": "Progetto musicale comunitario e rassegna di concerti dedicati alla nascita della prima banda cittadina.",
@@ -182,19 +169,6 @@
     "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   },
   {
-    "citta": "Cerignola",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "Papero Alfredo",
-    "dataTesto": "22 Nov 2026",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Cerignola (sede da confermare)",
-    "indirizzoMappa": "Cerignola",
-    "costo": "Da verificare",
-    "descrizione": "Spettacolo in programma domenica.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
-  },
-  {
     "citta": "Foggia",
     "categoria": "Cultura & Spettacoli",
     "titolo": "Foggia Festival Sport Story - Undicesima Edizione",
@@ -232,18 +206,5 @@
     "costo": "Ingresso libero",
     "descrizione": "Una giornata di testimonianza e riflessione aperta alla comunità con la presenza di Antonia Salzano, madre di San Carlo Acutis.",
     "fonteUrl": "https://www.traniviva.it/eventi/"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Cultura & Spettacoli",
-    "titolo": "L'universo è un materasso",
-    "dataTesto": "30 Nov 2026",
-    "dataInizio": "2026-11-30",
-    "dataFine": "2026-11-30",
-    "luogo": "Cerignola (sede da confermare)",
-    "indirizzoMappa": "Cerignola",
-    "costo": "Da verificare",
-    "descrizione": "Appuntamento teatrale.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/"
   }
 ]
