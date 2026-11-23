@@ -392,7 +392,7 @@ def classifica_categoria(testo):
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
         return "Sagre & Food"
     # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
-    if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "serata live", "birthday eve", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
+    if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
         return "Locali & Serate"
     # Riconosce anche esibizioni descritte senza la parola "concerto" nel titolo.
     if any(k in t for k in (
