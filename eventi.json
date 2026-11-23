@@ -29,6 +29,34 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Altro",
+    "titolo": "Sogni o realtà - Mostra fotografica di Potito Casparrini",
+    "dataTesto": "Martedì 24 novembre 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-24",
+    "luogo": "Museo Civico di Foggia, Sala Diomede",
+    "indirizzoMappa": "via Nigri 1, Foggia",
+    "costo": "n.d.",
+    "descrizione": "Inaugurazione della mostra fotografica di Potito Casparrini. L'esposizione presenta un percorso artistico basato sulla tecnica del mosso volontario, che trasforma paesaggi e scene quotidiane in immagini sognanti dai cont",
+    "fonteUrl": "https://www.immediato.net/2026/11/23/foggia-la-realta-si-trasforma-in-un-sogno-negli-scatti-di-potito-casparrini-al-museo-civico-la-mostra-fotografica/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Orsara Di Puglia",
+    "categoria": "Attività diurne",
+    "titolo": "Donne in rinascita e Rinascere nel Corpo",
+    "dataTesto": "24 e 25 novembre 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-25",
+    "luogo": "Palazzo De Gregorio e Palestra Comunale",
+    "indirizzoMappa": "Orsara di Puglia",
+    "costo": "n.d.",
+    "descrizione": "Due iniziative contro la violenza sulle donne: l'incontro 'Donne in Rinascita' il 24 novembre alle ore 16 presso Palazzo De Gregorio e l'evento 'Rinascere nel Corpo' il 25 novembre alle 16.30 nella nuova palestra comunal",
+    "fonteUrl": "https://www.immediato.net/2026/11/23/a-orsara-di-puglia-donne-in-rinascita-contro-la-violenza-per-riprendersi-la-propria-vita/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Trani",
     "categoria": "Altro",
     "titolo": "Trani accoglie Antonia Salzano: gli incontri con la madre di San Carlo Acutis",
@@ -110,5 +138,19 @@
     "costo": "gratuito",
     "descrizione": "Una giornata dedicata ai diritti e all’inclusione. Il programma prevede una marcia su Corso Manfredi a partire dalle 10:00 verso Piazza del Popolo con attività sportive. Nel pomeriggio, presso il Centro Bakhita a Borgo T",
     "fonteUrl": "https://www.cerignolaviva.it/eventi/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Tu scendi dalle stelle - Concerto di Natale con Luciano Lamonarca",
+    "dataTesto": "13 dicembre 2026",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Cattedrale di Foggia",
+    "indirizzoMappa": "Foggia",
+    "costo": "n.d.",
+    "descrizione": "Grande concerto di Natale con il celebre tenore italo-americano Luciano Lamonarca. L'evento celebra la pastorale composta da Sant’Alfonso Maria de’ Liguori ed è la prima iniziativa della Fondazione Onlus 'Tu scendi dalle",
+    "fonteUrl": "https://www.immediato.net/2026/11/21/nella-cattedrale-of-foggia-il-concerto-tu-scendi-dalle-stelle-protagonista-un-tenore-italo-americano/"
   }
 ]
