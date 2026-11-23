@@ -215,13 +215,13 @@ def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
         # Prima prevalgono le prove legate al luogo dell'evento e al suo contenuto.
         # citta può essere soltanto il comune predefinito della fonte e non la sede reale.
-        campi_documentali = " ".join(
-            str(testo_o_ev.get(k) or "")
-            for k in ("indirizzoMappa", "luogo", "titolo", "descrizione")
-        ).lower()
-        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\b{re.escape(k)}\b", campi_documentali):
-                return COMUNI_50KM[k]
+        # Valuta i campi in ordine di affidabilità: indirizzo e sede prima,
+        # poi titolo e descrizione. Non mescolare città citate incidentalmente.
+        for campo in ("indirizzoMappa", "luogo", "titolo", "descrizione"):
+            testo_campo = str(testo_o_ev.get(campo) or "").lower()
+            for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
+                if re.search(rf"\b{re.escape(k)}\b", testo_campo):
+                    return COMUNI_50KM[k]
 
         # Il campo citta resta un fallback per le fonti che documentano
         # la località soltanto nei metadati o nella pagina di provenienza.
@@ -564,7 +564,9 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             loc = loc[0] if loc else {}
         luogo_nome = loc.get("name", "") if isinstance(loc, dict) else ""
         addr = loc.get("address", {}) if isinstance(loc, dict) else {}
-        localita = addr.get("addressLocality", citta_default) if isinstance(addr, dict) else citta_default
+        # Non inserire la città predefinita come se fosse un dato geografico
+        # dichiarato dalla scheda: potrebbe essere soltanto la città del portale.
+        localita = addr.get("addressLocality", "") if isinstance(addr, dict) else ""
         desc = re.sub(r"\s+", " ", str(ev_ld.get("description") or "")).strip()
 
         ev_ok = normalizza_e_valida_evento({
@@ -574,7 +576,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "dataFine": d2,
             "dataTesto": formatta_data_italiano(d1, d2) if re.match(r"^\d{4}-\d{2}-\d{2}$", d1) else "",
             "luogo": luogo_nome,
-            "indirizzoMappa": f"{luogo_nome}, {localita or citta_default}".strip(" ,"),
+            "indirizzoMappa": f"{luogo_nome}, {localita}".strip(" ,"),
             "costo": "Non specificato nella fonte",
             "descrizione": desc,
             "fonteUrl": page_url
