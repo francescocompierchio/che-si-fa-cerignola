@@ -167,6 +167,32 @@ class ControlliQualitaTests(unittest.TestCase):
             )
         )
 
+    def test_comune_da_descrizione_prevale_sulla_citta_appesa_all_indirizzo(self):
+        evento = self.evento_base(
+            titolo="Cenerentola 301",
+            luogo="Teatro Comunale Lucio Dalla prosegue",
+            indirizzoMappa="Teatro Comunale Lucio Dalla prosegue, Foggia",
+            descrizione="Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00."
+        )
+        risultato = motore.normalizza_e_valida_evento(
+            evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+        )
+        self.assertIsNotNone(risultato)
+        self.assertEqual(risultato["citta"], "Manfredonia")
+        self.assertTrue(risultato["indirizzoMappa"].endswith("Manfredonia"))
+
+    def test_centro_piazze_non_e_una_sede_verificabile(self):
+        evento = self.evento_base(
+            citta="Barletta",
+            luogo="Centro / Piazze, Barletta",
+            indirizzoMappa="Centro / Piazze, Barletta"
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
     def test_comune_reale_lucera_corregge_default_cerignola(self):
         evento = self.evento_base(
             titolo="Gianni Fiorellino",
