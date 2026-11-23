@@ -225,16 +225,115 @@ def _comune_nel_testo(testo):
     return min(corrispondenze)[2]
 
 
+PROVINCE_SIGLE_LOCALITA = (
+    "Bari|BA|Brindisi|BR|Foggia|FG|Barletta-Andria-Trani|BAT|BT|"
+    "Taranto|TA|Lecce|LE|Potenza|PZ|Matera|MT|Avellino|AV|Benevento|BN|"
+    "Campobasso|CB|Napoli|NA|Roma|RM|Milano|MI|Torino|TO|Venezia|VE|Verona|VR|"
+    "Padova|PD|Brescia|BS|Bergamo|BG|Bologna|BO|Genova|GE|Firenze|FI|Pisa|PI|"
+    "Livorno|LI|Perugia|PG|Ancona|AN|Pescara|PE|L'Aquila|AQ|Salerno|SA|Caserta|CE|"
+    "Cosenza|CS|Catanzaro|CZ|Reggio Calabria|RC|Messina|ME|Palermo|PA|Catania|CT|"
+    "Cagliari|CA|Sassari|SS|Trieste|TS|Udine|UD|Trento|TN|Bolzano|BZ|Aosta|AO|"
+    "Arezzo|AR|Siena|SI|Lucca|LU|Parma|PR|Modena|MO|Ravenna|RA|Ferrara|FE|Rimini|RN|"
+    "Piacenza|PC|Como|CO|Varese|VA|Monza|MB|Pavia|PV|Cremona|CR|Mantova|MN|Lecco|LC|"
+    "Sondrio|SO|Novara|NO|Alessandria|AL|Cuneo|CN|Asti|AT|Imperia|IM|Savona|SV|"
+    "La Spezia|SP|Reggio Emilia|RE|Forlì-Cesena|FC|Macerata|MC|Pesaro e Urbino|PU|"
+    "Teramo|TE|Chieti|CH|Frosinone|FR|Latina|LT|Viterbo|VT|Rieti|RI|Isernia|IS|"
+    "Crotone|KR|Vibo Valentia|VV|Trapani|TP|Agrigento|AG|Enna|EN|Ragusa|RG|"
+    "Siracusa|SR|Nuoro|NU|Oristano|OR|Olbia-Tempio|OT|Carbonia-Iglesias|CI|"
+    "Ogliastra|OG|Medio Campidano|VS"
+)
+
+
+def _ripara_codifica(testo):
+    """Ripara le sequenze di codifica note riscontrate nelle schede evento."""
+    testo = str(testo or "")
+    sostituzioni = {
+        "√Ý": "à",
+        "‚Äô": "’",
+        "â€™": "’",
+        "Ã ": "à",
+        "Ã¨": "è",
+        "Ã©": "é",
+        "Ã¬": "ì",
+        "Ã²": "ò",
+        "Ã¹": "ù",
+    }
+    for errato, corretto in sostituzioni.items():
+        testo = testo.replace(errato, corretto)
+    return re.sub(r"\s+", " ", testo).strip()
+
+
+def _luogo_utilizzabile(luogo):
+    """Scarta frammenti di testo scambiati per una sede o un indirizzo."""
+    valore = re.sub(r"\s+", " ", str(luogo or "")).strip(" ,.;:-")
+    if not valore or len(valore) < 4 or len(valore) > 100:
+        return False
+    if valore.lower() in {
+        "corso", "via", "piazza", "viale", "centro / piazze",
+        "centro", "da definire", "da verificare", "n/d",
+    } or re.search(r"\bcentro\s*/\s*piazze\b", valore, re.I):
+        return False
+    if re.search(
+        r"\b(?:o ricevere maggiori informazioni|è possibile consultare|"
+        r"per maggiori informazioni|per informazioni|clicca per|"
+        r"persone parteciperanno|ingresso a pagamento|ingresso libero)\b",
+        valore,
+        re.I,
+    ):
+        return False
+    if re.match(r"^(?:corso|via|piazza|viale)\s+(?:da|di|per|o|è|e)\b", valore, re.I):
+        return False
+    return True
+
+
+def _localita_esplicita_fuori_area(testo):
+    """Riconosce una località esplicita fuori dal bacino servito e impedisce il fallback al comune fonte."""
+    testo = str(testo or "")[:900]
+    pattern = re.compile(
+        rf"\b([A-ZÀ-Ü][A-Za-zÀ-ÿ'’.-]*(?:\s+(?:di|del|della|de|san|santa|"
+        rf"[A-ZÀ-Ü][A-Za-zÀ-ÿ'’.-]*)){{0,4}})\s*"
+        rf"\((?i:{PROVINCE_SIGLE_LOCALITA})\)",
+    )
+    for match in pattern.finditer(testo):
+        localita = match.group(1).strip()
+        if not _comune_nel_testo(localita):
+            return localita
+    return ""
+
+
+def _url_tacco_generica(url):
+    """Individua pagine-categoria Tacco di Bacco, non schede di singoli eventi."""
+    parsed = urlparse(str(url or ""))
+    if "iltaccodibacco.it" not in parsed.netloc.lower():
+        return False
+    ultimo = parsed.path.rstrip("/").split("/")[-1].lower()
+    return ultimo in {
+        "eventi", "concerti", "sponsored", "avventure", "notizie",
+        "spettacoli", "tempo-libero", "cerignola", "barletta", "foggia",
+        "puglia",
+    }
+
+
 def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
-        # I campi più vicini alla sede reale prevalgono sui metadati del portale.
-        for campo in ("indirizzoMappa", "luogo", "titolo", "descrizione"):
-            comune = _comune_nel_testo(testo_o_ev.get(campo))
+        # L'indirizzo viene spesso costruito aggiungendo in coda la città predefinita
+        # della fonte: quella sola occorrenza non è una prova della sede reale.
+        indirizzo = str(testo_o_ev.get("indirizzoMappa") or "")
+        citta_default = str(testo_o_ev.get("citta") or "").strip()
+        if citta_default:
+            indirizzo = re.sub(
+                rf"(?:,\s*|\s+-\s*){re.escape(citta_default)}\s*$",
+                "",
+                indirizzo,
+                flags=re.I,
+            )
+        for testo in (indirizzo, testo_o_ev.get("luogo"), testo_o_ev.get("titolo"), testo_o_ev.get("descrizione")):
+            comune = _comune_nel_testo(testo)
             if comune:
                 return comune
 
         # citta è soltanto un fallback se non esistono prove più specifiche.
-        return _comune_nel_testo(testo_o_ev.get("citta"))
+        return _comune_nel_testo(citta_default)
     return _comune_nel_testo(testo_o_ev)
 
 
@@ -252,6 +351,11 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             indirizzo,
             flags=re.I,
         ).strip(" ,")
+    if citta:
+        parti = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
+        while len(parti) >= 2 and parti[-1].lower() == citta.lower() and parti[-2].lower() == citta.lower():
+            parti.pop()
+        indirizzo = ", ".join(parti)
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
@@ -263,6 +367,8 @@ def classifica_categoria(testo):
     # non partite sportive da cronaca: rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
+    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
+        return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
@@ -271,8 +377,6 @@ def classifica_categoria(testo):
         return "Locali & Serate"
     if any(k in t for k in ("concerto", "concerti", "musica dal vivo", "musica live", "live music", "tribute band", "cover band", "cabaret", "festa in piazza", "festa di piazza", "festa patronale", "festa di paese", "festa della birra")):
         return "Musica & Concerti"
-    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
-        return "Famiglie & Bambini"
     return "Attività diurne"
 
 
@@ -438,7 +542,7 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
             m_dove = re.match(r"^(?:dove|luogo|presso|location|sede|locale|indirizzo)\s*:\s*(.+)$", line, re.I)
             if m_dove:
                 cand = m_dove.group(1).strip(" ,.;:-")
-                if len(cand) >= 4 and cand.lower() not in ("da definire", "da verificare", "n/d", citta.lower()):
+                if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
                     return cand[:80]
 
     if citta:
@@ -467,13 +571,13 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
             grezzo,
             flags=re.I
         )[0].strip(" ,.;:-")
-        if len(pulito) >= 4 and pulito.lower() not in ("da definire", "da verificare", "n/d", citta.lower()):
+        if _luogo_utilizzabile(pulito) and pulito.lower() != citta.lower():
             return pulito[:80]
 
     m_presso = re.search(r"\bpresso\s+(?:il\s+|la\s+|lo\s+|l['’])?([A-ZÀ-Ü][A-Za-zÀ-ü0-9'’.\-]*(?:\s+[A-ZÀ-Ü0-9][A-Za-zÀ-ü0-9'’.\-]*){0,4})", testo_flat)
     if m_presso:
         cand = m_presso.group(1).strip(" ,.;:-")
-        if len(cand) >= 4 and cand.lower() != citta.lower():
+        if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
             return cand[:80]
 
     return ""
@@ -504,13 +608,21 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     oggi = ref.strftime("%Y-%m-%d")
     limite_max = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).strftime("%Y-%m-%d")
 
-    titolo = re.sub(r"\s+", " ", str(raw.get("titolo") or "")).strip()[:85]
-    descrizione = re.sub(r"\s+", " ", str(raw.get("descrizione") or "")).strip()[:220]
-    luogo = re.sub(r"\s+", " ", str(raw.get("luogo") or "")).strip()
+    titolo = _ripara_codifica(raw.get("titolo") or "")[:85]
+    descrizione = _ripara_codifica(raw.get("descrizione") or "")[:220]
+    luogo = _ripara_codifica(raw.get("luogo") or "")
+    indirizzo_grezzo = _ripara_codifica(raw.get("indirizzoMappa") or "")
     url = str(raw.get("fonteUrl") or "").strip()
 
-    if len(titolo) < 5 or not url.startswith("http"):
+    if len(titolo) < 5 or not url.startswith("http") or _url_tacco_generica(url):
         return None
+    if re.search(r"(?:√[ÝÈ]|‚Ä|Ã[Â-ÿ]|�)", titolo + " " + descrizione):
+        return None
+    # Analizza i campi separatamente: concatenarli può far inglobare al parser
+    # il comune valido precedente nel nome di una città estranea (es. "Cerignola Roma").
+    for testo_geografico in (indirizzo_grezzo, luogo, descrizione[:650]):
+        if _localita_esplicita_fuori_area(testo_geografico):
+            return None
 
     testo_check = f"{titolo} {descrizione} {luogo}"
     if REGEX_SCARTO.search(testo_check):
@@ -518,7 +630,14 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if not fonte_curata_eventi and not REGEX_TEMA_COERENTE.search(testo_check):
         return None
 
-    citta = risolvi_comune_50km(raw)
+    raw_pulito = dict(raw)
+    raw_pulito.update({
+        "titolo": titolo,
+        "descrizione": descrizione,
+        "luogo": luogo,
+        "indirizzoMappa": indirizzo_grezzo,
+    })
+    citta = risolvi_comune_50km(raw_pulito)
     if not citta:
         return None
 
@@ -534,14 +653,13 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if d2 < oggi or d1 > d2 or d1 > limite_max:
         return None
 
-    if not luogo or luogo.lower() in ("da definire", "da verificare", "n/d", "centro / piazze", citta.lower()):
+    if not _luogo_utilizzabile(luogo) or luogo.lower() == citta.lower():
         luogo = estrai_luogo_documentato(f"{titolo}\n{descrizione}", citta)
-    if not luogo:
+    if not _luogo_utilizzabile(luogo):
         return None
 
-    cat = str(raw.get("categoria") or "").strip()
-    if cat not in CATEGORIE_AMMESSE:
-        cat = classifica_categoria(f"{titolo} {descrizione}")
+    # Ricalcola la categoria sul contenuto, evitando di perpetuare classificazioni vecchie o incoerenti.
+    cat = classifica_categoria(f"{titolo} {descrizione}")
 
     if not d_txt:
         d_txt = formatta_data_italiano(d1, d2)
@@ -560,7 +678,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         "dataInizio": d1,
         "dataFine": d2,
         "luogo": luogo,
-        "indirizzoMappa": normalizza_indirizzo_mappa(raw.get("indirizzoMappa"), luogo, citta),
+        "indirizzoMappa": normalizza_indirizzo_mappa(indirizzo_grezzo, luogo, citta),
         "costo": costo,
         "descrizione": desc_finale[:220],
         "fonteUrl": url
@@ -768,6 +886,8 @@ def raccogli_da_portale_generico(session, fonte):
                 continue
             if p_low == urlparse(url).path.rstrip("/").lower():
                 continue
+            if _url_tacco_generica(full):
+                continue
             t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
                 continue
@@ -848,7 +968,15 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             if is_manuale:
                 manuali.append(item)
             elif ha_data:
-                auto_validi.append(item)
+                # Riconvalida anche gli eventi automatici già pubblicati: il vecchio
+                # archivio può contenere città/luoghi errati o URL di pagine-categoria.
+                evento_pulito = normalizza_e_valida_evento(
+                    item, ref_dt=oggi_dt(), fonte_curata_eventi=True
+                )
+                if evento_pulito:
+                    auto_validi.append(evento_pulito)
+                else:
+                    print(f"Evento automatico scartato in riconvalida: {titolo[:70]}")
     except Exception as e:
         print(f"Avviso lettura {percorso_json}: {str(e)[:70]}")
 

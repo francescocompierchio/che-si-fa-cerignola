@@ -2,7 +2,7 @@ name: Verifica motore eventi
 
 on:
   push:
-    branches: [miglioria-discovery-eventi, correzione-comuni-e-fonti]
+    branches: [miglioria-discovery-eventi, correzione-comuni-e-fonti, miglioria-qualita-eventi]
   pull_request:
     branches: [main]
     paths:
