@@ -156,7 +156,9 @@ REGEX_TEMA_COERENTE = re.compile(
     r"fattori[ae]\s+didattic[ah]|parco\s+tematico|"
     r"trekking|escursion[ei]|passeggiat[ae]\s+(?:naturalistic[ah]|guidat[ah])|"
     r"uscit[ae]\s+organizzat[ah]|visita\s+guidata|visita\s+alle\s+saline|riserva\s+naturale|attivit[aà]\s+all['’]aperto|"
-    r"fiera\s+(?:ricreativa|artigianale|d['’]aprile)|esperienz[ae]\s+artigianal\w*|festival|avventur\w*"
+    r"fiera\s+(?:ricreativa|artigianale|d['’]aprile)|esperienz[ae]\s+artigianal\w*|festival|avventur\w*|"
+    r"corricerignola|gara\s+podistica|maratona|mezza\s+maratona|corsa\s+(?:podistica|su\s+strada|campestre)|"
+    r"trail\s+running|urban\s+trail|spartan\s+race|hyrox"
     r")\b",
     re.I
 )
@@ -176,7 +178,7 @@ PAROLE_SCARTO = [
     "santa messa", "messa solenne", "processione", "parrocchia", "parrocchie",
     "diocesi", "vescovo", "liturgia", "città mariana", "devozione", "incoronazione",
     "sport agonistico", "torneo", "tornei", "campionato", "campionati",
-    "gara podistica", "maratona", "mezza maratona", "partita",
+    "partita",
     "calcio", "volley", "basket", "audace cerignola", "ultras",
     "webinar", "evento online", "corso online", "google meet", "zoom", "b2b",
     "wedding", "fiera sposi", "comunicato stampa", "consiglio comunale", "giunta",
@@ -213,24 +215,36 @@ def priorita_km(citta):
 
 def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
-        c_raw = (testo_o_ev.get("citta") or "").strip().lower()
-        if c_raw in COMUNI_50KM:
-            return COMUNI_50KM[c_raw]
+        # Prima prevalgono le prove legate al luogo dell'evento e al suo contenuto.
+        # citta può essere soltanto il comune predefinito della fonte e non la sede reale.
+        # Valuta i campi in ordine di affidabilità: indirizzo e sede prima,
+        # poi titolo e descrizione. Non mescolare città citate incidentalmente.
+        for campo in ("indirizzoMappa", "luogo", "titolo", "descrizione"):
+            testo_campo = str(testo_o_ev.get(campo) or "").lower()
+            for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
+                if re.search(rf"\b{re.escape(k)}\b", testo_campo):
+                    return COMUNI_50KM[k]
+
+        # Il campo citta resta un fallback per le fonti che documentano
+        # la località soltanto nei metadati o nella pagina di provenienza.
+        c_raw = str(testo_o_ev.get("citta") or "").strip().lower()
         for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
             if re.search(rf"\b{re.escape(k)}\b", c_raw):
                 return COMUNI_50KM[k]
-        testo = f"{testo_o_ev.get('luogo', '')} {testo_o_ev.get('titolo', '')} {testo_o_ev.get('descrizione', '')}".lower()
     else:
         testo = str(testo_o_ev or "").lower()
-
-    for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(k)}\b", testo):
-            return COMUNI_50KM[k]
+        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
+            if re.search(rf"\b{re.escape(k)}\b", testo):
+                return COMUNI_50KM[k]
     return ""
 
 
 def classifica_categoria(testo):
     t = (testo or "").lower()
+    # Le gare di corsa e gli eventi fitness sono esperienze a cui partecipare,
+    # non partite sportive da cronaca: rientrano nelle attività diurne.
+    if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
+        return "Attività diurne"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
@@ -556,7 +570,9 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             loc = loc[0] if loc else {}
         luogo_nome = loc.get("name", "") if isinstance(loc, dict) else ""
         addr = loc.get("address", {}) if isinstance(loc, dict) else {}
-        localita = addr.get("addressLocality", citta_default) if isinstance(addr, dict) else citta_default
+        # Non inserire la città predefinita come se fosse un dato geografico
+        # dichiarato dalla scheda: potrebbe essere soltanto la città del portale.
+        localita = addr.get("addressLocality", "") if isinstance(addr, dict) else ""
         desc = re.sub(r"\s+", " ", str(ev_ld.get("description") or "")).strip()
 
         ev_ok = normalizza_e_valida_evento({
@@ -566,7 +582,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "dataFine": d2,
             "dataTesto": formatta_data_italiano(d1, d2) if re.match(r"^\d{4}-\d{2}-\d{2}$", d1) else "",
             "luogo": luogo_nome,
-            "indirizzoMappa": f"{luogo_nome}, {localita or citta_default}".strip(" ,"),
+            "indirizzoMappa": f"{luogo_nome}, {localita}".strip(" ,"),
             "costo": "Non specificato nella fonte",
             "descrizione": desc,
             "fonteUrl": page_url
@@ -717,9 +733,8 @@ def raccogli_da_portale_generico(session, fonte):
         r.encoding = r.apparent_encoding or "utf-8"
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Prova prima a leggere la pagina elenco stessa se contiene eventi strutturati o date future
-        eventi.extend(analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata))
-
+        # Una pagina elenco non è di per sé un evento: si analizzano solo
+        # collegamenti che sembrano schede evento individuali.
         links = []
         visti = {url.rstrip("/").lower()}
         for a in soup.find_all("a", href=True):
@@ -737,6 +752,13 @@ def raccogli_da_portale_generico(session, fonte):
                 continue
             t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
+                continue
+
+            # Accetta un titolo con tema evento oppure un URL tipico di scheda
+            # evento con identificativo numerico; scarta menu e pagine generiche.
+            path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\d+\.html?$", p_low))
+            titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
+            if not (path_evento_id or titolo_evento):
                 continue
             if len(p_low.strip("/")) >= 4:
                 visti.add(chiave)
