@@ -1,20 +1,6 @@
 [
   {
     "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Attività diurne",
-    "titolo": "Barletta | Trani Film Festival: la Short Session prosegue il suo viaggio internaziona",
-    "dataTesto": "Dal 16 Nov al 23 Nov 2026",
-    "dataInizio": "2026-11-16",
-    "dataFine": "2026-11-23",
-    "luogo": "Cinema Paolillo",
-    "indirizzoMappa": "Cinema Paolillo, Corso Garibaldi, 25-29, Barletta",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Dal 16 al 20 novembre 2026, con una giornata conclusiva il 23 novembre, la Short Session del Trani Film Festival prosegue il suo viaggio internazionale al Multisala Paolillo di Barletta, nella Sala Tognazzi, nell’ambito",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336655.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Attività diurne",
     "titolo": "Foggia | Festival Sport Story – Il pallone è uguale per tutti",
@@ -218,9 +204,9 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
     "luogo": "Santo Graal",
-    "indirizzoMappa": "Santo Graal, Trani",
+    "indirizzoMappa": "Santo Graal, via San Giorgio, Trani",
     "costo": "Non specificato nella fonte",
-    "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d'autore, fino a quei brani italiani che, pur nascendo altrove, s",
+    "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d'autore, fino a quei brani italiani che, pur nascendo altrove, sembra",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336732.html"
   },
   {
@@ -547,6 +533,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Foggia | I fantasmi di Dickens",
+    "dataTesto": "Dal 26 Dic al 30 Dic 2026",
+    "dataInizio": "2026-12-26",
+    "dataFine": "2026-12-30",
+    "luogo": "Teatro dei limoni",
+    "indirizzoMappa": "Teatro dei limoni, Via Giardino 28, Foggia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Durante le festività il Teatro dei Limoni presenta I fantasmi di Dickens, nuovo testo di Christian Di Furia, già vincitore del Premio Riccione per il teatro e del Premio Hystrio. Lo spettacolo si inserisce nel percorso p",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332943.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Barletta",
     "categoria": "Attività diurne",
     "titolo": "Barletta | Capodanno al Curci – Dado, Angelo Mellone e Andrea Perroni",
@@ -628,6 +628,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Sergio Rubini è protagonista di Mio, sempre, mio Andrea, progetto dedicato ad Andrea Pazienza. Lo spettacolo coinvolge DauniaOrchestra feat. Giò Sada e Umberto Sangiovanni, Angelo Verziera e Michele De Costanzo. Lettere,",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331610.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Attività diurne",
+    "titolo": "Barletta | Arvo Pärt vs David Bowie",
+    "dataTesto": "Sab 30 Gen 2027",
+    "dataInizio": "2027-01-30",
+    "dataFine": "2027-01-30",
+    "luogo": "Teatro Curci",
+    "indirizzoMappa": "Teatro Curci, Corso Vittorio Emanuele II, 72, Barletta",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Arvo Pärt vs David Bowie è il dittico coreografico della Equilibrio Dinamico Repertory Dance Company, con concept e coreografia di Roberta Ferrara e Gianni Notarnicola. La sacralità musicale di Pärt incontra l’eclettismo",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331483.html"
   },
   {
     "tipoContenuto": "evento",
