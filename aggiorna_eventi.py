@@ -220,19 +220,19 @@ def risolvi_comune_50km(testo_o_ev):
             for k in ("indirizzoMappa", "luogo", "titolo", "descrizione")
         ).lower()
         for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\\b{re.escape(k)}\\b", campi_documentali):
+            if re.search(rf"\b{re.escape(k)}\b", campi_documentali):
                 return COMUNI_50KM[k]
 
         # Il campo citta resta un fallback per le fonti che documentano
         # la località soltanto nei metadati o nella pagina di provenienza.
         c_raw = str(testo_o_ev.get("citta") or "").strip().lower()
         for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\\b{re.escape(k)}\\b", c_raw):
+            if re.search(rf"\b{re.escape(k)}\b", c_raw):
                 return COMUNI_50KM[k]
     else:
         testo = str(testo_o_ev or "").lower()
         for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\\b{re.escape(k)}\\b", testo):
+            if re.search(rf"\b{re.escape(k)}\b", testo):
                 return COMUNI_50KM[k]
     return ""
 
@@ -742,13 +742,13 @@ def raccogli_da_portale_generico(session, fonte):
                 continue
             if p_low == urlparse(url).path.rstrip("/").lower():
                 continue
-            t_link = re.sub(r"\\s+", " ", a.get_text(" ", strip=True)).strip()
+            t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
                 continue
 
             # Accetta un titolo con tema evento oppure un URL tipico di scheda
             # evento con identificativo numerico; scarta menu e pagine generiche.
-            path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\\d+\\.html?$", p_low))
+            path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\d+\.html?$", p_low))
             titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
             if not (path_evento_id or titolo_evento):
                 continue
