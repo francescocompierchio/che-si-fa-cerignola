@@ -8,6 +8,8 @@ from difflib import SequenceMatcher
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from html import unescape
+from zoneinfo import ZoneInfo
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -108,9 +110,10 @@ COMUNI_50KM = {
 }
 
 CINTURA_25 = {
-    "Stornara", "Stornarella", "Orta Nova", "San Ferdinando di Puglia",
-    "Trinitapoli", "Canosa di Puglia", "Ordona", "Carapelle",
-    "Margherita di Savoia", "Lavello", "Ascoli Satriano"
+    # Comuni entro 25 km in linea d'aria dal centro di Cerignola.
+    "Stornara", "Stornarella", "Canosa di Puglia", "San Ferdinando di Puglia",
+    "Orta Nova", "Trinitapoli", "Carapelle", "Zapponeta", "Ordona",
+    "Margherita di Savoia", "Minervino Murge"
 }
 
 CATEGORIE_AMMESSE = [
@@ -150,7 +153,7 @@ REGEX_TEMA_COERENTE = re.compile(
     r"luminari[ae]|accensione\s+(?:delle\s+)?luminari[ae]|accensione\s+(?:dell['’]\s*)?albero|"
     r"villaggi[o]?\s+(?:di\s+natale|natalizi[o]?|di\s+babbo\s+natale)|"
     r"casa\s+di\s+babbo\s+natale|pist[ae]\s+di\s+(?:pattinaggio|ghiaccio)|presepe\s+vivente|"
-    r"concert[oi]|concerto\s+sinfonico|orchestra\s+sinfonica|musica\s+classica|recital\s+pianistic[o]?|musica\s+da\s+camera|opera\s+lirica|pianoforte|"
+    r"concert[oi]|concerts?|symphonic\s+concert|concerto\s+sinfonico|orchestra\s+sinfonica|musica\s+classica|recital\s+pianistic[o]?|musica\s+da\s+camera|opera\s+lirica|pianoforte|"
     r"spettacolo\s+teatrale|commedia\s+teatrale|teatro\s+ragazzi|prosa|musica\s+(?:dal\s+vivo|live)|live\s+music|tribute\s+band|cover\s+band|"
     r"dj\s*set|discotec[ah]|club\s+night|party|aperitiv[oi]\s+musical\w*|karaoke|"
     r"serat[ae]\s+(?:live|musical\w*|in\s+piazza|al\s+pub|nel\s+locale|danza|latina|disco|con)|"
@@ -201,7 +204,47 @@ ESCLUSIONI_PATH_VIVA = (
 
 
 def oggi_dt():
-    return datetime.now()
+    """Data/ora corrente nel fuso operativo italiano, indipendente dal runner UTC."""
+    return datetime.now(ZoneInfo("Europe/Rome"))
+
+
+def _data_iso_valida(valore):
+    valore = str(valore or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", valore):
+        return False
+    try:
+        return datetime.strptime(valore, "%Y-%m-%d").strftime("%Y-%m-%d") == valore
+    except ValueError:
+        return False
+
+
+def _host_appartiene(url, dominio):
+    """Confronto hostname rigoroso: il dominio deve essere host o suo suffisso DNS."""
+    host = (urlparse(str(url or "")).hostname or "").lower().rstrip(".")
+    dominio = str(dominio or "").lower().strip(".")
+    return bool(host and dominio and (host == dominio or host.endswith("." + dominio)))
+
+
+def _url_pagina_elenco(url):
+    """Riconosce alcuni endpoint di elenco che non sono schede di un singolo evento."""
+    parsed = urlparse(str(url or ""))
+    path = parsed.path.rstrip("/").lower()
+    if _host_appartiene(url, "experience-app.com") and path.startswith("/eventi/"):
+        return True
+    if _host_appartiene(url, "buzzeventmap.com") and path.startswith("/eventi/"):
+        return True
+    return False
+
+
+def _descrizione_placeholder(testo):
+    valore = re.sub(r"\s+", " ", str(testo or "")).strip().lower()
+    return any(frase in valore for frase in (
+        "l'indirizzo potrebbe essere inesatto",
+        "indirizzo potrebbe essere inesatto",
+        "accertati prima di partire",
+        "descrizione non disponibile",
+        "informazioni non disponibili",
+    ))
 
 
 def oggi_iso():
@@ -248,8 +291,8 @@ PROVINCE_SIGLE_LOCALITA = (
 
 
 def _ripara_codifica(testo):
-    """Ripara le sequenze di codifica note riscontrate nelle schede evento."""
-    testo = str(testo or "")
+    """Ripara HTML entities e sequenze di codifica note nelle schede evento."""
+    testo = unescape(str(testo or ""))
     sostituzioni = {
         "√Ý": "à",
         "‚Äô": "’",
@@ -330,7 +373,7 @@ def _localita_esplicita_fuori_area(testo):
 def _url_tacco_generica(url):
     """Individua pagine-categoria Tacco di Bacco, non schede di singoli eventi."""
     parsed = urlparse(str(url or ""))
-    if "iltaccodibacco.it" not in parsed.netloc.lower():
+    if not _host_appartiene(url, "iltaccodibacco.it"):
         return False
     ultimo = parsed.path.rstrip("/").split("/")[-1].lower()
     return ultimo in {
@@ -419,8 +462,9 @@ def classifica_categoria(testo):
         return "Locali & Serate"
     # Riconosce anche esibizioni descritte senza la parola "concerto" nel titolo.
     if any(k in t for k in (
-        "concerto", "concerti", "in concerto", "concerto sinfonico", "orchestra sinfonica",
-        "musica classica", "recital pianistico", "pianoforte", "musica da camera", "opera lirica",
+        "concerto", "concerti", "concert", "concerts", "symphonic concert", "in concerto",
+        "concerto sinfonico", "orchestra sinfonica", "musica classica", "recital pianistico",
+        "pianoforte", "musica da camera", "opera lirica",
         "vivaldi", "orchestra", "musica dal vivo", "musica live",
         "live music", "live", "tribute", "tributo", "tribute band", "cover band",
         "band", "jam", "quartet", "quatuor", "trio", "duo", "vocal harmony",
@@ -682,8 +726,22 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     indirizzo_grezzo = _ripara_codifica(raw.get("indirizzoMappa") or "")
     url = str(raw.get("fonteUrl") or "").strip()
 
-    if len(titolo) < 5 or not url.startswith("http") or _url_tacco_generica(url):
+    parsed_url = urlparse(url)
+    if (
+        len(titolo) < 5
+        or parsed_url.scheme not in ("http", "https")
+        or not parsed_url.hostname
+        or _url_tacco_generica(url)
+        or _url_pagina_elenco(url)
+    ):
         return None
+    descrizione_non_verificata = _descrizione_placeholder(descrizione)
+    # Experience App in alcune schede restituisce date e descrizioni generiche
+    # non verificabili: non pubblicarle come se fossero eventi confermati.
+    if descrizione_non_verificata and _host_appartiene(url, "experience-app.com"):
+        return None
+    if descrizione_non_verificata:
+        descrizione = ""
     if re.search(r"(?:√[ÝÈ]|‚Ä|Ã[Â-ÿ]|�)", titolo + " " + descrizione):
         return None
     # Analizza i campi separatamente: concatenarli può far inglobare al parser
@@ -713,10 +771,10 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     d2 = str(raw.get("dataFine") or d1).strip()[:10]
     d_txt = str(raw.get("dataTesto") or "").strip()
 
-    if not (re.match(r"^\d{4}-\d{2}-\d{2}$", d1) and re.match(r"^\d{4}-\d{2}-\d{2}$", d2)):
+    if not (_data_iso_valida(d1) and _data_iso_valida(d2)):
         d1, d2, d_txt = estrai_date_italiano(f"{titolo} {descrizione} {d_txt}", ref)
 
-    if not (re.match(r"^\d{4}-\d{2}-\d{2}$", d1) and re.match(r"^\d{4}-\d{2}-\d{2}$", d2)):
+    if not (_data_iso_valida(d1) and _data_iso_valida(d2)):
         return None
     if d2 < oggi or d1 > d2 or d1 > limite_max:
         return None
@@ -737,7 +795,10 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     costo = str(raw.get("costo") or "").strip() or "Non specificato nella fonte"
     desc_finale = rimuovi_riferimenti_pubblicazione(descrizione) if descrizione else ""
     if len(desc_finale) < 15:
-        desc_finale = f"{titolo} presso {luogo} ({citta})."
+        desc_finale = (
+            f"{titolo} presso {luogo} ({citta}). "
+            "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+        )
 
     return {
         "tipoContenuto": "evento",
@@ -767,31 +828,51 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         except Exception:
             continue
 
-    for ev_ld in eventi_ld[:4]:
+    for ev_ld in eventi_ld[:20]:
+        stato = str(ev_ld.get("eventStatus") or "").lower()
+        if "eventcancelled" in stato or "eventpostponed" in stato:
+            continue
         titolo = re.sub(r"\s+", " ", str(ev_ld.get("name") or "")).strip()
         d1 = str(ev_ld.get("startDate") or "").strip()[:10]
         d2 = str(ev_ld.get("endDate") or d1).strip()[:10]
         loc = ev_ld.get("location") or {}
         if isinstance(loc, list):
             loc = loc[0] if loc else {}
-        luogo_nome = loc.get("name", "") if isinstance(loc, dict) else ""
-        addr = loc.get("address", {}) if isinstance(loc, dict) else {}
-        # Non inserire la città predefinita come se fosse un dato geografico
-        # dichiarato dalla scheda: potrebbe essere soltanto la città del portale.
-        localita = addr.get("addressLocality", "") if isinstance(addr, dict) else ""
+        if isinstance(loc, dict):
+            luogo_nome = str(loc.get("name") or "").strip()
+            addr = loc.get("address", {})
+        else:
+            luogo_nome = str(loc or "").strip()
+            addr = {}
+        if isinstance(addr, dict):
+            localita = str(addr.get("addressLocality") or "").strip()
+            componenti_indirizzo = [
+                luogo_nome,
+                str(addr.get("streetAddress") or "").strip(),
+                str(addr.get("postalCode") or "").strip(),
+                localita,
+                str(addr.get("addressRegion") or "").strip(),
+            ]
+        else:
+            localita = ""
+            componenti_indirizzo = [luogo_nome, str(addr or "").strip()]
+        indirizzo_completo = ", ".join(x for x in componenti_indirizzo if x)
         desc = re.sub(r"\s+", " ", str(ev_ld.get("description") or "")).strip()
+        url_evento = urljoin(page_url, str(ev_ld.get("url") or "").strip())
+        if not _host_appartiene(url_evento, urlparse(page_url).hostname or ""):
+            url_evento = page_url
 
         ev_ok = normalizza_e_valida_evento({
             "citta": localita or citta_default,
             "titolo": titolo,
             "dataInizio": d1,
             "dataFine": d2,
-            "dataTesto": formatta_data_italiano(d1, d2) if re.match(r"^\d{4}-\d{2}-\d{2}$", d1) else "",
+            "dataTesto": formatta_data_italiano(d1, d2) if _data_iso_valida(d1) else "",
             "luogo": luogo_nome,
-            "indirizzoMappa": f"{luogo_nome}, {localita}".strip(" ,"),
+            "indirizzoMappa": indirizzo_completo,
             "costo": "Non specificato nella fonte",
             "descrizione": desc,
-            "fonteUrl": page_url
+            "fonteUrl": url_evento
         }, ref, fonte_curata_eventi=fonte_curata_eventi)
         if ev_ok:
             risultati.append(ev_ok)
@@ -884,7 +965,7 @@ def raccogli_da_portale_viva(session, fonte):
         for a in soup.find_all("a", href=True):
             full = urljoin(url, a["href"]).split("#")[0].strip()
             pr = urlparse(full)
-            if pr.scheme not in ("http", "https") or dominio not in pr.netloc.lower():
+            if pr.scheme not in ("http", "https") or not _host_appartiene(full, dominio):
                 continue
             p_low = pr.path.lower()
             if any(x in p_low for x in ESCLUSIONI_PATH_VIVA):
@@ -1023,16 +1104,14 @@ def sono_duplicati(a, b):
 
 def _fonte_appartiene_a_raccolta_automatica(url):
     """Confronta l'host reale, evitando falsi match su URL che contengono un dominio nel path."""
-    host = (urlparse(str(url or "")).hostname or "").lower().rstrip(".")
-    return any(host == dominio or host.endswith("." + dominio) for dominio in DOMINI_AUTO)
+    return any(_host_appartiene(url, dominio) for dominio in DOMINI_AUTO)
 
 
 def carica_esistenti_protetti(percorso_json="eventi.json"):
-    """Protegge i manuali eventualmente presenti nel JSON e riconvalida solo le schede automatiche.
+    """Protegge i manuali JSON e riconvalida solo gli eventi raccolti automaticamente.
 
-    Gli eventi approvati dal pannello admin vivono nel nodo Firebase 'eventiManuali'
-    e vengono caricati separatamente dal frontend: questo workflow non legge,
-    modifica o cancella il database Firebase.
+    Gli eventi approvati dal pannello admin vivono nel nodo Firebase 'eventiManuali':
+    questo processo non legge, modifica o cancella Firebase.
     """
     oggi = oggi_iso()
     manuali = []
@@ -1045,42 +1124,63 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
     try:
         with open(percorso_json, "r", encoding="utf-8") as f:
             dati = json.load(f)
-        if not isinstance(dati, list):
-            return manuali, auto_validi, scaduti_rimossi
+    except (OSError, json.JSONDecodeError) as exc:
+        # Fail closed: non rigenerare mai l'archivio da zero se quello esistente
+        # è corrotto o illeggibile.
+        raise RuntimeError(f"Archivio eventi esistente non leggibile: {percorso_json}") from exc
 
-        for item in dati:
-            if not isinstance(item, dict) or item.get("tipoContenuto") != "evento":
-                continue
-            titolo = str(item.get("titolo") or "").strip()
-            if len(titolo) < 3:
-                continue
+    if not isinstance(dati, list):
+        raise RuntimeError(f"Formato archivio eventi non valido: {percorso_json} non contiene una lista")
 
-            url = str(item.get("fonteUrl") or "").strip()
-            # Un flag esplicito o una fonte non riconosciuta comportano conservazione prudenziale.
-            is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
-            d_fin = str(item.get("dataFine") or item.get("dataInizio") or "").strip()[:10]
-            ha_data = bool(re.match(r"^\d{4}-\d{2}-\d{2}$", d_fin))
+    for item in dati:
+        if not isinstance(item, dict):
+            raise RuntimeError(f"Record non valido nell'archivio eventi: {percorso_json}")
+        if item.get("tipoContenuto") != "evento":
+            continue
 
-            if ha_data and d_fin < oggi:
-                scaduti_rimossi += 1
-                continue
+        titolo = str(item.get("titolo") or "").strip()
+        if len(titolo) < 3:
+            # Record incompleto: conserva per revisione invece di cancellarlo in silenzio.
+            manuali.append(item)
+            continue
 
-            if is_manuale:
-                manuali.append(item)
-            elif ha_data:
-                # Riconvalida anche gli eventi automatici già pubblicati: il vecchio
-                # archivio può contenere città/luoghi errati o URL di pagine-categoria.
-                evento_pulito = normalizza_e_valida_evento(
-                    item, ref_dt=oggi_dt(), fonte_curata_eventi=True
-                )
-                if evento_pulito:
-                    auto_validi.append(evento_pulito)
-                else:
-                    print(f"Evento automatico scartato in riconvalida: {titolo[:70]}")
-    except Exception as e:
-        print(f"Avviso lettura {percorso_json}: {str(e)[:70]}")
+        url = str(item.get("fonteUrl") or "").strip()
+        is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
+        d_fin = str(item.get("dataFine") or item.get("dataInizio") or "").strip()[:10]
+        ha_data = _data_iso_valida(d_fin)
+
+        if ha_data and d_fin < oggi:
+            scaduti_rimossi += 1
+            continue
+
+        if is_manuale:
+            manuali.append(item)
+        elif ha_data:
+            evento_pulito = normalizza_e_valida_evento(
+                item, ref_dt=oggi_dt(), fonte_curata_eventi=True
+            )
+            if evento_pulito:
+                auto_validi.append(evento_pulito)
+            else:
+                print(f"Evento automatico scartato in riconvalida: {titolo[:70]}")
+        else:
+            print(f"Evento automatico senza data valida scartato in riconvalida: {titolo[:70]}")
 
     return manuali, auto_validi, scaduti_rimossi
+
+
+def _scrivi_json_atomico(percorso, dati):
+    """Scrive JSON completo su file temporaneo e sostituisce il target solo a scrittura riuscita."""
+    temporaneo = f"{percorso}.tmp"
+    try:
+        with open(temporaneo, "w", encoding="utf-8") as f:
+            json.dump(dati, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temporaneo, percorso)
+    finally:
+        if os.path.exists(temporaneo):
+            os.remove(temporaneo)
 
 
 def esegui_aggiornamento():
@@ -1119,27 +1219,45 @@ def esegui_aggiornamento():
 
     lista_finale = sorted(
         consolidati,
-        key=lambda x: (x.get("dataInizio", "9999-12-31"), priorita_km(x.get("citta", "")), x.get("titolo", "").lower())
+        key=lambda x: (
+            x.get("dataInizio", "9999-12-31"),
+            priorita_km(x.get("citta", "")),
+            x.get("titolo", "").lower(),
+        ),
     )
 
-    with open("eventi.json", "w", encoding="utf-8") as f:
-        json.dump(lista_finale, f, ensure_ascii=False, indent=2)
+    # Verifica finale prima di toccare il file pubblicato.
+    if not isinstance(lista_finale, list) or any(not isinstance(e, dict) for e in lista_finale):
+        raise RuntimeError("Controllo integrità fallito: archivio eventi non valido")
+    _scrivi_json_atomico("eventi.json", lista_finale)
 
+    eventi_per_fonte = Counter(
+        (urlparse(str(e.get("fonteUrl") or "")).hostname or "fonte non specificata").lower()
+        for e in lista_finale
+    )
     report = {
-        "aggiornatoAl": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "aggiornatoAl": oggi_dt().strftime("%Y-%m-%d %H:%M:%S %Z"),
+        "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),
         "nuoviAggiunti": aggiunti_nuovi,
         "manualiConservati": len(manuali_admin),
+        "automaticiRiconvalidati": len(precedenti_auto),
         "scadutiEliminati": scaduti_rimossi,
-        "topComuni": dict(Counter(e.get("citta", "") for e in lista_finale).most_common(15))
+        "finestraAnticipoGiorni": GIORNI_ANTICIPO_MAX,
+        "eventiPerCategoria": dict(Counter(e.get("categoria", "Non classificato") for e in lista_finale)),
+        "eventiPerComune": dict(Counter(e.get("citta", "Non specificato") for e in lista_finale)),
+        "eventiPerFonte": dict(eventi_per_fonte),
     }
-    with open("report_copertura.json", "w", encoding="utf-8") as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
+    _scrivi_json_atomico("report_copertura.json", report)
 
     print(
         f"Fine: {len(lista_finale)} eventi totali salvati "
-        f"({aggiunti_nuovi} nuovi, {len(manuali_admin)} manuali, {scaduti_rimossi} scaduti rimossi) in {int(time.time() - t_start)}s"
+        f"({aggiunti_nuovi} nuovi, {len(manuali_admin)} manuali, "
+        f"{len(precedenti_auto)} automatici riconvalidati, {scaduti_rimossi} scaduti rimossi) "
+        f"in {int(time.time() - t_start)}s"
     )
+
+
 
 
 if __name__ == "__main__":
