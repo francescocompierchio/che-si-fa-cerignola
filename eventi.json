@@ -8,7 +8,7 @@
     "dataInizio": "2026-11-16",
     "dataFine": "2026-11-23",
     "luogo": "Cinema Paolillo",
-    "indirizzoMappa": "Cinema Paolillo Corso Garibaldi, 25-29, Barletta",
+    "indirizzoMappa": "Cinema Paolillo, Barletta",
     "costo": "Non specificato nella fonte",
     "descrizione": "Dal 16 al 20 novembre 2026, con una giornata conclusiva il 23 novembre, la Short Session del Trani Film Festival prosegue il suo viaggio internazionale al Multisala Paolillo di Barletta, nella Sala Tognazzi, nell’ambito",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336655.html"
@@ -50,7 +50,7 @@
     "dataInizio": "2026-11-24",
     "dataFine": "2026-11-28",
     "luogo": "Biblioteca di Foggia “La Magna Capitana” Foggia",
-    "indirizzoMappa": "Biblioteca di Foggia “La Magna Capitana” Foggia Biblioteca di Foggia “La Magna Capitana”, Foggia",
+    "indirizzoMappa": "Biblioteca di Foggia “La Magna Capitana” Foggia, Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "Dal 24 al 28 novembre 2026 torna a Foggia l’undicesima edizione del Foggia Festival Sport Story, dedicata quest’anno al tema «Il pallone è uguale per tutti». La manifestazione propone incontri e riflessioni sul rapporto",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337004.html"
@@ -64,10 +64,24 @@
     "dataInizio": "2026-11-24",
     "dataFine": "2026-11-24",
     "luogo": "Biblioteca Comunale \"G. Bovio\"",
-    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\" Piazzetta San Francesco, n. 1 , Trani",
+    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\", Trani",
     "costo": "Non specificato nella fonte",
     "descrizione": "Prosegue il ciclo di incontri “Rotary Educational” organizzato e promosso in collaborazione con l’Amministrazione del Comune di Trani. Una iniziativa di cinque incontri per capire il presente e orientare il futuro pensat",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337412.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Trani",
+    "categoria": "Attività diurne",
+    "titolo": "Trani | La Rivoluzione dei capibara: cultura digitale e immaginazione politica",
+    "dataTesto": "Mar 24 Nov 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-24",
+    "luogo": "Hub Porta Nova",
+    "indirizzoMappa": "Hub Porta Nova, Trani",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "A Trani “La Rivoluzione dei capibara”: cultura digitale e immaginazione politica Martedì 24 novembre, alle ore 18.30, HUB Porta Nova, in via Nigrò 18 a Trani, ospita “La rivoluzione dei capibara. Dal pensiero di Mark F",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337345.html"
   },
   {
     "tipoContenuto": "evento",
@@ -78,10 +92,24 @@
     "dataInizio": "2026-11-24",
     "dataFine": "2026-11-24",
     "luogo": "Biblioteca storica dell’Ordine degli Avvocati di Trani Trani",
-    "indirizzoMappa": "Biblioteca storica dell’Ordine degli Avvocati di Trani Trani Biblioteca storica dell’Ordine degli Avvocati di Trani, Trani",
-    "costo": "Ingresso libero / Da verificare",
+    "indirizzoMappa": "Biblioteca storica dell’Ordine degli Avvocati di Trani Trani, Trani",
+    "costo": "Non specificato nella fonte",
     "descrizione": "24 novembre 2026, ore 14:30 – La Biblioteca storica dell’Ordine degli Avvocati di Trani ospita l’incontro “La Verità degli Avvocati: un’indagine sul cinema italiano”, dedicato al rapporto tra verità storica, verità proce",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337404.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Attività diurne",
+    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
+    "dataTesto": "Mer 25 Nov 2026",
+    "dataInizio": "2026-11-25",
+    "dataFine": "2026-11-25",
+    "luogo": "Piazza della Repubblica",
+    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
+    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
   },
   {
     "tipoContenuto": "evento",
@@ -92,7 +120,7 @@
     "dataInizio": "2026-11-25",
     "dataFine": "2026-11-25",
     "luogo": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia Sala “Rosa del Vento” della Fondazione dei Monti Uniti, Foggia",
+    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia, Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "In occasione della Giornata internazionale per l&apos;eliminazione della violenza contro le donne, la Fondazione dei Monti Uniti di Foggia propone una serata di memoria, riflessione e sensibilizzazione sul tema della vio",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337262.html"
@@ -106,8 +134,8 @@
     "dataInizio": "2026-11-25",
     "dataFine": "2027-01-07",
     "luogo": "Contemporanea Galleria D'Arte",
-    "indirizzoMappa": "Contemporanea Galleria D'Arte Viale Michelangelo 65 , Foggia",
-    "costo": "Ingresso libero / Da verificare",
+    "indirizzoMappa": "Contemporanea Galleria D'Arte, Foggia",
+    "costo": "Non specificato nella fonte",
     "descrizione": "La Contemporanea Galleria d’Arte di Foggia presenta l’appuntamento espositivo “Mario Schifano e gli altri”, in programma da 25 novembre 2026 a 7 gennaio 2027. La mostra sarà ospitata negli spazi della galleria in Viale M",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336684.html"
   },
@@ -134,7 +162,7 @@
     "dataInizio": "2026-11-25",
     "dataFine": "2026-11-25",
     "luogo": "Biblioteca Comunale \"G. Bovio\"",
-    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\" Piazzetta San Francesco, n. 1 , Trani",
+    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\", Trani",
     "costo": "Non specificato nella fonte",
     "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
@@ -148,7 +176,7 @@
     "dataInizio": "2026-11-26",
     "dataFine": "2026-11-26",
     "luogo": "Santo Graal",
-    "indirizzoMappa": "Santo Graal via San Giorgio, Trani",
+    "indirizzoMappa": "Santo Graal, Trani",
     "costo": "Non specificato nella fonte",
     "descrizione": "Basta suonare davanti allo specchio, è ora di salire sul palco! 🎸🔥 Giovedì 26 novembre torna la JAM Session al Santo Graal di Trani! Festeggeremo in anticipo il compleanno del leggendario Jimi Hendrix (27 novembre) suona",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335415.html"
@@ -162,10 +190,24 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-29",
     "luogo": "Teatro Curci",
-    "indirizzoMappa": "Teatro Curci Corso Vittorio Emanuele II, 72, Barletta",
+    "indirizzoMappa": "Teatro Curci, Barletta",
     "costo": "Non specificato nella fonte",
     "descrizione": "People, Places and Things, tratto dal testo di Duncan Macmillan, è diretto da Pierfrancesco Favino e interpretato da Anna Ferzetti, Betti Pedrazzi, Totò Onnis e Thomas Trabacchi. La vicenda di Emma, un’attrice che perde",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331468.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Attività diurne",
+    "titolo": "Barletta | Rainbow Bridge plays Hendrix",
+    "dataTesto": "Ven 27 Nov 2026",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Via Boccaccio 42/44, Barletta. Barletta",
+    "indirizzoMappa": "Via Boccaccio 42/44, Barletta. Barletta, Barletta",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "I RAINBOW BRIDGE CELEBRANO JIMI HENDRIX AL BOHEMIEN DI BARLETTA Venerdì 27 novembre – Una serata rock-blues dedicata al chitarrista statunitense BARLETTA – Venerdì 27 novembre, in occasione dell&apos;anniversario della n",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337667.html"
   },
   {
     "tipoContenuto": "evento",
@@ -176,7 +218,7 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
     "luogo": "da Sergio e Davide",
-    "indirizzoMappa": "da Sergio e Davide Panoramica umberto paternostro, 273, Bisceglie",
+    "indirizzoMappa": "da Sergio e Davide, Bisceglie",
     "costo": "Non specificato nella fonte",
     "descrizione": "VENERDI’ 27 NOVEMBRE, dalle 21:00, serata dedicata ad uno dei più amati cantautori italiani, il grande “Califfo”, Franco Califano. Amanti della canzone italiana d’autore, Amanti e basta, Amanti del Califfo italiano, prep",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337373.html"
@@ -190,7 +232,7 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
     "luogo": "Santo Graal",
-    "indirizzoMappa": "Santo Graal via San Giorgio, Trani",
+    "indirizzoMappa": "Santo Graal, Trani",
     "costo": "Non specificato nella fonte",
     "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d&apos;autore, fino a quei brani italiani che, pur nascendo altrove, s",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336732.html"
@@ -218,10 +260,24 @@
     "dataInizio": "2026-11-28",
     "dataFine": "2026-11-28",
     "luogo": "Cinema Dell'Opera",
-    "indirizzoMappa": "Cinema Dell'Opera Via Giordano Bruno, 3, Lucera",
+    "indirizzoMappa": "Cinema Dell'Opera, Lucera",
     "costo": "Non specificato nella fonte",
     "descrizione": "Operazione Cicogna è una commedia irresistibile che racconta, con ironia e ritmo serrato, il delicato (e spesso esilarante) tema della genitorialità. Gli Arteteca, amatissimi dal pubblico televisivo e teatrale, portano i",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330009.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Attività diurne",
+    "titolo": "L’illustratore Marco Petrella è l’ultimo ospite di novembre alle Vecchie Segherie Mas",
+    "dataTesto": "Lun 30 Nov 2026",
+    "dataInizio": "2026-11-30",
+    "dataFine": "2026-11-30",
+    "luogo": "Vecchie Segherie Mastrototaro Appuntamento",
+    "indirizzoMappa": "Vecchie Segherie Mastrototaro Appuntamento, Bisceglie",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento il 30 novembre, alle 19:00, per la presentazione di “Si muove la città”",
+    "fonteUrl": "https://www.bisceglieviva.it/notizie/l-illustratore-marco-petrella-e-l-ultimo-ospite-di-novembre-alle-vecchie-segherie-mastrototaro/"
   },
   {
     "tipoContenuto": "evento",
@@ -232,7 +288,7 @@
     "dataInizio": "2026-11-30",
     "dataFine": "2026-11-30",
     "luogo": "Teatro Comunale Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla Via della Crocie, Manfredonia",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Manfredonia",
     "costo": "Non specificato nella fonte",
     "descrizione": "L’universo è un materasso, diretto e interpretato da Flavio Albanese per la Compagnia Teatro del Sole, appartiene alla sezione “Le mattine del teatro”. Lo spettacolo propone alle scuole un’occasione di avvicinamento alla",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335511.html"
@@ -246,7 +302,7 @@
     "dataInizio": "2026-12-04",
     "dataFine": "2026-12-06",
     "luogo": "Festival della Letteratura Mediterranea Lucera",
-    "indirizzoMappa": "Festival della Letteratura Mediterranea Lucera Festival della Letteratura Mediterranea, Lucera",
+    "indirizzoMappa": "Festival della Letteratura Mediterranea Lucera, Lucera",
     "costo": "Non specificato nella fonte",
     "descrizione": "Il Festival della Letteratura Mediterranea torna a Lucera con la sua XIX edizione, in programma dal 4 al 6 dicembre 2026. Il tema scelto per questa edizione è “Guarirsi”, una parola attraverso cui la manifestazione inten",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336619.html"
@@ -260,7 +316,7 @@
     "dataInizio": "2026-12-05",
     "dataFine": "2026-12-08",
     "luogo": "Teatro dei limoni",
-    "indirizzoMappa": "Teatro dei limoni Via Giardino 28, Foggia",
+    "indirizzoMappa": "Teatro dei limoni, Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "La gatta con gli stivali è il secondo appuntamento di Merende da Favola. Lo spettacolo è scritto da Michele Ciuffreda e diretto da M. Ciuffreda e Maggie Salice. La produzione del Teatro dei Limoni propone al pubblico del",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332948.html"
@@ -274,7 +330,7 @@
     "dataInizio": "2026-12-06",
     "dataFine": "2026-12-06",
     "luogo": "Teatro del Fuoco",
-    "indirizzoMappa": "Teatro del Fuoco Vico Cutino, 6, Foggia",
+    "indirizzoMappa": "Teatro del Fuoco, Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "Quest&apos;anno a portare l&apos;atmosfera di Natale a Foggia ci penserà CandleNight, uno spettacolo musicale tra 5.000 candele che si terrà il 6 dicembre al Teatro del Fuoco. In una sala illuminata solo dalle fiammelle",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335753.html"
@@ -288,7 +344,7 @@
     "dataInizio": "2026-12-16",
     "dataFine": "2026-12-16",
     "luogo": "Teatro Curci",
-    "indirizzoMappa": "Teatro Curci Corso Vittorio Emanuele II, 72, Barletta",
+    "indirizzoMappa": "Teatro Curci, Barletta",
     "costo": "Non specificato nella fonte",
     "descrizione": "Il lago dei cigni e l’incantesimo delle piume è la nuova produzione del GBM – Giovane Balletto Mediterraneo, con coreografia e regia di Mauro de Candia. La celebre fiaba musicale di Čajkovskij viene proposta in una versi",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331487.html"
@@ -302,7 +358,7 @@
     "dataInizio": "2026-12-31",
     "dataFine": "2026-12-31",
     "luogo": "Teatro Curci",
-    "indirizzoMappa": "Teatro Curci Corso Vittorio Emanuele II, 72, Barletta",
+    "indirizzoMappa": "Teatro Curci, Barletta",
     "costo": "Non specificato nella fonte",
     "descrizione": "Capodanno al Curci riunisce musica, comicità e spettacolo in una serata speciale. Il programma prevede lo spettacolo comico Il ripetente di Dado, seguito da Mezzanotte d’autore con Angelo Mellone e Andrea Perroni, per la",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331492.html"
@@ -316,7 +372,7 @@
     "dataInizio": "2027-01-05",
     "dataFine": "2027-01-05",
     "luogo": "Teatro Umberto Giordano",
-    "indirizzoMappa": "Teatro Umberto Giordano Piazza Cesare Battisti, Foggia",
+    "indirizzoMappa": "Teatro Umberto Giordano, Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "Valerio Lundini &amp; I Vazzanikki trasformano il Teatro Umberto Giordano in una Tombolata musicale, appuntamento fuori abbonamento pensato per il periodo dell’Epifania. Lo spettacolo combina concerto, gioco collettivo e",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332990.html"
