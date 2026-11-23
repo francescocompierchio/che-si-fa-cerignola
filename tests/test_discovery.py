@@ -186,7 +186,8 @@ class ControlliQualitaTests(unittest.TestCase):
         evento = self.evento_base(
             citta="Barletta",
             luogo="Centro / Piazze, Barletta",
-            indirizzoMappa="Centro / Piazze, Barletta"
+            indirizzoMappa="Centro / Piazze, Barletta",
+            descrizione="Appuntamento in centro / piazze, Barletta."
         )
         self.assertIsNone(
             motore.normalizza_e_valida_evento(
