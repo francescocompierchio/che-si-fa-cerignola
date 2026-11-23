@@ -15,50 +15,8 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Natura & Escursioni",
-    "titolo": "Arteteca - Operazione Cicogna",
-    "dataTesto": "Lun 23 Nov 2026",
-    "dataInizio": "2026-11-23",
-    "dataFine": "2026-11-23",
-    "luogo": "Centro / Piazze, Barletta",
-    "indirizzoMappa": "Centro / Piazze, Barletta, Barletta",
-    "costo": "Ingresso libero / Da verificare",
-    "descrizione": "Puglia › Provincia di Foggia › Lucera › Cinema Dell'Opera e dintorni Oggi è lunedì 23 novembre 2026!",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330009.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Natura & Escursioni",
-    "titolo": "La Verit√Ý degli Avvocati: un‚Äôindagine sul cinema italiano",
-    "dataTesto": "Lun 23 Nov 2026",
-    "dataInizio": "2026-11-23",
-    "dataFine": "2026-11-23",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Barletta",
-    "costo": "Ingresso libero",
-    "descrizione": "Puglia › Provincia di Barletta Andria Trani › Trani e dintorni Oggi è lunedì 23 novembre 2026!",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337404.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Marcia silenziosa contro la violenza di genere",
-    "dataTesto": "Mar 24 Nov 2026",
-    "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-24",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Sannicandro di Bari (Bari) Via Armando Diaz nei pressi della Madonnina ore 19:30 ingresso libero Info. 3477957990 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337670.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Christmas Vocal Harmony – SeiOttavi",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -72,7 +30,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Echi dell’anima – Quatuor Naka",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -86,7 +44,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Foggia Film Festival con Jun Ichikawa",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -114,7 +72,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Le mie Regine – Silvia Mezzanotte",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -128,7 +86,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Medieval Future – Silvano Mastromatteo",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -142,7 +100,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "categoria": "Attività diurne",
     "titolo": "Tra tradizione popolare e lirica: il sassofono racconta l’Europa",
     "dataTesto": "Mar 24 Nov 2026",
     "dataInizio": "2026-11-24",
@@ -197,20 +155,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Corso da Sommelier Primo Livello",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "corso o ricevere maggiori informazioni è possibile consultare",
-    "indirizzoMappa": "corso o ricevere maggiori informazioni è possibile consultare, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "Latiano (Brindisi) Tenute Bellamarina ore 20:00 ingresso a pagamento 460 euro Info. 0804949189 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337165.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
     "categoria": "Attività diurne",
     "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
@@ -253,20 +197,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Natura & Escursioni",
-    "titolo": "La Fondazione per il 25 novembre con Lorenzo Sepalone e Alfredo Traiano",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Centro / Piazze, Barletta",
-    "indirizzoMappa": "Centro / Piazze, Barletta, Barletta",
-    "costo": "Ingresso libero / Da verificare",
-    "descrizione": "Puglia › Foggia e dintorni Oggi è lunedì 23 novembre 2026!",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337262.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Trani",
     "categoria": "Attività diurne",
     "titolo": "Trani | Progetto BOTTEGA DELLE PAROLE. OFFICINA DI SCRITTURA CREATIVA",
@@ -291,7 +221,7 @@
     "indirizzoMappa": "Santo Graal, Trani",
     "costo": "Non specificato nella fonte",
     "descrizione": "Basta suonare davanti allo specchio, è ora di salire sul palco! 🎸🔥 Giovedì 26 novembre torna la JAM Session al Santo Graal di Trani! Festeggeremo in anticipo il compleanno del leggendario Jimi Hendrix (27 novembre) suona",
-    "fonteUrl": "https://iltaccodibacco.it/barletta/concerti/"
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335415.html"
   },
   {
     "tipoContenuto": "evento",
@@ -319,13 +249,27 @@
     "indirizzoMappa": "Teatro Curci, Barletta",
     "costo": "Non specificato nella fonte",
     "descrizione": "People, Places and Things, tratto dal testo di Duncan Macmillan, è diretto da Pierfrancesco Favino e interpretato da Anna Ferzetti, Betti Pedrazzi, Totò Onnis e Thomas Trabacchi. La vicenda di Emma, un’attrice che perde",
-    "fonteUrl": "https://iltaccodibacco.it/barletta/concerti/"
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331468.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Attività diurne",
+    "titolo": "Barletta | Rainbow Bridge plays Hendrix",
+    "dataTesto": "Ven 27 Nov 2026",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Via Boccaccio 42/44, Barletta. Barletta",
+    "indirizzoMappa": "Via Boccaccio 42/44, Barletta. Barletta, Barletta",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "I RAINBOW BRIDGE CELEBRANO JIMI HENDRIX AL BOHEMIEN DI BARLETTA Venerdì 27 novembre – Una serata rock-blues dedicata al chitarrista statunitense BARLETTA – Venerdì 27 novembre, in occasione dell&apos;anniversario della n",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337667.html"
   },
   {
     "tipoContenuto": "evento",
     "citta": "Bisceglie",
     "categoria": "Attività diurne",
-    "titolo": "Bisceglie | FRANCO CALIFANO live tribute con la \"CALIFFO BAND\"",
+    "titolo": "Bisceglie | FRANCO CALIFANO live tribute con la &quot;CALIFFO BAND&quot;",
     "dataTesto": "Ven 27 Nov 2026",
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
@@ -333,7 +277,7 @@
     "indirizzoMappa": "da Sergio e Davide, Bisceglie",
     "costo": "Non specificato nella fonte",
     "descrizione": "VENERDI’ 27 NOVEMBRE, dalle 21:00, serata dedicata ad uno dei più amati cantautori italiani, il grande “Califfo”, Franco Califano. Amanti della canzone italiana d’autore, Amanti e basta, Amanti del Califfo italiano, prep",
-    "fonteUrl": "https://iltaccodibacco.it/barletta/concerti/"
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337373.html"
   },
   {
     "tipoContenuto": "evento",
@@ -351,23 +295,9 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Gianni Fiorellino",
-    "dataTesto": "Sab 28 Nov 2026",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-28",
-    "luogo": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG)",
-    "indirizzoMappa": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG), Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "L'indirizzo potrebbe essere inesatto, accertati prima di partire.",
-    "fonteUrl": "https://experience-app.com/evento/2393"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Bisceglie",
     "categoria": "Attività diurne",
-    "titolo": "Bisceglie | ALAMAR SYMPHONIC CONCERT Ana Carla Maza &amp; l&apos;Orchestra ICO della ",
+    "titolo": "Bisceglie | ALAMAR SYMPHONIC CONCERT Ana Carla Maza &amp; l&apos;Orchestra ICO della",
     "dataTesto": "Sab 28 Nov 2026",
     "dataInizio": "2026-11-28",
     "dataFine": "2026-11-28",
@@ -376,6 +306,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "ALAMAR SYMPHONIC CONCERT Un viaggio musicale attraverso l&apos;America Latina Bisceglie in Musica 2026/2027 28 novembre ore 21.00 Teatro Garibaldi, Bisceglie Ana Carla Maza violoncello Jose Miguel Rodilla direttore Orche",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337025.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Lucera",
+    "categoria": "Attività diurne",
+    "titolo": "Gianni Fiorellino",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG)",
+    "indirizzoMappa": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG), Lucera",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "L'indirizzo potrebbe essere inesatto, accertati prima di partire.",
+    "fonteUrl": "https://experience-app.com/evento/2393"
   },
   {
     "tipoContenuto": "evento",
@@ -418,34 +362,6 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Stitch: palloncini e popcorn | Gelsomino Home presso Gelsomino Home (Manfredonia).",
     "fonteUrl": "https://buzzeventmap.com/eventi/foggia/cerignola"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "SAPORI D’AUTUNNO 2026 IL GUSTO DELLA PUGLIA, UN WEEKEND ALLA VOLTA",
-    "dataTesto": "Dom 29 Nov 2026",
-    "dataInizio": "2026-11-29",
-    "dataFine": "2026-11-29",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "da sabato 7 a domenica 29 novembre 2026 Monopoli (Bari) Viale Monacelle, 70043 Monopoli, BA, Italia ore 19:30 ingresso a pagamento 45 euro Info. 3929205447 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/334682.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Scambio di persona all'italiana - commedia brillante",
-    "dataTesto": "Dom 29 Nov 2026",
-    "dataInizio": "2026-11-29",
-    "dataFine": "2026-11-29",
-    "luogo": "via Silvio Pellico n",
-    "indirizzoMappa": "via Silvio Pellico n, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "da sabato 28 a domenica 29 novembre 2026 Mola di Bari (Bari) Teatro Angioino Via Pellico n.7 sabato h 21 domenica h. 19 ingresso a pagamento euro 12 Info. 0804713061 - 3496061378 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337584.html"
   },
   {
     "tipoContenuto": "evento",
@@ -492,7 +408,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Margherita di Savoia",
-    "categoria": "Attività diurne",
+    "categoria": "Natura & Escursioni",
     "titolo": "Salt Fest",
     "dataTesto": "Mar 01 Dic 2026",
     "dataInizio": "2026-12-01",
@@ -530,34 +446,6 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Il Festival della Letteratura Mediterranea torna a Lucera con la sua XIX edizione, in programma dal 4 al 6 dicembre 2026. Il tema scelto per questa edizione è “Guarirsi”, una parola attraverso cui la manifestazione inten",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336619.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Il Giardino delle Parole Silenziose - Un viaggio tra poesia, anima e musica mistica",
-    "dataTesto": "Sab 05 Dic 2026",
-    "dataInizio": "2026-12-05",
-    "dataFine": "2026-12-05",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Sannicandro di Bari (Bari) Castello di Sannicandro Piazza Castello ore 17:30 ingresso libero Info. 3396370374 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337511.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Sagre & Food",
-    "titolo": "Natale ad Alberobello, dal 5 dicembre torna il Villaggio Enogastronomico",
-    "dataTesto": "Sab 05 Dic 2026",
-    "dataInizio": "2026-12-05",
-    "dataFine": "2026-12-05",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "da sabato 5 Dicembre 2026 a mercoledì 6 gennaio 2027 Alberobello (Bari) Piazza Del Popolo. ore 17:00 ingresso libero età consigliata per i bambini: dai 6 anni in su Info. 3400513941 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337095.html"
   },
   {
     "tipoContenuto": "evento",
@@ -605,20 +493,6 @@
     "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Musica & Concerti",
-    "titolo": "Arteteca - Operazione Cicogna",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG)",
-    "indirizzoMappa": "Cinema Dell'Opera, Via Giordano Bruno, 3, Lucera (FG), Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "L'indirizzo potrebbe essere inesatto, accertati prima di partire.",
-    "fonteUrl": "https://experience-app.com/evento/2376"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
     "titolo": "Cerignola | Breaking Brecht – Sing’n’Song Cabaret",
     "dataTesto": "Dom 06 Dic 2026",
     "dataInizio": "2026-12-06",
@@ -660,7 +534,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Andria",
-    "categoria": "Natura & Escursioni",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Andria | mercatino di Natale",
     "dataTesto": "Dom 06 Dic 2026",
     "dataInizio": "2026-12-06",
@@ -673,59 +547,17 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Foggia",
-    "categoria": "Musica & Concerti",
+    "citta": "Manfredonia",
+    "categoria": "Attività diurne",
     "titolo": "Cenerentola 301",
     "dataTesto": "Dom 06 Dic 2026",
     "dataInizio": "2026-12-06",
     "dataFine": "2026-12-06",
     "luogo": "Teatro Comunale Lucio Dalla prosegue",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Foggia",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Manfredonia",
     "costo": "A pagamento",
     "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigliata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandire )",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Foggia",
-    "categoria": "Musica & Concerti",
-    "titolo": "Foggia | CandleNight, il concerto di Natale tra 5000 candele",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Teatro del Fuoco",
-    "indirizzoMappa": "Teatro del Fuoco, Foggia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Quest&apos;anno a portare l&apos;atmosfera di Natale a Foggia ci penserà CandleNight, uno spettacolo musicale tra 5.000 candele che si terrà il 6 dicembre al Teatro del Fuoco. In una sala illuminata solo dalle fiammelle",
-    "fonteUrl": "https://iltaccodibacco.it/foggia/concerti/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Lucera",
-    "categoria": "Attività diurne",
-    "titolo": "Lucera | Gianni Fiorellino",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Cinema Dell'Opera",
-    "indirizzoMappa": "Cinema Dell'Opera, Lucera",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Dopo anni di successi, palcoscenici gremiti e un legame sempre più forte con il suo pubblico, Gianni Fiorellino annuncia ufficialmente il “VAI TOUR 2026”, un nuovo attesissimo progetto live che porterà la sua musica nei",
-    "fonteUrl": "https://iltaccodibacco.it/foggia/concerti/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
-    "titolo": "Tenuta Monacelle - APULIA FOR CHRISTMAS XII EDIZIONE",
-    "dataTesto": "Mar 08 Dic 2026",
-    "dataInizio": "2026-12-08",
-    "dataFine": "2026-12-08",
-    "luogo": "corso",
-    "indirizzoMappa": "corso, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "da sabato 5 a martedì 8 dicembre 2026 Monopoli (Bari) Viale Monacelle, 70043 Monopoli, BA, Italia ore 16:00 ingresso libero Info. +393929205447 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335320.html"
   },
   {
     "tipoContenuto": "evento",
@@ -736,7 +568,7 @@
     "dataInizio": "2026-12-09",
     "dataFine": "2026-12-09",
     "luogo": "Teatro Giordano",
-    "indirizzoMappa": "Foggia, Foggia",
+    "indirizzoMappa": "Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "Macy Gray live al Teatro Giordano: l'icona mondiale del soul e dell’R&B in concerto a Foggia (FG), Puglia: concerto in programma mercoledì 9 dicembre 2026. Una voce inconfondibile, un’icona mondiale del soul e dell’R&B d",
     "fonteUrl": "https://experience-app.com/evento/2399"
@@ -754,20 +586,6 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Paladini di Francia. Spada avete voi, spada avete io! del Teatro Koreja è uno spettacolo tragicomico dedicato ai paladini di Carlo Magno. Giochi di bambini, guerra, pupi e lo spirito di Pasolini si incontrano in una prop",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335514.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Attività diurne",
-    "titolo": "Moto Babbi Rombi",
-    "dataTesto": "Sab 12 Dic 2026",
-    "dataInizio": "2026-12-12",
-    "dataFine": "2026-12-12",
-    "luogo": "3 persone parteciperanno · Canosa di Puglia",
-    "indirizzoMappa": "3 persone parteciperanno · Canosa di Puglia, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "partenza da Euronics Barletta alle ore 09:30 evento di beneficenza del reparto Pediatria Ospedale Dimiccoli",
-    "fonteUrl": "https://buzzeventmap.com/event/51eda574-8ca8-471f-b493-178ede4dd623"
   },
   {
     "tipoContenuto": "evento",
@@ -820,7 +638,7 @@
     "dataInizio": "2026-12-19",
     "dataFine": "2026-12-19",
     "luogo": "Teatro Umberto Giordano Riccardo Cocciante live al Teatro Umbe",
-    "indirizzoMappa": "Foggia, Foggia",
+    "indirizzoMappa": "Foggia",
     "costo": "Non specificato nella fonte",
     "descrizione": "Riccardo Cocciante live al Teatro Umberto Giordano a Foggia (FG), Puglia: concerto in programma sabato 19 dicembre 2026. Margherita, Se stiamo insieme, Bella senz'anima, Cervo a primavera, Celeste nostalgia, Questione di",
     "fonteUrl": "https://experience-app.com/evento/2411"
