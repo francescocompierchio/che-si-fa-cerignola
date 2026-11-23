@@ -548,3 +548,176 @@ class LuoghiFontiUfficialiTests(unittest.TestCase):
             motore.estrai_luogo_documentato(testo, "Cerignola"),
             "Teatro Comunale S. Mercadante",
         )
+
+
+class RevisioneAffidabilitaCompletaTests(unittest.TestCase):
+    def evento_base(self, **extra):
+        evento = {
+            "tipoContenuto": "evento",
+            "citta": "Cerignola",
+            "categoria": "Attività diurne",
+            "titolo": "Spettacolo di prova al Teatro Mercadante",
+            "dataTesto": "Dom 06 Dic 2026",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "luogo": "Teatro Mercadante",
+            "indirizzoMappa": "Teatro Mercadante, Cerignola",
+            "costo": "Non specificato nella fonte",
+            "descrizione": "Spettacolo in programma presso il Teatro Mercadante di Cerignola.",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338888.html",
+        }
+        evento.update(extra)
+        return evento
+
+    def test_data_iso_rifiuta_date_impossibili(self):
+        for valore in ("2026-02-31", "2026-13-01", "2026-00-00", "2026-2-03", ""):
+            with self.subTest(valore=valore):
+                self.assertFalse(motore._data_iso_valida(valore))
+        self.assertTrue(motore._data_iso_valida("2026-12-06"))
+
+    def test_evento_con_data_impossibile_non_viene_pubblicato(self):
+        evento = self.evento_base(
+            dataTesto="Data non disponibile",
+            dataInizio="2026-02-31",
+            dataFine="2026-02-31",
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_orologio_del_motore_usa_fuso_italiano(self):
+        self.assertEqual(motore.oggi_dt().tzinfo.key, "Europe/Rome")
+
+    def test_cintura_25_km_coerente_con_le_localita_verificate(self):
+        self.assertIn("Zapponeta", motore.CINTURA_25)
+        self.assertIn("Minervino Murge", motore.CINTURA_25)
+        self.assertNotIn("Lavello", motore.CINTURA_25)
+        self.assertNotIn("Ascoli Satriano", motore.CINTURA_25)
+
+    def test_hostname_rifiuta_dominio_falso_nel_nome_host(self):
+        self.assertTrue(motore._host_appartiene(
+            "https://www.iltaccodibacco.it/evento/123", "iltaccodibacco.it"
+        ))
+        self.assertFalse(motore._host_appartiene(
+            "https://iltaccodibacco.it.evil.example/evento/123", "iltaccodibacco.it"
+        ))
+
+    def test_pagine_elenco_non_vengono_accettate_come_schede_evento(self):
+        self.assertTrue(
+            motore._url_pagina_elenco(
+                "https://buzzeventmap.com/eventi/foggia/cerignola"
+            )
+        )
+        self.assertTrue(
+            motore._url_pagina_elenco(
+                "https://experience-app.com/eventi/puglia/foggia/"
+            )
+        )
+        self.assertFalse(
+            motore._url_pagina_elenco(
+                "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
+            )
+        )
+
+    def test_experience_app_con_descrizione_placeholder_viene_esclusa(self):
+        evento = self.evento_base(
+            titolo="Christmas Vocal Harmony – SeiOttavi",
+            citta="Foggia",
+            luogo="Teatro Umberto Giordano",
+            indirizzoMappa="Teatro Umberto Giordano, Foggia",
+            descrizione="L'indirizzo potrebbe essere inesatto, accertati prima di partire.",
+            fonteUrl="https://experience-app.com/evento/2404",
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_placeholder_generico_non_viene_mostrato_nella_scheda(self):
+        evento = self.evento_base(
+            descrizione="L'indirizzo potrebbe essere inesatto, accertati prima di partire.",
+        )
+        risultato = motore.normalizza_e_valida_evento(
+            evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+        )
+        self.assertIsNotNone(risultato)
+        self.assertNotIn("inesatto", risultato["descrizione"].lower())
+        self.assertIn("verifica orari", risultato["descrizione"].lower())
+
+    def test_testi_html_vengono_decodificati_prima_della_pubblicazione(self):
+        self.assertEqual(
+            motore._ripara_codifica('Iva Zanicchi &amp; Samuel Peron &quot;Viva la Mamma&quot;'),
+            'Iva Zanicchi & Samuel Peron "Viva la Mamma"',
+        )
+
+    def test_concerto_sinfonico_in_inglese_e_classificato_musica(self):
+        titolo = "ALAMAR SYMPHONIC CONCERT Ana Carla Maza & Orchestra"
+        self.assertIsNotNone(motore.REGEX_TEMA_COERENTE.search(titolo))
+        self.assertEqual(motore.classifica_categoria(titolo), "Musica & Concerti")
+
+    def test_eventi_jsonld_usano_url_individuale_e_indirizzo_strutturato(self):
+        html = """
+        <html><head>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Concerto sinfonico a Cerignola",
+          "startDate": "2026-12-06T20:30:00+01:00",
+          "endDate": "2026-12-06T22:30:00+01:00",
+          "url": "https://iltaccodibacco.it/puglia/eventi/338777.html",
+          "description": "Concerto sinfonico con orchestra al Teatro Mercadante di Cerignola.",
+          "location": {
+            "@type": "Place",
+            "name": "Teatro Mercadante",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Via dei Mille",
+              "postalCode": "71042",
+              "addressLocality": "Cerignola",
+              "addressRegion": "Puglia"
+            }
+          }
+        }
+        </script>
+        </head><body><h1>Calendario eventi</h1></body></html>
+        """
+        eventi = motore.analizza_pagina_evento(
+            html,
+            "https://iltaccodibacco.it/cerignola/",
+            citta_default="Cerignola",
+            fonte_curata_eventi=True,
+        )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(
+            eventi[0]["fonteUrl"],
+            "https://iltaccodibacco.it/puglia/eventi/338777.html",
+        )
+        self.assertIn("Via dei Mille", eventi[0]["indirizzoMappa"])
+        self.assertEqual(eventi[0]["categoria"], "Musica & Concerti")
+
+    def test_archivio_json_corrotto_blocca_la_rigenerazione(self):
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                f.write('[{"titolo": "record valido"},')
+            with self.assertRaises(RuntimeError):
+                motore.carica_esistenti_protetti(percorso)
+
+    def test_archivio_json_con_radice_non_lista_blocca_la_rigenerazione(self):
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump({"eventi": []}, f)
+            with self.assertRaises(RuntimeError):
+                motore.carica_esistenti_protetti(percorso)
+
+    def test_fonte_non_riconosciuta_non_viene_confusa_con_un_dominio_valido(self):
+        self.assertFalse(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://iltaccodibacco.it.evil.example/eventi/338777.html"
+            )
+        )
