@@ -5,12 +5,17 @@ on:
     - cron: "*/30 * * * *"
   workflow_dispatch:
 
+concurrency:
+  group: raccolta-eventi-cerignola
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
 jobs:
   aggiorna:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Scarica repository
         uses: actions/checkout@v4
@@ -28,7 +33,34 @@ jobs:
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: python aggiorna_eventi.py
+
+      - name: Pubblica riepilogo della raccolta
+        if: always()
+        run: |
+          if [ -f report_copertura.json ]; then
+            python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          report = json.loads(Path("report_copertura.json").read_text(encoding="utf-8"))
+          print("## Riepilogo raccolta eventi")
+          print(f"- Aggiornato: {report.get('aggiornatoAl', 'n/d')} ({report.get('fusoOrario', 'fuso non specificato')})")
+          print(f"- Eventi nell'archivio: {report.get('totaleContenuti', 0)}")
+          print(f"- Nuovi eventi: {report.get('nuoviAggiunti', 0)}")
+          print(f"- Eventi automatici riconvalidati: {report.get('automaticiRiconvalidati', 0)}")
+          print(f"- Eventi manuali JSON protetti: {report.get('manualiConservati', 0)}")
+          print(f"- Scaduti rimossi: {report.get('scadutiEliminati', 0)}")
+          print("### Distribuzione per comune")
+          for comune, count in sorted(report.get("eventiPerComune", {}).items(), key=lambda x: (-x[1], x[0])):
+              print(f"- {comune}: {count}")
+          print("### Distribuzione per fonte")
+          for fonte, count in sorted(report.get("eventiPerFonte", {}).items(), key=lambda x: (-x[1], x[0])):
+              print(f"- {fonte}: {count}")
+          PY
+          else
+            echo "Il report di copertura non è stato generato." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Salva modifiche su GitHub se ci sono novità
         run: |
