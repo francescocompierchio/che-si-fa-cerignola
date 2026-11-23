@@ -315,6 +315,19 @@ class MigliorieClassificazioneLuoghiTests(unittest.TestCase):
             motore.normalizza_nome_luogo("Vecchie Segherie Mastrototaro Appuntamento", "Bisceglie"),
             "Vecchie Segherie Mastrototaro",
         )
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Via Boccaccio 42/44, Barletta. Barletta", "Barletta"),
+            "Via Boccaccio 42/44, Barletta",
+        )
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Biblioteca storica dell’Ordine degli Avvocati di Trani Trani", "Trani"),
+            "Biblioteca storica dell’Ordine degli Avvocati di Trani",
+        )
+        # Una singola occorrenza della città nel nome della sede va mantenuta.
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Teatro Comunale di Barletta", "Barletta"),
+            "Teatro Comunale di Barletta",
+        )
 
     def test_dominio_automatico_verificato_sull_host(self):
         self.assertTrue(motore._fonte_appartiene_a_raccolta_automatica("https://www.experience-app.com/evento/123"))
