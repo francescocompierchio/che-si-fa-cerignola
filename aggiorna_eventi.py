@@ -859,7 +859,12 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         indirizzo_completo = ", ".join(x for x in componenti_indirizzo if x)
         desc = re.sub(r"\s+", " ", str(ev_ld.get("description") or "")).strip()
         url_evento = urljoin(page_url, str(ev_ld.get("url") or "").strip())
-        if not _host_appartiene(url_evento, urlparse(page_url).hostname or ""):
+        host_pagina = urlparse(page_url).hostname or ""
+        host_evento = urlparse(url_evento).hostname or ""
+        if not (
+            _host_appartiene(url_evento, host_pagina)
+            or _host_appartiene(page_url, host_evento)
+        ):
             url_evento = page_url
 
         ev_ok = normalizza_e_valida_evento({
@@ -1124,7 +1129,7 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
     try:
         with open(percorso_json, "r", encoding="utf-8") as f:
             dati = json.load(f)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         # Fail closed: non rigenerare mai l'archivio da zero se quello esistente
         # è corrotto o illeggibile.
         raise RuntimeError(f"Archivio eventi esistente non leggibile: {percorso_json}") from exc
@@ -1136,6 +1141,8 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
         if not isinstance(item, dict):
             raise RuntimeError(f"Record non valido nell'archivio eventi: {percorso_json}")
         if item.get("tipoContenuto") != "evento":
+            # Non cancellare eventuali record di altri tipi: non sono gestiti da questo crawler.
+            manuali.append(item)
             continue
 
         titolo = str(item.get("titolo") or "").strip()
