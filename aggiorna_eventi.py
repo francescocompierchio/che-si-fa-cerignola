@@ -278,8 +278,8 @@ def normalizza_nome_luogo(luogo, citta=""):
         # Accetta separatori diversi tra le due occorrenze (es. ", " e ". ").
         # Conserva il primo separatore e la prima occorrenza della città.
         valore = re.sub(
-            rf"(?i)([,.;:]\\s*|\\s+-\\s*|\\s+)({re.escape(citta)})(?:[,.;:]\\s*|\\s+-\\s*|\\s+)({re.escape(citta)})$",
-            r"\\1\\2",
+            rf"(?i)([,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})(?:[,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})$",
+            r"\1\2",
             valore,
         ).strip(" ,.;:-")
     return valore
@@ -684,7 +684,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
 
     luogo = normalizza_nome_luogo(luogo, citta)
     if not _luogo_utilizzabile(luogo) or luogo.lower() == citta.lower():
-        luogo = estrai_luogo_documentato(f"{titolo}\\n{descrizione}", citta)
+        luogo = estrai_luogo_documentato(f"{titolo}\n{descrizione}", citta)
     luogo = normalizza_nome_luogo(luogo, citta)
     if not _luogo_utilizzabile(luogo):
         return None
