@@ -596,6 +596,22 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
                 cand = m_dove.group(1).strip(" ,.;:-")
                 if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
                     return cand[:80]
+            # Alcuni portali ufficiali mostrano l'etichetta "Luogo" su una riga
+            # e la sede sulla successiva, seguita dall'indirizzo postale.
+            if line.lower() in {"luogo", "sede", "dove"}:
+                righe_successive = testo_pag.splitlines()
+                indice = righe_successive.index(raw_line)
+                for successiva in righe_successive[indice + 1:indice + 4]:
+                    cand = re.sub(r"\s*[-–|]\s*Comune di\s+.+$", "", successiva.strip(), flags=re.I)
+                    if re.match(r"^(?:via|viale|piazza|piazzale|corso|largo)\b", cand, re.I):
+                        break
+                    if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
+                        return cand[:80]
+            m_etichetta = re.match(r"^(?:teatro|venue|location)\s*:\s*(.+)$", line, re.I)
+            if m_etichetta:
+                cand = re.sub(rf"\s*[-–|,]\s*{re.escape(citta)}(?:\s+\([A-Z]{{2}}\))?$", "", m_etichetta.group(1), flags=re.I).strip(" ,.;:-")
+                if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
+                    return cand[:80]
 
     if citta:
         for raw_line in testo_pag.splitlines():
