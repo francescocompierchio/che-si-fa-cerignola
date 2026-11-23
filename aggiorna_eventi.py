@@ -351,6 +351,11 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             indirizzo,
             flags=re.I,
         ).strip(" ,")
+    if citta:
+        parti = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
+        while len(parti) >= 2 and parti[-1].lower() == citta.lower() and parti[-2].lower() == citta.lower():
+            parti.pop()
+        indirizzo = ", ".join(parti)
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
