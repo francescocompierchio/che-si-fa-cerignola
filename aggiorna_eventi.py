@@ -378,7 +378,7 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
         # Collassa anche il caso limite in cui l'intero campo contiene solo
         # il nome del comune ripetuto (es. "Foggia, Foggia").
         solo_comune_ripetuto = re.fullmatch(
-            rf"\\s*{re.escape(citta)}(?:\\s*[,.;:]\\s*{re.escape(citta)}|\\s+-\\s+{re.escape(citta)}|\\s+{re.escape(citta)})+\\s*",
+            rf"\s*{re.escape(citta)}(?:\s*[,.;:]\s*{re.escape(citta)}|\s+-\s+{re.escape(citta)}|\s+{re.escape(citta)})+\s*",
             indirizzo,
             flags=re.I,
         )
