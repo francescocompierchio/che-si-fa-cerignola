@@ -1,4 +1,7 @@
 import unittest
+import json
+import os
+import tempfile
 from datetime import datetime
 from unittest.mock import patch
 
@@ -218,6 +221,36 @@ class ControlliQualitaTests(unittest.TestCase):
         self.assertIsNotNone(risultato)
         self.assertEqual(risultato["citta"], "Lucera")
         self.assertNotIn(", Cerignola", risultato["indirizzoMappa"])
+
+    def test_riconvalida_archivio_corregge_auto_e_conserva_manuali(self):
+        automatico = self.evento_base(
+            titolo="Gianni Fiorellino",
+            luogo="Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG)",
+            indirizzoMappa="Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG), Cerignola",
+            descrizione="Concerto di Gianni Fiorellino.",
+            fonteUrl="https://experience-app.com/evento/2393",
+        )
+        generico = self.evento_base(
+            titolo="Evento senza scheda specifica",
+            fonteUrl="https://iltaccodibacco.it/barletta/concerti/",
+        )
+        manuale = self.evento_base(
+            titolo="Evento inviato da un locale",
+            manuale=True,
+            fonteUrl="https://example.com/evento-manuale",
+        )
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump([automatico, generico, manuale], f, ensure_ascii=False)
+            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+
+        self.assertEqual(scaduti, 0)
+        self.assertEqual(len(manuali), 1)
+        self.assertEqual(manuali[0]["titolo"], "Evento inviato da un locale")
+        self.assertEqual(len(automatici), 1)
+        self.assertEqual(automatici[0]["citta"], "Lucera")
+        self.assertEqual(automatici[0]["titolo"], "Gianni Fiorellino")
 
     def test_ripara_codifica_titolo_e_apostrofo(self):
         self.assertEqual(
