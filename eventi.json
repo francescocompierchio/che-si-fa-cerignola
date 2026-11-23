@@ -56,34 +56,6 @@
     "tipoContenuto": "evento"
   },
   {
-    "citta": "San Ferdinando",
-    "categoria": "Sagre & Food",
-    "titolo": "Fiera Nazionale del Carciofo Mediterraneo",
-    "dataTesto": "19-22 Nov 2026",
-    "dataInizio": "2026-11-19",
-    "dataFine": "2026-11-22",
-    "luogo": "San Ferdinando di Puglia",
-    "indirizzoMappa": "Area Fieristica San Ferdinando di Puglia",
-    "costo": "Ingresso libero",
-    "descrizione": "Fiera con stand, assaggi e prodotti agricoli del territorio.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
-    "tipoContenuto": "evento"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Bambinella a Palazzo",
-    "dataTesto": "21-22 Nov 2026 - 18:00",
-    "dataInizio": "2026-11-21",
-    "dataFine": "2026-11-22",
-    "luogo": "Palazzo Fornari, Cerignola",
-    "indirizzoMappa": "Palazzo Fornari, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Due giorni per bambini e famiglie per le feste natalizie.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
-    "tipoContenuto": "evento"
-  },
-  {
     "citta": "Cerignola",
     "categoria": "Altro",
     "titolo": "Natale nelle Quattro Vie",
@@ -94,34 +66,6 @@
     "indirizzoMappa": "Viale Roosevelt, Cerignola",
     "costo": "Ingresso libero",
     "descrizione": "Musica, luminarie e tombolate fino al 6 dicembre.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
-    "tipoContenuto": "evento"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Baratto dei bambini",
-    "dataTesto": "22 Nov 2026 - 10:00",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Piazza Matteotti, Cerignola",
-    "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
-    "costo": "Gratuito",
-    "descrizione": "Scambio di libri e giocattoli per i più piccoli.",
-    "fonteUrl": "https://www.cerignolaviva.it/eventi/",
-    "tipoContenuto": "evento"
-  },
-  {
-    "citta": "Cerignola",
-    "categoria": "Altro",
-    "titolo": "Mercatino di Autoproduzione e Artigianato",
-    "dataTesto": "22 Nov 2026 - 09:30",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2026-11-22",
-    "luogo": "Piazza Matteotti, Cerignola",
-    "indirizzoMappa": "Piazza Giacomo Matteotti, Cerignola",
-    "costo": "Ingresso libero",
-    "descrizione": "Stand, uncinetto e laboratori gratuiti.",
     "fonteUrl": "https://www.cerignolaviva.it/eventi/",
     "tipoContenuto": "evento"
   }
