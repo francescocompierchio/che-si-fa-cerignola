@@ -277,11 +277,13 @@ def normalizza_nome_luogo(luogo, citta=""):
         # può legittimamente contenere la città una sola volta.
         # Accetta separatori diversi tra le due occorrenze (es. ", " e ". ").
         # Conserva il primo separatore e la prima occorrenza della città.
-        valore = re.sub(
-            rf"(?i)([,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})(?:[,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})$",
-            r"\1\2",
-            valore,
-        ).strip(" ,.;:-")
+        pattern_duplicato = re.compile(
+            rf"(?i)([,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})(?:[,.;:]\s*|\s+-\s*|\s+)({re.escape(citta)})$"
+        )
+        precedente = None
+        while valore != precedente:
+            precedente = valore
+            valore = pattern_duplicato.sub(r"\1\2", valore).strip(" ,.;:-")
     return valore
 
 
@@ -373,10 +375,9 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             flags=re.I,
         ).strip(" ,")
     if citta:
-        parti = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
-        while len(parti) >= 2 and parti[-1].lower() == citta.lower() and parti[-2].lower() == citta.lower():
-            parti.pop()
-        indirizzo = ", ".join(parti)
+        # Elimina tutte le ripetizioni finali del comune anche con separatori misti
+        # (es. ", " e ". "), mantenendo l'eventuale comune nel nome della sede.
+        indirizzo = normalizza_nome_luogo(indirizzo, citta)
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
