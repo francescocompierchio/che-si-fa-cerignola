@@ -275,3 +275,73 @@ class ControlliQualitaTests(unittest.TestCase):
             motore.classifica_categoria("Andria | mercatino di Natale e passeggiata"),
             "Famiglie & Bambini",
         )
+
+
+class MigliorieClassificazioneLuoghiTests(unittest.TestCase):
+    def test_esibizioni_musicali_senza_parola_concerto(self):
+        casi = [
+            "Christmas Vocal Harmony – SeiOttavi",
+            "Echi dell’anima – Quatuor Naka",
+            "Hendrix Birthday Eve JAM al Santo Graal",
+            "Rainbow Bridge plays Hendrix",
+            'FRANCO CALIFANO live tribute con la "CALIFFO BAND"',
+            "Tra tradizione popolare e lirica: il sassofono racconta l’Europa",
+        ]
+        for titolo in casi:
+            with self.subTest(titolo=titolo):
+                self.assertEqual(motore.classifica_categoria(titolo), "Musica & Concerti")
+
+    def test_serate_dj_e_party_restano_locali(self):
+        for titolo in ("DJ set al pub", "Club night e party", "Aperitivo musicale"):
+            with self.subTest(titolo=titolo):
+                self.assertEqual(motore.classifica_categoria(titolo), "Locali & Serate")
+
+    def test_film_festival_non_diventa_automaticamente_musica(self):
+        self.assertEqual(
+            motore.classifica_categoria("Foggia Film Festival con Jun Ichikawa"),
+            "Attività diurne",
+        )
+
+    def test_pulisce_code_editoriali_e_citta_duplicata_nella_sede(self):
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Teatro Comunale Lucio Dalla prosegue", "Manfredonia"),
+            "Teatro Comunale Lucio Dalla",
+        )
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Biblioteca storica dell’Ordine degli Avvocati di Trani Trani", "Trani"),
+            "Biblioteca storica dell’Ordine degli Avvocati di Trani",
+        )
+        self.assertEqual(
+            motore.normalizza_nome_luogo("Vecchie Segherie Mastrototaro Appuntamento", "Bisceglie"),
+            "Vecchie Segherie Mastrototaro",
+        )
+
+    def test_dominio_automatico_verificato_sull_host(self):
+        self.assertTrue(motore._fonte_appartiene_a_raccolta_automatica("https://www.experience-app.com/evento/123"))
+        self.assertFalse(motore._fonte_appartiene_a_raccolta_automatica("https://example.com/experience-app.com/evento"))
+        self.assertFalse(motore._fonte_appartiene_a_raccolta_automatica(""))
+
+    def test_record_senza_fonte_o_con_flag_manuale_sono_protetti(self):
+        manuale_senza_fonte = {
+            "tipoContenuto": "evento",
+            "titolo": "Evento manuale senza fonte",
+            "citta": "Cerignola",
+            "dataInizio": "2026-11-24",
+            "dataFine": "2026-11-24",
+        }
+        manuale_flag = {
+            "tipoContenuto": "evento",
+            "titolo": "Evento manuale con flag",
+            "manuale": True,
+            "fonteUrl": "https://experience-app.com/evento/999",
+            "dataInizio": "2026-11-24",
+            "dataFine": "2026-11-24",
+        }
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump([manuale_senza_fonte, manuale_flag], f, ensure_ascii=False)
+            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+        self.assertEqual(scaduti, 0)
+        self.assertEqual(len(manuali), 2)
+        self.assertEqual(automatici, [])
