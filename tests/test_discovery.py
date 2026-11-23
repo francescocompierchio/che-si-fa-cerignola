@@ -114,6 +114,7 @@ if __name__ == "__main__":
 class ControlliQualitaTests(unittest.TestCase):
     def evento_base(self, **extra):
         evento = {
+            "tipoContenuto": "evento",
             "citta": "Cerignola",
             "categoria": "Attività diurne",
             "titolo": "Evento di prova a Cerignola",
