@@ -164,6 +164,12 @@ class ControlliQualitaTests(unittest.TestCase):
             )
         )
 
+    def test_indirizzo_non_ripete_due_volte_il_comune(self):
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa("Foggia, Foggia", "Teatro Giordano", "Foggia"),
+            "Foggia",
+        )
+
     def test_corso_non_viene_accettato_come_sede(self):
         evento = self.evento_base(
             luogo="corso",
