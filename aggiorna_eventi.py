@@ -375,9 +375,19 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             flags=re.I,
         ).strip(" ,")
     if citta:
-        # Elimina tutte le ripetizioni finali del comune anche con separatori misti
-        # (es. ", " e ". "), mantenendo l'eventuale comune nel nome della sede.
-        indirizzo = normalizza_nome_luogo(indirizzo, citta)
+        # Collassa anche il caso limite in cui l'intero campo contiene solo
+        # il nome del comune ripetuto (es. "Foggia, Foggia").
+        solo_comune_ripetuto = re.fullmatch(
+            rf"\\s*{re.escape(citta)}(?:\\s*[,.;:]\\s*{re.escape(citta)}|\\s+-\\s+{re.escape(citta)}|\\s+{re.escape(citta)})+\\s*",
+            indirizzo,
+            flags=re.I,
+        )
+        if solo_comune_ripetuto:
+            indirizzo = citta
+        else:
+            # Elimina tutte le ripetizioni finali del comune anche con separatori misti
+            # (es. ", " e ". "), mantenendo l'eventuale comune nel nome della sede.
+            indirizzo = normalizza_nome_luogo(indirizzo, citta)
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
