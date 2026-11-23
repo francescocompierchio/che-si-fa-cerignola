@@ -169,6 +169,7 @@ class ControlliQualitaTests(unittest.TestCase):
 
     def test_comune_da_descrizione_prevale_sulla_citta_appesa_all_indirizzo(self):
         evento = self.evento_base(
+            citta="Foggia",
             titolo="Cenerentola 301",
             luogo="Teatro Comunale Lucio Dalla prosegue",
             indirizzoMappa="Teatro Comunale Lucio Dalla prosegue, Foggia",
