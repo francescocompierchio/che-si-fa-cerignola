@@ -510,3 +510,18 @@ class MigliorieCoperturaQualitaTests(unittest.TestCase):
             url_analizzate,
             ["https://teatromercadantecerignola.it/evento/soundtrack-mascagni/"],
         )
+
+
+class FontiUfficialiPrioritarieTests(unittest.TestCase):
+    def test_fonti_ufficiali_locali_precedono_gli_aggregatori(self):
+        nomi = [fonte["nome"] for fonte in motore.FONTI_PORTALI]
+        self.assertLess(nomi.index("Puglia Culture Cerignola"), nomi.index("Tacco di Bacco Cerignola"))
+        self.assertLess(nomi.index("Comune di Cerignola Eventi"), nomi.index("Experience App Foggia"))
+        self.assertLess(nomi.index("Teatro Mercadante Cerignola"), nomi.index("Experience App Foggia"))
+
+    def test_puglia_culture_e_riconosciuta_come_fonte_automatica(self):
+        self.assertTrue(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://www.pugliaculture.it/evento/breaking-brecht/"
+            )
+        )
