@@ -134,6 +134,16 @@ class ControlliQualitaTests(unittest.TestCase):
             )
         )
 
+    def test_localita_nazionale_fuori_bacino_con_sigla_provincia(self):
+        evento = self.evento_base(
+            descrizione="Roma (RM) Teatro comunale, appuntamento il 24 novembre."
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
     def test_monopoli_fuori_bacino_viene_esclusa(self):
         evento = self.evento_base(
             titolo="Natale ad Alberobello",
