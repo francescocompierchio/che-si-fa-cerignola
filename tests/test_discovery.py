@@ -170,6 +170,16 @@ class ControlliQualitaTests(unittest.TestCase):
             "Foggia",
         )
 
+    def test_indirizzo_mappa_rimuove_duplicazioni_con_separatori_misti(self):
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                "Via Boccaccio 42/44, Barletta. Barletta, Barletta",
+                "Via Boccaccio 42/44, Barletta",
+                "Barletta",
+            ),
+            "Via Boccaccio 42/44, Barletta",
+        )
+
     def test_corso_non_viene_accettato_come_sede(self):
         evento = self.evento_base(
             luogo="corso",
