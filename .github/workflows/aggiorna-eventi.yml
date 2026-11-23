@@ -18,12 +18,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Scarica repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Configura Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -35,7 +35,6 @@ jobs:
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PYTHONUNBUFFERED: "1"
         run: python aggiorna_eventi.py
 
