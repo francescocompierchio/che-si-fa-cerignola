@@ -11,6 +11,7 @@ import aggiorna_eventi as motore
 class RisoluzioneComuneTests(unittest.TestCase):
     def test_indirizzo_reale_prevale_sulla_citta_predefinita(self):
         evento = {
+            "tipoContenuto": "evento",
             "citta": "Cerignola",
             "indirizzoMappa": "Cinema dell'Opera, Lucera",
             "luogo": "Cinema dell'Opera",
@@ -138,6 +139,10 @@ class ControlliQualitaTests(unittest.TestCase):
         )
 
     def test_localita_nazionale_fuori_bacino_con_sigla_provincia(self):
+        self.assertEqual(
+            motore._localita_esplicita_fuori_area("Roma (RM) Teatro comunale"),
+            "Roma",
+        )
         evento = self.evento_base(
             descrizione="Roma (RM) Teatro comunale, appuntamento il 24 novembre."
         )
