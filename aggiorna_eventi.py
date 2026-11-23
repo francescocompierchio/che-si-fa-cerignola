@@ -228,7 +228,19 @@ def _comune_nel_testo(testo):
 PROVINCE_SIGLE_LOCALITA = (
     "Bari|BA|Brindisi|BR|Foggia|FG|Barletta-Andria-Trani|BAT|BT|"
     "Taranto|TA|Lecce|LE|Potenza|PZ|Matera|MT|Avellino|AV|Benevento|BN|"
-    "Campobasso|CB|Napoli|NA"
+    "Campobasso|CB|Napoli|NA|Roma|RM|Milano|MI|Torino|TO|Venezia|VE|Verona|VR|"
+    "Padova|PD|Brescia|BS|Bergamo|BG|Bologna|BO|Genova|GE|Firenze|FI|Pisa|PI|"
+    "Livorno|LI|Perugia|PG|Ancona|AN|Pescara|PE|L'Aquila|AQ|Salerno|SA|Caserta|CE|"
+    "Cosenza|CS|Catanzaro|CZ|Reggio Calabria|RC|Messina|ME|Palermo|PA|Catania|CT|"
+    "Cagliari|CA|Sassari|SS|Trieste|TS|Udine|UD|Trento|TN|Bolzano|BZ|Aosta|AO|"
+    "Arezzo|AR|Siena|SI|Lucca|LU|Parma|PR|Modena|MO|Ravenna|RA|Ferrara|FE|Rimini|RN|"
+    "Piacenza|PC|Como|CO|Varese|VA|Monza|MB|Pavia|PV|Cremona|CR|Mantova|MN|Lecco|LC|"
+    "Sondrio|SO|Novara|NO|Alessandria|AL|Cuneo|CN|Asti|AT|Imperia|IM|Savona|SV|"
+    "La Spezia|SP|Reggio Emilia|RE|Forlì-Cesena|FC|Macerata|MC|Pesaro e Urbino|PU|"
+    "Teramo|TE|Chieti|CH|Frosinone|FR|Latina|LT|Viterbo|VT|Rieti|RI|Isernia|IS|"
+    "Crotone|KR|Vibo Valentia|VV|Trapani|TP|Agrigento|AG|Enna|EN|Ragusa|RG|"
+    "Siracusa|SR|Nuoro|NU|Oristano|OR|Olbia-Tempio|OT|Carbonia-Iglesias|CI|"
+    "Ogliastra|OG|Medio Campidano|VS"
 )
 
 
