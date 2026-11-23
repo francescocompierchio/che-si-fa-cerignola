@@ -259,7 +259,7 @@ def _luogo_utilizzabile(luogo):
     if valore.lower() in {
         "corso", "via", "piazza", "viale", "centro / piazze",
         "centro", "da definire", "da verificare", "n/d",
-    }:
+    } or re.search(r"\bcentro\s*/\s*piazze\b", valore, re.I):
         return False
     if re.search(
         r"\b(?:o ricevere maggiori informazioni|è possibile consultare|"
@@ -305,14 +305,24 @@ def _url_tacco_generica(url):
 
 def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
-        # I campi più vicini alla sede reale prevalgono sui metadati del portale.
-        for campo in ("indirizzoMappa", "luogo", "titolo", "descrizione"):
-            comune = _comune_nel_testo(testo_o_ev.get(campo))
+        # L'indirizzo viene spesso costruito aggiungendo in coda la città predefinita
+        # della fonte: quella sola occorrenza non è una prova della sede reale.
+        indirizzo = str(testo_o_ev.get("indirizzoMappa") or "")
+        citta_default = str(testo_o_ev.get("citta") or "").strip()
+        if citta_default:
+            indirizzo = re.sub(
+                rf"(?:,\s*|\s+-\s*){re.escape(citta_default)}\s*$",
+                "",
+                indirizzo,
+                flags=re.I,
+            )
+        for testo in (indirizzo, testo_o_ev.get("luogo"), testo_o_ev.get("titolo"), testo_o_ev.get("descrizione")):
+            comune = _comune_nel_testo(testo)
             if comune:
                 return comune
 
         # citta è soltanto un fallback se non esistono prove più specifiche.
-        return _comune_nel_testo(testo_o_ev.get("citta"))
+        return _comune_nel_testo(citta_default)
     return _comune_nel_testo(testo_o_ev)
 
 
