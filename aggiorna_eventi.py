@@ -156,7 +156,9 @@ REGEX_TEMA_COERENTE = re.compile(
     r"fattori[ae]\s+didattic[ah]|parco\s+tematico|"
     r"trekking|escursion[ei]|passeggiat[ae]\s+(?:naturalistic[ah]|guidat[ah])|"
     r"uscit[ae]\s+organizzat[ah]|visita\s+guidata|visita\s+alle\s+saline|riserva\s+naturale|attivit[aà]\s+all['’]aperto|"
-    r"fiera\s+(?:ricreativa|artigianale|d['’]aprile)|esperienz[ae]\s+artigianal\w*|festival|avventur\w*"
+    r"fiera\s+(?:ricreativa|artigianale|d['’]aprile)|esperienz[ae]\s+artigianal\w*|festival|avventur\w*|"
+    r"corricerignola|gara\s+podistica|maratona|mezza\s+maratona|corsa\s+(?:podistica|su\s+strada|campestre)|"
+    r"trail\s+running|urban\s+trail|spartan\s+race|hyrox"
     r")\b",
     re.I
 )
@@ -176,7 +178,7 @@ PAROLE_SCARTO = [
     "santa messa", "messa solenne", "processione", "parrocchia", "parrocchie",
     "diocesi", "vescovo", "liturgia", "città mariana", "devozione", "incoronazione",
     "sport agonistico", "torneo", "tornei", "campionato", "campionati",
-    "gara podistica", "maratona", "mezza maratona", "partita",
+    "partita",
     "calcio", "volley", "basket", "audace cerignola", "ultras",
     "webinar", "evento online", "corso online", "google meet", "zoom", "b2b",
     "wedding", "fiera sposi", "comunicato stampa", "consiglio comunale", "giunta",
@@ -239,6 +241,10 @@ def risolvi_comune_50km(testo_o_ev):
 
 def classifica_categoria(testo):
     t = (testo or "").lower()
+    # Le gare di corsa e gli eventi fitness sono esperienze a cui partecipare,
+    # non partite sportive da cronaca: rientrano nelle attività diurne.
+    if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
+        return "Attività diurne"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
