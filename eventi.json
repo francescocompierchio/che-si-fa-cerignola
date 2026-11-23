@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Ci stai leggendo con un adblocker",
+    "dataTesto": "Dal 6 Mar al 30 Dic 2026",
+    "dataInizio": "2026-11-23",
+    "dataFine": "2026-12-30",
+    "luogo": "Foggia (sede nell'articolo)",
+    "indirizzoMappa": "Foggia (sede nell'articolo), Foggia",
+    "costo": "Ingresso libero",
+    "descrizione": "Raccontiamo la tua città ogni giorno, con una redazione sul territorio. La pubblicità ci permette di offrire gratuitamente gran parte del nostro lavoro: scegli come continuare a leggerci.",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/location/teatro-umberto-giordano/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Ci stai leggendo con un adblocker",
+    "dataTesto": "Dal 24 al 28 Nov 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-28",
+    "luogo": "Foggia (sede nell'articolo)",
+    "indirizzoMappa": "Foggia (sede nell'articolo), Foggia",
+    "costo": "Ingresso libero",
+    "descrizione": "Biblioteca La Magna Capitana - Piccolo Teatro Impertinente",
+    "fonteUrl": "https://www.foggiatoday.it/eventi/location/biblioteca-la-magna-capitana-piccolo-teatro-impertinente/"
+  }
+]
