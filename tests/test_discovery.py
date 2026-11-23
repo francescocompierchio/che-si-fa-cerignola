@@ -368,3 +368,145 @@ class MigliorieClassificazioneLuoghiTests(unittest.TestCase):
         self.assertEqual(scaduti, 0)
         self.assertEqual(len(manuali), 2)
         self.assertEqual(automatici, [])
+
+
+class MigliorieCoperturaQualitaTests(unittest.TestCase):
+    def evento_base(self, **extra):
+        evento = {
+            "tipoContenuto": "evento",
+            "citta": "Cerignola",
+            "categoria": "Attività diurne",
+            "titolo": "Evento culturale di prova",
+            "dataTesto": "Lun 01 Feb 2027",
+            "dataInizio": "2027-02-01",
+            "dataFine": "2027-02-01",
+            "luogo": "Teatro Comunale Saverio Mercadante",
+            "indirizzoMappa": "Teatro Comunale Saverio Mercadante, Cerignola",
+            "descrizione": "Spettacolo in programma presso il teatro comunale.",
+            "fonteUrl": "https://teatromercadantecerignola.it/evento/prova",
+        }
+        evento.update(extra)
+        return evento
+
+    def test_finestra_raccolta_include_eventi_con_oltre_45_giorni_di_anticipo(self):
+        evento = self.evento_base()
+        risultato = motore.normalizza_e_valida_evento(
+            evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+        )
+        self.assertIsNotNone(risultato)
+        self.assertEqual(motore.GIORNI_ANTICIPO_MAX, 180)
+
+    def test_finestra_raccolta_non_supera_180_giorni(self):
+        evento = self.evento_base(
+            dataTesto="Sab 29 Mag 2027",
+            dataInizio="2027-05-29",
+            dataFine="2027-05-29",
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_concerti_classici_non_vengono_scartati(self):
+        for titolo in (
+            "Concerto sinfonico dell'Orchestra",
+            "Musica classica: Vivaldi",
+            "Recital pianistico",
+            "Musica da camera",
+        ):
+            with self.subTest(titolo=titolo):
+                self.assertIsNone(motore.REGEX_SCARTO.search(titolo))
+                self.assertEqual(motore.classifica_categoria(titolo), "Musica & Concerti")
+
+    def test_indirizzo_mappa_rimuove_citta_ripetuta_dopo_sigla_provinciale(self):
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia (FG), Foggia",
+                "Teatro Umberto Giordano",
+                "Foggia",
+            ),
+            "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia (FG)",
+        )
+
+    def test_indirizzo_mappa_rimuove_citta_ripetuta_dopo_regione(self):
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                "Teatro, Foggia, Puglia, Foggia", "Teatro", "Foggia"
+            ),
+            "Teatro, Foggia, Puglia",
+        )
+
+    def test_eventi_ricorrenti_in_date_diverse_non_sono_duplicati(self):
+        a = self.evento_base(
+            titolo="Le storie del Giovedì - Biblioteca di Comunità",
+            dataInizio="2026-11-26",
+            dataFine="2026-11-26",
+            fonteUrl="https://comune.example/evento/giovedi-26",
+        )
+        b = dict(a)
+        b.update({
+            "dataInizio": "2026-12-03",
+            "dataFine": "2026-12-03",
+            "fonteUrl": "https://comune.example/evento/giovedi-03",
+        })
+        self.assertFalse(motore.sono_duplicati(a, b))
+
+    def test_stesso_evento_stesso_giorno_da_fonti_diverse_e_duplicato(self):
+        a = self.evento_base(
+            titolo="Breaking Brecht",
+            dataInizio="2026-12-06",
+            dataFine="2026-12-06",
+            fonteUrl="https://teatro.example/evento/brecht",
+        )
+        b = dict(a)
+        b["fonteUrl"] = "https://puglia.example/rassegna/brecht"
+        self.assertTrue(motore.sono_duplicati(a, b))
+
+    def test_fonti_ufficiali_cerignola_sono_riconosciute_come_automatiche(self):
+        self.assertTrue(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://comune.cerignola.fg.it/vivere-il-comune/eventi/workshop"
+            )
+        )
+        self.assertTrue(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://www.teatromercadantecerignola.it/evento/breaking-brecht"
+            )
+        )
+
+    def test_prefisso_schede_ufficiale_accetta_link_senza_keyword_nel_titolo(self):
+        elenco_url = "https://teatromercadantecerignola.it/stagione-teatrale-2026-27/"
+        html = """
+        <html><body>
+          <a href="/evento/soundtrack-mascagni/">SOUNDTRACK MASCAGNI</a>
+          <a href="/contatti/">Contatti</a>
+        </body></html>
+        """
+
+        class Risposta:
+            status_code = 200
+            apparent_encoding = "utf-8"
+
+            def __init__(self, text):
+                self.text = text
+
+        class SessioneFinta:
+            def get(self, url, timeout=None):
+                return Risposta(html)
+
+        fonte = {
+            "nome": "Teatro ufficiale",
+            "url": elenco_url,
+            "dominio": "teatromercadantecerignola.it",
+            "citta_default": "Cerignola",
+            "curata": True,
+            "prefisso_schede": "/evento/",
+        }
+        with patch.object(motore, "analizza_pagina_evento", return_value=[]) as analizza:
+            motore.raccogli_da_portale_generico(SessioneFinta(), fonte)
+        url_analizzate = [call.args[1] for call in analizza.call_args_list]
+        self.assertEqual(
+            url_analizzate,
+            ["https://teatromercadantecerignola.it/evento/soundtrack-mascagni/"],
+        )
