@@ -613,11 +613,11 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         return None
     if re.search(r"(?:√[ÝÈ]|‚Ä|Ã[Â-ÿ]|�)", titolo + " " + descrizione):
         return None
-    localita_fuori_area = _localita_esplicita_fuori_area(
-        f"{indirizzo_grezzo} {luogo} {descrizione[:650]}"
-    )
-    if localita_fuori_area:
-        return None
+    # Analizza i campi separatamente: concatenarli può far inglobare al parser
+    # il comune valido precedente nel nome di una città estranea (es. "Cerignola Roma").
+    for testo_geografico in (indirizzo_grezzo, luogo, descrizione[:650]):
+        if _localita_esplicita_fuori_area(testo_geografico):
+            return None
 
     testo_check = f"{titolo} {descrizione} {luogo}"
     if REGEX_SCARTO.search(testo_check):
