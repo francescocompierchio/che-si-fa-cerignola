@@ -47,6 +47,9 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
+    {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/stagione-teatrale-2026-27/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Tacco di Bacco Cerignola", "url": "https://iltaccodibacco.it/cerignola/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Concerti", "url": "https://iltaccodibacco.it/cerignola/concerti/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Sponsored", "url": "https://iltaccodibacco.it/cerignola/sponsored/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
@@ -59,8 +62,7 @@ FONTI_PORTALI = [
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
     {"nome": "Virgilio Eventi Foggia", "url": "https://www.virgilio.it/italia/foggia/eventi/", "dominio": "virgilio.it", "citta_default": "", "curata": True},
     {"nome": "Experience App Foggia", "url": "https://experience-app.com/eventi/puglia/foggia/", "dominio": "experience-app.com", "citta_default": "", "curata": True},
-    {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
-    {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/stagione-teatrale-2026-27/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20}
+
 ]
 
 COMUNI_50KM = {
@@ -592,6 +594,22 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
             m_dove = re.match(r"^(?:dove|luogo|presso|location|sede|locale|indirizzo)\s*:\s*(.+)$", line, re.I)
             if m_dove:
                 cand = m_dove.group(1).strip(" ,.;:-")
+                if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
+                    return cand[:80]
+            # Alcuni portali ufficiali mostrano l'etichetta "Luogo" su una riga
+            # e la sede sulla successiva, seguita dall'indirizzo postale.
+            if line.lower() in {"luogo", "sede", "dove"}:
+                righe_successive = testo_pag.splitlines()
+                indice = righe_successive.index(raw_line)
+                for successiva in righe_successive[indice + 1:indice + 4]:
+                    cand = re.sub(r"\s*[-–|]\s*Comune di\s+.+$", "", successiva.strip(), flags=re.I)
+                    if re.match(r"^(?:via|viale|piazza|piazzale|corso|largo)\b", cand, re.I):
+                        break
+                    if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
+                        return cand[:80]
+            m_etichetta = re.match(r"^(?:teatro|venue|location)\s*:\s*(.+)$", line, re.I)
+            if m_etichetta:
+                cand = re.sub(rf"\s*[-–|,]\s*{re.escape(citta)}(?:\s+\([A-Z]{{2}}\))?$", "", m_etichetta.group(1), flags=re.I).strip(" ,.;:-")
                 if _luogo_utilizzabile(cand) and cand.lower() != citta.lower():
                     return cand[:80]
 

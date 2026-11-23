@@ -510,3 +510,41 @@ class MigliorieCoperturaQualitaTests(unittest.TestCase):
             url_analizzate,
             ["https://teatromercadantecerignola.it/evento/soundtrack-mascagni/"],
         )
+
+
+class FontiUfficialiPrioritarieTests(unittest.TestCase):
+    def test_fonti_ufficiali_locali_precedono_gli_aggregatori(self):
+        nomi = [fonte["nome"] for fonte in motore.FONTI_PORTALI]
+        self.assertLess(nomi.index("Puglia Culture Cerignola"), nomi.index("Tacco di Bacco Cerignola"))
+        self.assertLess(nomi.index("Comune di Cerignola Eventi"), nomi.index("Experience App Foggia"))
+        self.assertLess(nomi.index("Teatro Mercadante Cerignola"), nomi.index("Experience App Foggia"))
+
+    def test_puglia_culture_e_riconosciuta_come_fonte_automatica(self):
+        self.assertTrue(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://www.pugliaculture.it/evento/breaking-brecht/"
+            )
+        )
+
+
+class LuoghiFontiUfficialiTests(unittest.TestCase):
+    def test_estrazione_sede_da_etichetta_luogo_su_riga_separata(self):
+        testo = (
+            "Luogo\n"
+            "Biblioteca di Comunità - Comune di Cerignola\n"
+            "Via Cesare Battisti n. 13 - 71042 Cerignola FG\n"
+        )
+        self.assertEqual(
+            motore.estrai_luogo_documentato(testo, "Cerignola"),
+            "Biblioteca di Comunità",
+        )
+
+    def test_estrazione_sede_da_campo_teatro_etichettato(self):
+        testo = (
+            "Teatro: Teatro Comunale S. Mercadante - Cerignola\n"
+            "sabato 6 dicembre 2026 ore 21:00\n"
+        )
+        self.assertEqual(
+            motore.estrai_luogo_documentato(testo, "Cerignola"),
+            "Teatro Comunale S. Mercadante",
+        )
