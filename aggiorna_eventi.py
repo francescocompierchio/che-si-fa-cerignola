@@ -9,7 +9,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
-GIORNI_ANTICIPO_MAX = 45
+GIORNI_ANTICIPO_MAX = 180
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
@@ -28,7 +28,7 @@ DOMINI_AUTO = (
     "palazzodelleartibeltrani.it", "politeamaitalia.com",
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com",
-    "aivents.it", "experience-app.com"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it"
 )
 
 FONTI_VIVA = [
@@ -58,7 +58,9 @@ FONTI_PORTALI = [
     {"nome": "2D2Web Sagre Feste Cerignola", "url": "https://www.2d2web.com/sagre-feste/cerignola", "dominio": "2d2web.com", "citta_default": "Cerignola", "curata": True},
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
     {"nome": "Virgilio Eventi Foggia", "url": "https://www.virgilio.it/italia/foggia/eventi/", "dominio": "virgilio.it", "citta_default": "", "curata": True},
-    {"nome": "Experience App Foggia", "url": "https://experience-app.com/eventi/puglia/foggia/", "dominio": "experience-app.com", "citta_default": "", "curata": True}
+    {"nome": "Experience App Foggia", "url": "https://experience-app.com/eventi/puglia/foggia/", "dominio": "experience-app.com", "citta_default": "", "curata": True},
+    {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
+    {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/stagione-teatrale-2026-27/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20}
 ]
 
 COMUNI_50KM = {
@@ -146,7 +148,8 @@ REGEX_TEMA_COERENTE = re.compile(
     r"luminari[ae]|accensione\s+(?:delle\s+)?luminari[ae]|accensione\s+(?:dell['’]\s*)?albero|"
     r"villaggi[o]?\s+(?:di\s+natale|natalizi[o]?|di\s+babbo\s+natale)|"
     r"casa\s+di\s+babbo\s+natale|pist[ae]\s+di\s+(?:pattinaggio|ghiaccio)|presepe\s+vivente|"
-    r"concert[oi]|musica\s+(?:dal\s+vivo|live)|live\s+music|tribute\s+band|cover\s+band|"
+    r"concert[oi]|concerto\s+sinfonico|orchestra\s+sinfonica|musica\s+classica|recital\s+pianistic[o]?|musica\s+da\s+camera|opera\s+lirica|pianoforte|"
+    r"spettacolo\s+teatrale|commedia\s+teatrale|teatro\s+ragazzi|prosa|musica\s+(?:dal\s+vivo|live)|live\s+music|tribute\s+band|cover\s+band|"
     r"dj\s*set|discotec[ah]|club\s+night|party|aperitiv[oi]\s+musical\w*|karaoke|"
     r"serat[ae]\s+(?:live|musical\w*|in\s+piazza|al\s+pub|nel\s+locale|danza|latina|disco|con)|"
     r"cabaret|festa\s+(?:in\s+piazza|di\s+piazza|patronale|di\s+paese|della\s+birra)|"
@@ -171,10 +174,8 @@ PAROLE_SCARTO = [
     "tavola rotonda", "dibattito", "aula magna", "dipartimento", "università",
     "presentazione libro", "presentazione del libro", "presentazione del volume",
     "mostra fotografica", "vernissage", "esposizione fotografica",
-    "teatro di prosa", "stagione teatrale", "teatro d'autore", "prosa", "opera lirica",
-    "drammaturgia", "monologo", "la traviata", "notte poesia",
-    "concerto sinfonico", "orchestra sinfonica", "sinfonica", "musica classica",
-    "recital pianistico", "pianoforte", "musica da camera", "conservatorio", "vivaldi",
+    "drammaturgia", "monologo", "notte poesia",
+    "conservatorio",
     "santa messa", "messa solenne", "processione", "parrocchia", "parrocchie",
     "diocesi", "vescovo", "liturgia", "città mariana", "devozione", "incoronazione",
     "sport agonistico", "torneo", "tornei", "campionato", "campionati",
@@ -388,6 +389,13 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             # Elimina tutte le ripetizioni finali del comune anche con separatori misti
             # (es. ", " e ". "), mantenendo l'eventuale comune nel nome della sede.
             indirizzo = normalizza_nome_luogo(indirizzo, citta)
+    if citta:
+        # Rimuove una seconda occorrenza finale anche quando la prima è seguita
+        # dalla sigla provinciale o dalla regione: "Foggia (FG), Foggia".
+        duplicato_con_sigla = re.compile(
+            rf"(?i)^(.*?\b{re.escape(citta)}\b(?:\s*\([A-Z]{{2}}\))?(?:,\s*(?:Puglia|Italia))?)(?:[,.;]\s*{re.escape(citta)}\b(?:\s*\([A-Z]{{2}}\))?)+$"
+        )
+        indirizzo = duplicato_con_sigla.sub(r"\1", indirizzo).strip(" ,.;")
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
@@ -409,7 +417,9 @@ def classifica_categoria(testo):
         return "Locali & Serate"
     # Riconosce anche esibizioni descritte senza la parola "concerto" nel titolo.
     if any(k in t for k in (
-        "concerto", "concerti", "in concerto", "musica dal vivo", "musica live",
+        "concerto", "concerti", "in concerto", "concerto sinfonico", "orchestra sinfonica",
+        "musica classica", "recital pianistico", "pianoforte", "musica da camera", "opera lirica",
+        "vivaldi", "orchestra", "musica dal vivo", "musica live",
         "live music", "live", "tribute", "tributo", "tribute band", "cover band",
         "band", "jam", "quartet", "quatuor", "trio", "duo", "vocal harmony",
         "sassofono", "saxophone", "chitarra", "guitar", "cantautore", "cantante",
@@ -934,18 +944,25 @@ def raccogli_da_portale_generico(session, fonte):
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
                 continue
 
-            # Accetta un titolo con tema evento oppure un URL tipico di scheda
-            # evento con identificativo numerico; scarta menu e pagine generiche.
-            path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\d+\.html?$", p_low))
-            titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
-            if not (path_evento_id or titolo_evento):
-                continue
+            # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
+            # in quel caso il prefisso configurato è una prova sufficiente.
+            prefisso_schede = str(fonte.get("prefisso_schede") or "").lower()
+            if prefisso_schede:
+                if not p_low.startswith(prefisso_schede):
+                    continue
+            else:
+                # Accetta un titolo con tema evento oppure un URL tipico di scheda
+                # evento con identificativo numerico; scarta menu e pagine generiche.
+                path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\d+\.html?$", p_low))
+                titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
+                if not (path_evento_id or titolo_evento):
+                    continue
             if len(p_low.strip("/")) >= 4:
                 visti.add(chiave)
                 links.append(full)
 
         scaricate = 0
-        for link in links[:12]:
+        for link in links[:int(fonte.get("max_schede", 12))]:
             try:
                 rp = session.get(link, timeout=(4, 7))
                 if rp.status_code != 200:
@@ -966,13 +983,24 @@ def raccogli_da_portale_generico(session, fonte):
 
 
 def sono_duplicati(a, b):
-    if a.get("citta", "").lower() != b.get("citta", "").lower():
+    if str(a.get("citta", "")).lower() != str(b.get("citta", "")).lower():
         return False
-    if a.get("fonteUrl") and a.get("fonteUrl") == b.get("fonteUrl"):
-        return True
-    t1 = re.sub(r"[^a-z0-9\s]", "", a.get("titolo", "").lower())
-    t2 = re.sub(r"[^a-z0-9\s]", "", b.get("titolo", "").lower())
-    return SequenceMatcher(None, t1, t2).ratio() >= 0.68
+    t1 = re.sub(r"[^a-z0-9\s]", "", str(a.get("titolo", "")).lower())
+    t2 = re.sub(r"[^a-z0-9\s]", "", str(b.get("titolo", "")).lower())
+    if SequenceMatcher(None, t1, t2).ratio() < 0.68:
+        return False
+
+    # Una stessa manifestazione ricorrente in giorni diversi non è un duplicato.
+    # Le date sono già normalizzate in formato ISO YYYY-MM-DD.
+    inizio_a = str(a.get("dataInizio") or "")
+    fine_a = str(a.get("dataFine") or inizio_a)
+    inizio_b = str(b.get("dataInizio") or "")
+    fine_b = str(b.get("dataFine") or inizio_b)
+    if all(re.fullmatch(r"\d{4}-\d{2}-\d{2}", x) for x in (inizio_a, fine_a, inizio_b, fine_b)):
+        return not (fine_a < inizio_b or fine_b < inizio_a)
+
+    # Se manca una data valida, usa l'URL identico solo come fallback prudenziale.
+    return bool(a.get("fonteUrl") and a.get("fonteUrl") == b.get("fonteUrl"))
 
 
 def _fonte_appartiene_a_raccolta_automatica(url):
