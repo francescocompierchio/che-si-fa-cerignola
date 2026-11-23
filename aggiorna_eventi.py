@@ -213,30 +213,48 @@ def priorita_km(citta):
     return 2
 
 
+def _comune_nel_testo(testo):
+    """Restituisce il primo comune citato nel testo; a parità, preferisce il nome più specifico."""
+    testo = str(testo or "")
+    corrispondenze = []
+    for nome, canonico in COMUNI_50KM.items():
+        for match in re.finditer(rf"\b{re.escape(nome)}\b", testo, re.I):
+            corrispondenze.append((match.start(), -(match.end() - match.start()), canonico))
+    if not corrispondenze:
+        return ""
+    return min(corrispondenze)[2]
+
+
 def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
-        # Prima prevalgono le prove legate al luogo dell'evento e al suo contenuto.
-        # citta può essere soltanto il comune predefinito della fonte e non la sede reale.
-        # Valuta i campi in ordine di affidabilità: indirizzo e sede prima,
-        # poi titolo e descrizione. Non mescolare città citate incidentalmente.
+        # I campi più vicini alla sede reale prevalgono sui metadati del portale.
         for campo in ("indirizzoMappa", "luogo", "titolo", "descrizione"):
-            testo_campo = str(testo_o_ev.get(campo) or "").lower()
-            for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-                if re.search(rf"\b{re.escape(k)}\b", testo_campo):
-                    return COMUNI_50KM[k]
+            comune = _comune_nel_testo(testo_o_ev.get(campo))
+            if comune:
+                return comune
 
-        # Il campo citta resta un fallback per le fonti che documentano
-        # la località soltanto nei metadati o nella pagina di provenienza.
-        c_raw = str(testo_o_ev.get("citta") or "").strip().lower()
-        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\b{re.escape(k)}\b", c_raw):
-                return COMUNI_50KM[k]
-    else:
-        testo = str(testo_o_ev or "").lower()
-        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\b{re.escape(k)}\b", testo):
-                return COMUNI_50KM[k]
-    return ""
+        # citta è soltanto un fallback se non esistono prove più specifiche.
+        return _comune_nel_testo(testo_o_ev.get("citta"))
+    return _comune_nel_testo(testo_o_ev)
+
+
+def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
+    """Rimuove un eventuale comune predefinito errato in coda all'indirizzo."""
+    indirizzo = re.sub(r"\s+", " ", str(indirizzo or "")).strip(" ,")
+    if not indirizzo:
+        indirizzo = str(luogo or "").strip()
+    for nome in sorted(set(COMUNI_50KM.values()), key=len, reverse=True):
+        if nome.lower() == str(citta or "").lower():
+            continue
+        indirizzo = re.sub(
+            rf"(?:,\s*|\s+-\s*){re.escape(nome)}(?:\s*\([A-Z]{{2}}\))?\s*$",
+            "",
+            indirizzo,
+            flags=re.I,
+        ).strip(" ,")
+    if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
+        indirizzo = f"{indirizzo}, {citta}".strip(" ,")
+    return indirizzo
 
 
 def classifica_categoria(testo):
@@ -542,7 +560,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         "dataInizio": d1,
         "dataFine": d2,
         "luogo": luogo,
-        "indirizzoMappa": (str(raw.get("indirizzoMappa") or "").strip() or f"{luogo}, {citta}"),
+        "indirizzoMappa": normalizza_indirizzo_mappa(raw.get("indirizzoMappa"), luogo, citta),
         "costo": costo,
         "descrizione": desc_finale[:220],
         "fonteUrl": url
