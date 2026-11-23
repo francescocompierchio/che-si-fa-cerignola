@@ -21,6 +21,15 @@ class RisoluzioneComuneTests(unittest.TestCase):
             "Canosa di Puglia",
         )
 
+    def test_gare_podistiche_e_fitness_sono_eventi_diurni(self):
+        testo = "CorriCerignola: gara podistica e corsa su strada"
+        self.assertIsNotNone(motore.REGEX_TEMA_COERENTE.search(testo))
+        self.assertIsNone(motore.REGEX_SCARTO.search(testo))
+        self.assertEqual(motore.classifica_categoria(testo), "Attività diurne")
+
+    def test_hyrox_e_trail_running_sono_riconosciuti(self):
+        self.assertIsNotNone(motore.REGEX_TEMA_COERENTE.search("Hyrox e trail running"))
+
 
 class RaccoltaPortaliTests(unittest.TestCase):
     def test_analizza_solo_link_evento_e_non_la_pagina_elenco(self):
