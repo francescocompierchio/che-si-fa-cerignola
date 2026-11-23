@@ -21,6 +21,32 @@ class RisoluzioneComuneTests(unittest.TestCase):
             "Canosa di Puglia",
         )
 
+    def test_primo_comune_nell_indirizzo_prevale_sul_comune_predefinito_in_coda(self):
+        evento = {
+            "citta": "Cerignola",
+            "indirizzoMappa": "Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG), Cerignola",
+            "luogo": "Cinema dell'Opera, Lucera",
+        }
+        self.assertEqual(motore.risolvi_comune_50km(evento), "Lucera")
+
+    def test_normalizzazione_non_lascia_il_comune_errato_nell_indirizzo(self):
+        evento = {
+            "citta": "Cerignola",
+            "titolo": "Concerto di Gianni Fiorellino",
+            "dataInizio": "2026-11-28",
+            "dataFine": "2026-11-28",
+            "luogo": "Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG)",
+            "indirizzoMappa": "Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG), Cerignola",
+            "fonteUrl": "https://experience-app.com/evento/2393",
+        }
+        risultato = motore.normalizza_e_valida_evento(
+            evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+        )
+        self.assertIsNotNone(risultato)
+        self.assertEqual(risultato["citta"], "Lucera")
+        self.assertTrue(risultato["indirizzoMappa"].endswith("Lucera (FG)"))
+        self.assertNotIn(", Cerignola", risultato["indirizzoMappa"])
+
     def test_gare_podistiche_e_fitness_sono_eventi_diurni(self):
         testo = "CorriCerignola: gara podistica e corsa su strada"
         self.assertIsNotNone(motore.REGEX_TEMA_COERENTE.search(testo))
