@@ -292,8 +292,7 @@ def _localita_esplicita_fuori_area(testo):
     pattern = re.compile(
         rf"\b([A-ZÀ-Ü][A-Za-zÀ-ÿ'’.-]*(?:\s+(?:di|del|della|de|san|santa|"
         rf"[A-ZÀ-Ü][A-Za-zÀ-ÿ'’.-]*)){{0,4}})\s*"
-        rf"\((?:{PROVINCE_SIGLE_LOCALITA})\)",
-        re.I,
+        rf"\((?i:{PROVINCE_SIGLE_LOCALITA})\)",
     )
     for match in pattern.finditer(testo):
         localita = match.group(1).strip()
