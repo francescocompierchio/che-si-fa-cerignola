@@ -105,3 +105,90 @@ class RaccoltaPortaliTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ControlliQualitaTests(unittest.TestCase):
+    def evento_base(self, **extra):
+        evento = {
+            "citta": "Cerignola",
+            "categoria": "Attività diurne",
+            "titolo": "Evento di prova a Cerignola",
+            "dataTesto": "Mar 24 Nov 2026",
+            "dataInizio": "2026-11-24",
+            "dataFine": "2026-11-24",
+            "luogo": "Teatro Mercadante",
+            "indirizzoMappa": "Teatro Mercadante, Cerignola",
+            "descrizione": "Appuntamento culturale presso il Teatro Mercadante di Cerignola.",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337999.html",
+        }
+        evento.update(extra)
+        return evento
+
+    def test_localita_fuori_bacino_non_eredita_citta_default(self):
+        evento = self.evento_base(
+            descrizione="Sannicandro di Bari (Bari) Castello di Sannicandro, ore 17:30."
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_monopoli_fuori_bacino_viene_esclusa(self):
+        evento = self.evento_base(
+            titolo="Natale ad Alberobello",
+            descrizione="Dal 5 dicembre 2026 Monopoli (Bari), Viale Monacelle."
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_corso_non_viene_accettato_come_sede(self):
+        evento = self.evento_base(
+            luogo="corso",
+            indirizzoMappa="corso, Cerignola",
+            descrizione="Corso da Sommelier Primo Livello. Per informazioni consultare il sito."
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_scheda_tacco_generica_non_viene_pubblicata(self):
+        evento = self.evento_base(
+            fonteUrl="https://iltaccodibacco.it/barletta/concerti/"
+        )
+        self.assertIsNone(
+            motore.normalizza_e_valida_evento(
+                evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+            )
+        )
+
+    def test_comune_reale_lucera_corregge_default_cerignola(self):
+        evento = self.evento_base(
+            titolo="Gianni Fiorellino",
+            luogo="Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG)",
+            indirizzoMappa="Cinema dell'Opera, Via Giordano Bruno 3, Lucera (FG), Cerignola",
+            descrizione="Concerto di Gianni Fiorellino.",
+        )
+        risultato = motore.normalizza_e_valida_evento(
+            evento, ref_dt=datetime(2026, 11, 23), fonte_curata_eventi=True
+        )
+        self.assertIsNotNone(risultato)
+        self.assertEqual(risultato["citta"], "Lucera")
+        self.assertNotIn(", Cerignola", risultato["indirizzoMappa"])
+
+    def test_ripara_codifica_titolo_e_apostrofo(self):
+        self.assertEqual(
+            motore._ripara_codifica("La Verit√Ý degli Avvocati: un‚Äôindagine"),
+            "La Verità degli Avvocati: un’indagine",
+        )
+
+    def test_mercatino_di_natale_non_diventa_natura_per_la_parola_passeggiata(self):
+        self.assertEqual(
+            motore.classifica_categoria("Andria | mercatino di Natale e passeggiata"),
+            "Famiglie & Bambini",
+        )
