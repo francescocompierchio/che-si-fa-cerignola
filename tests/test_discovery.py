@@ -525,3 +525,26 @@ class FontiUfficialiPrioritarieTests(unittest.TestCase):
                 "https://www.pugliaculture.it/evento/breaking-brecht/"
             )
         )
+
+
+class LuoghiFontiUfficialiTests(unittest.TestCase):
+    def test_estrazione_sede_da_etichetta_luogo_su_riga_separata(self):
+        testo = (
+            "Luogo\n"
+            "Biblioteca di Comunità - Comune di Cerignola\n"
+            "Via Cesare Battisti n. 13 - 71042 Cerignola FG\n"
+        )
+        self.assertEqual(
+            motore.estrai_luogo_documentato(testo, "Cerignola"),
+            "Biblioteca di Comunità",
+        )
+
+    def test_estrazione_sede_da_campo_teatro_etichettato(self):
+        testo = (
+            "Teatro: Teatro Comunale S. Mercadante - Cerignola\n"
+            "sabato 6 dicembre 2026 ore 21:00\n"
+        )
+        self.assertEqual(
+            motore.estrai_luogo_documentato(testo, "Cerignola"),
+            "Teatro Comunale S. Mercadante",
+        )
