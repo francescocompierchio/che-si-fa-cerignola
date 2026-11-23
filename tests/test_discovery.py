@@ -721,3 +721,49 @@ class RevisioneAffidabilitaCompletaTests(unittest.TestCase):
                 "https://iltaccodibacco.it.evil.example/eventi/338777.html"
             )
         )
+
+
+    def test_url_evento_jsonld_accetta_www_e_host_base_dello_stesso_sito(self):
+        html = """
+        <html><head>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Concerto sinfonico a Cerignola",
+          "startDate": "2026-12-06",
+          "url": "https://iltaccodibacco.it/puglia/eventi/338778.html",
+          "description": "Concerto sinfonico con orchestra al Teatro Mercadante di Cerignola.",
+          "location": {
+            "name": "Teatro Mercadante",
+            "address": {"addressLocality": "Cerignola"}
+          }
+        }
+        </script>
+        </head><body></body></html>
+        """
+        eventi = motore.analizza_pagina_evento(
+            html,
+            "https://www.iltaccodibacco.it/cerignola/",
+            citta_default="Cerignola",
+            fonte_curata_eventi=True,
+        )
+        self.assertEqual(
+            eventi[0]["fonteUrl"],
+            "https://iltaccodibacco.it/puglia/eventi/338778.html",
+        )
+
+    def test_record_di_tipo_non_gestito_viene_conservato_nell_archivio(self):
+        altro_contenuto = {
+            "tipoContenuto": "luogo",
+            "titolo": "Luogo da visitare aggiunto manualmente",
+            "citta": "Cerignola",
+        }
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump([altro_contenuto], f)
+            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+        self.assertEqual(manuali, [altro_contenuto])
+        self.assertEqual(automatici, [])
+        self.assertEqual(scaduti, 0)
