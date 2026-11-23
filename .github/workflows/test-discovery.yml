@@ -8,7 +8,9 @@ on:
     paths:
       - "aggiorna_eventi.py"
       - "tests/**"
+      - "sw.js"
       - ".github/workflows/test-discovery.yml"
+      - ".github/workflows/aggiorna-eventi.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,6 +19,7 @@ permissions:
 jobs:
   test-discovery:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Scarica repository
         uses: actions/checkout@v4
@@ -28,5 +31,7 @@ jobs:
         run: pip install requests beautifulsoup4
       - name: Controlla sintassi Python
         run: python -m compileall -q aggiorna_eventi.py tests
+      - name: Controlla sintassi Service Worker
+        run: node --check sw.js
       - name: Esegue test del motore eventi
         run: python -m unittest discover -s tests -v
