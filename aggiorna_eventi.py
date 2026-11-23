@@ -725,9 +725,8 @@ def raccogli_da_portale_generico(session, fonte):
         r.encoding = r.apparent_encoding or "utf-8"
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Prova prima a leggere la pagina elenco stessa se contiene eventi strutturati o date future
-        eventi.extend(analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata))
-
+        # Una pagina elenco non è di per sé un evento: si analizzano solo
+        # collegamenti che sembrano schede evento individuali.
         links = []
         visti = {url.rstrip("/").lower()}
         for a in soup.find_all("a", href=True):
@@ -743,8 +742,15 @@ def raccogli_da_portale_generico(session, fonte):
                 continue
             if p_low == urlparse(url).path.rstrip("/").lower():
                 continue
-            t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
+            t_link = re.sub(r"\\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
+                continue
+
+            # Accetta un titolo con tema evento oppure un URL tipico di scheda
+            # evento con identificativo numerico; scarta menu e pagine generiche.
+            path_evento_id = bool(re.search(r"/(?:eventi?|events?)/[^/]*\\d+\\.html?$", p_low))
+            titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
+            if not (path_evento_id or titolo_evento):
                 continue
             if len(p_low.strip("/")) >= 4:
                 visti.add(chiave)
