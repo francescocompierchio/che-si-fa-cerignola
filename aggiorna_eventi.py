@@ -213,19 +213,27 @@ def priorita_km(citta):
 
 def risolvi_comune_50km(testo_o_ev):
     if isinstance(testo_o_ev, dict):
-        c_raw = (testo_o_ev.get("citta") or "").strip().lower()
-        if c_raw in COMUNI_50KM:
-            return COMUNI_50KM[c_raw]
+        # Prima prevalgono le prove legate al luogo dell'evento e al suo contenuto.
+        # citta può essere soltanto il comune predefinito della fonte e non la sede reale.
+        campi_documentali = " ".join(
+            str(testo_o_ev.get(k) or "")
+            for k in ("indirizzoMappa", "luogo", "titolo", "descrizione")
+        ).lower()
         for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-            if re.search(rf"\b{re.escape(k)}\b", c_raw):
+            if re.search(rf"\\b{re.escape(k)}\\b", campi_documentali):
                 return COMUNI_50KM[k]
-        testo = f"{testo_o_ev.get('luogo', '')} {testo_o_ev.get('titolo', '')} {testo_o_ev.get('descrizione', '')}".lower()
+
+        # Il campo citta resta un fallback per le fonti che documentano
+        # la località soltanto nei metadati o nella pagina di provenienza.
+        c_raw = str(testo_o_ev.get("citta") or "").strip().lower()
+        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
+            if re.search(rf"\\b{re.escape(k)}\\b", c_raw):
+                return COMUNI_50KM[k]
     else:
         testo = str(testo_o_ev or "").lower()
-
-    for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(k)}\b", testo):
-            return COMUNI_50KM[k]
+        for k in sorted(COMUNI_50KM.keys(), key=len, reverse=True):
+            if re.search(rf"\\b{re.escape(k)}\\b", testo):
+                return COMUNI_50KM[k]
     return ""
 
 
