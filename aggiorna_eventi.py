@@ -263,9 +263,29 @@ def _ripara_codifica(testo):
     return re.sub(r"\s+", " ", testo).strip()
 
 
+def normalizza_nome_luogo(luogo, citta=""):
+    """Pulisce code editoriali e ripetizioni della città senza inventare una sede."""
+    valore = re.sub(r"\s+", " ", str(luogo or "")).strip(" ,.;:-")
+    valore = re.sub(
+        r"\s+(?:prosegue|appuntamento|l'appuntamento|il\s+prossimo\s+appuntamento|evento\s+in\s+programma)\.?$",
+        "",
+        valore,
+        flags=re.I,
+    ).strip(" ,.;:-")
+    if citta:
+        # Corregge solo la duplicazione consecutiva finale: il nome della struttura
+        # può legittimamente contenere la città una sola volta.
+        valore = re.sub(
+            rf"(?i)(?:[, ]+{re.escape(citta)}){{2}}$",
+            f" {citta}",
+            valore,
+        ).strip(" ,.;:-")
+    return valore
+
+
 def _luogo_utilizzabile(luogo):
     """Scarta frammenti di testo scambiati per una sede o un indirizzo."""
-    valore = re.sub(r"\s+", " ", str(luogo or "")).strip(" ,.;:-")
+    valore = normalizza_nome_luogo(luogo)
     if not valore or len(valore) < 4 or len(valore) > 100:
         return False
     if valore.lower() in {
@@ -284,7 +304,6 @@ def _luogo_utilizzabile(luogo):
     if re.match(r"^(?:corso|via|piazza|viale)\s+(?:da|di|per|o|è|e)\b", valore, re.I):
         return False
     return True
-
 
 def _localita_esplicita_fuori_area(testo):
     """Riconosce una località esplicita fuori dal bacino servito e impedisce il fallback al comune fonte."""
@@ -363,8 +382,7 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
 
 def classifica_categoria(testo):
     t = (testo or "").lower()
-    # Le gare di corsa e gli eventi fitness sono esperienze a cui partecipare,
-    # non partite sportive da cronaca: rientrano nelle attività diurne.
+    # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
     if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
@@ -373,12 +391,21 @@ def classifica_categoria(testo):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
         return "Sagre & Food"
-    if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke")):
+    # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
+    if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "serata live", "birthday eve", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
         return "Locali & Serate"
-    if any(k in t for k in ("concerto", "concerti", "musica dal vivo", "musica live", "live music", "tribute band", "cover band", "cabaret", "festa in piazza", "festa di piazza", "festa patronale", "festa di paese", "festa della birra")):
+    # Riconosce anche esibizioni descritte senza la parola "concerto" nel titolo.
+    if any(k in t for k in (
+        "concerto", "concerti", "in concerto", "musica dal vivo", "musica live",
+        "live music", "live", "tribute", "tributo", "tribute band", "cover band",
+        "band", "jam", "quartet", "quatuor", "trio", "duo", "vocal harmony",
+        "sassofono", "saxophone", "chitarra", "guitar", "cantautore", "cantante",
+        "musicista", "soul", "r&b", "hendrix", "califano", "cabaret",
+        "festa in piazza", "festa di piazza", "festa patronale", "festa di paese",
+        "festa della birra"
+    )):
         return "Musica & Concerti"
     return "Attività diurne"
-
 
 def formatta_data_italiano(d_ini_iso, d_fin_iso):
     try:
@@ -653,8 +680,10 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if d2 < oggi or d1 > d2 or d1 > limite_max:
         return None
 
+    luogo = normalizza_nome_luogo(luogo, citta)
     if not _luogo_utilizzabile(luogo) or luogo.lower() == citta.lower():
-        luogo = estrai_luogo_documentato(f"{titolo}\n{descrizione}", citta)
+        luogo = estrai_luogo_documentato(f"{titolo}\\n{descrizione}", citta)
+    luogo = normalizza_nome_luogo(luogo, citta)
     if not _luogo_utilizzabile(luogo):
         return None
 
@@ -933,8 +962,19 @@ def sono_duplicati(a, b):
     return SequenceMatcher(None, t1, t2).ratio() >= 0.68
 
 
+def _fonte_appartiene_a_raccolta_automatica(url):
+    """Confronta l'host reale, evitando falsi match su URL che contengono un dominio nel path."""
+    host = (urlparse(str(url or "")).hostname or "").lower().rstrip(".")
+    return any(host == dominio or host.endswith("." + dominio) for dominio in DOMINI_AUTO)
+
+
 def carica_esistenti_protetti(percorso_json="eventi.json"):
-    """Elimina automaticamente solo gli eventi già scaduti e conserva quelli manuali admin e quelli ancora validi."""
+    """Protegge i manuali eventualmente presenti nel JSON e riconvalida solo le schede automatiche.
+
+    Gli eventi approvati dal pannello admin vivono nel nodo Firebase 'eventiManuali'
+    e vengono caricati separatamente dal frontend: questo workflow non legge,
+    modifica o cancella il database Firebase.
+    """
     oggi = oggi_iso()
     manuali = []
     auto_validi = []
@@ -956,8 +996,9 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             if len(titolo) < 3:
                 continue
 
-            url = str(item.get("fonteUrl") or "").strip().lower()
-            is_manuale = bool(item.get("manuale")) or not any(dom in url for dom in DOMINI_AUTO)
+            url = str(item.get("fonteUrl") or "").strip()
+            # Un flag esplicito o una fonte non riconosciuta comportano conservazione prudenziale.
+            is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
             d_fin = str(item.get("dataFine") or item.get("dataInizio") or "").strip()[:10]
             ha_data = bool(re.match(r"^\d{4}-\d{2}-\d{2}$", d_fin))
 
@@ -987,8 +1028,9 @@ def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
     print(
-        f"Eventi caricati: {len(manuali_admin)} manuali admin, "
-        f"{len(precedenti_auto)} automatici ancora validi, {scaduti_rimossi} scaduti eliminati."
+        f"Eventi JSON caricati: {len(manuali_admin)} record protetti/manuali, "
+        f"{len(precedenti_auto)} automatici ancora validi, {scaduti_rimossi} scaduti eliminati. "
+        "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
     session = requests.Session()
