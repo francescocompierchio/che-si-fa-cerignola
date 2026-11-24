@@ -7,6 +7,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
 from difflib import SequenceMatcher
 from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
@@ -229,12 +231,15 @@ def oggi_dt():
     return datetime.now(ZoneInfo("Europe/Rome"))
 
 STATISTICHE_FONTI = {}
+_LOCK_STATISTICHE = Lock()
+MAX_WORKER_FONTI = 4
 
 
 def registra_statistica_fonte(nome, **dati):
     """Conserva metriche per fonte per rendere verificabile ogni ciclo di raccolta."""
-    stato = STATISTICHE_FONTI.setdefault(nome, {})
-    stato.update(dati)
+    with _LOCK_STATISTICHE:
+        stato = STATISTICHE_FONTI.setdefault(nome, {})
+        stato.update(dati)
 
 
 def crea_session_raccolta():
@@ -1788,6 +1793,42 @@ def _scrivi_json_atomico(percorso, dati):
             os.remove(temporaneo)
 
 
+def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI):
+    """Parallelismo limitato fra domini; ogni dominio mantiene richieste sequenziali.
+
+    Ogni gruppo ha una Session HTTP indipendente. I risultati sono restituiti
+    nell'ordine originale, non nell'ordine di completamento dei thread.
+    """
+    gruppi = {}
+    for indice, (raccoglitore, fonte) in enumerate(compiti):
+        dominio = (fonte.get("dominio") or urlparse(fonte["url"]).hostname or "").lower().removeprefix("www.")
+        gruppi.setdefault(dominio, []).append((indice, raccoglitore, fonte))
+
+    def raccogli_gruppo(gruppo):
+        risultati = []
+        with crea_session_raccolta() as session:
+            for indice, raccoglitore, fonte in gruppo:
+                nome = fonte["nome"]
+                inizio = time.monotonic()
+                try:
+                    eventi = raccoglitore(session, fonte)
+                except Exception as exc:
+                    eventi = []
+                    registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], eventiEstratti=0)
+                    print(f"{nome}: errore isolato: {str(exc)[:100]}", flush=True)
+                registra_statistica_fonte(nome, durataSecondi=round(time.monotonic() - inizio, 2))
+                risultati.append((indice, eventi))
+        return risultati
+
+    if not gruppi:
+        return []
+    risultati = []
+    with ThreadPoolExecutor(max_workers=max(1, min(MAX_WORKER_FONTI, max_worker))) as pool:
+        for blocco in pool.map(raccogli_gruppo, gruppi.values()):
+            risultati.extend(blocco)
+    return [evento for _, eventi in sorted(risultati, key=lambda x: x[0]) for evento in eventi]
+
+
 def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
@@ -1798,15 +1839,13 @@ def esegui_aggiornamento():
     )
 
     STATISTICHE_FONTI.clear()
-    session = crea_session_raccolta()
-
-    nuovi_raccolti = []
-    for fonte in FONTI_VIVA:
-        nuovi_raccolti.extend(raccogli_da_portale_viva(session, fonte))
-    for fonte in FONTI_PORTALI:
-        nuovi_raccolti.extend(raccogli_da_portale_generico(session, fonte))
-    for fonte in FONTI_SOCIAL_RSS:
-        nuovi_raccolti.extend(raccogli_da_feed_social(session, fonte))
+    compiti = (
+        [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
+        + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
+        + [(raccogli_da_feed_social, fonte) for fonte in FONTI_SOCIAL_RSS]
+    )
+    print(f"Raccolta parallela: {len(compiti)} fonti, massimo {MAX_WORKER_FONTI} domini contemporanei", flush=True)
+    nuovi_raccolti = raccogli_fonti_parallele(compiti)
 
     nuovi_unici = []
     for ev in nuovi_raccolti:
@@ -1815,10 +1854,14 @@ def esegui_aggiornamento():
 
     consolidati = list(manuali_admin)
     aggiunti_nuovi = 0
+    ritrovati = 0
     for ev in nuovi_unici:
         if not any(sono_duplicati(x, ev) for x in consolidati):
             consolidati.append(ev)
-            aggiunti_nuovi += 1
+            if any(sono_duplicati(x, ev) for x in precedenti_auto):
+                ritrovati += 1
+            else:
+                aggiunti_nuovi += 1
 
     for ev_old in precedenti_auto:
         if not any(sono_duplicati(x, ev_old) for x in consolidati):
@@ -1847,6 +1890,9 @@ def esegui_aggiornamento():
         "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),
         "nuoviAggiunti": aggiunti_nuovi,
+        "automaticiRitrovati": ritrovati,
+        "durataSecondi": round(time.time() - t_start, 2),
+        "workerMassimi": MAX_WORKER_FONTI,
         "manualiConservati": len(manuali_admin),
         "automaticiRiconvalidati": len(precedenti_auto),
         "scadutiEliminati": scaduti_rimossi,
@@ -1870,7 +1916,7 @@ def esegui_aggiornamento():
 
     print(
         f"Fine: {len(lista_finale)} eventi totali salvati "
-        f"({aggiunti_nuovi} nuovi, {len(manuali_admin)} manuali, "
+        f"({aggiunti_nuovi} realmente nuovi, {ritrovati} ritrovati, {len(manuali_admin)} manuali, "
         f"{len(precedenti_auto)} automatici riconvalidati, {scaduti_rimossi} scaduti rimossi) "
         f"in {int(time.time() - t_start)}s"
     )

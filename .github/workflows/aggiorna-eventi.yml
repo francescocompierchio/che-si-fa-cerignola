@@ -61,7 +61,10 @@ jobs:
           print("## Riepilogo raccolta eventi")
           print(f"- Aggiornato: {report.get('aggiornatoAl', 'n/d')} ({report.get('fusoOrario', 'fuso non specificato')})")
           print(f"- Eventi nell'archivio: {report.get('totaleContenuti', 0)}")
-          print(f"- Nuovi eventi: {report.get('nuoviAggiunti', 0)}")
+          print(f"- Nuovi eventi rispetto all'archivio: {report.get('nuoviAggiunti', 0)}")
+          print(f"- Eventi già presenti ritrovati: {report.get('automaticiRitrovati', 0)}")
+          print(f"- Durata raccolta: {report.get('durataSecondi', 0)} secondi")
+          print(f"- Domini contemporanei massimi: {report.get('workerMassimi', 1)}")
           print(f"- Eventi automatici riconvalidati: {report.get('automaticiRiconvalidati', 0)}")
           print(f"- Eventi manuali JSON protetti: {report.get('manualiConservati', 0)}")
           print(f"- Scaduti rimossi: {report.get('scadutiEliminati', 0)}")
@@ -79,7 +82,8 @@ jobs:
                   f"- {fonte}: {dati.get('stato', 'n/d')}; "
                   f"{dati.get('linkCandidati', 0)} schede candidate, "
                   f"{dati.get('pagineScaricate', 0)} pagine lette, "
-                  f"{dati.get('eventiEstratti', 0)} eventi"
+                  f"{dati.get('eventiEstratti', 0)} eventi, "
+                  f"{dati.get('durataSecondi', 0)} s"
               )
           PY
           else
