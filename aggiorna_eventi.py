@@ -7,7 +7,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from collections import Counter
 from difflib import SequenceMatcher
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -29,7 +29,7 @@ DOMINI_AUTO = (
     "canosaviva.it", "barlettaviva.it", "traniviva.it",
     "bisceglieviva.it", "andriaviva.it", "statoquotidiano.it",
     "immediato.net", "vulturenews.net", "foggia.today", "lagazzettadelmezzogiorno.it",
-    "teatromercadantecerignola.it", "teatrogiordano.it",
+    "teatromercadantecerignola.it", "romateatrocinema.it", "teatrogiordano.it",
     "palazzodelleartibeltrani.it", "politeamaitalia.com",
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com",
@@ -56,6 +56,7 @@ FONTI_PORTALI = [
     {"nome": "Comune Cerignola Homepage Eventi", "url": "https://comune.cerignola.fg.it/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Roma Teatro Cerignola", "url": "https://romateatrocinema.it/", "dominio": "romateatrocinema.it", "citta_default": "Cerignola", "curata": True, "parametro_scheda": "mec-events", "max_schede": 30},
     {"nome": "Tacco di Bacco Cerignola", "url": "https://iltaccodibacco.it/cerignola/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Concerti", "url": "https://iltaccodibacco.it/cerignola/concerti/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Sponsored", "url": "https://iltaccodibacco.it/cerignola/sponsored/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
@@ -455,7 +456,7 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
     if str(citta or "").casefold() == "cerignola" and re.search(
         r"roma\s+teatro\s+cinema", f"{luogo} {indirizzo}", re.I
     ):
-        return "Roma Teatro Cinema E…, Via Roma, 49, Cerignola"
+        return "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola"
     for nome in sorted(set(COMUNI_50KM.values()), key=len, reverse=True):
         if nome.lower() == str(citta or "").lower():
             continue
@@ -511,7 +512,7 @@ def classifica_categoria(testo):
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
-    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
+    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
         return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
@@ -541,6 +542,10 @@ def classifica_categoria(testo):
         "festa della birra"
     )):
         return "Musica & Concerti"
+    # Le schede ufficiali del Roma Teatro marcano la categoria con questa
+    # etichetta; usarla solo dopo gli indizi musicali espliciti.
+    if any(k in t for k in ("stagione teatrale", "altri spettacoli teatrali")):
+        return "Teatro & Spettacoli"
     return "Attività diurne"
 
 def formatta_data_italiano(d_ini_iso, d_fin_iso):
@@ -1242,13 +1247,17 @@ def raccogli_da_portale_generico(session, fonte):
             pr = urlparse(full)
             if pr.scheme not in ("http", "https") or not _host_appartiene(full, dominio):
                 continue
+            p_low = pr.path.lower()
+            parametro_scheda = str(fonte.get("parametro_scheda") or "").strip()
+            valore_scheda = parse_qs(pr.query).get(parametro_scheda, [""])[0] if parametro_scheda else ""
             chiave = f"{pr.netloc.lower()}{pr.path.rstrip('/').lower()}"
+            if valore_scheda:
+                chiave += f"?{parametro_scheda}={valore_scheda}&{pr.query}"
             if chiave in visti:
                 continue
-            p_low = pr.path.lower()
             if any(x in p_low for x in ("/login", "/signup", "/privacy", "/cookie", "/contatti", "/chi-siamo", "/tag/", "/author/", "/autore/")):
                 continue
-            if p_low == urlparse(url).path.rstrip("/").lower():
+            if p_low == urlparse(url).path.rstrip("/").lower() and not valore_scheda:
                 continue
             if _url_tacco_generica(full):
                 continue
@@ -1259,7 +1268,12 @@ def raccogli_da_portale_generico(session, fonte):
             # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
             # in quel caso il prefisso configurato è una prova sufficiente.
             prefisso_schede = str(fonte.get("prefisso_schede") or "").lower()
-            if prefisso_schede:
+            if parametro_scheda:
+                # Alcuni calendari ufficiali pubblicano le schede come query
+                # sulla stessa homepage: ?mec-events=slug.
+                if not valore_scheda:
+                    continue
+            elif prefisso_schede:
                 if not p_low.startswith(prefisso_schede):
                     continue
             else:
@@ -1269,7 +1283,7 @@ def raccogli_da_portale_generico(session, fonte):
                 titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
                 if not (path_evento_id or titolo_evento):
                     continue
-            if len(p_low.strip("/")) >= 4:
+            if len(p_low.strip("/")) >= 4 or valore_scheda:
                 visti.add(chiave)
                 links.append(full)
 
@@ -1344,7 +1358,19 @@ def sono_duplicati(a, b):
     # per lo stesso spettacolo: confronta anche la parte distintiva iniziale.
     base_a = _titolo_base_duplicato(a.get("titolo"))
     base_b = _titolo_base_duplicato(b.get("titolo"))
-    return len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b
+    if len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b:
+        return True
+
+    # Alcuni aggregatori mettono il nome degli artisti prima del titolo,
+    # mentre la fonte ufficiale fa il contrario: confronta i token distintivi.
+    parole_a = set(re.findall(r"\b[a-z0-9à-ù]{4,}\b", base_a))
+    parole_b = set(re.findall(r"\b[a-z0-9à-ù]{4,}\b", base_b))
+    comuni = parole_a & parole_b
+    if not parole_a or not parole_b or len(comuni) < 2:
+        return False
+    copertura_breve = len(comuni) / min(len(parole_a), len(parole_b))
+    copertura_lunga = len(comuni) / max(len(parole_a), len(parole_b))
+    return copertura_breve >= 0.75 and copertura_lunga >= 0.30
 
 
 def _fonte_appartiene_a_raccolta_automatica(url):
