@@ -1058,7 +1058,10 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     if len(titolo) < 5:
         return []
 
-    for tag in soup(["script", "style", "nav", "footer", "aside", "form", "noscript", "iframe", "time"]):
+    # Non rimuovere i tag <time>: sui siti istituzionali e teatrali la data
+# dell'evento è spesso pubblicata semanticamente proprio in questi elementi.
+# Eliminandoli si perdeva la data e le fonti ufficiali restituivano zero eventi.
+for tag in soup(["script", "style", "nav", "footer", "aside", "form", "noscript", "iframe"]):
         tag.decompose()
     for meta_el in soup.select(".byline, .author, .meta, .post-meta, .entry-meta, .article-meta, [class*='publish'], [class*='update'], [class*='autore'], [class*='redazione']"):
         meta_el.decompose()
