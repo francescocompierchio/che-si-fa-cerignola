@@ -83,6 +83,29 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(all(evento["citta"] == "Cerignola" for evento in eventi))
         self.assertTrue(all(evento["luogo"] == "Teatro Comunale S. Mercadante" for evento in eventi))
 
+    def test_puglia_culture_card_riconosce_sede_con_link_separati(self):
+        html = """
+        <html><body><main>
+          <article class="event-card">
+            <a href="/evento/breaking-brecht-3/">BREAKING BRECHT</a>
+            <p>domenica 06 dicembre 2026</p>
+            <p>Teatro:</p>
+            <p><a href="/luogo/teatro-mercadante/">Teatro Comunale S. Mercadante</a> -
+               <a href="/luogo/cerignola/">Cerignola</a></p>
+          </article>
+        </main></body></html>
+        """
+        soup = crawler.BeautifulSoup(html, "html.parser")
+        eventi = crawler.estrai_eventi_puglia_da_elenco(
+            soup,
+            "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/",
+            "Cerignola",
+        )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["titolo"], "BREAKING BRECHT")
+        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale Saverio Mercadante")
+        self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
+
     def test_scheda_puglia_culture_con_metadati_fuori_main(self):
         html = """
         <html><body>
