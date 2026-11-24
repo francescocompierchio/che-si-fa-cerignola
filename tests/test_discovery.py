@@ -1009,3 +1009,100 @@ class DiagnosticaFontiTests(unittest.TestCase):
             0,
         )
         motore.STATISTICHE_FONTI.clear()
+
+
+
+class RecuperoFontiUfficialiETeatroTests(unittest.TestCase):
+    def test_scheda_comune_recupera_data_pubblicata_in_un_div(self):
+        html = """
+        <html><body><main>
+          <h1>Le storie del Giovedì – Biblioteca di Comunità</h1>
+          <div class="date">dal 26 Novembre 2026 alle 17:00 al 26 Novembre 2026 alle 18:00</div>
+          <p>Laboratorio di lettura creativa.</p>
+          <p>Giovedì 26 novembre, laboratorio per bambini dedicato alle avventure di Pinocchio.</p>
+          <h2>Luogo</h2>
+          <h3>Biblioteca di Comunità - Comune di Cerignola</h3>
+          <p>Via Cesare Battisti n. 13 - 71042 Cerignola FG</p>
+          <h2>Costi</h2>
+          <div>Gratuito. E' necessaria prenotazione.</div>
+        </main></body></html>
+        """
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-11-26")
+        self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")
+        self.assertIn("Via Cesare Battisti n. 13", eventi[0]["indirizzoMappa"])
+        self.assertEqual(eventi[0]["costo"].lower(), "gratuito")
+
+    def test_scheda_mercadante_recupera_data_e_classifica_prosa(self):
+        html = """
+        <html><body><main>
+          <h1>BREAKING BRECHT – Lo strano caso di Bertolt Brecht</h1>
+          <div>Spettacolo teatrale</div>
+          <div>Prosa</div>
+          <div>domenica 06 Dicembre 2026</div>
+          <div>ore 21:00</div>
+          <div>Teatro Comunale Saverio Mercadante</div>
+          <div>piazza G. Matteotti, 1</div>
+          <div>Cerignola FG</div>
+          <p>Con Veronica Pivetti e Manuela Mandracchia.</p>
+        </main></body></html>
+        """
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://www.teatromercadantecerignola.it/evento/breaking-brecht-lo-strano-caso-di-bertolt-brecht/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
+        self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
+        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale Saverio Mercadante")
+
+    def test_deduplica_titolo_ufficiale_con_sottotitolo_aggregatore(self):
+        aggregatore = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "Cerignola | Breaking Brecht – Sing’n’Song Cabaret",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331608.html",
+        }
+        ufficiale = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "BREAKING BRECHT – Lo strano caso di Bertolt Brecht",
+            "fonteUrl": "https://www.teatromercadantecerignola.it/evento/breaking-brecht-lo-strano-caso-di-bertolt-brecht/",
+        }
+        self.assertTrue(motore.sono_duplicati(aggregatore, ufficiale))
+
+    def test_classificazione_prosa_non_finira_in_attivita_diurne(self):
+        self.assertEqual(
+            motore.classifica_categoria("Spettacolo teatrale di prosa al Mercadante"),
+            "Teatro & Spettacoli",
+        )
+
+
+    def test_non_unifica_eventi_diversi_con_prefisso_generico_comune(self):
+        primo = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "Cerignola | Concerto – Jazz Quartet",
+            "fonteUrl": "https://example.org/a",
+        }
+        secondo = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "Concerto – Tribute Band",
+            "fonteUrl": "https://example.org/b",
+        }
+        self.assertFalse(motore.sono_duplicati(primo, secondo))

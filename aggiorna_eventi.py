@@ -122,6 +122,7 @@ CINTURA_25 = {
 
 CATEGORIE_AMMESSE = [
     "Musica & Concerti",
+    "Teatro & Spettacoli",
     "Locali & Serate",
     "Sagre & Food",
     "Famiglie & Bambini",
@@ -510,6 +511,13 @@ def classifica_categoria(testo):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
         return "Sagre & Food"
+    # Distingue la prosa e il teatro dalla musica, senza farsi ingannare
+    # dalla sola presenza del nome del Teatro come luogo dell'evento.
+    if any(k in t for k in (
+        "spettacolo teatrale", "teatro ragazzi", "teatro inclusivo",
+        "teatro & spettacoli", "commedia teatrale", "prosa", "cabaret",
+    )):
+        return "Teatro & Spettacoli"
     # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
     if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
         return "Locali & Serate"
@@ -940,8 +948,11 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if not _luogo_utilizzabile(luogo):
         return None
 
-    # Ricalcola la categoria sul contenuto, evitando di perpetuare classificazioni vecchie o incoerenti.
+    # Ricalcola la categoria sul contenuto. Mantiene però la classe specifica
+    # assegnata dalla scheda quando la fonte documenta esplicitamente il teatro.
     cat = classifica_categoria(f"{titolo} {descrizione}")
+    if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
+        cat = "Teatro & Spettacoli"
 
     if not d_txt:
         d_txt = formatta_data_italiano(d1, d2)
@@ -1052,7 +1063,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     for meta_el in soup.select(".byline, .author, .meta, .post-meta, .entry-meta, .article-meta, [class*='publish'], [class*='update'], [class*='autore'], [class*='redazione']"):
         meta_el.decompose()
 
-    cont = soup.find("article") or soup.find("main") or soup.body or soup
+    cont = soup.find("main") or soup.find("article") or soup.body or soup
     paragrafi = []
     for p in cont.find_all(["p", "li", "h2", "h3"]):
         txt = re.sub(r"\s+", " ", p.get_text(" ", strip=True)).strip()
@@ -1062,7 +1073,11 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             break
 
     corpo = " ".join(paragrafi)[:1800]
-    testo_completo = f"{titolo} | {corpo}"
+    # Date e metadati dei portali istituzionali sono spesso in div/span,
+    # non in paragrafi o intestazioni. Usa il testo visibile dell'area contenuto
+    # per non perdere schede che il crawler ha scaricato correttamente.
+    testo_visibile = re.sub(r"\s+", " ", cont.get_text(" ", strip=True)).strip()
+    testo_completo = f"{titolo} | {testo_visibile[:6000]}"
     d1, d2, d_txt = estrai_date_italiano(testo_completo, ref)
     if not d1:
         return []
@@ -1271,12 +1286,21 @@ def raccogli_da_portale_generico(session, fonte):
     return eventi
 
 
+def _titolo_base_duplicato(titolo):
+    """Riduce il titolo alla sua parte identificativa, togliendo città e sottotitoli."""
+    testo = _ripara_codifica(str(titolo or "")).casefold().strip()
+    if "|" in testo:
+        prefisso, resto = testo.split("|", 1)
+        if prefisso.strip() in COMUNI_50KM:
+            testo = resto.strip()
+    testo = re.split(r"\s+[–—-]\s+", testo, maxsplit=1)[0]
+    testo = re.split(r"\s*[:.!?]\s*", testo, maxsplit=1)[0]
+    testo = re.sub(r"[^a-z0-9à-ù\s]", " ", testo)
+    return re.sub(r"\s+", " ", testo).strip()
+
+
 def sono_duplicati(a, b):
-    if str(a.get("citta", "")).lower() != str(b.get("citta", "")).lower():
-        return False
-    t1 = re.sub(r"[^a-z0-9\s]", "", str(a.get("titolo", "")).lower())
-    t2 = re.sub(r"[^a-z0-9\s]", "", str(b.get("titolo", "")).lower())
-    if SequenceMatcher(None, t1, t2).ratio() < 0.68:
+    if str(a.get("citta", "")).casefold() != str(b.get("citta", "")).casefold():
         return False
 
     # Una stessa manifestazione ricorrente in giorni diversi non è un duplicato.
@@ -1285,11 +1309,26 @@ def sono_duplicati(a, b):
     fine_a = str(a.get("dataFine") or inizio_a)
     inizio_b = str(b.get("dataInizio") or "")
     fine_b = str(b.get("dataFine") or inizio_b)
-    if all(re.fullmatch(r"\d{4}-\d{2}-\d{2}", x) for x in (inizio_a, fine_a, inizio_b, fine_b)):
-        return not (fine_a < inizio_b or fine_b < inizio_a)
+    date_valide = all(
+        re.fullmatch(r"\d{4}-\d{2}-\d{2}", x)
+        for x in (inizio_a, fine_a, inizio_b, fine_b)
+    )
+    if not date_valide:
+        # Se manca una data valida, usa l'URL identico solo come fallback prudenziale.
+        return bool(a.get("fonteUrl") and a.get("fonteUrl") == b.get("fonteUrl"))
+    if fine_a < inizio_b or fine_b < inizio_a:
+        return False
 
-    # Se manca una data valida, usa l'URL identico solo come fallback prudenziale.
-    return bool(a.get("fonteUrl") and a.get("fonteUrl") == b.get("fonteUrl"))
+    t1 = re.sub(r"[^a-z0-9\s]", "", str(a.get("titolo", "")).casefold())
+    t2 = re.sub(r"[^a-z0-9\s]", "", str(b.get("titolo", "")).casefold())
+    if SequenceMatcher(None, t1, t2).ratio() >= 0.68:
+        return True
+
+    # Le fonti ufficiali e gli aggregatori spesso usano sottotitoli diversi
+    # per lo stesso spettacolo: confronta anche la parte distintiva iniziale.
+    base_a = _titolo_base_duplicato(a.get("titolo"))
+    base_b = _titolo_base_duplicato(b.get("titolo"))
+    return len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b
 
 
 def _fonte_appartiene_a_raccolta_automatica(url):
