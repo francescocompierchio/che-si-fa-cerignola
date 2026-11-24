@@ -66,6 +66,29 @@ jobs:
             {tipoContenuto:"esperienza",dataInizio:"2000-01-01",dataFine:"2099-12-31"}
           ]);
           assert.equal(countDate("2026-11-24"), 2, "Il conteggio agenda deve escludere le esperienze permanenti");
+          const icsSource = html.match(/function creaTestoICS\(ev\)\{[\s\S]*?\n    \}/);
+          assert.ok(icsSource, "Generatore file calendario non trovato");
+          assert.ok(html.includes("function piegaRigaICS"), "Piegatura righe ICS assente");
+          const makeIcsFactory = new Function("isSafeHttpUrl", "APP_URL", "spostaGiorniISO", "piegaRigaICS", icsSource[0] + "; return creaTestoICS;");
+          const makeIcs = makeIcsFactory(url => /^https?:\/\//.test(url), "https://example.test/", moveDate, line => line);
+          const ics = makeIcs({
+            titolo: "Serata, insieme",
+            dataInizio: "2026-11-24",
+            dataFine: "2026-11-25",
+            citta: "Cerignola",
+            luogo: "Piazza; centro",
+            descrizione: "Prima riga\nSeconda riga",
+            costo: "Ingresso libero",
+            fonteUrl: "https://example.test/evento"
+          });
+          assert.ok(ics.includes("DTSTART;VALUE=DATE:20261124"), "Data iniziale ICS errata");
+          assert.ok(ics.includes("DTEND;VALUE=DATE:20261126"), "La data finale ICS deve essere esclusiva");
+          assert.ok(ics.includes("SUMMARY:Serata\\, insieme"), "Virgole del titolo non escapate");
+          assert.ok(ics.includes("Prima riga\\nSeconda riga"), "A capo descrizione non escapato");
+          assert.ok(ics.includes("LOCATION:Piazza\\; centro\\, Cerignola"), "Località ICS non escapata");
+          assert.throws(() => makeIcs({dataInizio:"domani"}), /Data evento non valida/);
+          assert.throws(() => makeIcs({dataInizio:"2026-11-25",dataFine:"2026-11-24"}), /Intervallo evento non valido/);
+
 
           assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
           const fridayShift = day => day === 6 ? -1 : day === 0 ? -2 : (5 - day + 7) % 7;
