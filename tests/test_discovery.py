@@ -1314,3 +1314,16 @@ class DeduplicazioneRomaTeatroTests(unittest.TestCase):
             "fonteUrl": "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04",
         }
         self.assertTrue(motore.sono_duplicati(aggregatore, ufficiale))
+
+
+class PugliaCultureCircuitoCerignolaTests(unittest.TestCase):
+    def test_fonte_puglia_culture_usa_pagina_completa_cerignola(self):
+        fonte = next(
+            x for x in motore.FONTI_PORTALI
+            if x["nome"] == "Puglia Culture Cerignola"
+        )
+        self.assertEqual(
+            fonte["url"],
+            "https://www.pugliaculture.it/circuito/Cerignola/",
+        )
+        self.assertEqual(fonte["prefisso_schede"], "/evento/")
