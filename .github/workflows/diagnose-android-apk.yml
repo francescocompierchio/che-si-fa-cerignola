@@ -50,7 +50,13 @@ jobs:
           apktool d -f "$APK" -o /tmp/chesifa-apk >/dev/null
           echo "--- MainActivity smali location ---"
           find /tmp/chesifa-apk/smali* -name 'MainActivity.smali' -print
-          echo "--- WebView / URL / permissions code ---"
-          grep -R -n -E 'WebView;|setJavaScriptEnabled|setDomStorageEnabled|loadUrl|loadData|NotificationManager|POST_NOTIFICATIONS|requestPermissions|setWebViewClient|setWebChromeClient' /tmp/chesifa-apk/smali* 2>/dev/null | head -100 || true
-          echo "--- Manifest ---"
+          echo "--- MainActivity JavaScript bridge setup ---"
+          ACTIVITY="$(find /tmp/chesifa-apk/smali* -name 'MainActivity.smali' -print -quit)"
+          sed -n '2815,2925p' "$ACTIVITY"
+          echo "--- App-specific native bridge classes ---"
+          grep -R -l -E 'Landroid/webkit/JavascriptInterface;|Landroid/webkit/JavascriptInterface' /tmp/chesifa-apk/smali/com/francescocompierchio 2>/dev/null | while read -r file; do
+            echo "### $file"
+            grep -n -E '^\.class|^\.method|\.annotation runtime Landroid/webkit/JavascriptInterface;|\.end annotation|const-string.*(notification|Notification|toast|Toast|share|Share|open|Open)' "$file" | head -160
+          done || true
+          echo "--- Manifest ---
           sed -n '1,220p' /tmp/chesifa-apk/AndroidManifest.xml
