@@ -510,7 +510,7 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
         parti_indirizzo = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
 
         def chiavi_segmento_indirizzo(parte):
-            parte = re.sub(r"\s*\([A-Z]{{2}}\)$", "", parte)
+            parte = re.sub(r"\s*\([A-Z]{2}\)$", "", parte)
             senza_comune = re.sub(
                 rf"\s+{re.escape(str(citta))}$", "", parte, flags=re.I
             ) if citta else parte
