@@ -1509,7 +1509,7 @@ def raccogli_da_portale_generico(session, fonte):
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
                         titolo_immagine = h1.get_text(" ", strip=True) if h1 else ""
                         if len(titolo_immagine) < 5 or titolo_immagine.casefold() in {"evento", "eventi", "news", "notizie"}:
-                            titolo_immagine = re.split(r"\b(?:quando|data|dove|luogo|orario|ore|prezzo|costo)\\b", testo_locandina, maxsplit=1, flags=re.I)[0].strip()[:85]
+                            titolo_immagine = re.split(r"\b(?:quando|data|dove|luogo|orario|ore|prezzo|costo)\b", testo_locandina, maxsplit=1, flags=re.I)[0].strip()[:85]
                         html_ocr = "<html><body><h1>" + escape(titolo_immagine) + "</h1><main><p>" + escape(testo_locandina) + "</p></main></body></html>"
                         estratti = analizza_pagina_evento(html_ocr, link, citta_default=c_def, fonte_curata_eventi=curata)
                 eventi.extend(estratti)
