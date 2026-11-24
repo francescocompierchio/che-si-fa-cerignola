@@ -53,6 +53,8 @@ FONTI_VIVA = [
 
 FONTI_PORTALI = [
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/circuito/Cerignola/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Puglia Culture Stagione Teatrale Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 30},
+    {"nome": "Puglia Culture Teatro Ragazzi Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-la-scena-dei-ragazzi-2026-27-spettacoli-per-le-scuole/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Comune Cerignola Homepage Eventi", "url": "https://comune.cerignola.fg.it/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
