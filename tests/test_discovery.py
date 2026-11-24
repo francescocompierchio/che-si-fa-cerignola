@@ -824,3 +824,55 @@ class FontiUfficialiEIndirizziRegressionTests(unittest.TestCase):
             risultato,
             "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia (FG), Puglia",
         )
+
+
+class ProtezioneManualiERetryHttpTests(unittest.TestCase):
+    def test_evento_manuale_scaduto_viene_comunque_conservato(self):
+        manuale = {
+            "tipoContenuto": "evento",
+            "manuale": True,
+            "titolo": "Evento inserito manualmente da amministratore",
+            "citta": "Cerignola",
+            "dataInizio": "2020-01-01",
+            "dataFine": "2020-01-01",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/123.html",
+        }
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump([manuale], f)
+            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+        self.assertEqual(manuali, [manuale])
+        self.assertEqual(automatici, [])
+        self.assertEqual(scaduti, 0)
+
+    def test_evento_automatico_scaduto_viene_rimosso(self):
+        automatico = {
+            "tipoContenuto": "evento",
+            "titolo": "Evento automatico ormai terminato",
+            "citta": "Cerignola",
+            "dataInizio": "2020-01-01",
+            "dataFine": "2020-01-01",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/124.html",
+        }
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = os.path.join(cartella, "eventi.json")
+            with open(percorso, "w", encoding="utf-8") as f:
+                json.dump([automatico], f)
+            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+        self.assertEqual(manuali, [])
+        self.assertEqual(automatici, [])
+        self.assertEqual(scaduti, 1)
+
+    def test_sessione_http_ha_retry_su_rate_limit_e_errori_transitori(self):
+        session = motore.crea_session_raccolta()
+        try:
+            adapter = session.get_adapter("https://")
+            retry = adapter.max_retries
+            self.assertEqual(retry.total, 3)
+            self.assertIn(429, retry.status_forcelist)
+            self.assertIn(503, retry.status_forcelist)
+            self.assertIn("GET", retry.allowed_methods)
+            self.assertTrue(retry.respect_retry_after_header)
+        finally:
+            session.close()
