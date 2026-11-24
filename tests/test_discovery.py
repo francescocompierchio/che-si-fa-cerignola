@@ -1295,3 +1295,22 @@ class ClassificazioneRomaTeatroTests(unittest.TestCase):
             motore.classifica_categoria("Gran Galà di Capodanno con Orchestra ICO Suoni del Sud - Stagione teatrale"),
             "Musica & Concerti",
         )
+
+
+class DeduplicazioneRomaTeatroTests(unittest.TestCase):
+    def test_titolo_aggregatore_con_artisti_prima_del_titolo_e_duplicato(self):
+        aggregatore = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-04",
+            "dataFine": "2026-12-04",
+            "titolo": 'Iva Zanicchi E Samuel Peron "viva La Mamma"',
+            "fonteUrl": "https://buzzeventmap.com/event/456318e1-763d-4d21-b22e-456318e1",
+        }
+        ufficiale = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-04",
+            "dataFine": "2026-12-04",
+            "titolo": "VIVA LA MAMMA! – IVA ZANICCHI",
+            "fonteUrl": "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04",
+        }
+        self.assertTrue(motore.sono_duplicati(aggregatore, ufficiale))
