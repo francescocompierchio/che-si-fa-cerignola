@@ -95,7 +95,7 @@ jobs:
           assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v8"'), "Versione cache service worker non aggiornata");
           assert.ok(sw.includes('addEventListener("notificationclick"'), "Apertura app dal tocco notifica assente");
           assert.ok(html.includes("const LOCALI_CERIGNOLA_DEFAULT"), "Rubrica locali Instagram assente");
-          assert.ok((html.match(/\\{ nome: \"/g) || []).length >= 35, "Rubrica locali incompleta");
+          assert.ok((html.split('nome: "').length - 1) >= 35, "Rubrica locali incompleta");
           assert.ok(html.includes("Trova Instagram"), "Ricerca Instagram per profili non verificati assente");
           assert.ok(html.includes("citta: \"Orta Nova\"") && html.includes("citta: \"Canosa di Puglia\"") && html.includes("citta: \"Barletta\""), "Locali dei dintorni assenti");
           assert.ok(html.includes("function creaTestoPianoSalvati"), "Funzione condivisione piano salvato assente");
