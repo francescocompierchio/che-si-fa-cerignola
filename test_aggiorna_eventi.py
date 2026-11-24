@@ -188,6 +188,25 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertIn("Cerignola", testo)
         self.assertFalse(any("Palette images with Transparency" in str(w.message) for w in avvisi))
 
+    def test_ocr_rispetta_budget_timeout_e_non_blocca(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow non installato")
+        buffer = io.BytesIO()
+        Image.new("RGB", (50, 50)).save(buffer, format="PNG")
+        session = Mock()
+        session._csf_ocr_budget = {"rimanenti": 1}
+        session.get.return_value = SimpleNamespace(status_code=200, headers={"Content-Type":"image/png"}, content=buffer.getvalue())
+        ocr = Mock(side_effect=RuntimeError("timeout simulato"))
+        html = '<main><img src="https://example.test/logo.png"><img src="https://example.test/poster.png"><img src="https://example.test/secondo.png"></main>'
+        with patch.dict(sys.modules, {"pytesseract": SimpleNamespace(image_to_string=ocr)}):
+            self.assertEqual(crawler.estrai_testo_locandine(session, html), "")
+            self.assertEqual(crawler.estrai_testo_locandine(session, html), "")
+        self.assertEqual(session.get.call_count, 1)
+        self.assertEqual(session.get.call_args.args[0], "https://example.test/poster.png")
+        self.assertEqual(ocr.call_args.kwargs["timeout"], crawler.OCR_TIMEOUT_SECONDI)
+
     def test_ocr_locandine_senza_immagini_non_blocca(self):
         self.assertEqual(crawler.estrai_testo_locandine(None), "")
 

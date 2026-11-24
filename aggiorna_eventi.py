@@ -8,7 +8,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from threading import Lock
+from threading import Lock, BoundedSemaphore
 from difflib import SequenceMatcher
 from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
@@ -236,6 +236,10 @@ def oggi_dt():
 STATISTICHE_FONTI = {}
 _LOCK_STATISTICHE = Lock()
 MAX_WORKER_FONTI = 4
+MAX_OCR_PER_FONTE = 6
+OCR_TIMEOUT_SECONDI = 8
+OCR_MAX_PIXEL = 20_000_000
+_OCR_SLOT = BoundedSemaphore(2)
 
 
 def registra_statistica_fonte(nome, **dati):
@@ -1343,8 +1347,13 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
                 url_immagine = urljoin(base_url, url_immagine)
                 if url_immagine.startswith(("http://", "https://")):
                     immagini.append(url_immagine)
-        for img in soup.find_all("img"):
-            url_immagine = (img.get("src") or img.get("data-src") or "").strip()
+        # Evita loghi, banner e immagini di navigazione estranee alla scheda.
+        contenuto = soup.find("article") or soup.find("main")
+        for img in (contenuto.find_all("img") if contenuto else soup.find_all("img")):
+            segnali = " ".join(str(img.get(k, "")) for k in ("alt", "class", "id", "src", "data-src"))
+            if re.search(r"\b(?:logo|avatar|banner|icon|favicon|sprite|advertisement|gravatar)\b", segnali, re.I):
+                continue
+            url_immagine = (img.get("data-src") or img.get("src") or "").strip()
             if url_immagine:
                 url_immagine = urljoin(base_url, url_immagine)
                 if url_immagine.startswith(("http://", "https://")):
@@ -1359,17 +1368,28 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
         return ""
     testi = []
     for url_immagine in immagini:
+        # Il budget è assegnato per fonte dal coordinatore. L'uso diretto resta compatibile.
+        budget = getattr(session, "_csf_ocr_budget", None)
+        if isinstance(budget, dict):
+            if budget["rimanenti"] <= 0:
+                break
+            budget["rimanenti"] -= 1
         try:
-            risposta = session.get(url_immagine, timeout=(5, 10))
+            risposta = session.get(url_immagine, timeout=(4, 6))
             if risposta.status_code != 200 or not risposta.headers.get("Content-Type", "").lower().startswith("image/"):
                 continue
             contenuto = risposta.content
             if not contenuto or len(contenuto) > 8 * 1024 * 1024:
                 continue
-            immagine = Image.open(io.BytesIO(contenuto))
-            immagine = ImageOps.exif_transpose(immagine.convert("RGBA")).convert("RGB")
-            immagine.thumbnail((2200, 2200))
-            testo = pytesseract.image_to_string(immagine, lang="ita+eng", config="--psm 6")
+            with Image.open(io.BytesIO(contenuto)) as originale:
+                if originale.width * originale.height > OCR_MAX_PIXEL:
+                    continue
+                originale.thumbnail((1800, 1800))
+                immagine = ImageOps.exif_transpose(originale.convert("RGBA")).convert("RGB")
+            # Tesseract è CPU-bound: limita il numero di processi simultanei
+            # e termina ogni singolo OCR che supera il tempo massimo.
+            with _OCR_SLOT:
+                testo = pytesseract.image_to_string(immagine, lang="ita+eng", config="--psm 6", timeout=OCR_TIMEOUT_SECONDI)
             testo = re.sub(r"\s+", " ", testo).strip()
             if len(testo) >= 20:
                 testi.append(testo)
@@ -1845,13 +1865,16 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI):
             for indice, raccoglitore, fonte in gruppo:
                 nome = fonte["nome"]
                 inizio = time.monotonic()
+                session._csf_ocr_budget = {"rimanenti": MAX_OCR_PER_FONTE}
                 try:
                     eventi = raccoglitore(session, fonte)
                 except Exception as exc:
                     eventi = []
                     registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], eventiEstratti=0)
                     print(f"{nome}: errore isolato: {str(exc)[:100]}", flush=True)
-                registra_statistica_fonte(nome, durataSecondi=round(time.monotonic() - inizio, 2))
+                registra_statistica_fonte(nome, durataSecondi=round(time.monotonic() - inizio, 2),
+                                          tentativiOCR=MAX_OCR_PER_FONTE - session._csf_ocr_budget["rimanenti"])
+                print(f"{nome}: completata in {time.monotonic() - inizio:.1f}s", flush=True)
                 risultati.append((indice, eventi))
         return risultati
 
