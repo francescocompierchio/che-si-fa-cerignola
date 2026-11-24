@@ -1766,8 +1766,7 @@ def evento_movida_documentato(ev):
 
 
 def analizza_xceed(html_text, url, citta):
-    """Biglietteria nightlife: scheda individuale, data e sede esplicite.
-    Niente date estratte da menu, eventi correlati o testo promozionale."""
+    """Scheda individuale Xceed: verifica data principale e città dell'indirizzo."""
     if not re.fullmatch(r"/it/[^/]+/event/[^/]+/\d+/?", urlparse(url).path):
         return []
     soup = BeautifulSoup(html_text, "html.parser")
@@ -1775,15 +1774,42 @@ def analizza_xceed(html_text, url, citta):
     if not h1:
         return []
     titolo = h1.get_text(" ", strip=True)
-    # Il blocco immediatamente successivo all'H1 contiene la data della scheda.
     mesi = "|".join(MESI_IT)
     pat = rf"\b(\d{{1,2}})\s+({mesi})\s+(20\d{{2}})\b"
-    righe = list(soup.stripped_strings)
-    try:
-        pos = righe.index(titolo)
-    except ValueError:
-        return []
-    prima = " ".join(righe[pos+1:pos+7])
+    # Non dipendere da una singola stringa per H1: i componenti web possono
+    # dividere titolo, data, orario e intestazioni in più nodi.
+    def sezione(etichette, max_nodi=30):
+        for tag in soup.find_all(["h2","h3","h4","h5","h6","div","span","p","strong"]):
+            if tag.get_text(" ", strip=True).casefold().strip(": ") not in etichette:
+                continue
+            pezzi = []
+            for nodo in tag.next_elements:
+                if nodo is tag or tag in getattr(nodo, "parents", []):
+                    continue
+                if getattr(nodo,"name",None) in {"h1","h2","h3","h4","h5","h6"} and pezzi:
+                    break
+                if isinstance(nodo, str) and nodo.strip():
+                    if nodo.strip().casefold() in {"info","biglietti","artisti","location","indirizzo","address","venue","luogo"} and pezzi:
+                        break
+                    pezzi.append(nodo.strip())
+                    if len(pezzi) >= max_nodi:
+                        break
+            if pezzi:
+                return " ".join(pezzi)
+        return ""
+    pezzi = []
+    for nodo in h1.next_elements:
+        if h1 in getattr(nodo,"parents",[]):
+            continue
+        if getattr(nodo,"name",None) in {"h1","h2","h3","h4"} and pezzi:
+            break
+        if isinstance(nodo,str) and nodo.strip():
+            if nodo.strip().casefold() in {"info","biglietti","location"}:
+                break
+            pezzi.append(nodo.strip())
+            if len(pezzi) >= 15:
+                break
+    prima = " ".join(pezzi)
     m = re.search(pat, prima, re.I)
     if not m:
         return []
@@ -1794,27 +1820,23 @@ def analizza_xceed(html_text, url, citta):
     for m2 in re.finditer(pat, titolo, re.I):
         if (int(m2.group(1)), MESI_IT[m2.group(2).lower()], int(m2.group(3))) != (dt.day, dt.month, dt.year):
             return []
-    def valore_etichetta(etichette):
-        for idx, riga in enumerate(righe[:-1]):
-            if riga.casefold().strip(": ") in etichette:
-                return righe[idx+1]
-        return ""
-    luogo = valore_etichetta({"location", "luogo", "venue"})
-    indirizzo = valore_etichetta({"indirizzo", "address"})
+    luogo = sezione({"location","luogo","venue"}, 5)
+    indirizzo = sezione({"indirizzo","address"}, 5)
     if not luogo or not indirizzo or _comune_nel_testo(indirizzo) != citta:
         return []
-    info = valore_etichetta({"info", "informazioni", "description"})
-    # Rileva il riuso di una locandina con la stessa data ma anno differente.
+    luogo = re.sub(rf",\s*{re.escape(citta)}\s*$","",luogo,flags=re.I)
+    info = sezione({"info","informazioni","description"}, 8)
     for old in re.finditer(pat, info, re.I):
         if int(old.group(1)) == dt.day and MESI_IT[old.group(2).lower()] == dt.month and int(old.group(3)) != dt.year:
             return []
     ora = re.search(r"\b(?:alle ore|ore)\s*([01]\d|2[0-3]):([0-5]\d)", prima, re.I)
     d_txt = formatta_data_italiano(data,data) + (" · Ore "+ora.group(1)+":"+ora.group(2) if ora else "")
-    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "dataInizio":data, "dataFine":data, "dataTesto":d_txt, "luogo":luogo, "indirizzoMappa":indirizzo, "descrizione":("Serata in club. " + info)[:220], "fonteUrl":url, "costo":"Consulta la biglietteria"}, fonte_curata_eventi=True)
+    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "dataInizio":data, "dataFine":data, "dataTesto":d_txt, "luogo":luogo[:120], "indirizzoMappa":indirizzo[:200], "descrizione":("Serata in club. " + info)[:220], "fonteUrl":url, "costo":"Consulta la biglietteria"}, fonte_curata_eventi=True)
     if not ev or evento_non_attivo(ev):
         return []
     ev["categoria"] = "Locali & Serate"
     return [ev]
+
 
 
 def analizza_ticketsms(html_text, url, citta, luogo):

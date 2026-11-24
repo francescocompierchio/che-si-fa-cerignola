@@ -28,6 +28,8 @@ class QualitaEventiTests(unittest.TestCase):
         url = "https://xceed.me/it/barletta/event/serata/1234"
         html = f"<h1>Classic Saturday DJ set</h1><p>{date} alle ore 22:00</p><h2>Info</h2><p>Una serata in discoteca con DJ set e musica.</p><h2>Location</h2><p>Atrio22, Barletta</p><h2>Indirizzo</h2><p>Via Leonardo da Vinci 15, Barletta</p>"
         ev = crawler.analizza_xceed(html,url,"Barletta")
+        html_nodi = html.replace("Classic Saturday DJ set","<span>Classic Saturday</span><span>DJ set</span>").replace("alle ore 22:00","<span>alle ore</span><span>22:00</span>")
+        self.assertEqual(len(crawler.analizza_xceed(html_nodi,url,"Barletta")),1)
         self.assertEqual(len(ev),1)
         self.assertEqual(ev[0]["dataInizio"],data.strftime("%Y-%m-%d"))
         self.assertEqual(ev[0]["categoria"],"Locali & Serate")
