@@ -99,7 +99,10 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(all(x.get("fonteUrl") for x in catalogo if any(k in x["titolo"] for k in ("Ripa Alta", "Faeto", "Foresta Umbra", "Oasi Lago Salso"))))
 
     def test_ocr_gestisce_immagini_palette_con_trasparenza(self):
-        from PIL import Image
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow non installato in questo workflow")
 
         immagine = Image.new("P", (40, 40), 0)
         immagine.putpalette([0, 0, 0, 255, 255, 255] + [0, 0, 0] * 254)
