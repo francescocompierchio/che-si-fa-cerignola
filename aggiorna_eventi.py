@@ -1358,7 +1358,19 @@ def sono_duplicati(a, b):
     # per lo stesso spettacolo: confronta anche la parte distintiva iniziale.
     base_a = _titolo_base_duplicato(a.get("titolo"))
     base_b = _titolo_base_duplicato(b.get("titolo"))
-    return len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b
+    if len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b:
+        return True
+
+    # Alcuni aggregatori mettono il nome degli artisti prima del titolo,
+    # mentre la fonte ufficiale fa il contrario: confronta i token distintivi.
+    parole_a = set(re.findall(r"\b[a-z0-9à-ù]{4,}\b", base_a))
+    parole_b = set(re.findall(r"\b[a-z0-9à-ù]{4,}\b", base_b))
+    comuni = parole_a & parole_b
+    if not parole_a or not parole_b or len(comuni) < 2:
+        return False
+    copertura_breve = len(comuni) / min(len(parole_a), len(parole_b))
+    copertura_lunga = len(comuni) / max(len(parole_a), len(parole_b))
+    return copertura_breve >= 0.75 and copertura_lunga >= 0.30
 
 
 def _fonte_appartiene_a_raccolta_automatica(url):
