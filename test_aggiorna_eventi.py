@@ -103,7 +103,7 @@ class QualitaEventiTests(unittest.TestCase):
         )
         self.assertEqual(len(eventi), 1)
         self.assertEqual(eventi[0]["titolo"], "BREAKING BRECHT")
-        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale Saverio Mercadante")
+        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale S. Mercadante")
         self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
 
     def test_scheda_puglia_culture_con_metadati_fuori_main(self):
