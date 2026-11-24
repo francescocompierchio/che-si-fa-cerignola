@@ -38,7 +38,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it"
 )
 
 FONTI_VIVA = [
@@ -57,6 +57,8 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome":"TicketSms Idol Club Bisceglie","url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
+    {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Cafe des Artistes","url":"https://manfredoniaeventi.com/luogo/cafe-des-artistes/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -103,6 +105,10 @@ FONTI_PORTALI = [
 ]
 
 FONTI_SOCIAL_RSS = [
+    {"nome":"TicketSms discoteche BAT Capitanata","url":"https://news.google.com/rss/search?q=site%3Aticketsms.it%2Fevent%20(Bisceglie%20OR%20Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(club%20OR%20party%20OR%20discoteca%20OR%20DJ)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"DICE e promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Adice.fm%20(Barletta%20OR%20Trani%20OR%20Foggia%20OR%20Manfredonia%20OR%20Bisceglie)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Ticketoo e rivendita serate","url":"https://news.google.com/rss/search?q=site%3Aticketoo.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Bisceglie)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Oazis musica live BAT","url":"https://news.google.com/rss/search?q=site%3Aoazis.app%20(Barletta%20OR%20Trani%20OR%20Bisceglie%20OR%20Manfredonia)%20(live%20OR%20DJ%20OR%20jam)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"2night BAT weekend","url":"https://news.google.com/rss/search?q=site%3A2night.it%20(Barletta%20OR%20Trani%20OR%20Bisceglie%20OR%20Canosa)%20(%22dj%20set%22%20OR%20%22dinner%20show%22%20OR%20karaoke%20OR%20discoteca)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Resident Advisor costa","url":"https://news.google.com/rss/search?q=site%3Ara.co%2Fevents%20(Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"KODO promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Akodocollective.it%20(Barletta%20OR%20Trani%20OR%20Foggia)%20(DJ%20OR%20party%20OR%20club)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
@@ -1811,6 +1817,39 @@ def analizza_xceed(html_text, url, citta):
     return [ev]
 
 
+def analizza_ticketsms(html_text, url, citta, luogo):
+    """Solo schede TicketSms di club noto: data del permalink e data visibile concordanti."""
+    if not _host_appartiene(url, "ticketsms.it"):
+        return []
+    path = urlparse(url).path
+    m = re.search(r"-(\d{2})-(\d{2})-(20\d{2})/?$", path)
+    if not re.match(r"^/(?:it/)?event/[^/]+/?$", path, re.I) or not m:
+        return []
+    dt = _costruisci_data_sicura(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    if not dt or dt.strftime("%Y-%m-%d") < oggi_iso():
+        return []
+    soup = BeautifulSoup(html_text, "html.parser")
+    if registra_stati_negativi(html_text, url):
+        return []
+    h1 = soup.find("h1")
+    if not h1:
+        return []
+    titolo = h1.get_text(" ", strip=True)
+    testo = soup.get_text(" ", strip=True)
+    mesi = "|".join(MESI_IT)
+    data_testo = re.search(rf"\b(\d{{1,2}})\s+({mesi})\s+(20\d{{2}})\s*/\s*([01]\d|2[0-3]):([0-5]\d)\b", testo, re.I)
+    if not data_testo or (int(data_testo.group(1)), MESI_IT[data_testo.group(2).lower()], int(data_testo.group(3))) != (dt.day, dt.month, dt.year):
+        return []
+    if not re.search(rf"{re.escape(luogo)}\s*/\s*{re.escape(citta)}\b", testo, re.I):
+        return []
+    data = dt.strftime("%Y-%m-%d")
+    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{luogo}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+" · Ore "+data_testo.group(4)+":"+data_testo.group(5), "descrizione":"Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.", "costo":"Consulta la biglietteria", "fonteUrl":url}, fonte_curata_eventi=True)
+    if not ev:
+        return []
+    ev["categoria"] = "Locali & Serate"
+    return [ev]
+
+
 def raccogli_da_portale_generico(session, fonte):
     eventi = []
     nome = fonte["nome"]
@@ -1868,7 +1907,10 @@ def raccogli_da_portale_generico(session, fonte):
             # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
             # in quel caso il prefisso configurato è una prova sufficiente.
             prefisso_schede = str(fonte.get("prefisso_schede") or "").lower()
-            if parametro_scheda:
+            if fonte.get("ticketsms"):
+                if not re.match(r"^/(?:it/)?event/[^/]+/?$", p_low) or not re.search(r"-\d{2}-\d{2}-20\d{2}/?$", p_low):
+                    continue
+            elif parametro_scheda:
                 # Alcuni calendari ufficiali pubblicano le schede come query
                 # sulla stessa homepage: ?mec-events=slug.
                 if not valore_scheda:
@@ -1903,7 +1945,9 @@ def raccogli_da_portale_generico(session, fonte):
                 rp.encoding = rp.apparent_encoding or "utf-8"
                 if "evento si è già concluso" in rp.text.lower() or "fa parte del nostro archivio" in rp.text.lower():
                     continue
-                if fonte.get("xceed"):
+                if fonte.get("ticketsms"):
+                    estratti = analizza_ticketsms(rp.text, link, c_def, fonte["luogo_atteso"])
+                elif fonte.get("xceed"):
                     if registra_stati_negativi(rp.text, link):
                         continue
                     estratti = analizza_xceed(rp.text, link, c_def)
@@ -1912,7 +1956,7 @@ def raccogli_da_portale_generico(session, fonte):
                     estratti = analizza_pagina_evento("".join(str(x) for x in markup), link, citta_default="", fonte_curata_eventi=True)
                 else:
                     estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
-                if not estratti and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
+                if not estratti and not fonte.get("ticketsms") and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
                     testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
                     if testo_locandina:
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
@@ -2174,6 +2218,13 @@ def evidenze_fonti(eventi, riferimento):
     return ris
 
 
+def evento_sede_riservata(ev):
+    """Non pubblicare una localizzazione inventata per l'opening ECHOES.
+    La fonte RA indica Secret Location (BT), mentre altre indicano comuni diversi."""
+    t = str(ev.get("titolo") or "").casefold()
+    return "stefano andriezzi" in t and "opening" in t and ev.get("dataInizio") == "2026-11-28"
+
+
 def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
@@ -2203,8 +2254,8 @@ def esegui_aggiornamento():
     _scrivi_json_atomico(percorso_stato, memoria)
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
-    precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e)]
-    nuovi_raccolti = [e for e in nuovi_raccolti if not evento_non_attivo(e)]
+    precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e)]
+    nuovi_raccolti = [e for e in nuovi_raccolti if not evento_non_attivo(e) and not evento_sede_riservata(e)]
     esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []

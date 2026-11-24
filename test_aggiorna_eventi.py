@@ -9,6 +9,18 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_ticketsms_concordanza_data_luogo(self):
+        dt = crawler.oggi_dt() + crawler.timedelta(days=3)
+        mese = next(k for k,v in crawler.MESI_IT.items() if v == dt.month)
+        url = "https://www.ticketsms.it/it/event/Golden-Idol-Club-" + dt.strftime("%d-%m-%Y")
+        html = f"<h1>Golden Opening Party</h1><p>{dt.day} {mese} {dt.year} / 22:00</p><h4>Idol Club / Bisceglie</h4>"
+        self.assertEqual(len(crawler.analizza_ticketsms(html,url,"Bisceglie","Idol Club")),1)
+        self.assertEqual(crawler.analizza_ticketsms(html,url,"Trani","Idol Club"),[])
+        self.assertEqual(crawler.analizza_ticketsms(html.replace("22:00",""),url,"Bisceglie","Idol Club"),[])
+    def test_sede_riservata_non_attribuita_a_comune(self):
+        self.assertTrue(crawler.evento_sede_riservata({"titolo":"ECHOES Opening Winter Season with Stefano Andriezzi","dataInizio":"2026-11-28"}))
+        self.assertFalse(crawler.evento_sede_riservata({"titolo":"Habibi","dataInizio":"2026-11-28"}))
+
     def test_xceed_scheda_data_e_sede(self):
         data = crawler.oggi_dt() + crawler.timedelta(days=3)
         mese = next(k for k,v in crawler.MESI_IT.items() if v == data.month)
