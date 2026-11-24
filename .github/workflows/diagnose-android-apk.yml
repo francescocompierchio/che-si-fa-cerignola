@@ -1,0 +1,45 @@
+name: Diagnostica APK Android
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app-release.apk"
+      - ".github/workflows/diagnose-android-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Configure Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android build tools
+        run: sdkmanager "build-tools;35.0.0"
+      - name: Inspect application identity, manifest and signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK="app-release.apk"
+          echo "===== APK FILE ====="
+          ls -lh "$APK"
+          sha256sum "$APK"
+          echo "===== PACKAGE / VERSION / SDK / LAUNCHER ====="
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | grep -E "^(package:|sdkVersion:|targetSdkVersion:|application-label:|launchable-activity:|uses-permission:)" || true
+          echo "===== MANIFEST APPLICATION ID ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest application-id "$APK"
+          echo "===== MANIFEST VERSION ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-code "$APK"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-name "$APK" || true
+          echo "===== SIGNATURE CERTIFICATE ====="
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK" || true
+          echo "===== APK CONTENTS (TOP LEVEL) ====="
+          unzip -l "$APK" | sed -n '1,100p'
+          echo "===== DEX PACKAGE SUMMARY ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" dex packages --defined-only "$APK" | sed -n '1,120p'
