@@ -43,6 +43,40 @@ class QualitaEventiTests(unittest.TestCase):
             "/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/"
         ))
 
+    def test_scheda_puglia_culture_con_metadati_fuori_main(self):
+        html = """
+        <html><body>
+          <main><h1>MIO, SEMPRE, MIO ANDREA</h1></main>
+          <section class="event-meta">
+            <time datetime="2027-01-29T21:00:00+01:00">venerdì 29 gennaio 2027</time>
+            <p>Prosa</p>
+            <p>Teatro: Teatro Comunale S. Mercadante - Cerignola</p>
+            <p>Prezzo: a partire da € 12</p>
+            <p>Un progetto intenso che intreccia parole, musica e immagini.</p>
+          </section>
+        </body></html>
+        """
+        eventi = crawler.analizza_pagina_evento(
+            html,
+            "https://www.pugliaculture.it/evento/mio-sempre-mio-andrea/",
+            citta_default="Cerignola",
+            fonte_curata_eventi=True,
+        )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2027-01-29")
+        self.assertEqual(eventi[0]["citta"], "Cerignola")
+        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale S. Mercadante")
+        self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
+
+    def test_categoria_attivita_famiglie_e_natura(self):
+        self.assertEqual(crawler.classifica_categoria("Laboratorio creativo per bambini e famiglie"), "Famiglie & Bambini")
+        self.assertEqual(crawler.classifica_categoria("Escursione guidata lungo l'Ofanto"), "Natura & Escursioni")
+
+    def test_feed_social_pubblici_configurati(self):
+        self.assertEqual(len(crawler.FONTI_SOCIAL_RSS), 3)
+        self.assertTrue(any("instagram.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
+        self.assertTrue(any("facebook.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
+
     def test_indirizzo_concatenato_due_volte(self):
         indirizzo = (
             "Via Boccaccio 42/44, Barletta. Barletta, "
