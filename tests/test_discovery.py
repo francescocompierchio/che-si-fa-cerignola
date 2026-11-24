@@ -767,3 +767,60 @@ class RevisioneAffidabilitaCompletaTests(unittest.TestCase):
         self.assertEqual(manuali, [altro_contenuto])
         self.assertEqual(automatici, [])
         self.assertEqual(scaduti, 0)
+
+
+class FontiUfficialiEIndirizziRegressionTests(unittest.TestCase):
+    def test_fonte_teatro_usa_la_homepage_ufficiale_con_schede_evento(self):
+        fonte = next(
+            x for x in motore.FONTI_PORTALI
+            if x["nome"] == "Teatro Mercadante Cerignola"
+        )
+        self.assertEqual(fonte["url"], "https://www.teatromercadantecerignola.it/")
+        self.assertEqual(fonte["prefisso_schede"], "/evento/")
+
+    def test_host_di_fonte_generica_non_accetta_dominio_simile_malevolo(self):
+        self.assertFalse(motore._host_appartiene(
+            "https://teatromercadantecerignola.it.evil.example/evento/falso",
+            "teatromercadantecerignola.it",
+        ))
+        self.assertTrue(motore._host_appartiene(
+            "https://www.teatromercadantecerignola.it/evento/vero",
+            "teatromercadantecerignola.it",
+        ))
+
+    def test_estrazione_sede_ufficiale_mercadante_senza_etichetta_luogo(self):
+        html = """
+        <html><body><main>
+          <h1>BREAKING BRECHT – Lo strano caso di Bertolt Brecht</h1>
+          <p>domenica 06 Dicembre 2026</p>
+          <p>ore 21:00</p>
+          <p>Teatro Comunale Saverio Mercadante</p>
+          <p>piazza G. Matteotti, 1</p>
+          <p>Cerignola FG</p>
+          <p>Spettacolo teatrale di prosa con Veronica Pivetti e Manuela Mandracchia.</p>
+        </main></body></html>
+        """
+        eventi = motore.analizza_pagina_evento(
+            html,
+            "https://www.teatromercadantecerignola.it/evento/breaking-brecht/",
+            citta_default="Cerignola",
+            fonte_curata_eventi=True,
+        )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["luogo"], "Teatro Comunale Saverio Mercadante")
+        self.assertEqual(
+            eventi[0]["indirizzoMappa"],
+            "Teatro Comunale Saverio Mercadante, Piazza G. Matteotti, 1, Cerignola",
+        )
+        self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
+
+    def test_indirizzo_aggregatore_rimuove_citta_ripetuta_e_prefisso(self):
+        risultato = motore.normalizza_indirizzo_mappa(
+            "Foggia, Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia (FG), Foggia, Puglia",
+            "Teatro Umberto Giordano",
+            "Foggia",
+        )
+        self.assertEqual(
+            risultato,
+            "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia (FG), Puglia",
+        )
