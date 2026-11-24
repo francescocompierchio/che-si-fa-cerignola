@@ -844,7 +844,9 @@
 .notification-reminder-count{color:#64748b;font-size:.72rem;font-weight:700}
 .notification-toggle{border:0;border-radius:11px;background:#1746a2;color:#fff;padding:9px 14px;font-size:.78rem;font-weight:800;cursor:pointer;box-shadow:0 4px 10px rgba(23,70,162,.15)}
 .notification-toggle:disabled{opacity:.55;cursor:not-allowed}
-.notifications-note{margin:0;padding-top:8px;border-top:1px solid rgba(203,216,238,.75);color:#778399;font-size:.67rem;line-height:1.4}
+.notification-open-chrome{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;gap:6px;border:1px solid #c7d8f5;border-radius:10px;background:#edf4ff;color:#1746a2;padding:8px 11px;font-size:.74rem;font-weight:800;text-decoration:none}
+.notification-open-chrome[hidden]{display:none!important}
+.notifications-note{}margin:0;padding-top:8px;border-top:1px solid rgba(203,216,238,.75);color:#778399;font-size:.67rem;line-height:1.4}
 .btn-reminder{border:1px solid #d7e2f2;background:#f3f7ff;color:#1746a2}
 .btn-reminder.active{background:#e8f7ef;border-color:#a8dec0;color:#12643b}
 /* Nuova esperienza interattiva */
@@ -942,7 +944,8 @@
         <span id="notification-reminder-count" class="notification-reminder-count">0 promemoria</span>
         <button type="button" id="btn-notify-toggle" class="notification-toggle">Attiva avvisi</button>
       </div>
-      <p class="notifications-note">Nota: questi sono avvisi locali. Le nuove pubblicazioni vengono controllate alla riapertura dell'app; i promemoria vengono inviati nel giorno dell'evento al primo accesso. Non sono notifiche push quando l'app è chiusa.</p>
+      <a id="notification-open-chrome" class="notification-open-chrome" hidden href="intent://francescocompierchio.github.io/che-si-fa-cerignola/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Ffrancescocompierchio.github.io%2Fche-si-fa-cerignola%2F;end">Apri in Chrome ↗</a>
+      <p class="notifications-note">Su Android le notifiche richiedono Chrome o un browser compatibile e il Service Worker. Se hai aperto la piattaforma da Instagram, WhatsApp o un altro browser interno, usa “Apri in Chrome”. Gli avvisi restano locali: le novità vengono controllate alla riapertura dell’app e i promemoria nel giorno dell’evento al primo accesso; non sono notifiche push quando l’app è chiusa.</p>
     </section>
 
     <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
@@ -1460,6 +1463,27 @@
         .filter(ev => String(ev.dataFine || ev.dataInizio) >= oggi)
         .map(ev => ({ chiave: chiaveEvento(ev), titolo: ev.titolo || "Evento", dataInizio: ev.dataInizio, dataFine: ev.dataFine || ev.dataInizio }));
     }
+    function valutaSupportoNotifiche(contesto) {
+      const c = contesto || {};
+      if (!c.sicuro) return { supportato: false, codice: "https" };
+      if (!c.api || !c.richiediPermesso) return { supportato: false, codice: "api" };
+      if (c.android && (!c.serviceWorker || !c.notificaPersistente)) {
+        return { supportato: false, codice: "service-worker" };
+      }
+      return { supportato: true, codice: "ok" };
+    }
+    function supportoNotificheCorrente() {
+      const android = /Android/i.test(navigator.userAgent || "");
+      return valutaSupportoNotifiche({
+        sicuro: Boolean(window.isSecureContext),
+        api: "Notification" in window,
+        richiediPermesso: typeof Notification !== "undefined" && typeof Notification.requestPermission === "function",
+        android,
+        serviceWorker: "serviceWorker" in navigator,
+        notificaPersistente: typeof ServiceWorkerRegistration !== "undefined" &&
+          typeof ServiceWorkerRegistration.prototype.showNotification === "function"
+      });
+    }
     async function mostraNotificaDispositivo(titolo, corpo, tag) {
       if (!notificheAttive || typeof Notification === "undefined" || Notification.permission !== "granted") return false;
       const opzioni = {
@@ -1470,6 +1494,7 @@
         renotify: false,
         data: { url: APP_URL }
       };
+      const android = /Android/i.test(navigator.userAgent || "");
       try {
         if ("serviceWorker" in navigator) {
           const registrazione = await navigator.serviceWorker.ready;
@@ -1477,6 +1502,12 @@
             await registrazione.showNotification(titolo, opzioni);
             return true;
           }
+        }
+        if (android) {
+          console.warn("Notifica Android non inviata: Service Worker non disponibile.");
+          const stato = document.getElementById("notification-status");
+          if (stato) stato.textContent = "Permesso presente, ma questo browser non ha attivato il servizio necessario. Apri la piattaforma in Chrome.";
+          return false;
         }
         new Notification(titolo, opzioni);
         return true;
@@ -1489,15 +1520,24 @@
       const stato = document.getElementById("notification-status");
       const pulsante = document.getElementById("btn-notify-toggle");
       const conta = document.getElementById("notification-reminder-count");
+      const linkChrome = document.getElementById("notification-open-chrome");
       if (!stato || !pulsante || !conta) return;
       const promemoria = leggiListaLocale(PROMEMORIA_KEY).filter(p => p && p.dataFine >= oggi);
       conta.textContent = promemoria.length + " " + (promemoria.length === 1 ? "promemoria" : "promemoria");
-      if (!("Notification" in window) || !window.isSecureContext) {
-        stato.textContent = "Questo browser o contesto non supporta le notifiche. Puoi comunque usare agenda e calendario.";
+      const supporto = supportoNotificheCorrente();
+      if (!supporto.supportato) {
+        const messaggi = {
+          https: "Le notifiche funzionano solo in una pagina sicura HTTPS. Riapri l’indirizzo ufficiale della piattaforma.",
+          api: "Questa finestra non espone le notifiche (può succedere nei browser interni di social e chat). Apri la piattaforma in Chrome.",
+          "service-worker": "Su Android serve un browser che supporti le notifiche persistenti tramite Service Worker. Apri la piattaforma in Chrome."
+        };
+        stato.textContent = messaggi[supporto.codice] || "Questo browser non supporta le notifiche.";
         pulsante.disabled = true;
-        pulsante.textContent = "Non supportate";
+        pulsante.textContent = "Non disponibili qui";
+        if (linkChrome) linkChrome.hidden = !/Android/i.test(navigator.userAgent || "");
         return;
       }
+      if (linkChrome) linkChrome.hidden = true;
       if (Notification.permission === "denied") {
         stato.textContent = "Permesso bloccato dal browser: abilita le notifiche dalle impostazioni del sito o dell'app.";
         pulsante.disabled = true;
@@ -1601,8 +1641,10 @@
       }
     }
     async function gestisciAttivazioneNotifiche() {
-      if (!("Notification" in window) || !window.isSecureContext) {
-        mostraToast("Notifiche non supportate da questo browser");
+      const supporto = supportoNotificheCorrente();
+      if (!supporto.supportato) {
+        aggiornaPannelloNotifiche();
+        mostraToast(/Android/i.test(navigator.userAgent || "") ? "Apri Che Si Fa in Chrome per attivare gli avvisi" : "Notifiche non disponibili in questa finestra");
         return;
       }
       if (notificheAttive && Notification.permission === "granted") {
