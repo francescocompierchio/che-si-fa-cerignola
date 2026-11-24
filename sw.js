@@ -6,6 +6,7 @@ const SHELL_FILES = [
   new URL("manifest.json", self.registration.scope).href,
   new URL("event-tools.js", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
+  new URL("app-extras.js", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 

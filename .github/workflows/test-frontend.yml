@@ -9,6 +9,7 @@ on:
       - "genera_pagine_eventi.js"
       - "event-tools.js"
       - "metrics.js"
+      - "app-extras.js"
       - "admin.html"
       - "privacy.html"
       - "eventi/**"
@@ -219,4 +220,19 @@ jobs:
           assert.ok(metrics.includes('choice==="yes"'));
           assert.ok(html.includes('window.CsfMetrics?.allowed()'));
           new Function(metrics);
+          NODE
+
+      - name: Verifica estrazione locandina e promemoria
+        run: |
+          node <<'NODE'
+          const assert=require("node:assert/strict");
+          const u=require("./app-extras.js");
+          assert.equal(u.parsePoster("SABATO 28 NOVEMBRE 2026 START ORE 21:00").date,"2026-11-28");
+          assert.equal(u.parsePoster("START ORE 21:00").time,"Ore 21:00");
+          assert.equal(u.parsePoster("31/02/2026").date,"");
+          assert.equal(u.parsePoster("28 novembre").date,"");
+          const ics=u.fridayCalendar("2026-11-24","20261124T120000Z");
+          assert.ok(ics.includes("DTSTART:20261127T180000"));
+          assert.ok(ics.includes("RRULE:FREQ=WEEKLY;BYDAY=FR"));
+          assert.ok(ics.includes("BEGIN:VALARM"));
           NODE
