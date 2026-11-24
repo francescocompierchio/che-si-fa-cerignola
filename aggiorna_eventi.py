@@ -1357,7 +1357,7 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
             if not contenuto or len(contenuto) > 8 * 1024 * 1024:
                 continue
             immagine = Image.open(io.BytesIO(contenuto))
-            immagine = ImageOps.exif_transpose(immagine).convert("RGB")
+            immagine = ImageOps.exif_transpose(immagine.convert("RGBA")).convert("RGB")
             immagine.thumbnail((2200, 2200))
             testo = pytesseract.image_to_string(immagine, lang="ita+eng", config="--psm 6")
             testo = re.sub(r"\s+", " ", testo).strip()
