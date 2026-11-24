@@ -1332,6 +1332,7 @@
 
     const oggi = getDataLocaleOggi();
     let eventiDaJson = [];
+    let esperienzeDaJson = [];
     let eventiDaFirebase = [];
     let tuttiEventiAttivi = [];
     let filtroAttivo = "ALL";
@@ -1361,11 +1362,14 @@
       const jsonSenzaDuplicati = eventiDaJson.filter(
         evJson => !eventiDaFirebase.some(evFb => sonoEventiDuplicatiClient(evFb, evJson))
       );
-      const uniti = [...eventiDaFirebase, ...jsonSenzaDuplicati];
+      const uniti = [...eventiDaFirebase, ...jsonSenzaDuplicati, ...esperienzeDaJson];
 
       tuttiEventiAttivi = uniti
         .filter(ev => ev && ev.dataFine && ev.dataFine >= oggi && !isCategoriaCulturaleEsclusa(ev))
         .sort((a, b) => {
+          const tipoA = a.tipoContenuto === "esperienza" ? 1 : 0;
+          const tipoB = b.tipoContenuto === "esperienza" ? 1 : 0;
+          if (tipoA !== tipoB) return tipoA - tipoB;
           const evA = a.inEvidenza ? 1 : 0;
           const evB = b.inEvidenza ? 1 : 0;
           if (evA !== evB) return evB - evA;
@@ -1644,7 +1648,7 @@
     function renderEventi() {
       container.innerHTML = "";
       const filtrati = tuttiEventiAttivi.filter(ev => {
-        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const isToday = ev.tipoContenuto !== "esperienza" && oggi >= ev.dataInizio && oggi <= ev.dataFine;
         const cittaEv = (ev.citta || "").toLowerCase().trim();
         const fascia = getFasciaCerchioCerignola(cittaEv);
 
@@ -1660,13 +1664,17 @@
           if (ev.categoria !== catRichiesta) return false;
         }
         if (queryRicerca.trim() !== "") {
-          const testoCompleto = `${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria}`.toLowerCase();
+          const testoCompleto = `${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria} ${ev.adattoA || ""} ${ev.tipoEsperienza || ""}`.toLowerCase();
           if (!testoCompleto.includes(queryRicerca.toLowerCase().trim())) return false;
         }
         return true;
       });
 
-      counterBadge.textContent = `${filtrati.length} ${filtrati.length === 1 ? "evento in programma" : "eventi in programma"}`;
+      const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
+      const numeroEventi = filtrati.length - numeroEsperienze;
+      counterBadge.textContent = numeroEsperienze
+        ? `${filtrati.length} risultati · ${numeroEventi} eventi, ${numeroEsperienze} idee da vivere`
+        : `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
 
       if (filtrati.length === 0) {
         const empty = document.createElement("div");
@@ -1765,7 +1773,9 @@
         waBtn.addEventListener("click", () => {
           condividiContenuto(
             ev.titolo,
-            `📅 *${ev.titolo}*\n🗓 ${ev.dataTesto}\n📍 ${ev.luogo}\n\nTutti gli eventi su Che Si Fa Cerignola:`,
+            ev.tipoContenuto === "esperienza"
+              ? `🌿 *${ev.titolo}*\n📍 ${ev.luogo}\n${ev.dataTesto}\n\nScopri idee per il tempo libero su Che Si Fa Cerignola:`
+              : `📅 *${ev.titolo}*\n🗓 ${ev.dataTesto}\n📍 ${ev.luogo}\n\nTutti gli eventi su Che Si Fa Cerignola:`,
             APP_URL
           );
         });
@@ -1793,19 +1803,18 @@
       renderEventi();
     });
 
-    fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
-      .then(res => {
-        if (!res.ok) throw new Error("Impossibile caricare eventi.json");
-        return res.json();
-      })
-      .then(dati => {
-        eventiDaJson = Array.isArray(dati) ? dati : [];
-        aggiornaListaCompleta();
-      })
-      .catch(err => {
-        console.error(err);
-        aggiornaListaCompleta();
-      });
+    Promise.all([
+      fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
+        .then(res => res.ok ? res.json() : [])
+        .catch(err => { console.error("Eventi:", err); return []; }),
+      fetch(`esperienze.json?t=${Date.now()}`, { cache: "no-store" })
+        .then(res => res.ok ? res.json() : [])
+        .catch(err => { console.error("Esperienze:", err); return []; })
+    ]).then(([eventi, esperienze]) => {
+      eventiDaJson = Array.isArray(eventi) ? eventi : [];
+      esperienzeDaJson = Array.isArray(esperienze) ? esperienze : [];
+      aggiornaListaCompleta();
+    });
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
