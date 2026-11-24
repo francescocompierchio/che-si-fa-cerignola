@@ -1685,7 +1685,7 @@
       }
 
       filtrati.forEach(ev => {
-        const isToday = oggi >= ev.dataInizio && oggi <= ev.dataFine;
+        const isToday = ev.tipoContenuto !== "esperienza" && oggi >= ev.dataInizio && oggi <= ev.dataFine;
         const details = document.createElement("details");
         if (isToday) details.classList.add("is-today");
         if (ev.inEvidenza) details.classList.add("is-featured");
@@ -1725,6 +1725,7 @@
         boldDate.textContent = ev.dataTesto;
         info.appendChild(boldDate);
         info.append(` · ${ev.luogo}`);
+        if (ev.tipoContenuto === "esperienza" && ev.adattoA) info.append(` · ${ev.adattoA}`);
 
         const hint = document.createElement("span");
         hint.className = "toggle-hint";
