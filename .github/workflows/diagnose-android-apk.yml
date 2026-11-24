@@ -41,5 +41,16 @@ jobs:
           "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK" || true
           echo "===== APK CONTENTS (TOP LEVEL) ====="
           unzip -l "$APK" | sed -n '1,100p'
-          echo "===== DEX PACKAGE SUMMARY ====="
-          apkanalyzer dex packages --defined-only "$APK" | sed -n '1,120p'
+          echo "===== APP EMBEDDED HTML ====="
+          unzip -p "$APK" assets/htmlapp/root/index.html || true
+          echo
+          echo "===== DECOMPILE NATIVE ACTIVITY ====="
+          sudo apt-get update -qq
+          sudo apt-get install -y apktool
+          apktool d -f "$APK" -o /tmp/chesifa-apk >/dev/null
+          echo "--- MainActivity smali location ---"
+          find /tmp/chesifa-apk/smali* -name 'MainActivity.smali' -print
+          echo "--- WebView / URL / permissions code ---"
+          grep -R -n -E 'WebView;|setJavaScriptEnabled|setDomStorageEnabled|loadUrl|loadData|NotificationManager|POST_NOTIFICATIONS|requestPermissions|setWebViewClient|setWebChromeClient' /tmp/chesifa-apk/smali* 2>/dev/null | head -100 || true
+          echo "--- Manifest ---"
+          sed -n '1,220p' /tmp/chesifa-apk/AndroidManifest.xml
