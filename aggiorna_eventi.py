@@ -515,7 +515,7 @@ def classifica_categoria(testo):
     # dalla sola presenza del nome del Teatro come luogo dell'evento.
     if any(k in t for k in (
         "spettacolo teatrale", "teatro ragazzi", "teatro inclusivo",
-        "commedia teatrale", "prosa", "cabaret",
+        "teatro & spettacoli", "commedia teatrale", "prosa", "cabaret",
     )):
         return "Teatro & Spettacoli"
     # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
@@ -948,8 +948,11 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if not _luogo_utilizzabile(luogo):
         return None
 
-    # Ricalcola la categoria sul contenuto, evitando di perpetuare classificazioni vecchie o incoerenti.
+    # Ricalcola la categoria sul contenuto. Mantiene però la classe specifica
+    # assegnata dalla scheda quando la fonte documenta esplicitamente il teatro.
     cat = classifica_categoria(f"{titolo} {descrizione}")
+    if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
+        cat = "Teatro & Spettacoli"
 
     if not d_txt:
         d_txt = formatta_data_italiano(d1, d2)
@@ -1060,7 +1063,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     for meta_el in soup.select(".byline, .author, .meta, .post-meta, .entry-meta, .article-meta, [class*='publish'], [class*='update'], [class*='autore'], [class*='redazione']"):
         meta_el.decompose()
 
-    cont = soup.find("article") or soup.find("main") or soup.body or soup
+    cont = soup.find("main") or soup.find("article") or soup.body or soup
     paragrafi = []
     for p in cont.find_all(["p", "li", "h2", "h3"]):
         txt = re.sub(r"\s+", " ", p.get_text(" ", strip=True)).strip()
