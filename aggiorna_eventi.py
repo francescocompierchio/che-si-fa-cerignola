@@ -889,6 +889,14 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     url = str(raw.get("fonteUrl") or "").strip()
 
     parsed_url = urlparse(url)
+    # Le pagine indice e le categorie del portale comunale possono essere
+    # raggiunte come link interni: non sono schede di singoli eventi.
+    if titolo.casefold().strip(" -|") in {
+        "eventi", "tutti gli eventi", "calendario eventi",
+        "eventi in programma", "eventi a cerignola",
+    }:
+        return None
+
     if (
         len(titolo) < 5
         or parsed_url.scheme not in ("http", "https")

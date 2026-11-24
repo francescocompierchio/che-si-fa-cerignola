@@ -1156,3 +1156,26 @@ class DateSemanticheFontiUfficialiTests(unittest.TestCase):
         self.assertEqual(len(eventi), 1)
         self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
         self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
+
+
+class FiltriSchedeGenericheTests(unittest.TestCase):
+    def test_pagina_indice_eventi_non_viene_pubblicata_come_evento(self):
+        raw = {
+            "citta": "Cerignola",
+            "categoria": "Attività diurne",
+            "titolo": "Eventi",
+            "dataTesto": "Gio 26 Nov 2026",
+            "dataInizio": "2026-11-26",
+            "dataFine": "2026-11-26",
+            "luogo": "Piazza Q",
+            "indirizzoMappa": "Piazza Q, Cerignola",
+            "costo": "Gratuito",
+            "descrizione": "Elenco degli eventi pubblicati dal Comune di Cerignola.",
+            "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/cultura/",
+        }
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            self.assertIsNone(
+                motore.normalizza_e_valida_evento(
+                    raw, ref_dt=datetime(2026, 11, 24), fonte_curata_eventi=True
+                )
+            )
