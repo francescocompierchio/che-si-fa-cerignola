@@ -39,7 +39,7 @@ jobs:
             "quick-weekend", "quick-favorites", "favorites-count",
             "sort-events", "surprise-me", "dock-home", "dock-weekend",
             "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento",
-            "agenda-date-buttons", "clear-selected-date"
+            "agenda-date-buttons", "clear-selected-date", "saved-plan-share", "btn-share-saved-plan"
           ];
           for (const id of requiredIds) {
             const count = html.split('id="' + id + '"').length - 1;
@@ -69,6 +69,19 @@ jobs:
           const icsSource = html.match(/function creaTestoICS\(ev\)\{[\s\S]*?\n    \}/);
           assert.ok(icsSource, "Generatore file calendario non trovato");
           assert.ok(html.includes("function piegaRigaICS"), "Piegatura righe ICS assente");
+          assert.ok(html.includes("function creaTestoPianoSalvati"), "Funzione condivisione piano salvato assente");
+          const planSource = html.match(/function creaTestoPianoSalvati\(salvati\)\{[\s\S]*?\n    \}/);
+          assert.ok(planSource, "Composizione piano salvato non trovata");
+          const makePlan = new Function(planSource[0] + "; return creaTestoPianoSalvati;")();
+          const planText = makePlan([
+            {titolo:"Concerto in piazza",dataTesto:"Sab 28 Nov",luogo:"Piazza Duomo",citta:"Cerignola"},
+            {tipoContenuto:"esperienza",titolo:"Gita al lago",dataTesto:"Idea per una gita",luogo:"Lago Capacciotti",citta:"Cerignola"}
+          ]);
+          assert.ok(planText.includes("Concerto in piazza"), "Evento non incluso nel piano condiviso");
+          assert.ok(planText.includes("Gita al lago"), "Esperienza non inclusa nel piano condiviso");
+          const manyPlan = makePlan(Array.from({length:13},(_,i)=>({titolo:"Proposta "+(i+1),dataTesto:"Da scoprire"})));
+          assert.ok(manyPlan.includes("e altre 1 proposte salvate"), "Il riepilogo del piano non limita le voci condivise");
+
           const makeIcsFactory = new Function("isSafeHttpUrl", "APP_URL", "spostaGiorniISO", "piegaRigaICS", icsSource[0] + "; return creaTestoICS;");
           const makeIcs = makeIcsFactory(url => /^https?:\/\//.test(url), "https://example.test/", moveDate, line => line);
           const ics = makeIcs({
