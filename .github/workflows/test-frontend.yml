@@ -1,0 +1,51 @@
+name: Verifica interfaccia web
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "index.html"
+      - ".github/workflows/test-frontend.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
+      - name: Configura Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Verifica sintassi JavaScript e controlli interattivi
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const assert = require("node:assert/strict");
+          const html = fs.readFileSync("index.html", "utf8");
+          const scripts = [...html.matchAll(/<script\\b(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)]
+            .map(match => match[1]).filter(source => source.trim());
+          assert.ok(scripts.length > 0, "Nessuno script inline trovato");
+          scripts.forEach((source, index) => {
+            try { new Function(source); }
+            catch (error) { throw new Error(`Script inline ${index + 1}: ${error.message}`); }
+          });
+          const requiredIds = [
+            "events-container", "filters", "search-input", "quick-all",
+            "quick-weekend", "quick-favorites", "favorites-count",
+            "sort-events", "surprise-me", "dock-home", "dock-weekend",
+            "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento"
+          ];
+          for (const id of requiredIds) {
+            const count = (html.match(new RegExp(`id=["']${id}["']`, "g")) || []).length;
+            assert.equal(count, 1, `ID ${id}: atteso una sola occorrenza, trovate ${count}`);
+          }
+          assert.match(html, /csf_eventi_preferiti_v1/, "Persistenza preferiti assente");
+          assert.match(html, /function eWeekend/, "Filtro weekend assente");
+          assert.match(html, /prefers-reduced-motion/, "Supporto movimento ridotto assente");
+          console.log(`OK: ${scripts.length} script inline validati e ${requiredIds.length} ID interattivi verificati.`);
+          NODE
