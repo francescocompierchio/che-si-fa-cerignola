@@ -29,7 +29,7 @@ DOMINI_AUTO = (
     "canosaviva.it", "barlettaviva.it", "traniviva.it",
     "bisceglieviva.it", "andriaviva.it", "statoquotidiano.it",
     "immediato.net", "vulturenews.net", "foggia.today", "lagazzettadelmezzogiorno.it",
-    "teatromercadantecerignola.it", "teatrogiordano.it",
+    "teatromercadantecerignola.it", "romateatrocinema.it", "teatrogiordano.it",
     "palazzodelleartibeltrani.it", "politeamaitalia.com",
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com",
