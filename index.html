@@ -931,23 +931,6 @@
       </div>
     </section>
 
-    <section class="notifications-panel" id="notification-panel" aria-label="Avvisi e promemoria">
-      <div class="notifications-main">
-        <span class="notifications-icon" aria-hidden="true">🔔</span>
-        <div class="notifications-copy">
-          <strong>Avvisi e promemoria</strong>
-          <p id="notification-summary">Ricevi un avviso quando arrivano nuove proposte e nel giorno degli eventi che scegli.</p>
-          <small id="notification-status" aria-live="polite">Gli avvisi vengono controllati quando apri l'app.</small>
-        </div>
-      </div>
-      <div class="notifications-actions">
-        <span id="notification-reminder-count" class="notification-reminder-count">0 promemoria</span>
-        <button type="button" id="btn-notify-toggle" class="notification-toggle">Attiva avvisi</button>
-      </div>
-      <a id="notification-open-chrome" class="notification-open-chrome" hidden href="intent://francescocompierchio.github.io/che-si-fa-cerignola/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Ffrancescocompierchio.github.io%2Fche-si-fa-cerignola%2F;end">Apri in Chrome ↗</a>
-      <p class="notifications-note">Su Android le notifiche richiedono Chrome o un browser compatibile e il Service Worker. Se hai aperto la piattaforma da Instagram, WhatsApp o un altro browser interno, usa “Apri in Chrome”. Gli avvisi restano locali: le novità vengono controllate alla riapertura dell’app e i promemoria nel giorno dell’evento al primo accesso; non sono notifiche push quando l’app è chiusa.</p>
-    </section>
-
     <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
     <div class="venues-launcher-row">
       <button type="button" class="venues-side-tab" id="btn-open-venues" aria-label="Apri pagine Instagram dei locali">
@@ -1431,7 +1414,8 @@
     const EVENTI_NOTIFICATI_KEY = "csf_notifiche_eventi_v1";
     const PROMEMORIA_KEY = "csf_promemoria_eventi_v1";
     const BASELINE_IN_ATTESA_KEY = "csf_notifiche_baseline_in_attesa_v1";
-    let notificheAttive = localStorage.getItem(NOTIFICHE_ATTIVE_KEY) === "1";
+    localStorage.setItem(NOTIFICHE_ATTIVE_KEY, "0");
+    let notificheAttive = false;
     let archivioAutomaticoCaricato = false;
     let controlloPromemoriaInCorso = false;
 
@@ -1668,12 +1652,6 @@
       }
       aggiornaPannelloNotifiche();
     }
-    document.getElementById("btn-notify-toggle").addEventListener("click", gestisciAttivazioneNotifiche);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) controllaPromemoriaInScadenza(); });
-    window.addEventListener("focus", controllaPromemoriaInScadenza);
-    setInterval(controllaPromemoriaInScadenza, 15 * 60 * 1000);
-    aggiornaPannelloNotifiche();
-
     function creaTestoPianoSalvati(salvati){
       const massimo=12;
       const righe=salvati.slice(0,massimo).map(ev=>{
@@ -2224,18 +2202,6 @@
           actions.append(mapBtn,calendarBtn,waBtn);
         } else {
           actions.append(mapBtn,waBtn);
-        }
-
-        if (ev.tipoContenuto !== "esperienza" && /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio || ""))) {
-          const reminderBtn = document.createElement("button");
-          const reminderAttivo = haPromemoriaEvento(ev);
-          reminderBtn.type = "button";
-          reminderBtn.className = "btn btn-soft btn-reminder" + (reminderAttivo ? " active" : "");
-          reminderBtn.dataset.reminderKey = chiaveEvento(ev);
-          reminderBtn.textContent = reminderAttivo ? "Avviso attivo ✓" : "Avvisami";
-          reminderBtn.setAttribute("aria-pressed", String(reminderAttivo));
-          reminderBtn.addEventListener("click", () => alternaPromemoriaEvento(ev));
-          actions.appendChild(reminderBtn);
         }
 
         if (isSafeHttpUrl(ev.fonteUrl)) {
