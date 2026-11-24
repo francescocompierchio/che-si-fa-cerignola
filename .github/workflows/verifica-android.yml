@@ -1,0 +1,38 @@
+name: Verifica compatibilità APK Android
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app-release.apk"
+      - ".github/workflows/verifica-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verifica-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analizza APK esistente con Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          aapt="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -n1)"
+          if [ -z "$aapt" ]; then
+            echo "::error::aapt non disponibile sul runner"
+            exit 1
+          fi
+          "$aapt" dump badging app-release.apk > apk-info.txt
+          grep -E "^(package:|sdkVersion:|targetSdkVersion:|application-label:|uses-permission:|native-code:)" apk-info.txt | tee -a "$GITHUB_STEP_SUMMARY"
+          target="$(sed -n "s/^targetSdkVersion:'\([0-9]*\)'.*/\1/p" apk-info.txt)"
+          if [ -z "$target" ] || [ "$target" -lt 36 ]; then
+            echo "::warning::Target SDK inferiore al requisito API 36 per nuove app."
+          else
+            echo "Target SDK compatibile con il requisito API 36."
+          fi
+          apksigner="$(dirname "$aapt")/apksigner"
+          "$apksigner" verify --verbose --print-certs app-release.apk
