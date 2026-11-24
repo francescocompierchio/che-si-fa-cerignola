@@ -2184,6 +2184,18 @@
           actions.append(mapBtn,waBtn);
         }
 
+        if (ev.tipoContenuto !== "esperienza" && /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio || ""))) {
+          const reminderBtn = document.createElement("button");
+          const reminderAttivo = haPromemoriaEvento(ev);
+          reminderBtn.type = "button";
+          reminderBtn.className = "btn btn-soft btn-reminder" + (reminderAttivo ? " active" : "");
+          reminderBtn.dataset.reminderKey = chiaveEvento(ev);
+          reminderBtn.textContent = reminderAttivo ? "Avviso attivo ✓" : "Avvisami";
+          reminderBtn.setAttribute("aria-pressed", String(reminderAttivo));
+          reminderBtn.addEventListener("click", () => alternaPromemoriaEvento(ev));
+          actions.appendChild(reminderBtn);
+        }
+
         if (isSafeHttpUrl(ev.fonteUrl)) {
           const srcBtn = document.createElement("a");
           srcBtn.className = "btn btn-soft";
@@ -2209,15 +2221,23 @@
 
     Promise.all([
       fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
-        .then(res => res.ok ? res.json() : [])
-        .catch(err => { console.error("Eventi:", err); return []; }),
+        .then(res => res.ok ? res.json() : null)
+        .catch(err => { console.error("Eventi:", err); return null; }),
       fetch(`esperienze.json?t=${Date.now()}`, { cache: "no-store" })
         .then(res => res.ok ? res.json() : [])
         .catch(err => { console.error("Esperienze:", err); return []; })
     ]).then(([eventi, esperienze]) => {
       eventiDaJson = Array.isArray(eventi) ? eventi : [];
+      archivioAutomaticoCaricato = Array.isArray(eventi);
       esperienzeDaJson = Array.isArray(esperienze) ? esperienze : [];
       aggiornaListaCompleta();
+      if (archivioAutomaticoCaricato) {
+        controllaNuoviEventi();
+        controllaPromemoriaInScadenza();
+      } else {
+        const stato = document.getElementById("notification-status");
+        if (stato) stato.textContent = "Archivio eventi non raggiungibile: le nuove pubblicazioni saranno ricontrollate al prossimo accesso.";
+      }
     });
 
     if ("serviceWorker" in navigator) {
