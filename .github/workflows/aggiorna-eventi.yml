@@ -28,6 +28,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Configura Node.js per il generatore SEO
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Installa dipendenze
         run: |
           sudo apt-get update
