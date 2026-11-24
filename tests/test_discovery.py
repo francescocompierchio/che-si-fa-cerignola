@@ -915,3 +915,44 @@ class ComuneHomepageEIndirizziTests(unittest.TestCase):
         self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")
         self.assertIn("Via Cesare Battisti n. 13", eventi[0]["indirizzoMappa"])
         self.assertIn("Cerignola FG", eventi[0]["indirizzoMappa"])
+
+
+class PrezziJsonLdTests(unittest.TestCase):
+    def test_jsonld_esttrae_prezzo_euro(self):
+        self.assertEqual(
+            motore.estrai_costo_jsonld({
+                "offers": {"price": "12.50", "priceCurrency": "EUR"}
+            }),
+            "€ 12,50",
+        )
+
+    def test_jsonld_esttrae_prezzo_gratuito(self):
+        self.assertEqual(
+            motore.estrai_costo_jsonld({
+                "offers": {"price": "0", "priceCurrency": "EUR"}
+            }),
+            "Gratuito",
+        )
+
+    def test_jsonld_esttrae_fascia_prezzo(self):
+        self.assertEqual(
+            motore.estrai_costo_jsonld({
+                "offers": {"lowPrice": "12", "highPrice": "25", "priceCurrency": "EUR"}
+            }),
+            "Da € 12 a € 25",
+        )
+
+    def test_jsonld_senza_offerte_ripiega_sul_testo_della_pagina(self):
+        self.assertEqual(
+            motore.estrai_costo_jsonld(
+                {"name": "Evento"},
+                "Biglietti disponibili: € 18,50",
+            ),
+            "€ 18,50",
+        )
+
+    def test_prezzo_html_con_euro_non_viene_perso_per_la_regex(self):
+        self.assertEqual(
+            motore.estrai_costo_documentato("Biglietti disponibili a € 18,50"),
+            "€ 18,50",
+        )
