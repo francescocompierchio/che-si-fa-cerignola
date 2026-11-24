@@ -9,6 +9,20 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_nightz_scheda_documentata(self):
+        dt = crawler.oggi_dt() + crawler.timedelta(days=3)
+        mese = next(k for k,v in crawler.MESI_IT.items() if v == dt.month)
+        html = f"<h1>Around Us</h1><p>Data e orario</p><p>{dt.day} {mese} {dt.year}</p><p>Dalle 23:00</p><p>Location</p><p>Bisceglie</p><p>Divine Club, Bisceglie, BT, Italia</p>"
+        url = "https://nightz.it/eventi/around-us/"
+        ev = crawler.analizza_nightz(html,url)
+        self.assertEqual(len(ev),1)
+        self.assertEqual(ev[0]["categoria"],"Locali & Serate")
+        self.assertEqual(ev[0]["citta"],"Bisceglie")
+        self.assertEqual(crawler.analizza_nightz(html.replace("Bisceglie","Bari"),url),[])
+        self.assertEqual(crawler.analizza_nightz(html,"https://nightz.it/eventi/"),[])
+    def test_diagnostica_markup_pubblico(self):
+        self.assertEqual(crawler.diagnostica_scheda_movida("<h1>Serata</h1><p>Location</p>","https://example.org")["h1"],"Serata")
+
     def test_ticketsms_concordanza_data_luogo(self):
         dt = crawler.oggi_dt() + crawler.timedelta(days=3)
         mese = next(k for k,v in crawler.MESI_IT.items() if v == dt.month)

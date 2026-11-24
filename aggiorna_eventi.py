@@ -38,7 +38,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it"
 )
 
 FONTI_VIVA = [
@@ -57,6 +57,10 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
+    {"nome": "Nightz Divine Club", "url": "https://nightz.it/locali/divine-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Aphelion Club", "url": "https://nightz.it/locali/aphelion-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Vyon Club", "url": "https://nightz.it/locali/vyon-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome":"TicketSms Idol Club Bisceglie","url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
     {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -1872,6 +1876,89 @@ def analizza_ticketsms(html_text, url, citta, luogo):
     return [ev]
 
 
+def analizza_nightz(html_text, url):
+    """Scheda individuale Nightz, con data e località dichiarate esplicitamente."""
+    if not _host_appartiene(url, "nightz.it") or not re.fullmatch(r"/eventi/[^/]+/?", urlparse(url).path):
+        return []
+    if registra_stati_negativi(html_text, url):
+        return []
+    soup = BeautifulSoup(html_text, "html.parser")
+    h1 = soup.find("h1")
+    if not h1:
+        return []
+    righe = list(soup.stripped_strings)
+    def dopo(label, n=4):
+        for i, riga in enumerate(righe):
+            if riga.casefold().strip(": ") == label:
+                return righe[i+1:i+1+n]
+        return []
+    data = " ".join(dopo("data e orario", 4))
+    m = re.search(r"\b(\d{1,2})\s+("+"|".join(MESI_IT)+r")\s+(20\d{2})\b", data, re.I)
+    if not m:
+        return []
+    dt = _costruisci_data_sicura(int(m.group(1)), MESI_IT[m.group(2).casefold()], int(m.group(3)))
+    if not dt or dt.strftime("%Y-%m-%d") < oggi_iso():
+        return []
+    loc = dopo("location", 3)
+    if len(loc) < 2:
+        return []
+    comune = COMUNI_50KM.get(loc[0].strip().casefold())
+    indirizzo = loc[1].strip()
+    if not comune or _comune_nel_testo(indirizzo) != comune:
+        return []
+    luogo = indirizzo.split(",")[0].strip()
+    ora = re.search(r"\b(?:dalle|ore)\s*([01]\d|2[0-3]):([0-5]\d)", data, re.I)
+    d = dt.strftime("%Y-%m-%d")
+    ev = normalizza_e_valida_evento({"titolo":h1.get_text(" ",strip=True), "citta":comune, "luogo":luogo, "indirizzoMappa":indirizzo, "dataInizio":d, "dataFine":d, "dataTesto":formatta_data_italiano(d,d)+(" · Ore "+ora.group(1)+":"+ora.group(2) if ora else ""), "descrizione":"Serata pubblicata sul calendario Nightz. Verifica condizioni di ingresso e disponibilità con il locale.", "costo":"Consulta la fonte", "fonteUrl":url}, fonte_curata_eventi=True)
+    if not ev:
+        return []
+    ev["categoria"] = "Locali & Serate"
+    return [ev]
+
+
+def diagnostica_scheda_movida(html_text, url):
+    """Metadati pubblici minimali, utili per distinguere markup vuoto da parser errato."""
+    soup = BeautifulSoup(html_text, "html.parser")
+    h1 = soup.find("h1")
+    return {"url":url, "h1":h1.get_text(" ",strip=True)[:120] if h1 else "", "jsonld":len(soup.find_all("script", type="application/ld+json")), "etichette":[x for x in ("Location","Indirizzo","Data e orario","Info") if x.casefold() in soup.get_text(" ",strip=True).casefold()], "lunghezzaHTML":len(html_text)}
+
+
+def esplora_lineup_atlas(session, fonte):
+    """API ufficiale: cache di un'ora come da documentazione.
+    Risultati solo diagnostici finché lo schema reale non è verificato."""
+    nome = fonte["nome"]
+    path = os.path.join(".csf-state", "lineup-atlas-bat.json")
+    dati = {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            dati = json.load(f)
+    except (OSError, ValueError):
+        pass
+    try:
+        if not isinstance(dati, dict) or time.time() - dati.get("timestamp", 0) >= 3600:
+            r = session.get(fonte["url"], timeout=(5,10))
+            if r.status_code != 200:
+                registra_statistica_fonte(nome, stato=f"HTTP {r.status_code}", eventiEstratti=0)
+                return []
+            payload = r.json()
+            dati = {"timestamp":time.time(),"payload":payload}
+            os.makedirs(".csf-state",exist_ok=True)
+            _scrivi_json_atomico(path,dati)
+        payload = dati.get("payload")
+        righe = payload if isinstance(payload,list) else next((payload[k] for k in ("events","items","data","results") if isinstance(payload,dict) and isinstance(payload.get(k),list)),[])
+        candidati = []
+        for ev in righe[:15]:
+            if not isinstance(ev,dict):
+                continue
+            # Non presumere la semantica dei campi: registra chiavi e riferimenti pubblici.
+            candidati.append({"campi":sorted(ev.keys())[:35],"titolo":str(ev.get("title") or ev.get("name") or "")[:160],"url":str(ev.get("webUrl") or ev.get("url") or "")[:250]})
+        registra_statistica_fonte(nome,stato="ok",linkCandidati=len(righe),pagineScaricate=1,eventiEstratti=0,candidatiDaVerificare=candidati,chiaviRisposta=sorted(payload.keys()) if isinstance(payload,dict) else [])
+        print(f"{nome}: {len(righe)} candidati API; non pubblicati automaticamente")
+    except Exception as exc:
+        registra_statistica_fonte(nome,stato="errore",errore=str(exc)[:120],eventiEstratti=0)
+    return []
+
+
 def raccogli_da_portale_generico(session, fonte):
     eventi = []
     nome = fonte["nome"]
@@ -1929,7 +2016,10 @@ def raccogli_da_portale_generico(session, fonte):
             # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
             # in quel caso il prefisso configurato è una prova sufficiente.
             prefisso_schede = str(fonte.get("prefisso_schede") or "").lower()
-            if fonte.get("ticketsms"):
+            if fonte.get("nightz"):
+                if not re.fullmatch(r"/eventi/[^/]+/?", p_low):
+                    continue
+            elif fonte.get("ticketsms"):
                 if not re.match(r"^/(?:it/)?event/[^/]+/?$", p_low) or not re.search(r"-\d{2}-\d{2}-20\d{2}/?$", p_low):
                     continue
             elif parametro_scheda:
@@ -1958,6 +2048,7 @@ def raccogli_da_portale_generico(session, fonte):
                 links.append(full)
 
         scaricate = 0
+        diagnostica = []
         for link in links[:int(fonte.get("max_schede", 12))]:
             try:
                 rp = session.get(link, timeout=(4, 7))
@@ -1967,7 +2058,9 @@ def raccogli_da_portale_generico(session, fonte):
                 rp.encoding = rp.apparent_encoding or "utf-8"
                 if "evento si è già concluso" in rp.text.lower() or "fa parte del nostro archivio" in rp.text.lower():
                     continue
-                if fonte.get("ticketsms"):
+                if fonte.get("nightz"):
+                    estratti = analizza_nightz(rp.text, link)
+                elif fonte.get("ticketsms"):
                     estratti = analizza_ticketsms(rp.text, link, c_def, fonte["luogo_atteso"])
                 elif fonte.get("xceed"):
                     if registra_stati_negativi(rp.text, link):
@@ -1978,7 +2071,9 @@ def raccogli_da_portale_generico(session, fonte):
                     estratti = analizza_pagina_evento("".join(str(x) for x in markup), link, citta_default="", fonte_curata_eventi=True)
                 else:
                     estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
-                if not estratti and not fonte.get("ticketsms") and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
+                if not estratti and fonte.get("nightlife") and len(diagnostica) < 3:
+                    diagnostica.append(diagnostica_scheda_movida(rp.text, link))
+                if not estratti and not fonte.get("nightz") and not fonte.get("ticketsms") and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
                     testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
                     if testo_locandina:
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
@@ -2009,7 +2104,7 @@ def raccogli_da_portale_generico(session, fonte):
 
         registra_statistica_fonte(
             nome, stato="ok", linkCandidati=len(links),
-            pagineScaricate=scaricate, eventiEstratti=len(eventi)
+            pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica
         )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:
@@ -2262,6 +2357,7 @@ def esegui_aggiornamento():
         [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
         + [(raccogli_da_feed_social, fonte) for fonte in FONTI_SOCIAL_RSS]
+        + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
     memoria = stato_raccolta.carica(percorso_stato)
