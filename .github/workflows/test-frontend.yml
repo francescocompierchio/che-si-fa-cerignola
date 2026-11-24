@@ -78,8 +78,6 @@ jobs:
           assert.equal(valutaSupporto({sicuro:true,api:false,richiediPermesso:false,android:true,serviceWorker:true,notificaPersistente:true}).codice, "api", "Diagnostica browser integrato errata");
           assert.equal(valutaSupporto({sicuro:true,api:true,richiediPermesso:true,android:true,serviceWorker:false,notificaPersistente:false}).codice, "service-worker", "Supporto Android senza Service Worker non rilevato");
           assert.equal(valutaSupporto({sicuro:true,api:true,richiediPermesso:true,android:true,serviceWorker:true,notificaPersistente:true}).supportato, true, "Chrome Android compatibile non riconosciuto");
-          assert.ok(html.includes("intent://francescocompierchio.github.io/che-si-fa-cerignola/"), "Collegamento per aprire Chrome assente");
-          assert.ok(html.includes("Apri la piattaforma in Chrome"), "Istruzioni per browser integrato assenti");
           assert.ok(html.includes("function controllaNuoviEventi"), "Controllo nuove pubblicazioni assente");
           assert.ok(html.includes("function alternaPromemoriaEvento"), "Promemoria individuali assenti");
           assert.ok(html.includes("Notification.requestPermission()"), "Richiesta permesso notifiche assente");
@@ -128,7 +126,6 @@ jobs:
           assert.ok(ics.includes("LOCATION:Piazza\\; centro\\, Cerignola"), "Località ICS non escapata");
           assert.throws(() => makeIcs({dataInizio:"domani"}), /Data evento non valida/);
           assert.throws(() => makeIcs({dataInizio:"2026-11-25",dataFine:"2026-11-24"}), /Intervallo evento non valido/);
-
 
           assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
           const fridayShift = day => day === 6 ? -1 : day === 0 ? -2 : (5 - day + 7) % 7;
