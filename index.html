@@ -1387,6 +1387,25 @@
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
     function chiaveEvento(ev){return [ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();}
+    function creaTestoICS(ev){
+      const inizio=String(ev.dataInizio||""),fine=String(ev.dataFine||inizio);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(inizio)||!/^\d{4}-\d{2}-\d{2}$/.test(fine))throw new Error("Data evento non valida");
+      const esc=value=>String(value||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
+      const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+      const uid=encodeURIComponent([ev.titolo,ev.citta,inizio,ev.luogo].join("|"))+"@chesifacerignola";
+      const descr=esc((ev.descrizione||"")+(ev.costo?"\nCosto: "+ev.costo:""));
+      const fonte=isSafeHttpUrl(ev.fonteUrl)?String(ev.fonteUrl).trim():APP_URL;
+      return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Che Si Fa Cerignola//IT","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+uid,"DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+inizio.replace(/-/g,""),"DTEND;VALUE=DATE:"+spostaGiorniISO(fine,1).replace(/-/g,""),"SUMMARY:"+esc(ev.titolo||"Evento"),"DESCRIPTION:"+descr,"LOCATION:"+esc([ev.luogo,ev.citta].filter(Boolean).join(", ")),"URL:"+fonte,"STATUS:CONFIRMED","END:VEVENT","END:VCALENDAR"].join("\r\n")+"\r\n";
+    }
+    function scaricaCalendarioICS(ev){
+      try{
+        const blob=new Blob([creaTestoICS(ev)],{type:"text/calendar;charset=utf-8"});
+        const url=URL.createObjectURL(blob),link=document.createElement("a");
+        const nome=(ev.titolo||"evento").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"evento";
+        link.href=url;link.download=nome+".ics";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+        mostraToast("Evento pronto per il calendario");
+      }catch(error){console.error("Calendario:",error);mostraToast("Impossibile creare il promemoria per questo evento");}
+    }
     function aggiornaContatorePreferiti(){const el=document.getElementById("favorites-count");if(el)el.textContent=preferiti.size;document.querySelectorAll(".favorite-toggle").forEach(b=>{const v=preferiti.has(b.dataset.favoriteKey);b.classList.toggle("saved",v);b.textContent=v?"★":"☆";b.setAttribute("aria-label",v?"Rimuovi dai salvati":"Salva nei preferiti");b.setAttribute("aria-pressed",String(v));});}
     function salvaPreferiti(){try{localStorage.setItem(PREFERITI_KEY,JSON.stringify([...preferiti]));}catch(e){}aggiornaContatorePreferiti();}
     function mostraToast(msg){const t=document.getElementById("app-toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(mostraToast.timer);mostraToast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
@@ -1891,7 +1910,14 @@
           );
         });
 
-        actions.append(mapBtn, waBtn);
+        if (ev.tipoContenuto !== "esperienza" && /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio || ""))) {
+          const calendarBtn=document.createElement("button");
+          calendarBtn.type="button";calendarBtn.className="btn btn-soft";calendarBtn.textContent="Aggiungi al calendario";
+          calendarBtn.addEventListener("click",()=>scaricaCalendarioICS(ev));
+          actions.append(mapBtn,calendarBtn,waBtn);
+        } else {
+          actions.append(mapBtn,waBtn);
+        }
 
         if (isSafeHttpUrl(ev.fonteUrl)) {
           const srcBtn = document.createElement("a");
