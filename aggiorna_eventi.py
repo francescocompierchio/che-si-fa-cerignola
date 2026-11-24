@@ -600,7 +600,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     fonte_teatrale = any(d in url for d in (
         "teatromercadantecerignola.it", "romateatrocinema.it"
     ))
-    sede_teatrale = bool(re.search(r"\\bteatro\\b", sede))
+    sede_teatrale = bool(re.search(r"\bteatro\b", sede))
     if fonte_teatrale or sede_teatrale or any(
         k in t for k in ("stagione teatrale", "altri spettacoli teatrali")
     ):
