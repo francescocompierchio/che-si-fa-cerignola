@@ -11,7 +11,7 @@ function cacheKeyFor(request) {
   const url = new URL(request.url);
   // Il frontend aggiunge un timestamp a eventi.json: usa una chiave stabile
   // per non creare una voce di cache nuova a ogni visita.
-  if (url.pathname === `${BASE_PATH}eventi.json`) {
+  if ([`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`].includes(url.pathname)) {
     url.search = "";
     url.hash = "";
   }
@@ -91,7 +91,7 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE_PATH)) return;
 
   const key = cacheKeyFor(request);
-  const isData = url.pathname === `${BASE_PATH}eventi.json`;
+  const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`].includes(url.pathname);
   const isPage = request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === BASE_PATH;
 
   event.respondWith(

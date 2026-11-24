@@ -82,7 +82,9 @@ FONTI_PORTALI = [
 FONTI_SOCIAL_RSS = [
     {"nome": "Social pubblici Instagram Cerignola", "url": "https://news.google.com/rss/search?q=site%3Ainstagram.com%2Fp%2F+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
     {"nome": "Social pubblici Facebook Cerignola", "url": "https://news.google.com/rss/search?q=site%3Afacebook.com+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
-    {"nome": "Famiglie ed escursioni Cerignola", "url": "https://news.google.com/rss/search?q=Cerignola+(escursione+OR+trekking+OR+visita+guidata+OR+laboratorio+bambini+OR+fattoria+didattica+OR+gita)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
+    {"nome": "Famiglie e weekend Cerignola e dintorni", "url": "https://news.google.com/rss/search?q=(Cerignola+OR+Canosa+OR+Barletta+OR+Trinitapoli+OR+Margherita+di+Savoia+OR+Orta+Nova)+(weekend+OR+famiglie+OR+bambini+OR+laboratorio+OR+fattoria+didattica+OR+visita+guidata+OR+gita)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
+    {"nome": "Escursioni e cammini area BAT Foggia", "url": "https://news.google.com/rss/search?q=(Cerignola+OR+Canosa+OR+Barletta+OR+Andria+OR+Foggia+OR+Minervino+Murge)+(escursione+OR+trekking+OR+camminata+OR+cammino+OR+birdwatching+OR+cicloturismo+OR+e-bike+OR+passeggiata+guidata)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
+    {"nome": "Visite e attività rurali weekend", "url": "https://news.google.com/rss/search?q=(Cerignola+OR+Canosa+OR+Barletta+OR+Margherita+di+Savoia+OR+Foggia)+(masseria+OR+fattoria+OR+frantoio+OR+caseificio+OR+degustazione+OR+open+day+OR+family+day+OR+visita)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
 ]
 
 COMUNI_50KM = {
@@ -181,8 +183,8 @@ REGEX_TEMA_COERENTE = re.compile(
     r"laboratori[o]?\s+(?:per\s+bambini|creativ[oi])|animazione\s+per\s+bambini|"
     r"spettacol[oi]\s+(?:per\s+famiglie|di\s+intrattenimento)|festa\s+per\s+bambini|notte\s+bianca\s+dei\s+bambini|"
     r"fattori[ae]\s+didattic[ah]|parco\s+tematico|"
-    r"trekking|escursion[ei]|passeggiat[ae]\s+(?:naturalistic[ah]|guidat[ah])|"
-    r"uscit[ae]\s+organizzat[ah]|visita\s+guidata|visita\s+alle\s+saline|riserva\s+naturale|attivit[aà]\s+all['’]aperto|"
+    r"trekking|escursion[ei]|passeggiat[ae]\s+(?:naturalistic[ah]|guidat[ah])|camminat[ae]\s+(?:guidat[ae]|naturalistic[ah])|cammin[oie]|birdwatching|cicloturismo|e-bike|gita\s+(?:fuori\s+porta|organizzat[ae])|family\s+day|open\s+day|"
+    r"uscit[ae]\s+organizzat[ah]|visita\s+guidata|visita\s+alle\s+saline|visita\s+in\s+masseria|riserva\s+naturale|attivit[aà]\s+all['’]aperto|"
     r"fiera\s+(?:ricreativa|artigianale|d['’]aprile)|esperienz[ae]\s+artigianal\w*|festival|avventur\w*|"
     r"corricerignola|gara\s+podistica|maratona|mezza\s+maratona|corsa\s+(?:podistica|su\s+strada|campestre)|"
     r"trail\s+running|urban\s+trail|spartan\s+race|hyrox"
@@ -1393,7 +1395,7 @@ def raccogli_da_feed_social(session, fonte):
             testo = f"{titolo} {descrizione}"
             if not link or not titolo or not _comune_nel_testo(testo):
                 continue
-            if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|mercatino|sagra|festa|locandina)\w*\b", testo, re.I):
+            if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina)\w*\b", testo, re.I):
                 continue
             url_finale = link
             html_pagina = ""

@@ -73,9 +73,20 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(crawler.classifica_categoria("Escursione guidata lungo l'Ofanto"), "Natura & Escursioni")
 
     def test_feed_social_pubblici_configurati(self):
-        self.assertEqual(len(crawler.FONTI_SOCIAL_RSS), 3)
+        self.assertGreaterEqual(len(crawler.FONTI_SOCIAL_RSS), 5)
         self.assertTrue(any("instagram.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
         self.assertTrue(any("facebook.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
+        self.assertTrue(any("birdwatching" in f["url"] and "cicloturismo" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
+
+    def test_catalogo_esperienze_weekend(self):
+        import json
+        from pathlib import Path
+        catalogo = json.loads((Path(__file__).parent / "esperienze.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(catalogo), 12)
+        self.assertTrue(all(x.get("tipoContenuto") == "esperienza" for x in catalogo))
+        self.assertTrue(all(x.get("titolo") and x.get("citta") and x.get("indirizzoMappa") for x in catalogo))
+        self.assertTrue(any("bosco" in x.get("titolo", "").lower() for x in catalogo))
+        self.assertTrue(any("famiglie" in x.get("adattoA", "").lower() for x in catalogo))
 
     def test_ocr_locandine_senza_immagini_non_blocca(self):
         self.assertEqual(crawler.estrai_testo_locandine(None), "")
