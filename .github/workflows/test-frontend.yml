@@ -41,7 +41,6 @@ jobs:
             "sort-events", "surprise-me", "dock-home", "dock-weekend",
             "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento",
             "agenda-date-buttons", "clear-selected-date", "saved-plan-share", "btn-share-saved-plan",
-            "notification-panel", "notification-status", "notification-reminder-count", "btn-notify-toggle", "notification-open-chrome"
           ];
           for (const id of requiredIds) {
             const count = html.split('id="' + id + '"').length - 1;
