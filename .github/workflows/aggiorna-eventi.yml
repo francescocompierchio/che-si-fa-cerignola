@@ -33,6 +33,9 @@ jobs:
       - name: Pulisce il report del ciclo precedente
         run: rm -f report_copertura.json
 
+      - name: Verifica parser, categorie e indirizzi
+        run: python -m unittest discover -s . -p "test_*.py" -v
+
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
           PYTHONUNBUFFERED: "1"
