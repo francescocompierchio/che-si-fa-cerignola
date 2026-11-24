@@ -211,6 +211,15 @@ def oggi_dt():
     """Data/ora corrente nel fuso operativo italiano, indipendente dal runner UTC."""
     return datetime.now(ZoneInfo("Europe/Rome"))
 
+STATISTICHE_FONTI = {}
+
+
+def registra_statistica_fonte(nome, **dati):
+    """Conserva metriche per fonte per rendere verificabile ogni ciclo di raccolta."""
+    stato = STATISTICHE_FONTI.setdefault(nome, {})
+    stato.update(dati)
+
+
 def crea_session_raccolta():
     """Sessione HTTP con retry controllati per errori transitori e rate limit."""
     retry = Retry(
@@ -1112,6 +1121,10 @@ def raccogli_da_portale_viva(session, fonte):
     try:
         r = session.get(url, timeout=(5, 9))
         if r.status_code != 200:
+            registra_statistica_fonte(
+                nome, stato=f"HTTP {r.status_code}", linkCandidati=0,
+                pagineScaricate=0, eventiEstratti=0
+            )
             print(f"{nome}: HTTP {r.status_code}")
             return []
         r.encoding = r.apparent_encoding or "utf-8"
@@ -1154,8 +1167,16 @@ def raccogli_da_portale_viva(session, fonte):
             except Exception:
                 continue
 
+        registra_statistica_fonte(
+            nome, stato="ok", linkCandidati=len(candidati),
+            pagineScaricate=scaricate, eventiEstratti=len(eventi)
+        )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:
+        registra_statistica_fonte(
+            nome, stato="errore", errore=str(e)[:120],
+            linkCandidati=0, pagineScaricate=0, eventiEstratti=0
+        )
         print(f"Errore {nome}: {str(e)[:75]}")
 
     return eventi
@@ -1172,6 +1193,10 @@ def raccogli_da_portale_generico(session, fonte):
     try:
         r = session.get(url, timeout=(6, 10))
         if r.status_code != 200:
+            registra_statistica_fonte(
+                nome, stato=f"HTTP {r.status_code}", linkCandidati=0,
+                pagineScaricate=0, eventiEstratti=0
+            )
             print(f"{nome}: HTTP {r.status_code}")
             return []
         r.encoding = r.apparent_encoding or "utf-8"
@@ -1231,8 +1256,16 @@ def raccogli_da_portale_generico(session, fonte):
             except Exception:
                 continue
 
+        registra_statistica_fonte(
+            nome, stato="ok", linkCandidati=len(links),
+            pagineScaricate=scaricate, eventiEstratti=len(eventi)
+        )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:
+        registra_statistica_fonte(
+            nome, stato="errore", errore=str(e)[:120],
+            linkCandidati=0, pagineScaricate=0, eventiEstratti=0
+        )
         print(f"Errore {nome}: {str(e)[:75]}")
 
     return eventi
@@ -1355,6 +1388,7 @@ def esegui_aggiornamento():
         "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
+    STATISTICHE_FONTI.clear()
     session = crea_session_raccolta()
 
     nuovi_raccolti = []
@@ -1409,6 +1443,17 @@ def esegui_aggiornamento():
         "eventiPerCategoria": dict(Counter(e.get("categoria", "Non classificato") for e in lista_finale)),
         "eventiPerComune": dict(Counter(e.get("citta", "Non specificato") for e in lista_finale)),
         "eventiPerFonte": dict(eventi_per_fonte),
+        "diagnosticaFonti": {
+            nome: dict(dati) for nome, dati in STATISTICHE_FONTI.items()
+        },
+        "fontiConEventi": sum(
+            1 for dati in STATISTICHE_FONTI.values()
+            if dati.get("eventiEstratti", 0) > 0
+        ),
+        "fontiSenzaEventi": [
+            nome for nome, dati in STATISTICHE_FONTI.items()
+            if dati.get("eventiEstratti", 0) == 0
+        ],
     }
     _scrivi_json_atomico("report_copertura.json", report)
 
