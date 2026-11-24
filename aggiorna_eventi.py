@@ -37,7 +37,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it"
 )
 
 FONTI_VIVA = [
@@ -56,6 +56,8 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome": "Foggia Reporter Eventi Cerignola", "url": "https://www.foggiareporter.it/comune/comune-cerignola", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
+    {"nome": "Foggia Reporter Eventi", "url": "https://www.foggiareporter.it/category/eventi", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/circuito/Cerignola/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Puglia Culture Stagione Teatrale Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 30},
     {"nome": "Puglia Culture Teatro Ragazzi Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-la-scena-dei-ragazzi-2026-27-spettacoli-per-le-scuole/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
@@ -172,7 +174,8 @@ NOMI_GIORNI_BREVI = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
 
 REGEX_TEMA_COERENTE = re.compile(
     r"\b(?:"
-    r"mercatin[oi]\s+(?:di\s+natale|nataliz\w*|enogastronomic\w*|artigianal\w*)|"
+    r"mercatin[oi]\s+(?:di\s+natale|nataliz\w*|enogastronomic\w*|artigianal\w*|di\s+autoproduzione)|"
+    r"natale\s+(?:nelle|tra\s+le|in\s+piazza)|tombolat[ae]|cena\s+spettacolo|dinner\s+show|show\s+cooking|music\s+selection|serat[ae]\s+k-pop|"
     r"luminari[ae]|accensione\s+(?:delle\s+)?luminari[ae]|accensione\s+(?:dell['’]\s*)?albero|"
     r"villaggi[o]?\s+(?:di\s+natale|natalizi[o]?|di\s+babbo\s+natale)|"
     r"casa\s+di\s+babbo\s+natale|pist[ae]\s+di\s+(?:pattinaggio|ghiaccio)|presepe\s+vivente|"
@@ -1286,6 +1289,9 @@ def raccogli_da_portale_viva(session, fonte):
             t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
                 continue
+            if fonte.get("notizie_locali"):
+                if not p_low.endswith(".html") or priorita_candidato_rss(t_link, "") < 0:
+                    continue
             if solo_ev or "/eventi/" in p_low or REGEX_TEMA_COERENTE.search(t_link):
                 visti.add(chiave)
                 candidati.append(full)
@@ -1374,6 +1380,26 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
     return " ".join(testi)[:5000]
 
 
+def priorita_candidato_rss(titolo, descrizione):
+    """Selezione dei link pubblici: non è una validazione di eventi."""
+    testo = f"{titolo} {descrizione}"
+    comune = _comune_nel_testo(testo)
+    if not comune or REGEX_SCARTO.search(titolo):
+        return -1
+    if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina|natale|tombolata|show cooking|dinner show|music selection)\w*\b", testo, re.I):
+        return -1
+    punteggio = 10 if comune == "Cerignola" else 3
+    if _comune_nel_testo(titolo):
+        punteggio += 4
+    if REGEX_TEMA_COERENTE.search(testo):
+        punteggio += 3
+    if re.search(r"\b(?:dj\s*set|party|karaoke|musica dal vivo|aperitivo|dinner show|show cooking|music selection|serata)\b", testo, re.I):
+        punteggio += 6
+    if re.search(r"\b\d{1,2}\s+(?:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\b", testo, re.I):
+        punteggio += 4
+    return punteggio
+
+
 def raccogli_da_feed_social(session, fonte):
     """Legge contenuti pubblici indicizzati; non accede a profili privati o Stories effimere."""
     nome = fonte["nome"]
@@ -1391,23 +1417,29 @@ def raccogli_da_feed_social(session, fonte):
         items = feed.find_all("item")
         candidati = len(items)
         tentativi_scheda = 0
-        for item in items[:18]:
+        classificati = []
+        for item in items[:100]:
             titolo_el = item.find("title")
             link_el = item.find("link")
             desc_el = item.find("description")
             titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
             descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
-            testo = f"{titolo} {descrizione}"
-            if not link or not titolo or not _comune_nel_testo(testo):
+            punteggio = priorita_candidato_rss(titolo, descrizione)
+            if punteggio < 0 or not link or not titolo:
                 continue
-            if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina)\w*\b", testo, re.I):
-                continue
-            # Limita il lavoro aggiuntivo per feed dopo aver ripristinato gli URL.
-            if tentativi_scheda >= 6:
-                break
             if urlparse(link).scheme not in ("http", "https") or not urlparse(link).hostname:
                 continue
+            classificati.append((punteggio, item, titolo, link, descrizione))
+        # Ordina tutti i candidati: il budget di rete resta invariato.
+        classificati.sort(key=lambda x: -x[0])
+        visti_link = set()
+        for _, item, titolo, link, descrizione in classificati:
+            if tentativi_scheda >= 6:
+                break
+            if link in visti_link:
+                continue
+            visti_link.add(link)
             tentativi_scheda += 1
             url_finale = link
             html_pagina = ""
@@ -1420,14 +1452,17 @@ def raccogli_da_feed_social(session, fonte):
                     html_pagina = pagina.text
             except requests.RequestException:
                 pass
-            estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True) if html_pagina else []
+            # La pagina intermedia di Google News non è la fonte originale.
+            if _host_appartiene(url_finale, "news.google.com"):
+                html_pagina = ""
+            estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
             if not estratti:
                 testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, max_immagini=1, base_url=url_finale)
                 testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
                 # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
                 # La sede non viene mai inventata: deve comparire nel testo o nella locandina.
                 html_snippet = "<html><body><h1>" + escape(titolo) + "</h1><main><p>" + escape(testo_social) + "</p></main></body></html>"
-                estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True)
+                estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default="", fonte_curata_eventi=False)
             eventi.extend(estratti)
         registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
         print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
