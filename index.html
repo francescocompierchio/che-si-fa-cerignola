@@ -1849,9 +1849,26 @@
       db.ref("localiCerignola").on("value", snap => {
         const val = snap.val();
         if (val) {
-          const lista = Object.values(val).filter(l => l && l.nome);
-          if (lista.length > 0) {
-            localiAttivi = lista;
+          const listaFirebase = Object.values(val).filter(l => l && l.nome);
+          if (listaFirebase.length > 0) {
+            // Firebase contiene i locali aggiunti manualmente in passato.
+            // Non deve sostituire la rubrica predefinita aggiornata: uniamo
+            // i due elenchi e deduplichiamo per nome + città.
+            const uniti = new Map();
+            [...LOCALI_CERIGNOLA_DEFAULT, ...listaFirebase].forEach(loc => {
+              if (!loc || !loc.nome) return;
+              const normalizza = valore => String(valore || "")
+                .normalize("NFD")
+                .replace(/[\\u0300-\\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, " ")
+                .trim();
+              const citta = loc.citta || "Cerignola";
+              const chiave = normalizza(loc.nome) + "|" + normalizza(citta);
+              const precedente = uniti.get(chiave) || {};
+              uniti.set(chiave, { ...precedente, ...loc, citta });
+            });
+            localiAttivi = [...uniti.values()];
             renderLocali();
           }
         }
@@ -2265,7 +2282,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js").catch(err => console.error("SW:", err));
+        navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(err => console.error("SW:", err));
       });
     }
   </script>
