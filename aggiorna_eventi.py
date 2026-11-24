@@ -528,6 +528,8 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             else:
                 i += 1
         indirizzo = ", ".join(parti_indirizzo)
+        if citta:
+            indirizzo = normalizza_nome_luogo(indirizzo, citta)
 
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
