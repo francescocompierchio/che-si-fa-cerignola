@@ -1313,14 +1313,16 @@ def raccogli_da_portale_viva(session, fonte):
 
 
 
-def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3):
+def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url=""):
     """Estrae testo da locandine pubbliche usando OCR locale, se Tesseract è installato."""
     immagini = []
     if item_feed is not None:
         for tag in item_feed.find_all(["enclosure", "media:content", "media:thumbnail"]):
             url_immagine = (tag.get("url") or tag.get("href") or "").strip()
-            if url_immagine.startswith(("http://", "https://")):
-                immagini.append(url_immagine)
+            if url_immagine:
+                url_immagine = urljoin(base_url, url_immagine)
+                if url_immagine.startswith(("http://", "https://")):
+                    immagini.append(url_immagine)
     if html_pagina:
         soup = BeautifulSoup(html_pagina, "html.parser")
         for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
@@ -1402,7 +1404,7 @@ def raccogli_da_feed_social(session, fonte):
                 pass
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True) if html_pagina else []
             if not estratti:
-                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item)
+                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, base_url=url_finale)
                 testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
                 # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
                 # La sede non viene mai inventata: deve comparire nel testo o nella locandina.
@@ -1498,10 +1500,12 @@ def raccogli_da_portale_generico(session, fonte):
                     continue
                 estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
                 if not estratti:
-                    testo_locandina = estrai_testo_locandine(session, rp.text)
+                    testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
                     if testo_locandina:
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
                         titolo_immagine = h1.get_text(" ", strip=True) if h1 else ""
+                        if len(titolo_immagine) < 5 or titolo_immagine.casefold() in {"evento", "eventi", "news", "notizie"}:
+                            titolo_immagine = re.split(r"\\b(?:quando|data|dove|luogo|orario|ore|prezzo|costo)\\b", testo_locandina, maxsplit=1, flags=re.I)[0].strip()[:85]
                         html_ocr = "<html><body><h1>" + escape(titolo_immagine) + "</h1><main><p>" + escape(testo_locandina) + "</p></main></body></html>"
                         estratti = analizza_pagina_evento(html_ocr, link, citta_default=c_def, fonte_curata_eventi=curata)
                 eventi.extend(estratti)
