@@ -512,7 +512,7 @@ def classifica_categoria(testo):
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
-    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
+    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "teatro ragazzi", "la scena dei ragazzi", "spettacoli per le scuole", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
         return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
@@ -521,7 +521,7 @@ def classifica_categoria(testo):
     # Distingue la prosa e il teatro dalla musica, senza farsi ingannare
     # dalla sola presenza del nome del Teatro come luogo dell'evento.
     if any(k in t for k in (
-        "spettacolo teatrale", "teatro ragazzi", "teatro inclusivo",
+        "spettacolo teatrale", "teatro inclusivo",
         "teatro & spettacoli", "commedia teatrale", "prosa", "cabaret",
     )):
         return "Teatro & Spettacoli"
