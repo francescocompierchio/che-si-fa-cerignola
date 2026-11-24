@@ -53,10 +53,7 @@ jobs:
           echo "--- MainActivity JavaScript bridge setup ---"
           ACTIVITY="$(find /tmp/chesifa-apk/smali* -name 'MainActivity.smali' -print -quit)"
           sed -n '2815,2925p' "$ACTIVITY"
-          echo "--- App-specific native bridge classes ---"
-          grep -R -l -E 'Landroid/webkit/JavascriptInterface;|Landroid/webkit/JavascriptInterface' /tmp/chesifa-apk/smali/com/francescocompierchio 2>/dev/null | while read -r file; do
-            echo "### $file"
-            grep -n -E '^\.class|^\.method|\.annotation runtime Landroid/webkit/JavascriptInterface;|\.end annotation|const-string.*(notification|Notification|toast|Toast|share|Share|open|Open)' "$file" | head -160
-          done || true
-          echo "--- Manifest ---
+          echo "--- JavaScript bridge class V/d ---"
+          sed -n '1,420p' /tmp/chesifa-apk/smali/V/d.smali
+          echo "--- Manifest ---"
           sed -n '1,220p' /tmp/chesifa-apk/AndroidManifest.xml
