@@ -227,7 +227,8 @@ def crea_session_raccolta():
         pool_connections=10,
         pool_maxsize=10,
     )
-    session = crea_session_raccolta()
+    session = requests.Session()
+    session.headers.update(HEADERS)
     session.mount("https://", adapter)
     session.mount("http://", adapter)
     return session
@@ -1257,8 +1258,7 @@ def esegui_aggiornamento():
         "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    session = crea_session_raccolta()
 
     nuovi_raccolti = []
     for fonte in FONTI_VIVA:
