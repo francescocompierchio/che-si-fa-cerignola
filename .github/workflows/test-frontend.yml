@@ -284,3 +284,21 @@ jobs:
           genera.conLastmod(next,files["sitemap.xml"],p=>files[p],"2026-11-25");
           assert.ok(!next["sitemap.xml"].includes("<lastmod>2026-11-25</lastmod>"));
           NODE
+
+      - name: Controllo metadati e collegamenti eventi correlati
+        run: |
+          node <<'NODE'
+          const assert=require("node:assert/strict");
+          const genera=require("./genera_pagine_eventi.js");
+          const ev={tipoContenuto:"evento",titolo:"Un concerto molto speciale con un titolo lungo e tanti dettagli aggiuntivi per il pubblico di Cerignola",citta:"Cerignola",luogo:"Teatro",dataInizio:"2026-11-28",dataFine:"2026-11-28",categoria:"Musica & Concerti",fonteUrl:"https://example.org/evento",descrizione:"Descrizione documentata ".repeat(20)};
+          const second={...ev,titolo:"Festa di prova",dataInizio:"2026-11-29",dataFine:"2026-11-29"};
+          const other={...second,titolo:"Evento altrove",citta:"Foggia"};
+          const files=genera([ev,second,other],[],"2026-11-24");
+          const path=Object.keys(files).find(p=>p.includes("un-concerto-molto-speciale"));
+          const page=files[path];
+          assert.ok(page.match(/<title>([^<]+)<\/title>/)[1].length<=60);
+          assert.ok(page.match(/<meta name="description" content="([^"]+)"/)[1].length<=155);
+          assert.ok(page.includes("Festa di prova"));
+          assert.ok(!page.includes("Evento altrove"));
+          assert.ok(!page.includes("CSF_RELATED"));
+          NODE
