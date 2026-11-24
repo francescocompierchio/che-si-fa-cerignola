@@ -35,6 +35,14 @@ class QualitaEventiTests(unittest.TestCase):
             "Musica & Concerti",
         )
 
+    def test_calendari_puglia_culture_cerignola_configurati(self):
+        fonti = {fonte["nome"]: fonte for fonte in crawler.FONTI_PORTALI}
+        self.assertIn("Puglia Culture Stagione Teatrale Cerignola 2026/27", fonti)
+        self.assertIn("Puglia Culture Teatro Ragazzi Cerignola 2026/27", fonti)
+        self.assertTrue(fonti["Puglia Culture Stagione Teatrale Cerignola 2026/27"]["url"].endswith(
+            "/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/"
+        ))
+
     def test_indirizzo_concatenato_due_volte(self):
         indirizzo = (
             "Via Boccaccio 42/44, Barletta. Barletta, "
