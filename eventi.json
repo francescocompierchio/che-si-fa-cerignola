@@ -85,6 +85,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Andria",
+    "categoria": "Natura & Escursioni",
+    "titolo": "«Le parole in cammino»: la Murgia si colora con la Piccola Marcia per la Pace",
+    "dataTesto": "Mar 24 Nov 2026",
+    "dataInizio": "2026-11-24",
+    "dataFine": "2026-11-24",
+    "luogo": "Piccola marcia per la Pace",
+    "indirizzoMappa": "Piccola marcia per la Pace, Andria",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Il bilancio della presidente del Consiglio Daniela Di Bari: «La pace comincia così, un passo alla volta»",
+    "fonteUrl": "https://www.andriaviva.it/notizie/le-parole-in-cammino-la-murgia-si-colora-con-la-piccola-marcia-per-la-pace/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
     "categoria": "Attività diurne",
     "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
@@ -432,6 +446,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
     "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Natura & Escursioni",
+    "titolo": "AgroArcheoTrekking 4.0 a Canne della Battaglia: un cammino inclusivo tra natura, cult",
+    "dataTesto": "Dom 06 Dic 2026",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Cittadella di Canne",
+    "indirizzoMappa": "Cittadella di Canne, Barletta",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "In programma domenica 6 dicembre con “Il Sentiero di Annibale”",
+    "fonteUrl": "https://www.barlettaviva.it/notizie/agroarcheotrekking-4-0-fa-tappa-a-barletta-tornano-i-cammini-inclusivi-tra-natura-cultura-e-tradizioni/"
   },
   {
     "tipoContenuto": "evento",
