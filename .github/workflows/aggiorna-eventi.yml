@@ -28,7 +28,10 @@ jobs:
           python-version: "3.11"
 
       - name: Installa dipendenze
-        run: pip install requests beautifulsoup4
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-ita
+          pip install requests beautifulsoup4 pillow pytesseract
 
       - name: Pulisce il report del ciclo precedente
         run: rm -f report_copertura.json
