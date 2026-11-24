@@ -15,20 +15,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Attività diurne",
-    "titolo": "Mercatino antiquariato e usato di Cerignola, \"Antiquariando\", piazza Libertà",
-    "dataTesto": "Mar 24 Nov 2026",
-    "dataInizio": "2026-11-24",
-    "dataFine": "2026-11-24",
-    "luogo": "\"Antiquariando\", piazza Libertà, , Cerignola (, Puglia), Puglia",
-    "indirizzoMappa": "\"Antiquariando\", piazza Libertà, Cerignola (, Puglia), \"Antiquariando\", piazza Libertà, Cerignola (Foggia), Puglia",
-    "costo": "Gratuito",
-    "descrizione": "Mercatino antiquariato e usato di Cerignola, “Antiquariando” - Scopri gli orari di apertura, la mappa per raggiungere il mercatino di antiquariato/modernariato, il giorno dell’esposizione",
-    "fonteUrl": "https://www.cosedicasa.live/mercatini/cerignola-antiquariando"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Attività diurne",
     "titolo": "Foggia | Festival Sport Story – Il pallone è uguale per tutti",

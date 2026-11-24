@@ -57,7 +57,6 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
-    {"nome": "Cose di Casa Mercatini Cerignola", "url": "https://www.cosedicasa.live/mercatini/cerignola-antiquariando", "dominio": "cosedicasa.live", "citta_default": "Cerignola", "curata": True, "scheda_diretta": True, "max_schede": 1},
     {"nome": "Lanotiziaweb Cerignola", "url": "https://www.lanotiziaweb.it/", "dominio": "lanotiziaweb.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi Cerignola", "url": "https://www.foggiareporter.it/comune/comune-cerignola", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi", "url": "https://www.foggiareporter.it/category/eventi", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
