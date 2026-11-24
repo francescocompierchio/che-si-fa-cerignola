@@ -1211,7 +1211,7 @@ class IndirizziSediLocaliVerificateTests(unittest.TestCase):
                 f"{sede} Trani",
                 "Trani",
             ),
-            f"{sede} Trani",
+            sede,
         )
 
 
