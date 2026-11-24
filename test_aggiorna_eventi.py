@@ -48,6 +48,41 @@ class QualitaEventiTests(unittest.TestCase):
             "/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/"
         ))
 
+    def test_elenco_puglia_culture_usa_card_evento_come_fallback(self):
+        html = """
+        <html><body><main>
+          <div class="event-card">
+            <a href="/evento/breaking-brecht-3/">BREAKING BRECHT</a>
+            <p>domenica 06 dicembre 2026</p>
+            <p>Teatro: Teatro Comunale S. Mercadante - Cerignola</p>
+            <p>Prezzo: a partire da € 12</p>
+          </div>
+          <div class="event-card">
+            <a href="/evento/mio-sempre-mio-andrea/">MIO, SEMPRE, MIO ANDREA</a>
+            <p>venerdì 29 gennaio 2027</p>
+            <p>Teatro: Teatro Comunale S. Mercadante - Cerignola</p>
+          </div>
+          <div class="event-card">
+            <a href="/evento/spettacolo-altro-comune/">SPETTACOLO ALTRO COMUNE</a>
+            <p>sabato 12 dicembre 2026</p>
+            <p>Teatro: Teatro Comunale - Foggia</p>
+          </div>
+        </main></body></html>
+        """
+        soup = crawler.BeautifulSoup(html, "html.parser")
+        eventi = crawler.estrai_eventi_puglia_da_elenco(
+            soup,
+            "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/",
+            "Cerignola",
+        )
+        self.assertEqual(len(eventi), 2)
+        self.assertEqual(
+            {evento["titolo"] for evento in eventi},
+            {"BREAKING BRECHT", "MIO, SEMPRE, MIO ANDREA"},
+        )
+        self.assertTrue(all(evento["citta"] == "Cerignola" for evento in eventi))
+        self.assertTrue(all(evento["luogo"] == "Teatro Comunale S. Mercadante" for evento in eventi))
+
     def test_scheda_puglia_culture_con_metadati_fuori_main(self):
         html = """
         <html><body>
