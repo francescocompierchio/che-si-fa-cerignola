@@ -1528,7 +1528,7 @@
       if (!supporto.supportato) {
         const messaggi = {
           https: "Le notifiche funzionano solo in una pagina sicura HTTPS. Riapri l’indirizzo ufficiale della piattaforma.",
-          api: "Questa finestra non espone le notifiche (può succedere nei browser interni di social e chat). Apri la piattaforma in Chrome.",
+          api: "Questa finestra dell’app non espone le notifiche. Succede con alcuni contenitori Android/WebView e browser interni di social o chat: apri la piattaforma in Chrome.",
           "service-worker": "Su Android serve un browser che supporti le notifiche persistenti tramite Service Worker. Apri la piattaforma in Chrome."
         };
         stato.textContent = messaggi[supporto.codice] || "Questo browser non supporta le notifiche.";
