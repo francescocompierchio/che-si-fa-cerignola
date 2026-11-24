@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v4";
+const CACHE_NAME = "chesifa-shell-v5";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -80,6 +80,23 @@ self.addEventListener("activate", event => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const destinazione = event.notification.data && event.notification.data.url
+    ? event.notification.data.url
+    : new URL("index.html", self.registration.scope).href;
+  event.waitUntil((async () => {
+    const finestre = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const finestra of finestre) {
+      if (finestra.url.startsWith(self.registration.scope) && "focus" in finestra) {
+        await finestra.focus();
+        return;
+      }
+    }
+    if (self.clients.openWindow) await self.clients.openWindow(destinazione);
+  })());
 });
 
 self.addEventListener("fetch", event => {
