@@ -1301,7 +1301,7 @@
     }
 
     const shareAppAction = () => {
-      window.CsfMetrics?.action("csf_app_share");
+      window.CsfMetrics?.action?.("csf_app_share");
       condividiContenuto(
         "Che Si Fa Cerignola",
         "Scopri eventi, serate e attività a Cerignola e nel raggio di 50 km su Che Si Fa Cerignola:",
@@ -1881,7 +1881,7 @@
     }
     document.getElementById("clear-selected-date").addEventListener("click",()=>{dataSelezionata="";renderAgendaRapida();renderEventi();});
     function entroSetteGiorni(ev){if(!ev.dataInizio||ev.tipoContenuto==="esperienza")return false;const oggiD=new Date(oggi+"T00:00:00"),limite=new Date(oggiD);limite.setDate(limite.getDate()+6);const inizio=new Date(ev.dataInizio+"T12:00:00"),fine=new Date((ev.dataFine||ev.dataInizio)+"T12:00:00");return inizio<=limite&&fine>=oggiD;}
-    function impostaFiltroSmart(modo){window.CsfMetrics?.action("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";renderAgendaRapida();document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaFiltroSmart(modo){window.CsfMetrics?.action?.("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";renderAgendaRapida();document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
     function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderAgendaRapida();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
@@ -2128,7 +2128,7 @@
         const content=CsfExtras.fridayCalendar(oggi,new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""));
         const url=URL.createObjectURL(new Blob([content],{type:"text/calendar;charset=utf-8"}));
         const link=document.createElement("a");link.href=url;link.download="promemoria-weekend.ics";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-        window.CsfMetrics?.action("csf_weekend_reminder");
+        window.CsfMetrics?.action?.("csf_weekend_reminder");
         mostraToast("Importa il promemoria nel calendario: ogni venerdì alle 18.");
       }catch(_){mostraToast("Impossibile creare il promemoria.");}
     });
@@ -2136,7 +2136,7 @@
     segTipoSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
-      window.CsfMetrics?.action("csf_report_open");
+      window.CsfMetrics?.action?.("csf_report_open");
       if (!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
       modalSegnala.classList.add("open");
@@ -2198,7 +2198,7 @@
 
       try {
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
-        window.CsfMetrics?.action("csf_report_sent");
+        window.CsfMetrics?.action?.("csf_report_sent");
         e.target.reset();posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
@@ -2542,7 +2542,7 @@
       queryRicerca = e.target.value;
       clearTimeout(timerRicerca);
       if(!queryRicerca.trim())renderEventi();
-      else timerRicerca=setTimeout(()=>{renderEventi();window.CsfMetrics?.action("csf_search_used");},100);
+      else timerRicerca=setTimeout(()=>{renderEventi();window.CsfMetrics?.action?.("csf_search_used");},100);
     });
     aggiornaArchivio(true);
 
