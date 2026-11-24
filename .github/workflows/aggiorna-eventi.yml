@@ -48,6 +48,7 @@ jobs:
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
           PYTHONUNBUFFERED: "1"
+          OMP_THREAD_LIMIT: "1"
         run: python aggiorna_eventi.py
 
       - name: Pubblica riepilogo della raccolta
@@ -83,7 +84,8 @@ jobs:
                   f"{dati.get('linkCandidati', 0)} schede candidate, "
                   f"{dati.get('pagineScaricate', 0)} pagine lette, "
                   f"{dati.get('eventiEstratti', 0)} eventi, "
-                  f"{dati.get('durataSecondi', 0)} s"
+                  f"{dati.get('durataSecondi', 0)} s; "
+                  f"{dati.get('tentativiOCR', 0)} tentativi OCR"
               )
           PY
           else
