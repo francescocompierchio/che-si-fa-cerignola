@@ -1,4 +1,9 @@
+import io
+import sys
 import unittest
+import warnings
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 import aggiorna_eventi as crawler
 
@@ -92,6 +97,38 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(any("Foresta Umbra" in titolo for titolo in titoli))
         self.assertTrue(any("Oasi Lago Salso" in titolo for titolo in titoli))
         self.assertTrue(all(x.get("fonteUrl") for x in catalogo if any(k in x["titolo"] for k in ("Ripa Alta", "Faeto", "Foresta Umbra", "Oasi Lago Salso"))))
+
+    def test_ocr_gestisce_immagini_palette_con_trasparenza(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow non installato in questo workflow")
+
+        immagine = Image.new("P", (40, 40), 0)
+        immagine.putpalette([0, 0, 0, 255, 255, 255] + [0, 0, 0] * 254)
+        immagine.info["transparency"] = 0
+        buffer = io.BytesIO()
+        immagine.save(buffer, format="PNG")
+
+        risposta = SimpleNamespace(
+            status_code=200,
+            headers={"Content-Type": "image/png"},
+            content=buffer.getvalue(),
+        )
+        session = Mock()
+        session.get.return_value = risposta
+
+        with patch.dict(sys.modules, {"pytesseract": SimpleNamespace(image_to_string=lambda *args, **kwargs: "Locandina evento Cerignola sabato 12 dicembre")}):
+            with warnings.catch_warnings(record=True) as avvisi:
+                warnings.simplefilter("always")
+                testo = crawler.estrai_testo_locandine(
+                    session,
+                    '<html><head><meta property="og:image" content="https://example.test/locandina.png"></head></html>',
+                    base_url="https://example.test/",
+                )
+
+        self.assertIn("Cerignola", testo)
+        self.assertFalse(any("Palette images with Transparency" in str(w.message) for w in avvisi))
 
     def test_ocr_locandine_senza_immagini_non_blocca(self):
         self.assertEqual(crawler.estrai_testo_locandine(None), "")
