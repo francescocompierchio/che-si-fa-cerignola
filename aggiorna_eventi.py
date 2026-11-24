@@ -1327,8 +1327,10 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
         soup = BeautifulSoup(html_pagina, "html.parser")
         for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
             url_immagine = (meta.get("content") or "").strip()
-            if url_immagine.startswith(("http://", "https://")):
-                immagini.append(url_immagine)
+            if url_immagine:
+                url_immagine = urljoin(base_url, url_immagine)
+                if url_immagine.startswith(("http://", "https://")):
+                    immagini.append(url_immagine)
         for img in soup.find_all("img"):
             url_immagine = (img.get("src") or img.get("data-src") or "").strip()
             if url_immagine.startswith(("http://", "https://")):
