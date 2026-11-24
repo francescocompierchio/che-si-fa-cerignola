@@ -502,6 +502,38 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
                 "",
                 indirizzo,
             )
+    # Alcuni aggregatori concatenano due volte la stessa sede: una volta
+    # nel campo luogo e una seconda volta nei dati strutturati dell'indirizzo.
+    # Collassa soltanto segmenti consecutivi equivalenti, ignorando il comune
+    # finale del primo segmento (es. "... Foggia, ...").
+    if indirizzo:
+        parti_indirizzo = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
+
+        def chiavi_segmento_indirizzo(parte):
+            parte = re.sub(r"\s*\([A-Z]{2}\)$", "", parte)
+            senza_comune = re.sub(
+                rf"\s+{re.escape(str(citta))}$", "", parte, flags=re.I
+            ) if citta else parte
+            normalizza = lambda valore: re.sub(
+                r"[^a-z0-9]+", " ", valore.casefold()
+            ).strip()
+            return {
+                chiave for chiave in (normalizza(parte), normalizza(senza_comune))
+                if chiave
+            }
+
+        i = 0
+        while i < len(parti_indirizzo) - 1:
+            chiavi_correnti = chiavi_segmento_indirizzo(parti_indirizzo[i])
+            chiavi_successive = chiavi_segmento_indirizzo(parti_indirizzo[i + 1])
+            if chiavi_correnti.intersection(chiavi_successive):
+                parti_indirizzo.pop(i + 1)
+            else:
+                i += 1
+        indirizzo = ", ".join(parti_indirizzo)
+        if citta:
+            indirizzo = normalizza_nome_luogo(indirizzo, citta)
+
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo

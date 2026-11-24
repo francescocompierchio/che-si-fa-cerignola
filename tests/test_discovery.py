@@ -1192,6 +1192,28 @@ class IndirizziSediLocaliVerificateTests(unittest.TestCase):
             "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola",
         )
 
+    def test_elimina_la_sede_ripetuta_nei_dati_strutturati(self):
+        sede = "Biblioteca di Foggia “La Magna Capitana”"
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                f"{sede} Foggia, {sede}, Foggia",
+                f"{sede} Foggia",
+                "Foggia",
+            ),
+            f"{sede} Foggia",
+        )
+
+    def test_elimina_la_sede_ripetuta_per_trani(self):
+        sede = "Biblioteca storica dell’Ordine degli Avvocati di Trani"
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                f"{sede} Trani, {sede}, Trani",
+                f"{sede} Trani",
+                "Trani",
+            ),
+            sede,
+        )
+
 
 class RomaTeatroUfficialeTests(unittest.TestCase):
     def test_fonte_ufficiale_roma_teatro_usa_parametro_mec_events(self):
