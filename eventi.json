@@ -717,20 +717,6 @@
     "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Teatro & Spettacoli",
-    "titolo": "Cerignola | La Mandragola – Massimo Venturiello e Maurizio Micheli",
-    "dataTesto": "Mar 23 Feb 2027",
-    "dataInizio": "2027-02-23",
-    "dataFine": "2027-02-23",
-    "luogo": "Teatro Mercadante",
-    "indirizzoMappa": "Teatro Mercadante, P.zza Matteotti, 1, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "Massimo Venturiello, con la partecipazione di Maurizio Micheli e Antonella Piccolo, interpreta La Mandragola di Niccolò Machiavelli. In scena anche Guglielmo Poggi, Marco Imparato, Martina Fatighenti, Enrico Spelta e Mat",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331611.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
     "titolo": "LA MANDRAGOLA",
     "dataTesto": "Mar 23 Feb 2027",
     "dataInizio": "2027-02-23",
@@ -754,20 +740,6 @@
     "costo": "€ 5",
     "descrizione": "L’ARRAGO. STORIA DI UNA BABY GANG presso Teatro Comunale S. Mercadante (Cerignola).",
     "fonteUrl": "https://www.pugliaculture.it/evento/larrago-storia-di-una-baby-gang/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
-    "titolo": "Cerignola | Malinconico. Moderatamente felice – Massimiliano Gallo",
-    "dataTesto": "Mar 16 Mar 2027",
-    "dataInizio": "2027-03-16",
-    "dataFine": "2027-03-16",
-    "luogo": "Teatro Mercadante",
-    "indirizzoMappa": "Teatro Mercadante, P.zza Matteotti, 1, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "Massimiliano Gallo porta in scena Malinconico. Moderatamente felice, scritto da Diego De Silva e Massimiliano Gallo e diretto dallo stesso Gallo. Con lui sul palco Biagio Musella, Eleonora Russo, Diego D’Elia, Greta Espo",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331612.html"
   },
   {
     "tipoContenuto": "evento",
@@ -810,20 +782,6 @@
     "costo": "€ 5",
     "descrizione": "COME IL BRUTTO ANATROCCOLO presso Teatro Comunale S. Mercadante (Cerignola).",
     "fonteUrl": "https://www.pugliaculture.it/evento/come-il-brutto-anatroccolo-3/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
-    "titolo": "Cerignola | Kaos. La vita è quantica – Luca Perri",
-    "dataTesto": "Sab 17 Apr 2027",
-    "dataInizio": "2027-04-17",
-    "dataFine": "2027-04-17",
-    "luogo": "Teatro Mercadante",
-    "indirizzoMappa": "Teatro Mercadante, P.zza Matteotti, 1, Cerignola",
-    "costo": "A pagamento",
-    "descrizione": "Luca Perri conduce il pubblico in Kaos. La vita è quantica, un viaggio tra fisica quantistica e biologia quantistica. Lo spettacolo intreccia scienza, meraviglia e interrogativi sulla realtà, proponendo una divulgazione",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331614.html"
   },
   {
     "tipoContenuto": "evento",
