@@ -1354,3 +1354,17 @@ class PugliaCultureSchedeEventiTests(unittest.TestCase):
         self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
         self.assertIn("Mercadante", eventi[0]["luogo"])
         self.assertIn("12", eventi[0]["costo"])
+
+
+class ClassificazioneTeatroRagazziTests(unittest.TestCase):
+    def test_la_scena_dei_ragazzi_va_in_famiglie_bambini(self):
+        self.assertEqual(
+            motore.classifica_categoria("C'era una volta l'Africa - La Scena dei Ragazzi"),
+            "Famiglie & Bambini",
+        )
+
+    def test_teatro_ragazzi_non_finira_nella_categoria_teatro_generica(self):
+        self.assertEqual(
+            motore.classifica_categoria("L'Arrago - Teatro Ragazzi"),
+            "Famiglie & Bambini",
+        )
