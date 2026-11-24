@@ -12,12 +12,13 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Che Si Fa Cerignola – Eventi, serate e attività a Cerignola e nel raggio di 50 km</title>
-  <meta name="description" content="Eventi, serate nei locali, attività serali e diurne, famiglie, escursioni e luoghi da visitare a Cerignola e in tutti i comuni nel raggio di 50 km. Un progetto di Francesco Compierchio." />
+  <title>Eventi a Cerignola oggi e nel weekend | Che Si Fa Cerignola</title>
+  <meta name="description" content="Cosa fare a Cerignola oggi, stasera e nel weekend: eventi, serate nei locali, concerti, sagre, attività per famiglie ed escursioni nei dintorni." />
   <meta name="author" content="Francesco Compierchio" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://francescocompierchio.github.io/che-si-fa-cerignola/" />
   <link rel="manifest" href="manifest.json" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Che Si Fa Cerignola","url":"https://francescocompierchio.github.io/che-si-fa-cerignola/","inLanguage":"it","description":"Eventi e serate a Cerignola e dintorni."}</script>
   <meta name="theme-color" content="#004aad" />
   <link rel="apple-touch-icon" href="1795175413227~4.jpg" />
 
@@ -993,7 +994,7 @@
     <div class="drawer-header">
       <div>
         <h2>Locali &amp; Pagine Instagram</h2>
-        <p id="venues-drawer-sub">Apri i profili Instagram o cerca il locale</p>
+        <p id="venues-drawer-sub">Apri i profili Instagram disponibili o avvia il navigatore</p>
       </div>
       <button type="button" class="drawer-close-btn" id="btn-close-venues" aria-label="Chiudi pannello locali">✕</button>
     </div>
@@ -1162,7 +1163,7 @@
 
     function getInstagramUrl(username) {
       const cleanUser = String(username || "").replace(/^@/, "").trim();
-      return cleanUser ? `https://www.instagram.com/${cleanUser}/` : "https://www.instagram.com/";
+      return /^[a-zA-Z0-9._]{1,30}$/.test(cleanUser) ? `https://www.instagram.com/${cleanUser}/` : "";
     }
 
     function isSafeHttpUrl(url) {
@@ -1273,18 +1274,18 @@
       { nome: "Caffè Plaza", tipo: "Caffetteria · Bar & Pasticceria", igUser: "caffe_plaza", citta: "Cerignola", mappa: "Corso Scuola Agraria 5, Cerignola" },
       { nome: "U' Vulesce", tipo: "Hostaria · Enoteca", igUser: "", citta: "Cerignola", mappa: "Via Cesare Battisti 3, Cerignola" },
       { nome: "Pilsner Legend", tipo: "Pub · Birreria & Cucina", igUser: "", citta: "Cerignola", mappa: "Piano San Rocco 24, Cerignola" },
-      { nome: "Teku33", tipo: "Beer Shop · Pub & Food", igUser: "", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 115, Cerignola" },
+      { nome: "Teku33", tipo: "Beer Shop · Pub & Food", igUser: "teku_33", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 115, Cerignola" },
       { nome: "Safarà", tipo: "Pub · Musica & Serate", igUser: "", citta: "Cerignola", mappa: "Piazza Giacomo Matteotti 6, Cerignola" },
       { nome: "Il Postaccio", tipo: "Pub · Cocktail & Cucina", igUser: "", citta: "Cerignola", mappa: "Piazza Giacomo Matteotti 20, Cerignola" },
-      { nome: "La Volpe e l'Uva", tipo: "Ristorante · Cucina di mare", igUser: "", citta: "Cerignola", mappa: "Via Nizza 48, Cerignola" },
+      { nome: "La Volpe e l'Uva", tipo: "Ristorante · Cucina di mare", igUser: "la_volpe_e_l_uva", citta: "Cerignola", mappa: "Via Nizza 48, Cerignola" },
       { nome: "Terramia Osteria Moderna", tipo: "Osteria · Cucina contemporanea", igUser: "", citta: "Cerignola", mappa: "Piazza Madre Teresa di Calcutta, Cerignola" },
-      { nome: "Ossobuco Steakhouse & Restaurant", tipo: "Steakhouse · Ristorante", igUser: "", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 31, Cerignola" },
-      { nome: "Alchimia Cucina & Vino", tipo: "Ristorante · Wine & Food", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 83, Cerignola" },
+      { nome: "Ossobuco Steakhouse & Restaurant", tipo: "Steakhouse · Ristorante", igUser: "ossobuco.restaurant", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 31, Cerignola" },
+      { nome: "Alchimia Cucina & Vino", tipo: "Ristorante · Wine & Food", igUser: "alchimia.cucinaevino", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 83, Cerignola" },
       { nome: "Pizzeria 10 Fontane", tipo: "Pizzeria", igUser: "", citta: "Cerignola", mappa: "Via Bologna 25, Cerignola" },
-      { nome: "31 Grani", tipo: "Pizzeria · Brew Pub", igUser: "", citta: "Cerignola", mappa: "Via Don Minzoni 112, Cerignola" },
-      { nome: "Mistella - Vino Pizza e Cucina", tipo: "Ristorante · Pizzeria & Vineria", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 101, Cerignola" },
+      { nome: "31 Grani", tipo: "Pizzeria · Brew Pub", igUser: "31grani", citta: "Cerignola", mappa: "Via Don Minzoni 112, Cerignola" },
+      { nome: "Mistella - Vino Pizza e Cucina", tipo: "Ristorante · Pizzeria & Vineria", igUser: "mistella_vinopizzaecucina", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 101, Cerignola" },
       { nome: "Sayuri - Japanese Cult & Style", tipo: "Ristorante giapponese", igUser: "", citta: "Cerignola", mappa: "Viale di Levante 71, Cerignola" },
-      { nome: "HANA Ristorante Giapponese", tipo: "Ristorante giapponese · Sushi", igUser: "", citta: "Cerignola", mappa: "Via Nizza 56, Cerignola" },
+      { nome: "HANA Ristorante Giapponese", tipo: "Ristorante giapponese · Sushi", igUser: "hana.sushi.cerignola.new", citta: "Cerignola", mappa: "Via Nizza 56, Cerignola" },
       { nome: "L'Habituel Cafè", tipo: "Caffetteria · Aperitivi", igUser: "", citta: "Cerignola", mappa: "Via Felice Cavallotti 25, Cerignola" },
       { nome: "Cafè Noir", tipo: "Bar · Caffetteria", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 75, Cerignola" },
       { nome: "Caffetteria Traversi", tipo: "Gran Pasticceria · Bar & Gelateria", igUser: "", citta: "Cerignola", mappa: "Corso Antonio Gramsci 18, Cerignola" },
@@ -1360,12 +1361,21 @@
         const actions = document.createElement("div");
         actions.className = "venue-actions";
 
-        const igBtn = document.createElement("a");
-        igBtn.className = "btn-xs btn-ig";
-        igBtn.href = loc.igUser ? getInstagramUrl(loc.igUser) : `https://www.google.com/search?q=${encodeURIComponent("site:instagram.com " + loc.nome + " " + (loc.citta || "Cerignola"))}`;
-        igBtn.target = "_blank";
-        igBtn.rel = "noopener noreferrer";
-        igBtn.textContent = loc.igUser ? "Instagram" : "Trova Instagram";
+        const instagramUrl = getInstagramUrl(loc.igUser);
+        if (instagramUrl) {
+          const igBtn = document.createElement("a");
+          igBtn.className = "btn-xs btn-ig";
+          igBtn.href = instagramUrl;
+          igBtn.target = "_blank";
+          igBtn.rel = "noopener noreferrer";
+          igBtn.textContent = "Instagram";
+          actions.appendChild(igBtn);
+        } else {
+          const stato = document.createElement("span");
+          stato.className = "venue-tag";
+          stato.textContent = "Profilo Instagram non verificato";
+          actions.appendChild(stato);
+        }
 
         const mapBtn = document.createElement("button");
         mapBtn.type = "button";
@@ -1373,7 +1383,7 @@
         mapBtn.textContent = "Naviga";
         mapBtn.addEventListener("click", () => apriNavigazioneMappa(loc.mappa));
 
-        actions.append(igBtn, mapBtn);
+        actions.appendChild(mapBtn);
         card.append(name, tag, actions);
         venuesList.appendChild(card);
       });
@@ -1898,7 +1908,7 @@
               const citta = loc.citta || "Cerignola";
               const chiave = normalizza(loc.nome) + "|" + normalizza(citta);
               const precedente = uniti.get(chiave) || {};
-              uniti.set(chiave, { ...precedente, ...loc, citta });
+              uniti.set(chiave, { ...precedente, ...loc, citta, igUser: getInstagramUrl(loc.igUser) ? loc.igUser : (precedente.igUser || "") });
             });
             localiAttivi = [...uniti.values()];
             renderLocali();
