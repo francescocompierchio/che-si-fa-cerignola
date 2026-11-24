@@ -1381,9 +1381,11 @@ def raccogli_da_feed_social(session, fonte):
             registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
             print(f"{nome}: HTTP {risposta.status_code}")
             return []
-        feed = BeautifulSoup(risposta.content, "html.parser")
+        # RSS è XML: il parser HTML tratta <link> come tag vuoto e perde gli URL.
+        feed = BeautifulSoup(risposta.content, "xml")
         items = feed.find_all("item")
         candidati = len(items)
+        tentativi_scheda = 0
         for item in items[:18]:
             titolo_el = item.find("title")
             link_el = item.find("link")
@@ -1396,6 +1398,12 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina)\w*\b", testo, re.I):
                 continue
+            # Limita il lavoro aggiuntivo per feed dopo aver ripristinato gli URL.
+            if tentativi_scheda >= 6:
+                break
+            if urlparse(link).scheme not in ("http", "https") or not urlparse(link).hostname:
+                continue
+            tentativi_scheda += 1
             url_finale = link
             html_pagina = ""
             try:
@@ -1409,7 +1417,7 @@ def raccogli_da_feed_social(session, fonte):
                 pass
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True) if html_pagina else []
             if not estratti:
-                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, base_url=url_finale)
+                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, max_immagini=1, base_url=url_finale)
                 testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
                 # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
                 # La sede non viene mai inventata: deve comparire nel testo o nella locandina.
@@ -1417,7 +1425,7 @@ def raccogli_da_feed_social(session, fonte):
                 estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True)
             eventi.extend(estratti)
         registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
-        print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati")
+        print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
     except Exception as exc:
         registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
         print(f"Errore {nome}: {str(exc)[:75]}")
