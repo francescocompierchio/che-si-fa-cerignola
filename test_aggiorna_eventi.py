@@ -9,6 +9,33 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_stato_evento_annullato_non_ripescato(self):
+        url = "https://example.org/evento/serata"
+        data = (crawler.oggi_dt() + crawler.timedelta(days=3)).strftime("%Y-%m-%d")
+        ev = {"@type": "Event", "name": "Serata DJ set", "startDate": data, "eventStatus": "https://schema.org/EventCancelled", "url": url}
+        import json
+        html = '<script type="application/ld+json">' + json.dumps(ev) + '</script><h1>Serata DJ set</h1><p>Luogo: Piazza Matteotti, Cerignola</p>'
+        try:
+            crawler.STATI_EVENTI_NEGATIVI.clear()
+            self.assertEqual(crawler.analizza_pagina_evento(html, url, "Cerignola", True), [])
+            self.assertTrue(crawler.evento_non_attivo({"fonteUrl": url, "dataInizio": data}))
+            self.assertFalse(crawler.evento_non_attivo({"fonteUrl": url, "dataInizio": "2099-01-01"}))
+            self.assertFalse(crawler.evento_non_attivo({"fonteUrl": "https://example.org/evento/altro", "dataInizio": data}))
+        finally:
+            crawler.STATI_EVENTI_NEGATIVI.clear()
+
+    def test_stato_riprogrammato_solo_vecchia_data(self):
+        import json
+        url = "https://example.org/evento/serata"
+        ev = {"@type": "Event", "name": "Serata", "startDate": "2030-03-01", "previousStartDate": "2030-02-01", "eventStatus": "https://schema.org/EventRescheduled", "url": url}
+        try:
+            crawler.STATI_EVENTI_NEGATIVI.clear()
+            crawler.registra_stati_negativi('<script type="application/ld+json">' + json.dumps(ev) + '</script>', url)
+            self.assertTrue(crawler.evento_non_attivo({"fonteUrl": url, "dataInizio": "2030-02-01"}))
+            self.assertFalse(crawler.evento_non_attivo({"fonteUrl": url, "dataInizio": "2030-03-01"}))
+        finally:
+            crawler.STATI_EVENTI_NEGATIVI.clear()
+
     def test_spettacolo_in_sede_teatrale(self):
         self.assertEqual(
             crawler.classifica_categoria("Cenerentola 301", luogo="Teatro Comunale Lucio Dalla"),

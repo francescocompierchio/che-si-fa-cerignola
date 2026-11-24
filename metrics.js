@@ -14,8 +14,10 @@
    const script=document.createElement("script");script.async=true;script.src="https://www.googletagmanager.com/gtag/js?id="+id;document.head.appendChild(script);
  }
  const actions=new Set(["csf_event_open","csf_event_share","csf_event_map","csf_event_source","csf_event_save","csf_event_calendar"]);
+ const appActions=new Set(["csf_app_share","csf_weekend_reminder","csf_report_open","csf_report_sent","csf_filter_used","csf_search_used"]);
  window.CsfMetrics={
    allowed,
+   action(name){if(allowed()&&window.__csfGaStarted&&typeof window.gtag==="function"&&appActions.has(name))window.gtag("event",name,{});},
    record(action,ev){if(!allowed()||!window.__csfGaStarted||typeof window.gtag!=="function"||!actions.has(action)||!ev?.titolo)return;window.gtag("event",action,{csf_event_id:[ev.titolo,ev.citta,ev.dataInizio].join("|").slice(0,100),csf_category:String(ev.categoria||"").slice(0,100)});}
  };
  function decide(v){

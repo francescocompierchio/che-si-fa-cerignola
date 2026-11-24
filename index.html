@@ -947,7 +947,7 @@
 
     <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
     <div class="venues-launcher-row">
-      <button type="button" class="venues-side-tab" id="btn-open-venues" aria-label="Apri pagine Instagram dei locali">
+      <button type="button" class="venues-side-tab" id="btn-open-venues" aria-label="Pagine Instagram Locali: apri il pannello">
         <span class="venues-tab-left">
           <span class="ig-badge-icon" aria-hidden="true">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -991,6 +991,7 @@
       <div id="agenda-date-buttons" class="agenda-date-buttons"></div>
     </section>
     <div class="filters" id="filters"></div>
+    <h2 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap">Elenco degli eventi</h2>
     <div id="events-container"></div>
   </main>
 
@@ -1300,6 +1301,7 @@
     }
 
     const shareAppAction = () => {
+      window.CsfMetrics?.action("csf_app_share");
       condividiContenuto(
         "Che Si Fa Cerignola",
         "Scopri eventi, serate e attività a Cerignola e nel raggio di 50 km su Che Si Fa Cerignola:",
@@ -1869,7 +1871,7 @@
       host.innerHTML="";if(clear)clear.hidden=!dataSelezionata;
       for(let offset=0;offset<7;offset++){
         const data=spostaGiorniISO(oggi,offset),date=new Date(data+"T12:00:00"),day=date.toLocaleDateString("it-IT",{weekday:"short"}).replace(".",""),count=contaEventiGiorno(data);
-        const btn=document.createElement("button");btn.type="button";btn.className="agenda-date-btn"+(count===0?" empty":"")+(dataSelezionata===data?" active":"");btn.setAttribute("aria-pressed",String(dataSelezionata===data));btn.setAttribute("aria-label",date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})+", "+count+" appuntamenti");
+        const btn=document.createElement("button");btn.type="button";btn.className="agenda-date-btn"+(count===0?" empty":"")+(dataSelezionata===data?" active":"");btn.setAttribute("aria-pressed",String(dataSelezionata===data));btn.setAttribute("aria-label",day+" "+date.getDate()+" "+(count===1?"1 evento":count+" eventi")+" · "+date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}));
         const wd=document.createElement("span");wd.className="agenda-date-weekday";wd.textContent=day;
         const num=document.createElement("span");num.className="agenda-date-number";num.textContent=String(date.getDate());
         const total=document.createElement("span");total.className="agenda-date-count";total.textContent=count===1?"1 evento":count+" eventi";
@@ -1879,7 +1881,7 @@
     }
     document.getElementById("clear-selected-date").addEventListener("click",()=>{dataSelezionata="";renderAgendaRapida();renderEventi();});
     function entroSetteGiorni(ev){if(!ev.dataInizio||ev.tipoContenuto==="esperienza")return false;const oggiD=new Date(oggi+"T00:00:00"),limite=new Date(oggiD);limite.setDate(limite.getDate()+6);const inizio=new Date(ev.dataInizio+"T12:00:00"),fine=new Date((ev.dataFine||ev.dataInizio)+"T12:00:00");return inizio<=limite&&fine>=oggiD;}
-    function impostaFiltroSmart(modo){filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";renderAgendaRapida();document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaFiltroSmart(modo){window.CsfMetrics?.action("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";renderAgendaRapida();document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
     function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderAgendaRapida();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
@@ -2126,6 +2128,7 @@
         const content=CsfExtras.fridayCalendar(oggi,new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""));
         const url=URL.createObjectURL(new Blob([content],{type:"text/calendar;charset=utf-8"}));
         const link=document.createElement("a");link.href=url;link.download="promemoria-weekend.ics";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+        window.CsfMetrics?.action("csf_weekend_reminder");
         mostraToast("Importa il promemoria nel calendario: ogni venerdì alle 18.");
       }catch(_){mostraToast("Impossibile creare il promemoria.");}
     });
@@ -2133,6 +2136,7 @@
     segTipoSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
+      window.CsfMetrics?.action("csf_report_open");
       if (!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
       modalSegnala.classList.add("open");
@@ -2194,6 +2198,7 @@
 
       try {
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
+        window.CsfMetrics?.action("csf_report_sent");
         e.target.reset();posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
@@ -2537,7 +2542,7 @@
       queryRicerca = e.target.value;
       clearTimeout(timerRicerca);
       if(!queryRicerca.trim())renderEventi();
-      else timerRicerca=setTimeout(renderEventi,100);
+      else timerRicerca=setTimeout(()=>{renderEventi();window.CsfMetrics?.action("csf_search_used");},100);
     });
     aggiornaArchivio(true);
 

@@ -74,6 +74,10 @@ jobs:
           print(f"- Eventi nell'archivio: {report.get('totaleContenuti', 0)}")
           print(f"- Nuovi eventi rispetto all'archivio: {report.get('nuoviAggiunti', 0)}")
           print(f"- Eventi già presenti ritrovati: {report.get('automaticiRitrovati', 0)}")
+          print(f"- Eventi a Cerignola nei prossimi 7 giorni: {report.get('eventiCerignolaProssimi7Giorni', 0)}")
+          print(f"- Serate automatiche a Cerignola: {report.get('serateCerignola', 0)}")
+          print(f"- Schede ricontrollate: {report.get('controlloStato', {}).get('schedeLette', 0)}")
+          print(f"- Record esclusi per stato esplicito: {report.get('recordEsclusiPerStato', 0)}")
           print(f"- Durata raccolta: {report.get('durataSecondi', 0)} secondi")
           print(f"- Domini contemporanei massimi: {report.get('workerMassimi', 1)}")
           print(f"- Eventi automatici riconvalidati: {report.get('automaticiRiconvalidati', 0)}")
@@ -101,6 +105,15 @@ jobs:
           else
             echo "Il report di copertura non è stato generato." >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      - name: Conserva report di copertura per 14 giorni
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copertura-eventi-${{ github.run_id }}
+          path: report_copertura.json
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Verifica integrità SEO e aggiornamento archivio
         run: node tests/seo-integrity.cjs

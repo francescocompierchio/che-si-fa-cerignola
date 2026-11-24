@@ -56,6 +56,7 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome": "Lanotiziaweb Cerignola", "url": "https://www.lanotiziaweb.it/", "dominio": "lanotiziaweb.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi Cerignola", "url": "https://www.foggiareporter.it/comune/comune-cerignola", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi", "url": "https://www.foggiareporter.it/category/eventi", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/circuito/Cerignola/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
@@ -236,6 +237,7 @@ def oggi_dt():
     return datetime.now(ZoneInfo("Europe/Rome"))
 
 STATISTICHE_FONTI = {}
+STATI_EVENTI_NEGATIVI = set()
 _LOCK_STATISTICHE = Lock()
 MAX_WORKER_FONTI = 4
 MAX_OCR_PER_FONTE = 6
@@ -1088,6 +1090,78 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     }
 
 
+def chiave_stato_evento(url, data):
+    """Confronto prudente: stessa scheda e stessa data, mai solo il nome."""
+    pr = urlparse(str(url or ""))
+    if pr.scheme not in ("http", "https") or not pr.hostname or not _data_iso_valida(data):
+        return None
+    return (pr.hostname.lower().removeprefix("www."), pr.path.rstrip("/") or "/", pr.query, data)
+
+
+def registra_stati_negativi(html_text, page_url):
+    """Legge esclusivamente stati espliciti Schema.org; non deduce cancellazioni da HTTP o testo generico."""
+    soup = BeautifulSoup(html_text, "html.parser")
+    eventi_ld = []
+    for sc in soup.find_all("script", type="application/ld+json"):
+        try:
+            estrai_eventi_jsonld(json.loads(sc.string or ""), eventi_ld)
+        except (ValueError, TypeError):
+            continue
+    negativi = set()
+    for ev in eventi_ld:
+        stato = str(ev.get("eventStatus") or "").lower().rstrip("/").rsplit("/", 1)[-1]
+        if stato not in {"eventcancelled", "eventpostponed", "eventrescheduled"}:
+            continue
+        # Per gli eventi riprogrammati serve la vecchia data esplicita.
+        data = str(ev.get("previousStartDate") if stato == "eventrescheduled" else ev.get("startDate") or "")[:10]
+        url = urljoin(page_url, str(ev.get("url") or ""))
+        if not _host_appartiene(url, urlparse(page_url).hostname):
+            continue
+        k = chiave_stato_evento(url, data)
+        if k:
+            negativi.add(k)
+    with _LOCK_STATISTICHE:
+        STATI_EVENTI_NEGATIVI.update(negativi)
+    return negativi
+
+
+def evento_non_attivo(ev):
+    k = chiave_stato_evento(ev.get("fonteUrl"), ev.get("dataInizio"))
+    with _LOCK_STATISTICHE:
+        return k is not None and k in STATI_EVENTI_NEGATIVI
+
+
+def ricontrolla_eventi_imminenti(eventi, massimo=10):
+    """Rilegge un piccolo campione di schede automatiche imminenti.
+    Un errore o un blocco HTTP non autorizza mai una cancellazione."""
+    oggi = oggi_iso()
+    limite = (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")
+    scelti = []
+    visti = set()
+    for ev in sorted(eventi, key=lambda e: (priorita_km(e.get("citta", "")), e.get("dataInizio", ""))):
+        url = ev.get("fonteUrl", "")
+        if not (oggi <= ev.get("dataInizio", "") <= limite) or not _fonte_appartiene_a_raccolta_automatica(url):
+            continue
+        if url in visti or _host_appartiene(url, "news.google.com") or _host_appartiene(url, "instagram.com") or _host_appartiene(url, "facebook.com"):
+            continue
+        visti.add(url)
+        scelti.append(url)
+        if len(scelti) >= massimo:
+            break
+    letti = 0
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+        for url in scelti:
+            try:
+                r = session.get(url, timeout=(3, 5), allow_redirects=False)
+                if r.status_code == 200 and "html" in r.headers.get("Content-Type", "text/html").lower():
+                    registra_stati_negativi(r.text, url)
+                    letti += 1
+            except requests.RequestException:
+                pass
+    return {"schedeSelezionate": len(scelti), "schedeLette": letti}
+
+
 def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_eventi=False):
     ref = oggi_dt()
     soup = BeautifulSoup(html_text, "html.parser")
@@ -1100,6 +1174,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         except Exception:
             continue
 
+    negativi = registra_stati_negativi(html_text, page_url) if eventi_ld else set()
     for ev_ld in eventi_ld[:20]:
         stato = str(ev_ld.get("eventStatus") or "").lower()
         if "eventcancelled" in stato or "eventpostponed" in stato:
@@ -1151,11 +1226,13 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "descrizione": desc,
             "fonteUrl": url_evento
         }, ref, fonte_curata_eventi=fonte_curata_eventi)
-        if ev_ok:
+        if ev_ok and not evento_non_attivo(ev_ok):
             risultati.append(ev_ok)
 
     if risultati:
         return risultati
+    if negativi:
+        return []  # Non ricostruire dal testo una scheda esplicitamente non attiva.
 
     h1 = soup.find("h1")
     titolo = re.sub(r"\s+", " ", h1.get_text(" ", strip=True)) if h1 else ""
@@ -1478,7 +1555,7 @@ def raccogli_da_feed_social(session, fonte):
             if _host_appartiene(url_finale, "news.google.com"):
                 html_pagina = ""
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
-            if not estratti:
+            if not estratti and not (html_pagina and registra_stati_negativi(html_pagina, url_finale)):
                 testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, max_immagini=1, base_url=url_finale)
                 testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
                 # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
@@ -1619,6 +1696,8 @@ def raccogli_da_portale_generico(session, fonte):
             t_link = re.sub(r"\s+", " ", a.get_text(" ", strip=True)).strip()
             if _contiene_anno_passato(f"{pr.path} {t_link}") or REGEX_SCARTO.search(t_link):
                 continue
+            if fonte.get("notizie_locali") and priorita_candidato_rss(t_link, pr.path.replace("-", " ")) < 0:
+                continue
 
             # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
             # in quel caso il prefisso configurato è una prova sufficiente.
@@ -1653,7 +1732,7 @@ def raccogli_da_portale_generico(session, fonte):
                 if "evento si è già concluso" in rp.text.lower() or "fa parte del nostro archivio" in rp.text.lower():
                     continue
                 estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
-                if not estratti:
+                if not estratti and not registra_stati_negativi(rp.text, link):
                     testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
                     if testo_locandina:
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
@@ -1899,6 +1978,7 @@ def esegui_aggiornamento():
     )
 
     STATISTICHE_FONTI.clear()
+    STATI_EVENTI_NEGATIVI.clear()
     compiti = (
         [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
@@ -1906,6 +1986,11 @@ def esegui_aggiornamento():
     )
     print(f"Raccolta parallela: {len(compiti)} fonti, massimo {MAX_WORKER_FONTI} domini contemporanei", flush=True)
     nuovi_raccolti = raccogli_fonti_parallele(compiti)
+    controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
+    prima = len(precedenti_auto) + len(nuovi_raccolti)
+    precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e)]
+    nuovi_raccolti = [e for e in nuovi_raccolti if not evento_non_attivo(e)]
+    esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []
     for ev in nuovi_raccolti:
@@ -1949,6 +2034,10 @@ def esegui_aggiornamento():
         "aggiornatoAl": oggi_dt().strftime("%Y-%m-%d %H:%M:%S %Z"),
         "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),
+        "controlloStato": controllo_stato,
+        "recordEsclusiPerStato": esclusi_stato,
+        "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
+        "serateCerignola": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and e.get("categoria") == "Locali & Serate"),
         "nuoviAggiunti": aggiunti_nuovi,
         "automaticiRitrovati": ritrovati,
         "durataSecondi": round(time.time() - t_start, 2),
