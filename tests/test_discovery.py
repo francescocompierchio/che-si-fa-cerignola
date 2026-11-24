@@ -1267,7 +1267,7 @@ class RomaTeatroUfficialeTests(unittest.TestCase):
         self.assertEqual(len(eventi), 1)
         self.assertEqual(eventi[0]["dataInizio"], "2026-12-04")
         self.assertIn("roma teatro", eventi[0]["luogo"].casefold())
-        self.assertIn("Via Roma, 49", eventi[0]["indirizzoMappa"])
+        self.assertIn("Corso Roma, 49", eventi[0]["indirizzoMappa"])
 
     def test_schede_roma_teatro_vengono_riconosciute_come_automatiche(self):
         self.assertTrue(
