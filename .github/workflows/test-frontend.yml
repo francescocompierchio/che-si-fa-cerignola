@@ -92,8 +92,12 @@ jobs:
           const makeNotificationSummary = new Function(summarySource[0] + "; return riepilogoNuoviEventi;")();
           assert.equal(makeNotificationSummary([{titolo:"Concerto"},{titolo:"Teatro"},{titolo:"Festival"}]), "3 nuovi eventi: Concerto · Teatro e altri 1");
           const sw = fs.readFileSync("sw.js", "utf8");
-          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v7"'), "Versione cache service worker non aggiornata");
+          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v8"'), "Versione cache service worker non aggiornata");
           assert.ok(sw.includes('addEventListener("notificationclick"'), "Apertura app dal tocco notifica assente");
+          assert.ok(html.includes("const LOCALI_CERIGNOLA_DEFAULT"), "Rubrica locali Instagram assente");
+          assert.ok((html.match(/\\{ nome: \"/g) || []).length >= 35, "Rubrica locali incompleta");
+          assert.ok(html.includes("Trova Instagram"), "Ricerca Instagram per profili non verificati assente");
+          assert.ok(html.includes("citta: \"Orta Nova\"") && html.includes("citta: \"Canosa di Puglia\"") && html.includes("citta: \"Barletta\""), "Locali dei dintorni assenti");
           assert.ok(html.includes("function creaTestoPianoSalvati"), "Funzione condivisione piano salvato assente");
           const planSource = html.match(/function creaTestoPianoSalvati\(salvati\)\{[\s\S]*?\n    \}/);
           assert.ok(planSource, "Composizione piano salvato non trovata");
