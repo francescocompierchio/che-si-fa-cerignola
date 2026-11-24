@@ -38,7 +38,8 @@ jobs:
             "events-container", "filters", "search-input", "quick-all",
             "quick-weekend", "quick-favorites", "favorites-count",
             "sort-events", "surprise-me", "dock-home", "dock-weekend",
-            "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento"
+            "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento",
+            "agenda-date-buttons", "clear-selected-date"
           ];
           for (const id of requiredIds) {
             const count = html.split('id="' + id + '"').length - 1;
@@ -46,6 +47,26 @@ jobs:
           }
           assert.ok(html.includes("csf_eventi_preferiti_v1"), "Persistenza preferiti assente");
           assert.ok(html.includes("function eWeekend"), "Filtro weekend assente");
+          assert.ok(html.includes("function renderAgendaRapida"), "Agenda settimanale assente");
+          assert.ok(html.includes('data-smart-filter="COUPLE"'), "Filtro coppie assente");
+          assert.ok(html.includes('data-smart-filter="FRIENDS"'), "Filtro amici assente");
+          assert.ok(html.includes('data-smart-filter="NIGHT"'), "Filtro serate assente");
+          assert.ok(html.includes('data-smart-filter="CULTURE"'), "Filtro cultura assente");
+          const moveSource = html.match(/function spostaGiorniISO\(data,giorni\)\{[^}]*\}/);
+          assert.ok(moveSource, "Funzione di calendario non trovata");
+          const moveDate = new Function(moveSource[0] + "; return spostaGiorniISO;")();
+          assert.equal(moveDate("2026-11-30", 1), "2026-12-01", "Cambio mese errato");
+          assert.equal(moveDate("2026-12-31", 1), "2027-01-01", "Cambio anno errato");
+          const countSource = html.match(/function contaEventiGiorno\(data\)\{[^}]*\}/);
+          assert.ok(countSource, "Conteggio agenda non trovato");
+          const countFactory = new Function("tuttiEventiAttivi", countSource[0] + "; return contaEventiGiorno;");
+          const countDate = countFactory([
+            {tipoContenuto:"evento",dataInizio:"2026-11-24",dataFine:"2026-11-24"},
+            {tipoContenuto:"evento",dataInizio:"2026-11-23",dataFine:"2026-11-25"},
+            {tipoContenuto:"esperienza",dataInizio:"2000-01-01",dataFine:"2099-12-31"}
+          ]);
+          assert.equal(countDate("2026-11-24"), 2, "Il conteggio agenda deve escludere le esperienze permanenti");
+
           assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
           const fridayShift = day => day === 6 ? -1 : day === 0 ? -2 : (5 - day + 7) % 7;
           const expectedShift = [-2, 4, 3, 2, 1, 0, -1];
