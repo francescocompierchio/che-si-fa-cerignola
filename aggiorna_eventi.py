@@ -51,7 +51,7 @@ FONTI_VIVA = [
 FONTI_PORTALI = [
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
-    {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/stagione-teatrale-2026-27/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Tacco di Bacco Cerignola", "url": "https://iltaccodibacco.it/cerignola/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Concerti", "url": "https://iltaccodibacco.it/cerignola/concerti/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Sponsored", "url": "https://iltaccodibacco.it/cerignola/sponsored/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
@@ -441,6 +441,21 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
             rf"(?i)^(.*?\b{re.escape(citta)}\b(?:\s*\([A-Z]{{2}}\))?(?:,\s*(?:Puglia|Italia))?)(?:[,.;]\s*{re.escape(citta)}\b(?:\s*\([A-Z]{{2}}\))?)+$"
         )
         indirizzo = duplicato_con_sigla.sub(r"\1", indirizzo).strip(" ,.;")
+    if citta:
+        # Rimuove il comune ripetuto dopo la sigla provinciale:
+        # "... Foggia (FG), Foggia, Puglia".
+        indirizzo = re.sub(
+            rf"(?i)(\b{re.escape(citta)}\b\s*\([A-Z]{{2}}\))(?:,\s*{re.escape(citta)}\b)+",
+            r"\1",
+            indirizzo,
+        )
+        # Alcuni aggregatori premettono il comune e poi lo ripetono in coda.
+        if re.search(rf"(?i),\s*{re.escape(citta)}\b", indirizzo):
+            indirizzo = re.sub(
+                rf"(?i)^{re.escape(citta)}\s*,\s*",
+                "",
+                indirizzo,
+            )
     if citta and not re.search(rf"\b{re.escape(citta)}\b", indirizzo, re.I):
         indirizzo = f"{indirizzo}, {citta}".strip(" ,")
     return indirizzo
@@ -631,6 +646,15 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
         testo_pag = testo_o_soup.get_text("\n", strip=True)
     else:
         testo_pag = str(testo_o_soup or "")
+
+    # La pagina ufficiale del Mercadante espone la sede come riga autonoma,
+    # non come etichetta "Luogo:"; riconoscila senza inventare altre sedi.
+    if citta.lower() == "cerignola" and re.search(
+        r"\bteatro\s+comunale\s+saverio\s+mercadante\b",
+        testo_pag,
+        re.I,
+    ):
+        return "Teatro Comunale Saverio Mercadante"
 
     for raw_line in testo_pag.splitlines():
         line = re.sub(r"\s+", " ", raw_line).strip()
@@ -936,7 +960,11 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         "dataInizio": d1,
         "dataFine": d2,
         "luogo": luogo,
-        "indirizzoMappa": f"{luogo}, {citta}",
+        "indirizzoMappa": (
+            "Teatro Comunale Saverio Mercadante, Piazza G. Matteotti, 1, Cerignola"
+            if citta == "Cerignola" and luogo == "Teatro Comunale Saverio Mercadante"
+            else f"{luogo}, {citta}"
+        ),
         "costo": costo,
         "descrizione": descrizione or f"{titolo} presso {luogo} ({citta}).",
         "fonteUrl": page_url
@@ -1032,7 +1060,7 @@ def raccogli_da_portale_generico(session, fonte):
         for a in soup.find_all("a", href=True):
             full = urljoin(url, a["href"]).split("#")[0].strip()
             pr = urlparse(full)
-            if pr.scheme not in ("http", "https") or dominio not in pr.netloc.lower():
+            if pr.scheme not in ("http", "https") or not _host_appartiene(full, dominio):
                 continue
             chiave = f"{pr.netloc.lower()}{pr.path.rstrip('/').lower()}"
             if chiave in visti:
