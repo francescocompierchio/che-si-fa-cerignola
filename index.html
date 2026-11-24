@@ -1394,9 +1394,7 @@
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
     function chiaveEvento(ev){return [ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();}
-    function condividiPianoSalvati(){
-      const salvati=tuttiEventiAttivi.filter(ev=>preferiti.has(chiaveEvento(ev)));
-      if(!salvati.length){mostraToast("Non hai ancora proposte salvate da condividere");return;}
+    function creaTestoPianoSalvati(salvati){
       const massimo=12;
       const righe=salvati.slice(0,massimo).map(ev=>{
         const data=ev.tipoContenuto==="esperienza"?(ev.dataTesto||"Idea per una gita"):(ev.dataTesto||ev.dataInizio||"Data da verificare");
@@ -1404,8 +1402,12 @@
         return "• "+(ev.titolo||"Proposta")+" — "+data+(luogo?" · "+luogo:"");
       });
       if(salvati.length>massimo)righe.push("… e altre "+(salvati.length-massimo)+" proposte salvate");
-      const testo="Ho preparato una selezione di cose da fare con Che Si Fa Cerignola. Ecco le mie idee:\n\n"+righe.join("\n")+"\n\nApri la piattaforma e scopri tutti i dettagli:";
-      condividiContenuto("Il mio piano · Che Si Fa Cerignola",testo,APP_URL);
+      return "Ho preparato una selezione di cose da fare con Che Si Fa Cerignola. Ecco le mie idee:\n\n"+righe.join("\n")+"\n\nApri la piattaforma e scopri tutti i dettagli:";
+    }
+    function condividiPianoSalvati(){
+      const salvati=tuttiEventiAttivi.filter(ev=>preferiti.has(chiaveEvento(ev)));
+      if(!salvati.length){mostraToast("Non hai ancora proposte salvate da condividere");return;}
+      condividiContenuto("Il mio piano · Che Si Fa Cerignola",creaTestoPianoSalvati(salvati),APP_URL);
     }
     document.getElementById("btn-share-saved-plan").addEventListener("click",condividiPianoSalvati);
 
