@@ -1661,6 +1661,19 @@ def sono_duplicati(a, b):
     if SequenceMatcher(None, t1, t2).ratio() >= 0.68:
         return True
 
+    # Titolo breve contenuto per intero e sede compatibile: unifica solo
+    # repliche con le stesse date (es. teatro e aggregatore).
+    if inizio_a == inizio_b and fine_a == fine_b:
+        def parole_norm(valore):
+            return re.findall(r"[a-z0-9à-ù]+", str(valore or "").casefold())
+        ta, tb = (" ".join(parole_norm(e.get("titolo"))) for e in (a, b))
+        la, lb = (set(parole_norm(e.get("luogo"))) for e in (a, b))
+        generiche = {"teatro", "comunale", "piazza", "palazzo", "centro", "parco", "chiesa", "cinema", "ristorante", "cerignola", "foggia", "barletta", "andria", "trani", "manfredonia"}
+        comune = {x for x in la & lb if len(x) >= 5 and x not in generiche}
+        breve, lungo = sorted((ta, tb), key=len)
+        if comune and len(breve) >= 9 and f" {breve} " in f" {lungo} ":
+            return True
+
     # Le fonti ufficiali e gli aggregatori spesso usano sottotitoli diversi
     # per lo stesso spettacolo: confronta anche la parte distintiva iniziale.
     base_a = _titolo_base_duplicato(a.get("titolo"))

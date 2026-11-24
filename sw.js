@@ -1,9 +1,10 @@
-const CACHE_NAME = "chesifa-shell-v13";
+const CACHE_NAME = "chesifa-shell-v14";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
   new URL("index.html", self.registration.scope).href,
   new URL("manifest.json", self.registration.scope).href,
+  new URL("event-tools.js", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 
@@ -11,7 +12,7 @@ function cacheKeyFor(request) {
   const url = new URL(request.url);
   // Il frontend aggiunge un timestamp a eventi.json: usa una chiave stabile
   // per non creare una voce di cache nuova a ogni visita.
-  if ([`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`].includes(url.pathname)) {
+  if ([`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`, `${BASE_PATH}sitemap.xml`].includes(url.pathname)) {
     url.search = "";
     url.hash = "";
   }
@@ -108,7 +109,7 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE_PATH)) return;
 
   const key = cacheKeyFor(request);
-  const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`].includes(url.pathname);
+  const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`, `${BASE_PATH}sitemap.xml`].includes(url.pathname);
   const isPage = request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === BASE_PATH;
 
   event.respondWith(
