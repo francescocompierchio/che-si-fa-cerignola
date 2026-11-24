@@ -1059,8 +1059,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         return []
 
     # Le schede ufficiali possono pubblicare la data dell'evento dentro <time>.
-# Manteniamo il tag e il suo testo: rimuoverlo faceva perdere la data al parser.
-for tag in soup(["script", "style", "nav", "footer", "aside", "form", "noscript", "iframe"]):
+    # Manteniamo il tag e il suo testo: rimuoverlo faceva perdere la data al parser.
+    for tag in soup(["script", "style", "nav", "footer", "aside", "form", "noscript", "iframe"]):
         tag.decompose()
     for meta_el in soup.select(".byline, .author, .meta, .post-meta, .entry-meta, .article-meta, [class*='publish'], [class*='update'], [class*='autore'], [class*='redazione']"):
         meta_el.decompose()
