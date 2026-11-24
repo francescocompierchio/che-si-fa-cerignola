@@ -1088,3 +1088,21 @@ class RecuperoFontiUfficialiETeatroTests(unittest.TestCase):
             motore.classifica_categoria("Spettacolo teatrale di prosa al Mercadante"),
             "Teatro & Spettacoli",
         )
+
+
+    def test_non_unifica_eventi_diversi_con_prefisso_generico_comune(self):
+        primo = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "Cerignola | Concerto – Jazz Quartet",
+            "fonteUrl": "https://example.org/a",
+        }
+        secondo = {
+            "citta": "Cerignola",
+            "dataInizio": "2026-12-06",
+            "dataFine": "2026-12-06",
+            "titolo": "Concerto – Tribute Band",
+            "fonteUrl": "https://example.org/b",
+        }
+        self.assertFalse(motore.sono_duplicati(primo, secondo))
