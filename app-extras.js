@@ -28,7 +28,16 @@ function util(){
    if(params.get("segnala")!=="1")return null;
    return {luogo:clean("luogo",100),citta:clean("citta",60)};
  }
- return {parsePoster,fridayCalendar,propostaPonderata,datiSegnalazione};
+ function interpretaRicerca(query){
+   let q=String(query||"").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[?!.,;:]/g," ").trim();
+   const modo=/\b(?:stasera|questa sera)\b/.test(q)?"TONIGHT":/\b(?:domani)\b/.test(q)?"TOMORROW":/\b(?:oggi)\b/.test(q)?"TODAY":/\b(?:weekend|fine settimana|week end)\b/.test(q)?"WEEKEND":"";
+   // Rimuove soltanto formule di richiesta riconoscibili; conserva i nomi dei locali.
+   q=q.replace(/^(?:cosa (?:fare|si fa)|che (?:si fa|fare)|dove (?:andare|uscire)|quali eventi(?: ci sono)?|ci sono eventi)\b\s*/,"");
+   if(modo)q=q.replace(/\b(?:stasera|questa sera|domani|oggi|weekend|fine settimana|week end)\b/g," ");
+   q=q.replace(/\b(?:a|ad|in|nel|nella|il|di|per|con)\b/g," ");
+   return {modo,parole:q.split(/\s+/).filter(Boolean)};
+ }
+ return {parsePoster,fridayCalendar,propostaPonderata,datiSegnalazione,interpretaRicerca};
 }
 const CsfExtras=util();
 if(typeof module!=="undefined"&&module.exports)module.exports=CsfExtras;

@@ -776,6 +776,46 @@ def estrai_date_italiano(testo, ref_dt=None):
     return "", "", ""
 
 
+def date_discontinue(testo, ref_dt=None):
+    """Se una fonte elenca giorni separati, non inventare i giorni intermedi."""
+    ref = ref_dt or oggi_dt()
+    mesi = "|".join(MESI_IT)
+    testo = rimuovi_riferimenti_pubblicazione(testo).casefold()
+    m = re.search(rf"\b(\d{{1,2}}(?:\s*,\s*\d{{1,2}})*\s+(?:e|ed)\s+\d{{1,2}})\s+({mesi})(?:\s+(20\d{{2}}))?\b", testo)
+    if not m:
+        return []
+    giorni = [int(x) for x in re.findall(r"\d{1,2}", m.group(1))]
+    date = [_inferisci_anno(g, MESI_IT[m.group(2)], m.group(3), ref) for g in giorni]
+    if not all(date) or len(set(giorni)) != len(giorni) or giorni != sorted(giorni):
+        return []
+    if len(giorni) < 2:
+        return []
+    return [d.strftime("%Y-%m-%d") for d in date]
+
+
+def ricorrenza_compatibile(testo, data):
+    """Una regola mensile esplicita può smentire una data, non confermarne di nuove."""
+    m = re.search(r"\b(prim[oa]|second[oa]|terz[oa]|quart[oa]|ultim[oa])\s+(luned[iì]|marted[iì]|mercoled[iì]|gioved[iì]|venerd[iì]|sabato|domenica)\s+(?:di\s+ogni\s+mese|del\s+mese|di\s+tutti\s+i\s+mesi)\b", testo or "", re.I)
+    if not m or not _data_iso_valida(data):
+        return True
+    d = datetime.strptime(data, "%Y-%m-%d")
+    giorni = ["luned", "marted", "mercoled", "gioved", "venerd", "sabato", "domenica"]
+    giorno = next(i for i,g in enumerate(giorni) if m.group(2).casefold().startswith(g))
+    ordinale = m.group(1).casefold()[:-1]
+    if d.weekday() != giorno:
+        return False
+    if ordinale == "ultim":
+        return (d + timedelta(days=7)).month != d.month
+    return (d.day - 1) // 7 + 1 == {"prim":1,"second":2,"terz":3,"quart":4}[ordinale]
+
+
+def orario_data_strutturata(valore):
+    m = re.match(r"^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)", str(valore or ""))
+    if not m or m.group(1,2) == ("00","00"):
+        return ""
+    return " · Ore " + m.group(1) + ":" + m.group(2)
+
+
 def estrai_eventi_jsonld(obj, trovati):
     if isinstance(obj, list):
         for item in obj:
@@ -1176,6 +1216,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             continue
 
     negativi = registra_stati_negativi(html_text, page_url) if eventi_ld else set()
+    testo_regola = (soup.find("main") or soup.find("article") or soup.body or soup).get_text(" ", strip=True)
     for ev_ld in eventi_ld[:20]:
         stato = str(ev_ld.get("eventStatus") or "").lower()
         if "eventcancelled" in stato or "eventpostponed" in stato:
@@ -1183,6 +1224,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         titolo = re.sub(r"\s+", " ", str(ev_ld.get("name") or "")).strip()
         d1 = str(ev_ld.get("startDate") or "").strip()[:10]
         d2 = str(ev_ld.get("endDate") or d1).strip()[:10]
+        if not ricorrenza_compatibile(testo_regola, d1):
+            continue
         loc = ev_ld.get("location") or {}
         if isinstance(loc, list):
             loc = loc[0] if loc else {}
@@ -1220,7 +1263,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "titolo": titolo,
             "dataInizio": d1,
             "dataFine": d2,
-            "dataTesto": formatta_data_italiano(d1, d2) if _data_iso_valida(d1) else "",
+            "dataTesto": (formatta_data_italiano(d1, d2) + orario_data_strutturata(ev_ld.get("startDate"))) if _data_iso_valida(d1) else "",
             "luogo": luogo_nome,
             "indirizzoMappa": indirizzo_completo,
             "costo": estrai_costo_jsonld(ev_ld, soup),
@@ -1286,7 +1329,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             d1 = min(date_strutturate).strftime("%Y-%m-%d")
             d2 = d1
             d_txt = formatta_data_italiano(d1, d2)
-    if not d1:
+    if not d1 or not ricorrenza_compatibile(testo_completo, d1):
         return []
 
     citta = risolvi_comune_50km({"citta": citta_default, "titolo": titolo, "descrizione": corpo[:650]})
@@ -1305,7 +1348,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             descrizione = rimuovi_riferimenti_pubblicazione(p)[:220]
             break
 
-    ev_ok = normalizza_e_valida_evento({
+    raw = {
         "citta": citta,
         "categoria": classifica_categoria(testo_completo, luogo=luogo, fonte_url=page_url),
         "titolo": titolo,
@@ -1323,8 +1366,18 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         "costo": costo,
         "descrizione": descrizione or f"{titolo} presso {luogo} ({citta}).",
         "fonteUrl": page_url
-    }, ref, fonte_curata_eventi=fonte_curata_eventi)
-    return [ev_ok] if ev_ok else []
+    }
+    giorni = date_discontinue(testo_completo, ref)
+    # Dividi soltanto quando il parser principale ha identificato lo stesso intervallo.
+    if giorni and giorni[0] == d1 and giorni[-1] == d2:
+        for giorno in giorni:
+            if ricorrenza_compatibile(testo_completo, giorno):
+                ev = normalizza_e_valida_evento(dict(raw, dataInizio=giorno, dataFine=giorno, dataTesto=formatta_data_italiano(giorno, giorno)), ref, fonte_curata_eventi=fonte_curata_eventi)
+                if ev and not evento_non_attivo(ev):
+                    risultati.append(ev)
+        return risultati
+    ev_ok = normalizza_e_valida_evento(raw, ref, fonte_curata_eventi=fonte_curata_eventi)
+    return [ev_ok] if ev_ok and not evento_non_attivo(ev_ok) else []
 
 
 def _contiene_anno_passato(testo):
@@ -1974,6 +2027,28 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI):
     return [evento for _, eventi in sorted(risultati, key=lambda x: x[0]) for evento in eventi]
 
 
+def evidenze_fonti(eventi, riferimento):
+    """Concordanza osservata nel ciclo corrente, non certificazione di veridicità.
+    Richiede stesso comune, titolo distintivo, data e sede, oltre a domini diversi.
+    Non cambia la fonte primaria né la pubblicazione."""
+    def norm(t):
+        return " ".join(re.findall(r"[a-z0-9à-ù]+", str(t or "").casefold()))
+    def host(e):
+        return (urlparse(e.get("fonteUrl") or "").hostname or "").lower().removeprefix("www.")
+    gruppi = {}
+    for e in eventi:
+        k = (norm(e.get("citta")), norm(e.get("titolo")), e.get("dataInizio"), e.get("dataFine"), norm(e.get("luogo")))
+        if len(k[1]) >= 12 and k[4] and host(e):
+            gruppi.setdefault(k, set()).add(host(e))
+    ris = []
+    for ev in riferimento:
+        k = (norm(ev.get("citta")), norm(ev.get("titolo")), ev.get("dataInizio"), ev.get("dataFine"), norm(ev.get("luogo")))
+        fonti = sorted(gruppi.get(k, set()))
+        if len(fonti) >= 2:
+            ris.append({"titolo":ev.get("titolo"),"citta":ev.get("citta"),"data":ev.get("dataInizio"),"dominiConcordanti":fonti})
+    return ris
+
+
 def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
@@ -2045,7 +2120,10 @@ def esegui_aggiornamento():
         (urlparse(str(e.get("fonteUrl") or "")).hostname or "fonte non specificata").lower()
         for e in lista_finale
     )
+    concordanze = evidenze_fonti(nuovi_raccolti, lista_finale)
     report = {
+        "concordanzeFonti": concordanze,
+        "eventiConcordanti": len(concordanze),
         "aggiornatoAl": oggi_dt().strftime("%Y-%m-%d %H:%M:%S %Z"),
         "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),

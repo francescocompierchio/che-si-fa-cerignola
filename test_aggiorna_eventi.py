@@ -9,6 +9,31 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_date_separate_non_intervallo(self):
+        ref = crawler.datetime(2026, 11, 25)
+        self.assertEqual(crawler.date_discontinue("Mercatini 11, 13 e 20 dicembre 2026", ref), ["2026-12-11","2026-12-13","2026-12-20"])
+        self.assertEqual(crawler.date_discontinue("dal 11 al 20 dicembre 2026", ref), [])
+        self.assertEqual(crawler.date_discontinue("28 e 31 febbraio 2027", ref), [])
+
+    def test_ricorrenza_mensile_non_inventa_date(self):
+        testo = "Antiquariando, seconda domenica di ogni mese"
+        self.assertFalse(crawler.ricorrenza_compatibile(testo, "2026-11-24"))
+        self.assertTrue(crawler.ricorrenza_compatibile(testo, "2026-12-13"))
+        self.assertTrue(crawler.ricorrenza_compatibile("ultima domenica del mese", "2026-12-27"))
+
+    def test_orario_jsonld(self):
+        self.assertEqual(crawler.orario_data_strutturata("2026-12-13T21:30:00+01:00"), " · Ore 21:30")
+        self.assertEqual(crawler.orario_data_strutturata("2026-12-13"), "")
+        self.assertEqual(crawler.orario_data_strutturata("2026-12-13T00:00:00"), "")
+
+    def test_concordanza_fonti_non_confonde_date(self):
+        e = {"titolo":"Concerto in piazza", "citta":"Cerignola", "luogo":"Piazza Libertà", "dataInizio":"2026-12-13", "dataFine":"2026-12-13", "fonteUrl":"https://example.org/evento"}
+        b = dict(e, fonteUrl="https://example.net/serata")
+        c = dict(b, dataInizio="2026-12-20", dataFine="2026-12-20")
+        self.assertEqual(len(crawler.evidenze_fonti([e,b], [e])), 1)
+        self.assertEqual(crawler.evidenze_fonti([e,c], [e]), [])
+        self.assertEqual(crawler.evidenze_fonti([e,dict(e,fonteUrl="https://www.example.org/altro")], [e]), [])
+
     def test_stato_evento_annullato_non_ripescato(self):
         url = "https://example.org/evento/serata"
         data = (crawler.oggi_dt() + crawler.timedelta(days=3)).strftime("%Y-%m-%d")

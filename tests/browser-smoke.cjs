@@ -10,6 +10,8 @@ const assert = require("node:assert/strict");
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
+    await page.locator("#search-input").fill("Cosa fare nel weekend a Cerignola?");
+    await page.waitForFunction(()=>Array.from(document.querySelectorAll("#events-container details")).some(el=>el.textContent.includes("Il Sabato di ADE")));
     await page.locator("#search-input").fill("Il Sabato di ADE");
     await page.waitForFunction(()=>document.querySelectorAll("#events-container details").length===1);
     const card = page.locator("#events-container details").filter({hasText:"Il Sabato di ADE"});

@@ -2316,6 +2316,7 @@
     function renderEventi() {
       const schedeAperte = new Set([...container.querySelectorAll("details[open][data-event-key]")].map(el=>el.dataset.eventKey));
       container.innerHTML = "";
+      const intento=CsfExtras.interpretaRicerca?.(queryRicerca)||{modo:"",parole:normalizzaRicerca(queryRicerca).split(/\s+/).filter(Boolean)};
       let filtrati = tuttiEventiAttivi.filter(ev => {
         const isToday = ev.tipoContenuto !== "esperienza" && oggi >= ev.dataInizio && oggi <= ev.dataFine;
         const cittaEv = (ev.citta || "").toLowerCase().trim();
@@ -2348,7 +2349,11 @@
         }
         if (queryRicerca.trim() !== "") {
           const testoCompleto = normalizzaRicerca(`${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria} ${ev.adattoA || ""} ${ev.tipoEsperienza || ""}`);
-          const paroleRicerca = normalizzaRicerca(queryRicerca).split(/\s+/).filter(Boolean);
+          if(intento.modo==="TONIGHT"&&(!isToday||!CsfEventTools.evening(ev)))return false;
+          if(intento.modo==="TODAY"&&!isToday)return false;
+          if(intento.modo==="TOMORROW"){const domani=spostaGiorniISO(oggi,1);if(ev.tipoContenuto==="esperienza"||!ev.dataInizio||ev.dataInizio>domani||(ev.dataFine||ev.dataInizio)<domani)return false;}
+          if(intento.modo==="WEEKEND"&&(ev.tipoContenuto==="esperienza"||!eWeekend(ev)))return false;
+          const paroleRicerca = intento.parole;
           if (!paroleRicerca.every(parola => testoCompleto.includes(parola))) return false;
         }
         return true;
