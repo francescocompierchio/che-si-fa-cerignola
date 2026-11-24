@@ -52,6 +52,7 @@ FONTI_VIVA = [
 
 FONTI_PORTALI = [
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Comune Cerignola Homepage Eventi", "url": "https://comune.cerignola.fg.it/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Tacco di Bacco Cerignola", "url": "https://iltaccodibacco.it/cerignola/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
@@ -746,6 +747,34 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
     return ""
 
 
+def estrai_indirizzo_documentato(testo_o_soup, citta=""):
+    """Estrae una via/piazza esplicitamente pubblicata, senza geocodificare dati inventati."""
+    if hasattr(testo_o_soup, "get_text"):
+        righe = testo_o_soup.get_text("\n", strip=True).splitlines()
+    else:
+        righe = str(testo_o_soup or "").splitlines()
+
+    for indice, raw_line in enumerate(righe):
+        line = re.sub(r"\s+", " ", raw_line).strip()
+        if not re.match(
+            r"^(?:via|viale|piazza|piazzale|corso|largo|strada|contrada)\b",
+            line,
+            re.I,
+        ):
+            continue
+        indirizzo = line.strip(" ,.;")
+        if citta and citta.lower() not in indirizzo.lower():
+            for successiva in righe[indice + 1:indice + 3]:
+                prossima = re.sub(r"\s+", " ", successiva).strip(" ,.;")
+                if citta.lower() in prossima.lower():
+                    indirizzo = f"{indirizzo}, {prossima}"
+                    break
+        if citta and citta.lower() not in indirizzo.lower():
+            indirizzo = f"{indirizzo}, {citta}"
+        return indirizzo[:150]
+    return ""
+
+
 def estrai_costo_documentato(testo_o_soup):
     if hasattr(testo_o_soup, "get_text"):
         testo_pag = testo_o_soup.get_text("\n", strip=True)
@@ -972,6 +1001,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     if not luogo:
         return []
 
+    indirizzo_documentato = estrai_indirizzo_documentato(cont, citta)
     costo = estrai_costo_documentato(cont)
     descrizione = ""
     for p in paragrafi:
@@ -990,6 +1020,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         "indirizzoMappa": (
             "Teatro Comunale Saverio Mercadante, Piazza G. Matteotti, 1, Cerignola"
             if citta == "Cerignola" and luogo == "Teatro Comunale Saverio Mercadante"
+            else f"{luogo}, {indirizzo_documentato}"
+            if indirizzo_documentato
             else f"{luogo}, {citta}"
         ),
         "costo": costo,
