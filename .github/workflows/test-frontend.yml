@@ -177,5 +177,6 @@ jobs:
           assert.ok(page.includes('application/ld+json'));
           assert.ok(files["sitemap.xml"].includes("cerignola-2030-01-01-test-script.html"));
           assert.ok(fs.existsSync("eventi/index.html"));
-          assert.ok(fs.existsSync("eventi/cerignola-2026-11-28-il-sabato-di-ade.html"));
+          const sitemap = fs.readFileSync("sitemap.xml", "utf8");
+          for (const match of sitemap.matchAll(/<loc>[^<]*\/eventi\/([^<]+\.html)<\/loc>/g)) assert.ok(fs.existsSync("eventi/"+match[1]), "Pagina in sitemap mancante: "+match[1]);
           NODE
