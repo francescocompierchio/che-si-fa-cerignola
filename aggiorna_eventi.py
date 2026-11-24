@@ -11,7 +11,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
-from html import unescape
+from html import escape, unescape
 from zoneinfo import ZoneInfo
 
 GIORNI_ANTICIPO_MAX = 180
@@ -32,7 +32,8 @@ DOMINI_AUTO = (
     "teatromercadantecerignola.it", "romateatrocinema.it", "teatrogiordano.it",
     "palazzodelleartibeltrani.it", "politeamaitalia.com",
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
-    "buzzeventmap.com", "paesionline.it", "2d2web.com",
+    "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
+    "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
     "aivents.it", "experience-app.com", "comune.cerignola.fg.it"
 )
 
@@ -71,7 +72,16 @@ FONTI_PORTALI = [
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
     {"nome": "Virgilio Eventi Foggia", "url": "https://www.virgilio.it/italia/foggia/eventi/", "dominio": "virgilio.it", "citta_default": "", "curata": True},
     {"nome": "Experience App Foggia", "url": "https://experience-app.com/eventi/puglia/foggia/", "dominio": "experience-app.com", "citta_default": "", "curata": True},
+    {"nome": "Piazza in Festa Cerignola", "url": "https://puglia.piazzainfesta.it/cerignola", "dominio": "piazzainfesta.it", "citta_default": "Cerignola", "curata": True, "max_schede": 35},
+    {"nome": "Masseria Pavoni Cerignola", "url": "https://www.masseriapavoni.com/", "dominio": "masseriapavoni.com", "citta_default": "Cerignola", "curata": True, "max_schede": 12},
+    {"nome": "Agriturismo Moschella Cerignola", "url": "https://www.agriturismomoschella.com/", "dominio": "agriturismomoschella.com", "citta_default": "Cerignola", "curata": True, "max_schede": 12},
 
+]
+
+FONTI_SOCIAL_RSS = [
+    {"nome": "Social pubblici Instagram Cerignola", "url": "https://news.google.com/rss/search?q=site%3Ainstagram.com%2Fp%2F+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
+    {"nome": "Social pubblici Facebook Cerignola", "url": "https://news.google.com/rss/search?q=site%3Afacebook.com+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
+    {"nome": "Famiglie ed escursioni Cerignola", "url": "https://news.google.com/rss/search?q=Cerignola+(escursione+OR+trekking+OR+visita+guidata+OR+laboratorio+bambini+OR+fattoria+didattica+OR+gita)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
 ]
 
 COMUNI_50KM = {
@@ -564,7 +574,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
-    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "teatro ragazzi", "la scena dei ragazzi", "spettacoli per le scuole", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
+    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "teatro ragazzi", "la scena dei ragazzi", "spettacoli per le scuole", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "laboratorio creativo", "laboratori per famiglie", "attivita per famiglie", "attività per famiglie", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
         return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
@@ -1146,7 +1156,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     for meta_el in soup.select(".byline, .author, .meta, .post-meta, .entry-meta, .article-meta, [class*='publish'], [class*='update'], [class*='autore'], [class*='redazione']"):
         meta_el.decompose()
 
-    cont = soup.find("main") or soup.find("article") or soup.body or soup
+    # Puglia Culture colloca parte dei metadati fuori dal contenitore main.
+    cont = soup if _host_appartiene(page_url, "pugliaculture.it") else (soup.find("main") or soup.find("article") or soup.body or soup)
     paragrafi = []
     for p in cont.find_all(["p", "li", "h2", "h3"]):
         txt = re.sub(r"\s+", " ", p.get_text(" ", strip=True)).strip()
@@ -1162,6 +1173,25 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
     testo_visibile = re.sub(r"\s+", " ", cont.get_text(" ", strip=True)).strip()
     testo_completo = f"{titolo} | {testo_visibile[:6000]}"
     d1, d2, d_txt = estrai_date_italiano(testo_completo, ref)
+    if _host_appartiene(page_url, "pugliaculture.it"):
+        # Preferisce le date strutturate della scheda ed esclude le date di pubblicazione trascorse.
+        date_strutturate = []
+        limite = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).date()
+        for el in soup.select('[itemprop="startDate"], time[datetime], [data-start-date]'):
+            valore = (el.get("content") or el.get("datetime") or el.get("data-start-date") or "").strip()
+            match_data = re.match(r"^(20\d{2}-\d{2}-\d{2})", valore)
+            if not match_data:
+                continue
+            try:
+                dt = datetime.strptime(match_data.group(1), "%Y-%m-%d").date()
+            except ValueError:
+                continue
+            if ref.date() <= dt <= limite:
+                date_strutturate.append(dt)
+        if date_strutturate:
+            d1 = min(date_strutturate).strftime("%Y-%m-%d")
+            d2 = d1
+            d_txt = formatta_data_italiano(d1, d2)
     if not d1:
         return []
 
@@ -1277,6 +1307,60 @@ def raccogli_da_portale_viva(session, fonte):
         )
         print(f"Errore {nome}: {str(e)[:75]}")
 
+    return eventi
+
+
+
+def raccogli_da_feed_social(session, fonte):
+    """Legge contenuti pubblici indicizzati; non accede a profili privati o Stories effimere."""
+    nome = fonte["nome"]
+    eventi = []
+    candidati = 0
+    scaricate = 0
+    try:
+        risposta = session.get(fonte["url"], timeout=(6, 12))
+        if risposta.status_code != 200:
+            registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
+            print(f"{nome}: HTTP {risposta.status_code}")
+            return []
+        feed = BeautifulSoup(risposta.content, "html.parser")
+        items = feed.find_all("item")
+        candidati = len(items)
+        for item in items[:18]:
+            titolo_el = item.find("title")
+            link_el = item.find("link")
+            desc_el = item.find("description")
+            titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
+            link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
+            descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
+            testo = f"{titolo} {descrizione}"
+            if not link or not titolo or not _comune_nel_testo(testo):
+                continue
+            if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|mercatino|sagra|festa|locandina)\w*\b", testo, re.I):
+                continue
+            url_finale = link
+            html_pagina = ""
+            try:
+                pagina = session.get(link, timeout=(5, 9), allow_redirects=True)
+                if pagina.status_code == 200 and "html" in pagina.headers.get("Content-Type", "text/html").lower():
+                    scaricate += 1
+                    url_finale = pagina.url or link
+                    pagina.encoding = pagina.apparent_encoding or "utf-8"
+                    html_pagina = pagina.text
+            except requests.RequestException:
+                pass
+            estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True) if html_pagina else []
+            if not estratti:
+                # Il motore può mostrare il testo del post anche se Meta impedisce l'apertura.
+                # La sede non viene mai inventata: deve comparire nel contenuto indicizzato.
+                html_snippet = "<html><body><h1>" + escape(titolo) + "</h1><main><p>" + escape(descrizione) + "</p></main></body></html>"
+                estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True)
+            eventi.extend(estratti)
+        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
+        print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati")
+    except Exception as exc:
+        registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
+        print(f"Errore {nome}: {str(exc)[:75]}")
     return eventi
 
 
@@ -1539,6 +1623,8 @@ def esegui_aggiornamento():
         nuovi_raccolti.extend(raccogli_da_portale_viva(session, fonte))
     for fonte in FONTI_PORTALI:
         nuovi_raccolti.extend(raccogli_da_portale_generico(session, fonte))
+    for fonte in FONTI_SOCIAL_RSS:
+        nuovi_raccolti.extend(raccogli_da_feed_social(session, fonte))
 
     nuovi_unici = []
     for ev in nuovi_raccolti:
