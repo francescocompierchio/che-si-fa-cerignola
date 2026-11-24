@@ -88,12 +88,12 @@
     "dataInizio": "2000-01-01",
     "dataFine": "2099-12-31",
     "dataTesto": "Visita didattica · da concordare",
-    "luogo": "Strada Vecchia Barletta km 2,8",
-    "indirizzoMappa": "Masseria Chiomenti, Strada Vecchia Barletta km 2,8, Cerignola FG",
+    "luogo": "Strada Comunale 8 · km 3",
+    "indirizzoMappa": "Masseria Didattica Chiomenti, Strada Comunale 8 km 3, Cerignola FG",
     "descrizione": "Masseria didattica con percorsi legati all'agricoltura, alla trasformazione degli alimenti e alle tradizioni locali. Ideale per esperienze educative in famiglia o per gruppi; contattare la struttura per calendario, disponibilità e prenotazione.",
     "adattoA": "Famiglie, bambini e gruppi",
     "tipoEsperienza": "Masseria didattica",
-    "fonteUrl": "https://www.regione.puglia.it/"
+    "fonteUrl": "https://www.regione.puglia.it/it/web/masserie-didattiche/mappa-masserie-didattiche?_masserieFO_INSTANCE_WsTTJS8smQzq_comId=&_masserieFO_INSTANCE_WsTTJS8smQzq_cur=2&_masserieFO_INSTANCE_WsTTJS8smQzq_delta=40&_masserieFO_INSTANCE_WsTTJS8smQzq_denom=&_masserieFO_INSTANCE_WsTTJS8smQzq_provId=&_masserieFO_INSTANCE_WsTTJS8smQzq_resetCur=false&p_p_id=masserieFO_INSTANCE_WsTTJS8smQzq&p_p_lifecycle=0&p_p_mode=view&p_p_state=normal"
   },
   {
     "id": "agriturismo-moschella",
@@ -109,7 +109,7 @@
     "descrizione": "Struttura rurale nell'area dell'Ofanto che propone attività outdoor e uscite in e-bike secondo disponibilità. Interessante per coppie e piccoli gruppi; verificare percorso, durata, condizioni meteo, noleggio e prenotazione direttamente con la struttura.",
     "adattoA": "Coppie e gruppi; famiglie da verificare con la struttura",
     "tipoEsperienza": "E-bike e campagna",
-    "fonteUrl": "https://www.agriturismomoschella.com/"
+    "fonteUrl": "https://www.regione.puglia.it/it/web/masserie-didattiche/mappa-masserie-didattiche?_masserieFO_INSTANCE_WsTTJS8smQzq_comId=&_masserieFO_INSTANCE_WsTTJS8smQzq_cur=2&_masserieFO_INSTANCE_WsTTJS8smQzq_delta=40&_masserieFO_INSTANCE_WsTTJS8smQzq_denom=&_masserieFO_INSTANCE_WsTTJS8smQzq_provId=&_masserieFO_INSTANCE_WsTTJS8smQzq_resetCur=false&p_p_id=masserieFO_INSTANCE_WsTTJS8smQzq&p_p_lifecycle=0&p_p_mode=view&p_p_state=normal"
   },
   {
     "id": "bosco-incoronata",
@@ -158,5 +158,37 @@
     "adattoA": "Coppie, famiglie e passeggini",
     "tipoEsperienza": "Parco urbano e passeggiata",
     "fonteUrl": "https://comune.cerignola.fg.it/"
+  },
+  {
+    "id": "masseria-cefalicchio",
+    "tipoContenuto": "esperienza",
+    "titolo": "Masseria Didattica Cefalicchio",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "dataInizio": "2000-01-01",
+    "dataFine": "2099-12-31",
+    "dataTesto": "Visita didattica · da concordare",
+    "luogo": "Corso Sabino, 6",
+    "indirizzoMappa": "Masseria Didattica Cefalicchio, Corso Sabino 6, Canosa di Puglia BT",
+    "descrizione": "Masseria inserita nell'elenco ufficiale regionale delle masserie didattiche. Una possibile esperienza per famiglie e gruppi interessati al mondo agricolo e alle tradizioni locali; attività, disponibilità e prenotazione vanno concordate direttamente.",
+    "adattoA": "Famiglie, bambini e gruppi",
+    "tipoEsperienza": "Masseria didattica",
+    "fonteUrl": "https://www.regione.puglia.it/it/web/masserie-didattiche/mappa-masserie-didattiche?_masserieFO_INSTANCE_WsTTJS8smQzq_comId=&_masserieFO_INSTANCE_WsTTJS8smQzq_cur=2&_masserieFO_INSTANCE_WsTTJS8smQzq_delta=40&_masserieFO_INSTANCE_WsTTJS8smQzq_denom=&_masserieFO_INSTANCE_WsTTJS8smQzq_provId=&_masserieFO_INSTANCE_WsTTJS8smQzq_resetCur=false&p_p_id=masserieFO_INSTANCE_WsTTJS8smQzq&p_p_lifecycle=0&p_p_mode=view&p_p_state=normal"
+  },
+  {
+    "id": "giardino-ulivi-trinitapoli",
+    "tipoContenuto": "esperienza",
+    "titolo": "Masseria Didattica Giardino degli Ulivi",
+    "citta": "Trinitapoli",
+    "categoria": "Famiglie & Bambini",
+    "dataInizio": "2000-01-01",
+    "dataFine": "2099-12-31",
+    "dataTesto": "Visita didattica · da concordare",
+    "luogo": "Contrada Giardino",
+    "indirizzoMappa": "Masseria Didattica Giardino degli Ulivi, Contrada Giardino, Trinitapoli BT",
+    "descrizione": "Masseria didattica presente nell'elenco ufficiale della Regione Puglia. Idea per una visita in famiglia legata alla campagna e alle attività agricole; verificare direttamente giorni, attività per bambini, costi e prenotazione.",
+    "adattoA": "Famiglie e bambini",
+    "tipoEsperienza": "Masseria didattica",
+    "fonteUrl": "https://www.regione.puglia.it/it/web/masserie-didattiche/mappa-masserie-didattiche?_masserieFO_INSTANCE_WsTTJS8smQzq_comId=&_masserieFO_INSTANCE_WsTTJS8smQzq_cur=2&_masserieFO_INSTANCE_WsTTJS8smQzq_delta=40&_masserieFO_INSTANCE_WsTTJS8smQzq_denom=&_masserieFO_INSTANCE_WsTTJS8smQzq_provId=&_masserieFO_INSTANCE_WsTTJS8smQzq_resetCur=false&p_p_id=masserieFO_INSTANCE_WsTTJS8smQzq&p_p_lifecycle=0&p_p_mode=view&p_p_state=normal"
   }
 ]
