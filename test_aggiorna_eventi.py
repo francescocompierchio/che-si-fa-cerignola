@@ -82,7 +82,7 @@ class QualitaEventiTests(unittest.TestCase):
         import json
         from pathlib import Path
         catalogo = json.loads((Path(__file__).parent / "esperienze.json").read_text(encoding="utf-8"))
-        self.assertGreaterEqual(len(catalogo), 8)
+        self.assertGreaterEqual(len(catalogo), 12)
         self.assertTrue(all(x.get("tipoContenuto") == "esperienza" for x in catalogo))
         self.assertTrue(all(x.get("titolo") and x.get("citta") and x.get("indirizzoMappa") for x in catalogo))
         self.assertTrue(any("bosco" in x.get("titolo", "").lower() for x in catalogo))
