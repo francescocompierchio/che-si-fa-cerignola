@@ -177,7 +177,7 @@ jobs:
           const genera = require("./genera_pagine_eventi.js");
           const ev = {titolo:"Test <script>",citta:"Cerignola",luogo:"Piazza",categoria:"Locali & Serate",dataInizio:"2030-01-01",dataFine:"2030-01-01",fonteUrl:"https://example.org/evento",descrizione:"Test </script>"};
           const files=genera([ev,ev,{...ev,dataInizio:"2020-01-01",dataFine:"2020-01-01"}],[],"2026-11-24");
-          assert.equal(Object.keys(files).length,3);
+          assert.equal(Object.keys(files).length,5);
           const page=files["eventi/cerignola-2030-01-01-test-script.html"];
           assert.ok(page.includes("Test &lt;script&gt;"));
           assert.ok(page.includes('application/ld+json'));
@@ -264,4 +264,23 @@ jobs:
           assert.ok(html.includes('if (isAndroidApp || isStandalone)'));
           assert.ok(html.includes('campo("seg-descrizione")'));
           assert.ok(html.includes('timeZone:"Europe/Rome"'));
+          NODE
+
+      - name: Controlli SEO locali e date di aggiornamento
+        run: |
+          node <<'NODE'
+          const assert=require("node:assert/strict");
+          const genera=require("./genera_pagine_eventi.js");
+          const ev={tipoContenuto:"evento",titolo:"Serata di prova",citta:"Cerignola",luogo:"Piazza",indirizzoMappa:"Via Test 12, Cerignola",dataInizio:"2026-11-28",dataFine:"2026-11-28",dataTesto:"Sab 28 Nov · Ore 21:00",categoria:"Locali & Serate",fonteUrl:"https://example.org/evento",descrizione:"Serata di prova."};
+          const files=genera([ev],[],"2026-11-24");
+          assert.ok(files["eventi/cerignola.html"].includes("Serata di prova"));
+          assert.ok(files["eventi/weekend.html"].includes("Serata di prova"));
+          const pagina=files["eventi/cerignola-2026-11-28-serata-di-prova.html"];
+          assert.ok(pagina.includes("BreadcrumbList")&&pagina.includes("Via Test 12")&&pagina.includes("2026-11-28T21:00:00"));
+          assert.ok(!genera([],[],"2026-11-24")["sitemap.xml"].includes("weekend.html"));
+          genera.conLastmod(files,"",()=>null,"2026-11-24");
+          assert.ok(files["sitemap.xml"].includes("<lastmod>2026-11-24</lastmod>"));
+          const next=genera([ev],[],"2026-11-25");
+          genera.conLastmod(next,files["sitemap.xml"],p=>files[p],"2026-11-25");
+          assert.ok(!next["sitemap.xml"].includes("<lastmod>2026-11-25</lastmod>"));
           NODE
