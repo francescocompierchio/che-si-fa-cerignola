@@ -59,6 +59,16 @@ jobs:
           print("### Distribuzione per fonte")
           for fonte, count in sorted(report.get("eventiPerFonte", {}).items(), key=lambda x: (-x[1], x[0])):
               print(f"- {fonte}: {count}")
+          print("### Esito interrogazione fonti")
+          print(f"- Fonti che hanno restituito eventi: {report.get('fontiConEventi', 0)}")
+          print(f"- Fonti senza eventi: {len(report.get('fontiSenzaEventi', []))}")
+          for fonte, dati in sorted(report.get("diagnosticaFonti", {}).items()):
+              print(
+                  f"- {fonte}: {dati.get('stato', 'n/d')}; "
+                  f"{dati.get('linkCandidati', 0)} schede candidate, "
+                  f"{dati.get('pagineScaricate', 0)} pagine lette, "
+                  f"{dati.get('eventiEstratti', 0)} eventi"
+              )
           PY
           else
             echo "Il report di copertura non è stato generato." >> "$GITHUB_STEP_SUMMARY"
