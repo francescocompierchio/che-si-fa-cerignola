@@ -1051,7 +1051,7 @@ class RecuperoFontiUfficialiETeatroTests(unittest.TestCase):
           <div>Teatro Comunale Saverio Mercadante</div>
           <div>piazza G. Matteotti, 1</div>
           <div>Cerignola FG</div>
-          <p>Uno spettacolo di prosa con Veronica Pivetti e Manuela Mandracchia.</p>
+          <p>Con Veronica Pivetti e Manuela Mandracchia.</p>
         </main></body></html>
         """
         with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
