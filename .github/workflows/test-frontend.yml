@@ -68,8 +68,9 @@ jobs:
           assert.equal(countDate("2026-11-24"), 2, "Il conteggio agenda deve escludere le esperienze permanenti");
           const icsSource = html.match(/function creaTestoICS\(ev\)\{[\s\S]*?\n    \}/);
           assert.ok(icsSource, "Generatore file calendario non trovato");
-          const makeIcsFactory = new Function("isSafeHttpUrl", "APP_URL", "spostaGiorniISO", icsSource[0] + "; return creaTestoICS;");
-          const makeIcs = makeIcsFactory(url => /^https?:\/\//.test(url), "https://example.test/", moveDate);
+          assert.ok(html.includes("function piegaRigaICS"), "Piegatura righe ICS assente");
+          const makeIcsFactory = new Function("isSafeHttpUrl", "APP_URL", "spostaGiorniISO", "piegaRigaICS", icsSource[0] + "; return creaTestoICS;");
+          const makeIcs = makeIcsFactory(url => /^https?:\/\//.test(url), "https://example.test/", moveDate, line => line);
           const ics = makeIcs({
             titolo: "Serata, insieme",
             dataInizio: "2026-11-24",
@@ -86,6 +87,7 @@ jobs:
           assert.ok(ics.includes("Prima riga\\nSeconda riga"), "A capo descrizione non escapato");
           assert.ok(ics.includes("LOCATION:Piazza\\; centro\\, Cerignola"), "Località ICS non escapata");
           assert.throws(() => makeIcs({dataInizio:"domani"}), /Data evento non valida/);
+          assert.throws(() => makeIcs({dataInizio:"2026-11-25",dataFine:"2026-11-24"}), /Intervallo evento non valido/);
 
 
           assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
