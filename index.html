@@ -1,14 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2QBFBHQXQ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-M2QBFBHQXQ');
-  </script>
+  <script src="metrics.js"></script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1006,6 +999,14 @@
   </aside>
 
   <footer>
+    <section id="csf-consent" class="install-strip" hidden aria-label="Preferenze statistiche">
+      <p>Vuoi contribuire a migliorare il servizio? Le statistiche facoltative misurano visite e interazioni con gli eventi. Puoi rifiutare senza perdere funzionalità.</p>
+      <div class="footer-actions">
+        <button type="button" class="btn btn-soft" id="csf-consent-yes">Consenti statistiche</button>
+        <button type="button" class="btn btn-soft" id="csf-consent-no">Rifiuta</button>
+      </div>
+      <a href="privacy.html">Informativa privacy</a>
+    </section>
     <p>Organizzi una serata, un'attività o conosci un luogo da valorizzare a Cerignola o nel raggio di 50 km?</p>
     <div class="footer-actions">
       <button type="button" class="btn btn-map" id="btn-segnala-evento">
@@ -1029,6 +1030,7 @@
         Profilo Instagram · @francesco_c_92
       </a>
       <div class="author-meta">
+        <button type="button" class="btn-strip btn-strip-soft" id="csf-consent-settings">Preferenze statistiche</button>
         <a href="eventi/">Agenda eventi</a> · Aggiornamento automatico · <a href="privacy.html">Privacy &amp; Cookie Policy</a>
       </div>
     </div>
@@ -1856,7 +1858,7 @@
       dbGlobal = db;
 
       const visiteRef = db.ref("statistiche/visiteTotali");
-      if (!isDispositivoEscluso() && !sessionStorage.getItem("csf_visitato")) {
+      if (window.CsfMetrics?.allowed() && !isDispositivoEscluso() && !sessionStorage.getItem("csf_visitato")) {
         visiteRef.transaction(curr => (curr || 0) + 1);
         sessionStorage.setItem("csf_visitato", "1");
         sessionStorage.setItem("csf_contata_ora", "1");
@@ -1871,7 +1873,7 @@
       const connessioniRef = db.ref("statistiche/utentiOnline");
       const connectedRef = db.ref(".info/connected");
       connectedRef.on("value", snap => {
-        if (snap.val() === true && !isDispositivoEscluso()) {
+        if (snap.val() === true && window.CsfMetrics?.allowed() && !isDispositivoEscluso()) {
           const miaConnessione = connessioniRef.push();
           miaConnessione.onDisconnect().remove();
           miaConnessione.set(true);
@@ -1881,7 +1883,7 @@
 
       connessioniRef.on("value", snap => {
         const reali = snap.numChildren();
-        const online = isDispositivoEscluso() ? reali : Math.max(1, reali);
+        const online = reali;
         document.getElementById("online-users-count").textContent = online;
         document.getElementById("live-pill").style.display = "inline-flex";
       });
@@ -2185,7 +2187,7 @@
         if (ev.inEvidenza) details.classList.add("is-featured");
 
         const summary = document.createElement("summary");
-        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);mostraToast("Aggiunto ai salvati");}salvaPreferiti();aggiornaComandiRapidi();if(modalitaRapida==="FAVORITES")renderEventi();});
+        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);window.CsfMetrics?.record("csf_event_save",ev);mostraToast("Aggiunto ai salvati");}salvaPreferiti();aggiornaComandiRapidi();if(modalitaRapida==="FAVORITES")renderEventi();});
         const metaTop = document.createElement("div");
         metaTop.className = "meta-top";
 
@@ -2267,6 +2269,7 @@
         mapBtn.className = "btn btn-map";
         mapBtn.textContent = "Avvia navigatore";
         mapBtn.addEventListener("click", () => {
+          window.CsfMetrics?.record("csf_event_map",ev);
           apriNavigazioneMappa(ev.indirizzoMappa || `${ev.luogo}, ${ev.citta}`);
         });
 
@@ -2275,6 +2278,7 @@
         waBtn.className = "btn btn-wa";
         waBtn.textContent = "Condividi evento";
         waBtn.addEventListener("click", () => {
+          window.CsfMetrics?.record("csf_event_share",ev);
           condividiContenuto(
             ev.titolo,
             ev.tipoContenuto === "esperienza"
@@ -2287,7 +2291,7 @@
         if (ev.tipoContenuto !== "esperienza" && /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio || ""))) {
           const calendarBtn=document.createElement("button");
           calendarBtn.type="button";calendarBtn.className="btn btn-soft";calendarBtn.textContent="Aggiungi al calendario";
-          calendarBtn.addEventListener("click",()=>scaricaCalendarioICS(ev));
+          calendarBtn.addEventListener("click",()=>{window.CsfMetrics?.record("csf_event_calendar",ev);scaricaCalendarioICS(ev);});
           actions.append(mapBtn,calendarBtn,waBtn);
         } else {
           actions.append(mapBtn,waBtn);
@@ -2300,12 +2304,14 @@
           srcBtn.target = "_blank";
           srcBtn.rel = "noopener noreferrer";
           srcBtn.textContent = "Fonte ufficiale ↗";
+          srcBtn.addEventListener("click",()=>window.CsfMetrics?.record("csf_event_source",ev));
           actions.appendChild(srcBtn);
         }
 
         body.appendChild(actions);
         details.append(summary, body);
         details.appendChild(favoriteBtn);
+        details.addEventListener("toggle",()=>{if(details.open)window.CsfMetrics?.record("csf_event_open",ev);});
         container.appendChild(details);
         if(linkEventoDaAprire && CsfEventTools.key(ev)===linkEventoDaAprire){
           linkEventoDaAprire=""; details.open=true;
