@@ -841,6 +841,12 @@
 .smart-filters-row::-webkit-scrollbar{display:none}
 .smart-filter-btn{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--text);padding:7px 11px;font-size:.77rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .smart-filter-btn.active{background:#eaf1ff;border-color:#8fb2ef;color:#1746a2;box-shadow:0 2px 8px rgba(23,70,162,.08)}
+.saved-plan-share{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px 0 12px;padding:12px 13px;border:1px solid #c9d8f2;border-radius:15px;background:linear-gradient(120deg,#edf4ff,#fff);box-shadow:0 5px 18px rgba(20,33,61,.04)}
+.saved-plan-share[hidden]{display:none!important}
+.saved-plan-share strong{display:block;color:#14213d;font-size:.84rem}
+.saved-plan-share span{display:block;margin-top:2px;color:#64748b;font-size:.72rem;line-height:1.35}
+.saved-plan-share .discovery-btn{flex:0 0 auto}
+@media(max-width:600px){.saved-plan-share{align-items:flex-start;flex-direction:column}.saved-plan-share .discovery-btn{width:100%}}
 .agenda-panel{margin:0 0 13px;padding:12px 11px 11px;background:rgba(255,255,255,.83);border:1px solid #e2e8f0;border-radius:15px;box-shadow:0 5px 18px rgba(20,33,61,.035)}
 .agenda-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 9px;color:#14213d;font-size:.83rem}
 .agenda-heading span{color:#64748b;font-weight:500}
@@ -936,6 +942,7 @@
     <input type="search" id="search-input" class="search-box" placeholder="Cerca evento, serata, attività o comune (entro 50 km)..." aria-label="Cerca evento o attività" />
 
     <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></section>
+    <section id="saved-plan-share" class="saved-plan-share" hidden><div><strong>Il tuo piano è pronto?</strong><span>Condividi in un messaggio tutti gli eventi e le idee che hai salvato</span></div><button type="button" id="btn-share-saved-plan" class="discovery-btn active">↗ Condividi il mio piano</button></section>
     <div class="smart-filters" aria-label="Filtri intelligenti">
       <span class="smart-filters-label">Scopri per tema o compagnia</span>
       <div class="smart-filters-row">
@@ -1387,6 +1394,23 @@
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
     function chiaveEvento(ev){return [ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();}
+    function creaTestoPianoSalvati(salvati){
+      const massimo=12;
+      const righe=salvati.slice(0,massimo).map(ev=>{
+        const data=ev.tipoContenuto==="esperienza"?(ev.dataTesto||"Idea per una gita"):(ev.dataTesto||ev.dataInizio||"Data da verificare");
+        const luogo=[ev.luogo,ev.citta].filter(Boolean).join(", ");
+        return "• "+(ev.titolo||"Proposta")+" — "+data+(luogo?" · "+luogo:"");
+      });
+      if(salvati.length>massimo)righe.push("… e altre "+(salvati.length-massimo)+" proposte salvate");
+      return "Ho preparato una selezione di cose da fare con Che Si Fa Cerignola. Ecco le mie idee:\n\n"+righe.join("\n")+"\n\nApri la piattaforma e scopri tutti i dettagli:";
+    }
+    function condividiPianoSalvati(){
+      const salvati=tuttiEventiAttivi.filter(ev=>preferiti.has(chiaveEvento(ev)));
+      if(!salvati.length){mostraToast("Non hai ancora proposte salvate da condividere");return;}
+      condividiContenuto("Il mio piano · Che Si Fa Cerignola",creaTestoPianoSalvati(salvati),APP_URL);
+    }
+    document.getElementById("btn-share-saved-plan").addEventListener("click",condividiPianoSalvati);
+
     function piegaRigaICS(riga){let parti=[],corrente="",byteCount=0;for(const carattere of String(riga)){const byteSize=new TextEncoder().encode(carattere).length;if(byteCount+byteSize>73){parti.push(corrente);corrente=" "+carattere;byteCount=1+byteSize;}else{corrente+=carattere;byteCount+=byteSize;}}parti.push(corrente);return parti.join("\r\n");}
     function creaTestoICS(ev){
       const inizio=String(ev.dataInizio||""),fine=String(ev.dataFine||inizio);
@@ -1413,7 +1437,7 @@
     function salvaPreferiti(){try{localStorage.setItem(PREFERITI_KEY,JSON.stringify([...preferiti]));}catch(e){}aggiornaContatorePreferiti();}
     function mostraToast(msg){const t=document.getElementById("app-toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(mostraToast.timer);mostraToast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
     function eWeekend(data){if(!data)return false;const d=new Date(data+"T12:00:00"),oggiD=new Date(oggi+"T12:00:00"),ven=new Date(oggiD);const weekday=oggiD.getDay(),daysUntilFriday=(5-weekday+7)%7,shift=weekday===6?-1:weekday===0?-2:daysUntilFriday;ven.setDate(oggiD.getDate()+shift);const dom=new Date(ven);dom.setDate(ven.getDate()+2);return d>=ven&&d<=dom;}
-    function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");document.querySelectorAll(".smart-filter-btn").forEach(b=>{const active=b.dataset.smartFilter===filtroSmart;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});}
+    function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");const sharePlan=document.getElementById("saved-plan-share");if(sharePlan)sharePlan.hidden=!(modalitaRapida==="FAVORITES"&&tuttiEventiAttivi.some(ev=>preferiti.has(chiaveEvento(ev))));document.querySelectorAll(".smart-filter-btn").forEach(b=>{const active=b.dataset.smartFilter===filtroSmart;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});}
     function normalizzaRicerca(v){return String(v||"").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
     function spostaGiorniISO(data,giorni){const [a,m,g]=data.split("-").map(Number),d=new Date(a,m-1,g,12);d.setDate(d.getDate()+giorni);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
     function contaEventiGiorno(data){return tuttiEventiAttivi.filter(ev=>ev.tipoContenuto!=="esperienza"&&ev.dataInizio&&ev.dataInizio<=data&&(ev.dataFine||ev.dataInizio)>=data).length;}
@@ -1822,7 +1846,7 @@
         if (ev.inEvidenza) details.classList.add("is-featured");
 
         const summary = document.createElement("summary");
-        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);mostraToast("Aggiunto ai salvati");}salvaPreferiti();if(modalitaRapida==="FAVORITES")renderEventi();});
+        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);mostraToast("Aggiunto ai salvati");}salvaPreferiti();aggiornaComandiRapidi();if(modalitaRapida==="FAVORITES")renderEventi();});
         const metaTop = document.createElement("div");
         metaTop.className = "meta-top";
 
