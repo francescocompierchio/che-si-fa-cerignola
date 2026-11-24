@@ -47,5 +47,11 @@ jobs:
           assert.ok(html.includes("csf_eventi_preferiti_v1"), "Persistenza preferiti assente");
           assert.ok(html.includes("function eWeekend"), "Filtro weekend assente");
           assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
-          console.log("OK: " + scripts.length + " script inline validati e " + requiredIds.length + " ID interattivi verificati.");
+          const fridayShift = day => day === 6 ? -1 : day === 0 ? -2 : (5 - day + 7) % 7;
+          const expectedShift = [-2, 4, 3, 2, 1, 0, -1];
+          expectedShift.forEach((expected, day) => assert.equal(fridayShift(day), expected, "Calcolo weekend errato per weekday " + day));
+          const normalize = value => value.toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+          assert.equal(normalize("Città"), "citta", "Ricerca senza accenti non valida");
+          assert.deepEqual(normalize("Bosco e natura").split(/\s+/), ["bosco", "e", "natura"]);
+          console.log("OK: " + scripts.length + " script inline, " + requiredIds.length + " ID, date weekend e normalizzazione ricerca verificate.");
           NODE
