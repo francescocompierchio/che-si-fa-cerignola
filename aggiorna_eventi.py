@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import io
 import time
 import requests
 from requests.adapters import HTTPAdapter
@@ -1311,6 +1312,62 @@ def raccogli_da_portale_viva(session, fonte):
 
 
 
+
+def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url=""):
+    """Estrae testo da locandine pubbliche usando OCR locale, se Tesseract è installato."""
+    immagini = []
+    if item_feed is not None:
+        for tag in item_feed.find_all(["enclosure", "media:content", "media:thumbnail"]):
+            url_immagine = (tag.get("url") or tag.get("href") or "").strip()
+            if url_immagine:
+                url_immagine = urljoin(base_url, url_immagine)
+                if url_immagine.startswith(("http://", "https://")):
+                    immagini.append(url_immagine)
+    if html_pagina:
+        soup = BeautifulSoup(html_pagina, "html.parser")
+        for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
+            url_immagine = (meta.get("content") or "").strip()
+            if url_immagine:
+                url_immagine = urljoin(base_url, url_immagine)
+                if url_immagine.startswith(("http://", "https://")):
+                    immagini.append(url_immagine)
+        for img in soup.find_all("img"):
+            url_immagine = (img.get("src") or img.get("data-src") or "").strip()
+            if url_immagine:
+                url_immagine = urljoin(base_url, url_immagine)
+                if url_immagine.startswith(("http://", "https://")):
+                    immagini.append(url_immagine)
+    immagini = list(dict.fromkeys(immagini))[:max_immagini]
+    if not immagini:
+        return ""
+    try:
+        from PIL import Image, ImageOps
+        import pytesseract
+    except ImportError:
+        return ""
+    testi = []
+    for url_immagine in immagini:
+        try:
+            risposta = session.get(url_immagine, timeout=(5, 10))
+            if risposta.status_code != 200 or not risposta.headers.get("Content-Type", "").lower().startswith("image/"):
+                continue
+            contenuto = risposta.content
+            if not contenuto or len(contenuto) > 8 * 1024 * 1024:
+                continue
+            immagine = Image.open(io.BytesIO(contenuto))
+            immagine = ImageOps.exif_transpose(immagine).convert("RGB")
+            immagine.thumbnail((2200, 2200))
+            testo = pytesseract.image_to_string(immagine, lang="ita+eng", config="--psm 6")
+            testo = re.sub(r"\s+", " ", testo).strip()
+            if len(testo) >= 20:
+                testi.append(testo)
+        except Exception:
+            # Un'immagine corrotta, un formato non supportato o Tesseract assente
+            # non devono interrompere la raccolta delle altre fonti.
+            continue
+    return " ".join(testi)[:5000]
+
+
 def raccogli_da_feed_social(session, fonte):
     """Legge contenuti pubblici indicizzati; non accede a profili privati o Stories effimere."""
     nome = fonte["nome"]
@@ -1351,9 +1408,11 @@ def raccogli_da_feed_social(session, fonte):
                 pass
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True) if html_pagina else []
             if not estratti:
-                # Il motore può mostrare il testo del post anche se Meta impedisce l'apertura.
-                # La sede non viene mai inventata: deve comparire nel contenuto indicizzato.
-                html_snippet = "<html><body><h1>" + escape(titolo) + "</h1><main><p>" + escape(descrizione) + "</p></main></body></html>"
+                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, base_url=url_finale)
+                testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
+                # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
+                # La sede non viene mai inventata: deve comparire nel testo o nella locandina.
+                html_snippet = "<html><body><h1>" + escape(titolo) + "</h1><main><p>" + escape(testo_social) + "</p></main></body></html>"
                 estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default=fonte.get("citta_default", "Cerignola"), fonte_curata_eventi=True)
             eventi.extend(estratti)
         registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
@@ -1443,7 +1502,17 @@ def raccogli_da_portale_generico(session, fonte):
                 rp.encoding = rp.apparent_encoding or "utf-8"
                 if "evento si è già concluso" in rp.text.lower() or "fa parte del nostro archivio" in rp.text.lower():
                     continue
-                eventi.extend(analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata))
+                estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
+                if not estratti:
+                    testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
+                    if testo_locandina:
+                        h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
+                        titolo_immagine = h1.get_text(" ", strip=True) if h1 else ""
+                        if len(titolo_immagine) < 5 or titolo_immagine.casefold() in {"evento", "eventi", "news", "notizie"}:
+                            titolo_immagine = re.split(r"\b(?:quando|data|dove|luogo|orario|ore|prezzo|costo)\b", testo_locandina, maxsplit=1, flags=re.I)[0].strip()[:85]
+                        html_ocr = "<html><body><h1>" + escape(titolo_immagine) + "</h1><main><p>" + escape(testo_locandina) + "</p></main></body></html>"
+                        estratti = analizza_pagina_evento(html_ocr, link, citta_default=c_def, fonte_curata_eventi=curata)
+                eventi.extend(estratti)
             except Exception:
                 continue
 
