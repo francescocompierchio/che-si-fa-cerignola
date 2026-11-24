@@ -76,14 +76,14 @@ jobs:
             dataFine: "2026-11-25",
             citta: "Cerignola",
             luogo: "Piazza; centro",
-            descrizione: "Prima riga\\nSeconda riga",
+            descrizione: "Prima riga\nSeconda riga",
             costo: "Ingresso libero",
             fonteUrl: "https://example.test/evento"
           });
           assert.ok(ics.includes("DTSTART;VALUE=DATE:20261124"), "Data iniziale ICS errata");
           assert.ok(ics.includes("DTEND;VALUE=DATE:20261126"), "La data finale ICS deve essere esclusiva");
           assert.ok(ics.includes("SUMMARY:Serata\\, insieme"), "Virgole del titolo non escapate");
-          assert.ok(ics.includes("Prima riga\\\\nSeconda riga"), "A capo descrizione non escapato");
+          assert.ok(ics.includes("Prima riga\\nSeconda riga"), "A capo descrizione non escapato");
           assert.ok(ics.includes("LOCATION:Piazza\\; centro\\, Cerignola"), "Località ICS non escapata");
           assert.throws(() => makeIcs({dataInizio:"domani"}), /Data evento non valida/);
 
