@@ -1179,3 +1179,15 @@ class FiltriSchedeGenericheTests(unittest.TestCase):
                     raw, ref_dt=datetime(2026, 11, 24), fonte_curata_eventi=True
                 )
             )
+
+
+class IndirizziSediLocaliVerificateTests(unittest.TestCase):
+    def test_roma_teatro_cerignola_usa_indirizzo_verificato(self):
+        self.assertEqual(
+            motore.normalizza_indirizzo_mappa(
+                "ROMA TEATRO CINEMA E..., Cerignola",
+                "ROMA TEATRO CINEMA E",
+                "Cerignola",
+            ),
+            "Roma Teatro Cinema E…, Via Roma, 49, Cerignola",
+        )

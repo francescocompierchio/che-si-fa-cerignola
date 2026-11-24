@@ -450,6 +450,12 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
     indirizzo = re.sub(r"\s+", " ", str(indirizzo or "")).strip(" ,")
     if not indirizzo:
         indirizzo = str(luogo or "").strip()
+    # Sede verificata del Roma Teatro Cinema E… di Cerignola: alcune
+    # schede aggregate riportano solo il nome abbreviato della struttura.
+    if str(citta or "").casefold() == "cerignola" and re.search(
+        r"roma\s+teatro\s+cinema", f"{luogo} {indirizzo}", re.I
+    ):
+        return "Roma Teatro Cinema E…, Via Roma, 49, Cerignola"
     for nome in sorted(set(COMUNI_50KM.values()), key=len, reverse=True):
         if nome.lower() == str(citta or "").lower():
             continue
