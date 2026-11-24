@@ -750,14 +750,14 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
 def estrai_indirizzo_documentato(testo_o_soup, citta=""):
     """Estrae una via/piazza esplicitamente pubblicata, senza geocodificare dati inventati."""
     if hasattr(testo_o_soup, "get_text"):
-        righe = testo_o_soup.get_text("\\n", strip=True).splitlines()
+        righe = testo_o_soup.get_text("\n", strip=True).splitlines()
     else:
         righe = str(testo_o_soup or "").splitlines()
 
     for indice, raw_line in enumerate(righe):
-        line = re.sub(r"\\s+", " ", raw_line).strip()
+        line = re.sub(r"\s+", " ", raw_line).strip()
         if not re.match(
-            r"^(?:via|viale|piazza|piazzale|corso|largo|strada|contrada)\\b",
+            r"^(?:via|viale|piazza|piazzale|corso|largo|strada|contrada)\b",
             line,
             re.I,
         ):
@@ -765,7 +765,7 @@ def estrai_indirizzo_documentato(testo_o_soup, citta=""):
         indirizzo = line.strip(" ,.;")
         if citta and citta.lower() not in indirizzo.lower():
             for successiva in righe[indice + 1:indice + 3]:
-                prossima = re.sub(r"\\s+", " ", successiva).strip(" ,.;")
+                prossima = re.sub(r"\s+", " ", successiva).strip(" ,.;")
                 if citta.lower() in prossima.lower():
                     indirizzo = f"{indirizzo}, {prossima}"
                     break
