@@ -53,7 +53,10 @@ jobs:
           echo "--- MainActivity JavaScript bridge setup ---"
           ACTIVITY="$(find /tmp/chesifa-apk/smali* -name 'MainActivity.smali' -print -quit)"
           sed -n '2815,2925p' "$ACTIVITY"
-          echo "--- JavaScript bridge class V/d ---"
-          sed -n '1,420p' /tmp/chesifa-apk/smali/V/d.smali
+          echo "--- JavaScript bridge methods and annotations ---"
+          grep -n -E '^\.class|^\.field|^\.method|^\.end method|JavascriptInterface|annotation' /tmp/chesifa-apk/smali/V/d.smali || true
+          echo "--- Firebase / FCM APK components ---"
+          unzip -l "$APK" | grep -Ei 'firebase|messaging|google-services|gms' | head -100 || true
+          grep -R -n -E 'FirebaseMessagingService|com/google/firebase/messaging|MESSAGING_EVENT|firebase_messaging' /tmp/chesifa-apk/AndroidManifest.xml /tmp/chesifa-apk/smali 2>/dev/null | head -120 || true
           echo "--- Manifest ---"
           sed -n '1,220p' /tmp/chesifa-apk/AndroidManifest.xml
