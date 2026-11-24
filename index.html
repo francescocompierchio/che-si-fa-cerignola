@@ -985,7 +985,7 @@
     <div class="drawer-header">
       <div>
         <h2>Locali &amp; Pagine Instagram</h2>
-        <p id="venues-drawer-sub">Tocca Instagram per le storie o Naviga</p>
+        <p id="venues-drawer-sub">Apri i profili Instagram o cerca il locale</p>
       </div>
       <button type="button" class="drawer-close-btn" id="btn-close-venues" aria-label="Chiudi pannello locali">✕</button>
     </div>
@@ -1254,30 +1254,46 @@
 
     // CASSETTO LATERALE PAGINE INSTAGRAM LOCALI
     const LOCALI_CERIGNOLA_DEFAULT = [
-      {
-        nome: "Civico 10 Bistrot",
-        tipo: "Aperitivo · Cena & Serate",
-        igUser: "civico10bistrot",
-        mappa: "Via Giovanni Gentile 10, Cerignola"
-      },
-      {
-        nome: "ADE - Rooftop & Luxury Space",
-        tipo: "Ristorante · Eventi & DJ Set",
-        igUser: "ade_rooftopluxuryspace",
-        mappa: "Via Tiro a Segno Km 3, Cerignola"
-      },
-      {
-        nome: "Baraonda",
-        tipo: "Lounge Bar · Wine Shop & Cene",
-        igUser: "baraonda__",
-        mappa: "Via Aurelio Saffi 36, Cerignola"
-      },
-      {
-        nome: "Strike Bowling",
-        tipo: "Bowling · Sala Giochi & Serate",
-        igUser: "strikebowling.cerignola",
-        mappa: "Via Tiro a Segno, Cerignola"
-      }
+      // Cerignola: profili già presenti e principali attività del territorio.
+      { nome: "Civico 10 Bistrot", tipo: "Aperitivo · Cena & Serate", igUser: "civico10bistrot", citta: "Cerignola", mappa: "Via Giovanni Gentile 10, Cerignola" },
+      { nome: "ADE - Rooftop & Luxury Space", tipo: "Ristorante · Eventi & DJ Set", igUser: "ade_rooftopluxuryspace", citta: "Cerignola", mappa: "Via Tiro a Segno, Cerignola" },
+      { nome: "Baraonda", tipo: "Lounge Bar · Wine Shop & Cene", igUser: "baraonda__", citta: "Cerignola", mappa: "Via Aurelio Saffi 36, Cerignola" },
+      { nome: "Strike Bowling", tipo: "Bowling · Sala Giochi & Serate", igUser: "strikebowling.cerignola", citta: "Cerignola", mappa: "Via Tiro a Segno, Cerignola" },
+      { nome: "Maximilian Pub & Grill", tipo: "Pub · Pizzeria & Grill", igUser: "maximilianpub4", citta: "Cerignola", mappa: "Viale Terminillo, Cerignola" },
+      { nome: "Bar Gorizia", tipo: "Bar · Pasticceria", igUser: "barGorizia", citta: "Cerignola", mappa: "Corso Giuseppe Garibaldi 42, Cerignola" },
+      { nome: "Bar Roma Perrucci", tipo: "Bar · Pasticceria storica", igUser: "bar_roma_perrucci", citta: "Cerignola", mappa: "Via Don Minzoni 130, Cerignola" },
+      { nome: "Caffè Plaza", tipo: "Caffetteria · Bar & Pasticceria", igUser: "caffe_plaza", citta: "Cerignola", mappa: "Corso Scuola Agraria 5, Cerignola" },
+      { nome: "U' Vulesce", tipo: "Hostaria · Enoteca", igUser: "", citta: "Cerignola", mappa: "Via Cesare Battisti 3, Cerignola" },
+      { nome: "Pilsner Legend", tipo: "Pub · Birreria & Cucina", igUser: "", citta: "Cerignola", mappa: "Piano San Rocco 24, Cerignola" },
+      { nome: "Teku33", tipo: "Beer Shop · Pub & Food", igUser: "", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 115, Cerignola" },
+      { nome: "Safarà", tipo: "Pub · Musica & Serate", igUser: "", citta: "Cerignola", mappa: "Piazza Giacomo Matteotti 6, Cerignola" },
+      { nome: "Il Postaccio", tipo: "Pub · Cocktail & Cucina", igUser: "", citta: "Cerignola", mappa: "Piazza Giacomo Matteotti 20, Cerignola" },
+      { nome: "La Volpe e l'Uva", tipo: "Ristorante · Cucina di mare", igUser: "", citta: "Cerignola", mappa: "Via Nizza 48, Cerignola" },
+      { nome: "Terramia Osteria Moderna", tipo: "Osteria · Cucina contemporanea", igUser: "", citta: "Cerignola", mappa: "Piazza Madre Teresa di Calcutta, Cerignola" },
+      { nome: "Ossobuco Steakhouse & Restaurant", tipo: "Steakhouse · Ristorante", igUser: "", citta: "Cerignola", mappa: "Viale Giuseppe Di Vittorio 31, Cerignola" },
+      { nome: "Alchimia Cucina & Vino", tipo: "Ristorante · Wine & Food", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 83, Cerignola" },
+      { nome: "Pizzeria 10 Fontane", tipo: "Pizzeria", igUser: "", citta: "Cerignola", mappa: "Via Bologna 25, Cerignola" },
+      { nome: "31 Grani", tipo: "Pizzeria · Brew Pub", igUser: "", citta: "Cerignola", mappa: "Via Don Minzoni 112, Cerignola" },
+      { nome: "Mistella - Vino Pizza e Cucina", tipo: "Ristorante · Pizzeria & Vineria", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 101, Cerignola" },
+      { nome: "Sayuri - Japanese Cult & Style", tipo: "Ristorante giapponese", igUser: "", citta: "Cerignola", mappa: "Viale di Levante 71, Cerignola" },
+      { nome: "HANA Ristorante Giapponese", tipo: "Ristorante giapponese · Sushi", igUser: "", citta: "Cerignola", mappa: "Via Nizza 56, Cerignola" },
+      { nome: "L'Habituel Cafè", tipo: "Caffetteria · Aperitivi", igUser: "", citta: "Cerignola", mappa: "Via Felice Cavallotti 25, Cerignola" },
+      { nome: "Cafè Noir", tipo: "Bar · Caffetteria", igUser: "", citta: "Cerignola", mappa: "Via Giuseppe Pavoncelli 75, Cerignola" },
+      { nome: "Caffetteria Traversi", tipo: "Gran Pasticceria · Bar & Gelateria", igUser: "", citta: "Cerignola", mappa: "Corso Antonio Gramsci 18, Cerignola" },
+      { nome: "La Fontana", tipo: "Pizzeria · Ristorante", igUser: "", citta: "Cerignola", mappa: "Viale di Levante 79, Cerignola" },
+      { nome: "Bar Melluso al Palazzo Ducale", tipo: "Bar · Caffetteria", igUser: "", citta: "Cerignola", mappa: "Piazza Giuseppe Tortora 3, Cerignola" },
+      { nome: "Civico 10 Bistrot", tipo: "Bistrot · Aperitivi", igUser: "civico10bistrot", citta: "Cerignola", mappa: "Via Giovanni Gentile 10, Cerignola" },
+
+      // Dintorni: Orta Nova, Canosa di Puglia e Barletta.
+      { nome: "Pub Bounty Killer", tipo: "Music Pub · Grill & Serate", igUser: "", citta: "Orta Nova", mappa: "Viale Ferrovia, Orta Nova" },
+      { nome: "Broadway Music Pub", tipo: "Music Pub", igUser: "", citta: "Orta Nova", mappa: "Corso Aldo Moro 7, Orta Nova" },
+      { nome: "Al Boccon Divino", tipo: "Ristorante · Pizzeria & Cantina", igUser: "", citta: "Orta Nova", mappa: "Corso Aldo Moro 113, Orta Nova" },
+      { nome: "Ego Enopizzeria", tipo: "Pizzeria d'autore · Enoteca", igUser: "", citta: "Orta Nova", mappa: "Corso Aldo Moro 32, Orta Nova" },
+      { nome: "Resta Cu'mme", tipo: "Pizzeria", igUser: "", citta: "Canosa di Puglia", mappa: "Via Piano San Giovanni 29, Canosa di Puglia" },
+      { nome: "Mare in Terra", tipo: "Ristorante · Cucina di mare", igUser: "", citta: "Canosa di Puglia", mappa: "Corso San Sabino 92, Canosa di Puglia" },
+      { nome: "Osteria Vinàlia", tipo: "Osteria · Cucina pugliese", igUser: "", citta: "Canosa di Puglia", mappa: "Corso San Sabino 11, Canosa di Puglia" },
+      { nome: "New Oberdan Risto Pub", tipo: "Risto Pub · Osteria & Pizzeria", igUser: "", citta: "Canosa di Puglia", mappa: "Via Guglielmo Oberdan 10, Canosa di Puglia" },
+      { nome: "Saint Patrick", tipo: "Irish Pub · Musica dal vivo", igUser: "", citta: "Barletta", mappa: "Via Cialdini 17, Barletta" }
     ];
 
     let localiAttivi = [...LOCALI_CERIGNOLA_DEFAULT];
@@ -1310,7 +1326,7 @@
 
       const filtrati = localiAttivi.filter(loc => {
         if (!queryLocali.trim()) return true;
-        const txt = `${loc.nome} ${loc.tipo}`.toLowerCase();
+        const txt = `${loc.nome} ${loc.tipo} ${loc.citta || "Cerignola"}`.toLowerCase();
         return txt.includes(queryLocali.toLowerCase().trim());
       });
 
@@ -1332,17 +1348,17 @@
 
         const tag = document.createElement("p");
         tag.className = "venue-tag";
-        tag.textContent = loc.tipo;
+        tag.textContent = `${loc.tipo} · ${loc.citta || "Cerignola"}`;
 
         const actions = document.createElement("div");
         actions.className = "venue-actions";
 
         const igBtn = document.createElement("a");
         igBtn.className = "btn-xs btn-ig";
-        igBtn.href = getInstagramUrl(loc.igUser);
+        igBtn.href = loc.igUser ? getInstagramUrl(loc.igUser) : `https://www.google.com/search?q=${encodeURIComponent("site:instagram.com " + loc.nome + " " + (loc.citta || "Cerignola"))}`;
         igBtn.target = "_blank";
         igBtn.rel = "noopener noreferrer";
-        igBtn.textContent = "Instagram";
+        igBtn.textContent = loc.igUser ? "Instagram" : "Trova Instagram";
 
         const mapBtn = document.createElement("button");
         mapBtn.type = "button";
