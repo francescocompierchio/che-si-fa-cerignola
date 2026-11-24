@@ -574,7 +574,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
-    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "teatro ragazzi", "la scena dei ragazzi", "spettacoli per le scuole", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
+    if any(k in t for k in ("luminari", "mercatini di natale", "mercatino di natale", "mercatini nataliz", "villaggio di natale", "villaggio nataliz", "villaggio di babbo natale", "babbo natale", "casa di babbo natale", "teatro ragazzi", "la scena dei ragazzi", "spettacoli per le scuole", "pista di pattinaggio", "pista di ghiaccio", "presepe vivente", "laboratori per bambini", "laboratorio per bambini", "laboratori creativi", "laboratorio creativo", "laboratori per famiglie", "attivita per famiglie", "attività per famiglie", "animazione per bambini", "spettacolo per famiglie", "festa per bambini", "notte bianca dei bambini", "fattoria didattica", "fattorie didattiche", "parco tematico")):
         return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
@@ -1179,7 +1179,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
         limite = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).date()
         for el in soup.select('[itemprop="startDate"], time[datetime], [data-start-date]'):
             valore = (el.get("content") or el.get("datetime") or el.get("data-start-date") or "").strip()
-            match_data = re.match(r"^(20\\d{2}-\\d{2}-\\d{2})", valore)
+            match_data = re.match(r"^(20\d{2}-\d{2}-\d{2})", valore)
             if not match_data:
                 continue
             try:
