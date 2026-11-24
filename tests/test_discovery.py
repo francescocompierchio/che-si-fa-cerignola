@@ -1275,3 +1275,23 @@ class RomaTeatroUfficialeTests(unittest.TestCase):
                 "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04"
             )
         )
+
+
+class ClassificazioneRomaTeatroTests(unittest.TestCase):
+    def test_stagione_teatrale_classifica_prosa_come_teatro(self):
+        self.assertEqual(
+            motore.classifica_categoria("Viva la Mamma! - Stagione teatrale"),
+            "Teatro & Spettacoli",
+        )
+
+    def test_babbo_natale_va_in_categoria_famiglie(self):
+        self.assertEqual(
+            motore.classifica_categoria("Babbo Natale va in pensione"),
+            "Famiglie & Bambini",
+        )
+
+    def test_gran_gala_con_orchestra_resta_musica(self):
+        self.assertEqual(
+            motore.classifica_categoria("Gran Galà di Capodanno con Orchestra ICO Suoni del Sud - Stagione teatrale"),
+            "Musica & Concerti",
+        )
