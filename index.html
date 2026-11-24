@@ -834,6 +834,19 @@
       gap: 8px;
     }
   
+.notifications-panel{display:flex;flex-direction:column;gap:10px;margin:0 0 13px;padding:13px 14px;background:linear-gradient(125deg,#eef4ff,#fff);border:1px solid #d5e2f5;border-radius:16px;box-shadow:0 5px 18px rgba(20,33,61,.045)}
+.notifications-main{display:flex;align-items:flex-start;gap:10px}
+.notifications-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:12px;background:#dce9ff;font-size:1.1rem}
+.notifications-copy strong{display:block;color:#14213d;font-size:.88rem}
+.notifications-copy p{margin:2px 0 3px;color:#475569;font-size:.77rem;line-height:1.4}
+.notifications-copy small{display:block;color:#64748b;font-size:.69rem;line-height:1.35}
+.notifications-actions{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.notification-reminder-count{color:#64748b;font-size:.72rem;font-weight:700}
+.notification-toggle{border:0;border-radius:11px;background:#1746a2;color:#fff;padding:9px 14px;font-size:.78rem;font-weight:800;cursor:pointer;box-shadow:0 4px 10px rgba(23,70,162,.15)}
+.notification-toggle:disabled{opacity:.55;cursor:not-allowed}
+.notifications-note{margin:0;padding-top:8px;border-top:1px solid rgba(203,216,238,.75);color:#778399;font-size:.67rem;line-height:1.4}
+.btn-reminder{border:1px solid #d7e2f2;background:#f3f7ff;color:#1746a2}
+.btn-reminder.active{background:#e8f7ef;border-color:#a8dec0;color:#12643b}
 /* Nuova esperienza interattiva */
 .smart-filters{margin:0 0 12px;padding:11px 12px 12px;background:rgba(255,255,255,.72);border:1px solid rgba(226,232,240,.9);border-radius:15px}
 .smart-filters-label{display:block;margin:0 0 8px;color:#64748b;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
@@ -914,6 +927,22 @@
         <p id="guide-android"><strong>Android:</strong> tocca <strong>Scarica App</strong> e apri il file scaricato.</p>
         <p id="guide-ios"><strong>iPhone (Safari):</strong> tocca <strong>Condividi</strong> in basso → <strong>Aggiungi alla schermata Home</strong>.</p>
       </div>
+    </section>
+
+    <section class="notifications-panel" id="notification-panel" aria-label="Avvisi e promemoria">
+      <div class="notifications-main">
+        <span class="notifications-icon" aria-hidden="true">🔔</span>
+        <div class="notifications-copy">
+          <strong>Avvisi e promemoria</strong>
+          <p id="notification-summary">Ricevi un avviso quando arrivano nuove proposte e nel giorno degli eventi che scegli.</p>
+          <small id="notification-status" aria-live="polite">Gli avvisi vengono controllati quando apri l'app.</small>
+        </div>
+      </div>
+      <div class="notifications-actions">
+        <span id="notification-reminder-count" class="notification-reminder-count">0 promemoria</span>
+        <button type="button" id="btn-notify-toggle" class="notification-toggle">Attiva avvisi</button>
+      </div>
+      <p class="notifications-note">Nota: questi sono avvisi locali. Le nuove pubblicazioni vengono controllate alla riapertura dell'app; i promemoria vengono inviati nel giorno dell'evento al primo accesso. Non sono notifiche push quando l'app è chiusa.</p>
     </section>
 
     <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
@@ -1394,6 +1423,215 @@
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
     function chiaveEvento(ev){return [ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();}
+
+    const NOTIFICHE_ATTIVE_KEY = "csf_notifiche_attive_v1";
+    const EVENTI_NOTIFICATI_KEY = "csf_notifiche_eventi_v1";
+    const PROMEMORIA_KEY = "csf_promemoria_eventi_v1";
+    const BASELINE_IN_ATTESA_KEY = "csf_notifiche_baseline_in_attesa_v1";
+    let notificheAttive = localStorage.getItem(NOTIFICHE_ATTIVE_KEY) === "1";
+    let archivioAutomaticoCaricato = false;
+    let controlloPromemoriaInCorso = false;
+
+    function leggiListaLocale(chiave) {
+      try {
+        const valore = JSON.parse(localStorage.getItem(chiave) || "[]");
+        return Array.isArray(valore) ? valore : [];
+      } catch (error) { return []; }
+    }
+    function salvaListaLocale(chiave, valore) {
+      try { localStorage.setItem(chiave, JSON.stringify(valore)); return true; }
+      catch (error) { console.warn("Impossibile salvare impostazioni locali:", error); return false; }
+    }
+    function promemoriaPronto(promemoria, dataCorrente) {
+      const inizio = String(promemoria && promemoria.dataInizio || "");
+      const fine = String(promemoria && promemoria.dataFine || inizio);
+      return /^\d{4}-\d{2}-\d{2}$/.test(inizio) && /^\d{4}-\d{2}-\d{2}$/.test(fine) &&
+        fine >= inizio && inizio <= dataCorrente && fine >= dataCorrente;
+    }
+    function riepilogoNuoviEventi(nuovi) {
+      const titoli = nuovi.slice(0, 2).map(ev => String(ev.titolo || "Nuovo evento")).filter(Boolean);
+      const extra = nuovi.length > titoli.length ? " e altri " + (nuovi.length - titoli.length) : "";
+      return nuovi.length + " nuovi eventi: " + titoli.join(" · ") + extra;
+    }
+    function eventiAutomaticiFuturi() {
+      return eventiDaJson
+        .filter(ev => ev && ev.tipoContenuto !== "esperienza" && ev.dataInizio)
+        .filter(ev => /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio)))
+        .filter(ev => String(ev.dataFine || ev.dataInizio) >= oggi)
+        .map(ev => ({ chiave: chiaveEvento(ev), titolo: ev.titolo || "Evento", dataInizio: ev.dataInizio, dataFine: ev.dataFine || ev.dataInizio }));
+    }
+    async function mostraNotificaDispositivo(titolo, corpo, tag) {
+      if (!notificheAttive || typeof Notification === "undefined" || Notification.permission !== "granted") return false;
+      const opzioni = {
+        body: corpo,
+        icon: new URL("1795175413227~4.jpg", APP_URL).href,
+        badge: new URL("1795175413227~4.jpg", APP_URL).href,
+        tag: tag || "chesifa-avviso",
+        renotify: false,
+        data: { url: APP_URL }
+      };
+      try {
+        if ("serviceWorker" in navigator) {
+          const registrazione = await navigator.serviceWorker.ready;
+          if (registrazione && typeof registrazione.showNotification === "function") {
+            await registrazione.showNotification(titolo, opzioni);
+            return true;
+          }
+        }
+        new Notification(titolo, opzioni);
+        return true;
+      } catch (error) {
+        console.warn("Notifica non inviata:", error);
+        return false;
+      }
+    }
+    function aggiornaPannelloNotifiche() {
+      const stato = document.getElementById("notification-status");
+      const pulsante = document.getElementById("btn-notify-toggle");
+      const conta = document.getElementById("notification-reminder-count");
+      if (!stato || !pulsante || !conta) return;
+      const promemoria = leggiListaLocale(PROMEMORIA_KEY).filter(p => p && p.dataFine >= oggi);
+      conta.textContent = promemoria.length + " " + (promemoria.length === 1 ? "promemoria" : "promemoria");
+      if (!("Notification" in window) || !window.isSecureContext) {
+        stato.textContent = "Questo browser o contesto non supporta le notifiche. Puoi comunque usare agenda e calendario.";
+        pulsante.disabled = true;
+        pulsante.textContent = "Non supportate";
+        return;
+      }
+      if (Notification.permission === "denied") {
+        stato.textContent = "Permesso bloccato dal browser: abilita le notifiche dalle impostazioni del sito o dell'app.";
+        pulsante.disabled = true;
+        pulsante.textContent = "Permesso bloccato";
+        return;
+      }
+      pulsante.disabled = false;
+      if (notificheAttive && Notification.permission === "granted") {
+        stato.textContent = promemoria.length ? promemoria.length + " promemoria attivi su questo dispositivo." : "Avvisi attivi su questo dispositivo.";
+        pulsante.textContent = "Disattiva avvisi";
+      } else if (Notification.permission === "granted") {
+        stato.textContent = "Il browser ha già concesso il permesso. Attiva gli avvisi quando vuoi.";
+        pulsante.textContent = "Attiva avvisi";
+      } else {
+        stato.textContent = "Attiva gli avvisi per le nuove pubblicazioni e per i promemoria che scegli.";
+        pulsante.textContent = "Attiva avvisi";
+      }
+    }
+    function haPromemoriaEvento(ev) {
+      return leggiListaLocale(PROMEMORIA_KEY).some(p => p && p.chiave === chiaveEvento(ev));
+    }
+    function aggiornaPulsantiPromemoria() {
+      document.querySelectorAll(".btn-reminder").forEach(btn => {
+        const attivo = btn.dataset.reminderKey && leggiListaLocale(PROMEMORIA_KEY).some(p => p && p.chiave === btn.dataset.reminderKey);
+        btn.classList.toggle("active", Boolean(attivo));
+        btn.textContent = attivo ? "Avviso attivo ✓" : "Avvisami";
+        btn.setAttribute("aria-pressed", String(Boolean(attivo)));
+      });
+    }
+    async function alternaPromemoriaEvento(ev) {
+      const lista = leggiListaLocale(PROMEMORIA_KEY);
+      const chiave = chiaveEvento(ev);
+      const indice = lista.findIndex(p => p && p.chiave === chiave);
+      if (indice >= 0) {
+        lista.splice(indice, 1);
+        salvaListaLocale(PROMEMORIA_KEY, lista);
+        mostraToast("Promemoria rimosso");
+      } else {
+        lista.push({
+          chiave,
+          titolo: ev.titolo || "Evento",
+          dataInizio: ev.dataInizio,
+          dataFine: ev.dataFine || ev.dataInizio,
+          luogo: ev.luogo || "",
+          citta: ev.citta || "",
+          notificatoIl: ""
+        });
+        if (!salvaListaLocale(PROMEMORIA_KEY, lista)) {
+          mostraToast("Spazio locale non disponibile: promemoria non salvato");
+          return;
+        }
+        mostraToast(notificheAttive ? "Promemoria salvato per il giorno dell'evento" : "Promemoria salvato. Attiva gli avvisi qui sopra.");
+        await controllaPromemoriaInScadenza();
+      }
+      aggiornaPannelloNotifiche();
+      aggiornaPulsantiPromemoria();
+    }
+    async function controllaPromemoriaInScadenza() {
+      if (controlloPromemoriaInCorso || !notificheAttive || typeof Notification === "undefined" || Notification.permission !== "granted") return;
+      controlloPromemoriaInCorso = true;
+      try {
+        const originali = leggiListaLocale(PROMEMORIA_KEY);
+        const lista = originali.filter(p => p && p.dataFine >= oggi);
+        let cambiato = lista.length !== originali.length;
+        for (const promemoria of lista) {
+          if (!promemoria.notificatoIl && promemoriaPronto(promemoria, oggi)) {
+            const inviato = await mostraNotificaDispositivo(
+              "Oggi: " + promemoria.titolo,
+              "È il giorno dell'evento" + (promemoria.luogo ? " · " + promemoria.luogo : "") + ". Apri Che Si Fa Cerignola per i dettagli.",
+              "promemoria-" + encodeURIComponent(promemoria.chiave)
+            );
+            if (inviato) { promemoria.notificatoIl = oggi; cambiato = true; }
+          }
+        }
+        if (cambiato) salvaListaLocale(PROMEMORIA_KEY, lista);
+      } finally {
+        controlloPromemoriaInCorso = false;
+        aggiornaPannelloNotifiche();
+        aggiornaPulsantiPromemoria();
+      }
+    }
+    function salvaBaselineEventi() {
+      const chiavi = eventiAutomaticiFuturi().map(ev => ev.chiave);
+      salvaListaLocale(EVENTI_NOTIFICATI_KEY, chiavi);
+      localStorage.removeItem(BASELINE_IN_ATTESA_KEY);
+    }
+    async function controllaNuoviEventi() {
+      if (!archivioAutomaticoCaricato || !notificheAttive || typeof Notification === "undefined" || Notification.permission !== "granted") return;
+      const attuali = eventiAutomaticiFuturi();
+      const chiaviAttuali = attuali.map(ev => ev.chiave);
+      if (localStorage.getItem(BASELINE_IN_ATTESA_KEY) === "1" || localStorage.getItem(EVENTI_NOTIFICATI_KEY) === null) {
+        salvaListaLocale(EVENTI_NOTIFICATI_KEY, chiaviAttuali);
+        localStorage.removeItem(BASELINE_IN_ATTESA_KEY);
+        return;
+      }
+      const viste = new Set(leggiListaLocale(EVENTI_NOTIFICATI_KEY));
+      const nuovi = attuali.filter(ev => !viste.has(ev.chiave));
+      salvaListaLocale(EVENTI_NOTIFICATI_KEY, [...viste, ...chiaviAttuali].slice(-1500));
+      if (nuovi.length) {
+        await mostraNotificaDispositivo("Nuovi eventi da scoprire", riepilogoNuoviEventi(nuovi), "nuovi-eventi-" + oggi);
+      }
+    }
+    async function gestisciAttivazioneNotifiche() {
+      if (!("Notification" in window) || !window.isSecureContext) {
+        mostraToast("Notifiche non supportate da questo browser");
+        return;
+      }
+      if (notificheAttive && Notification.permission === "granted") {
+        notificheAttive = false;
+        localStorage.setItem(NOTIFICHE_ATTIVE_KEY, "0");
+        mostraToast("Avvisi disattivati su questo dispositivo");
+      } else {
+        let permesso = Notification.permission;
+        if (permesso === "default") permesso = await Notification.requestPermission();
+        if (permesso !== "granted") {
+          aggiornaPannelloNotifiche();
+          mostraToast(permesso === "denied" ? "Permesso notifiche negato dal browser" : "Permesso notifiche non concesso");
+          return;
+        }
+        notificheAttive = true;
+        localStorage.setItem(NOTIFICHE_ATTIVE_KEY, "1");
+        if (archivioAutomaticoCaricato) salvaBaselineEventi();
+        else localStorage.setItem(BASELINE_IN_ATTESA_KEY, "1");
+        mostraToast("Avvisi attivati su questo dispositivo");
+        await controllaPromemoriaInScadenza();
+      }
+      aggiornaPannelloNotifiche();
+    }
+    document.getElementById("btn-notify-toggle").addEventListener("click", gestisciAttivazioneNotifiche);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) controllaPromemoriaInScadenza(); });
+    window.addEventListener("focus", controllaPromemoriaInScadenza);
+    setInterval(controllaPromemoriaInScadenza, 15 * 60 * 1000);
+    aggiornaPannelloNotifiche();
+
     function creaTestoPianoSalvati(salvati){
       const massimo=12;
       const righe=salvati.slice(0,massimo).map(ev=>{
@@ -1946,6 +2184,18 @@
           actions.append(mapBtn,waBtn);
         }
 
+        if (ev.tipoContenuto !== "esperienza" && /^\d{4}-\d{2}-\d{2}$/.test(String(ev.dataInizio || ""))) {
+          const reminderBtn = document.createElement("button");
+          const reminderAttivo = haPromemoriaEvento(ev);
+          reminderBtn.type = "button";
+          reminderBtn.className = "btn btn-soft btn-reminder" + (reminderAttivo ? " active" : "");
+          reminderBtn.dataset.reminderKey = chiaveEvento(ev);
+          reminderBtn.textContent = reminderAttivo ? "Avviso attivo ✓" : "Avvisami";
+          reminderBtn.setAttribute("aria-pressed", String(reminderAttivo));
+          reminderBtn.addEventListener("click", () => alternaPromemoriaEvento(ev));
+          actions.appendChild(reminderBtn);
+        }
+
         if (isSafeHttpUrl(ev.fonteUrl)) {
           const srcBtn = document.createElement("a");
           srcBtn.className = "btn btn-soft";
@@ -1971,15 +2221,23 @@
 
     Promise.all([
       fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
-        .then(res => res.ok ? res.json() : [])
-        .catch(err => { console.error("Eventi:", err); return []; }),
+        .then(res => res.ok ? res.json() : null)
+        .catch(err => { console.error("Eventi:", err); return null; }),
       fetch(`esperienze.json?t=${Date.now()}`, { cache: "no-store" })
         .then(res => res.ok ? res.json() : [])
         .catch(err => { console.error("Esperienze:", err); return []; })
     ]).then(([eventi, esperienze]) => {
       eventiDaJson = Array.isArray(eventi) ? eventi : [];
+      archivioAutomaticoCaricato = Array.isArray(eventi);
       esperienzeDaJson = Array.isArray(esperienze) ? esperienze : [];
       aggiornaListaCompleta();
+      if (archivioAutomaticoCaricato) {
+        controllaNuoviEventi();
+        controllaPromemoriaInScadenza();
+      } else {
+        const stato = document.getElementById("notification-status");
+        if (stato) stato.textContent = "Archivio eventi non raggiungibile: le nuove pubblicazioni saranno ricontrollate al prossimo accesso.";
+      }
     });
 
     if ("serviceWorker" in navigator) {
