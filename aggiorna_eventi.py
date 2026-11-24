@@ -1456,15 +1456,18 @@ def estrai_eventi_puglia_da_elenco(soup, base_url, citta_default="Cerignola"):
             testo_candidato = re.sub(r"\\s+", " ", antenato.get_text(" ", strip=True)).strip()
             if not (40 <= len(testo_candidato) <= 1400):
                 continue
-            comune_card = _comune_nel_testo(testo_candidato)
-            if comune_card != citta_default:
-                continue
             d1, d2, d_txt = estrai_date_italiano(testo_candidato)
             if not d1:
                 continue
+            comune_card = _comune_nel_testo(testo_candidato)
+            # Non risalire a contenitori più grandi dopo aver trovato una card
+            # datata di un altro comune: si rischierebbe di associare al link
+            # eventi e sedi della card precedente.
+            if comune_card != citta_default:
+                break
             sede = estrai_luogo_documentato(antenato, citta_default)
             if not sede:
-                continue
+                break
             testo_card = testo_candidato
             data_inizio, data_fine, data_testo = d1, d2, d_txt
             luogo = sede
