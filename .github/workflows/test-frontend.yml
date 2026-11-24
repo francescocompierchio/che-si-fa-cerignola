@@ -201,7 +201,7 @@ jobs:
           assert.equal(u.duplicate(a,{...b,luogo:"Piazza Duomo"}),false);
           assert.equal(u.duplicate(a,{...b,dataInizio:"2026-11-29",dataFine:"2026-11-29"}),false);
           assert.equal(u.dedup([a,b]).length,1);
-          const fs=require("node:fs");
-          const page=fs.readFileSync("eventi/cerignola-2026-11-28-il-sabato-di-ade.html","utf8");
-          assert.ok(page.includes('property="og:image"'));
+          const genera=require("./genera_pagine_eventi.js");
+          const files=genera([{...ev,fonteUrl:"https://example.test/ade",locandinaUrl:"https://example.test/poster.jpg"}],[],"2026-11-24");
+          assert.ok(files["eventi/cerignola-2026-11-28-il-sabato-di-ade.html"].includes('property="og:image" content="https://example.test/poster.jpg"'));
           NODE
