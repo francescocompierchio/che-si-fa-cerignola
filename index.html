@@ -834,6 +834,19 @@
       gap: 8px;
     }
   
+.notifications-panel{display:flex;flex-direction:column;gap:10px;margin:0 0 13px;padding:13px 14px;background:linear-gradient(125deg,#eef4ff,#fff);border:1px solid #d5e2f5;border-radius:16px;box-shadow:0 5px 18px rgba(20,33,61,.045)}
+.notifications-main{display:flex;align-items:flex-start;gap:10px}
+.notifications-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:12px;background:#dce9ff;font-size:1.1rem}
+.notifications-copy strong{display:block;color:#14213d;font-size:.88rem}
+.notifications-copy p{margin:2px 0 3px;color:#475569;font-size:.77rem;line-height:1.4}
+.notifications-copy small{display:block;color:#64748b;font-size:.69rem;line-height:1.35}
+.notifications-actions{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.notification-reminder-count{color:#64748b;font-size:.72rem;font-weight:700}
+.notification-toggle{border:0;border-radius:11px;background:#1746a2;color:#fff;padding:9px 14px;font-size:.78rem;font-weight:800;cursor:pointer;box-shadow:0 4px 10px rgba(23,70,162,.15)}
+.notification-toggle:disabled{opacity:.55;cursor:not-allowed}
+.notifications-note{margin:0;padding-top:8px;border-top:1px solid rgba(203,216,238,.75);color:#778399;font-size:.67rem;line-height:1.4}
+.btn-reminder{border:1px solid #d7e2f2;background:#f3f7ff;color:#1746a2}
+.btn-reminder.active{background:#e8f7ef;border-color:#a8dec0;color:#12643b}
 /* Nuova esperienza interattiva */
 .smart-filters{margin:0 0 12px;padding:11px 12px 12px;background:rgba(255,255,255,.72);border:1px solid rgba(226,232,240,.9);border-radius:15px}
 .smart-filters-label{display:block;margin:0 0 8px;color:#64748b;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
@@ -914,6 +927,22 @@
         <p id="guide-android"><strong>Android:</strong> tocca <strong>Scarica App</strong> e apri il file scaricato.</p>
         <p id="guide-ios"><strong>iPhone (Safari):</strong> tocca <strong>Condividi</strong> in basso → <strong>Aggiungi alla schermata Home</strong>.</p>
       </div>
+    </section>
+
+    <section class="notifications-panel" id="notification-panel" aria-label="Avvisi e promemoria">
+      <div class="notifications-main">
+        <span class="notifications-icon" aria-hidden="true">🔔</span>
+        <div class="notifications-copy">
+          <strong>Avvisi e promemoria</strong>
+          <p id="notification-summary">Ricevi un avviso quando arrivano nuove proposte e nel giorno degli eventi che scegli.</p>
+          <small id="notification-status" aria-live="polite">Gli avvisi vengono controllati quando apri l'app.</small>
+        </div>
+      </div>
+      <div class="notifications-actions">
+        <span id="notification-reminder-count" class="notification-reminder-count">0 promemoria</span>
+        <button type="button" id="btn-notify-toggle" class="notification-toggle">Attiva avvisi</button>
+      </div>
+      <p class="notifications-note">Nota: questi sono avvisi locali. Le nuove pubblicazioni vengono controllate alla riapertura dell'app; i promemoria vengono inviati nel giorno dell'evento al primo accesso. Non sono notifiche push quando l'app è chiusa.</p>
     </section>
 
     <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
