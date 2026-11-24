@@ -1209,16 +1209,26 @@
       }
     }
 
+    function linkCondivisioneTracciato(raw,source){
+      try{
+        const u=new URL(raw,"https://francescocompierchio.github.io/che-si-fa-cerignola/");
+        if(u.origin!=="https://francescocompierchio.github.io"||!u.pathname.startsWith("/che-si-fa-cerignola/"))return raw;
+        u.searchParams.set("utm_source",source);
+        u.searchParams.set("utm_medium","social");
+        u.searchParams.set("utm_campaign","condivisione_eventi");
+        return u.href;
+      }catch(_){return raw;}
+    }
     async function condividiContenuto(titolo, testo, url) {
       if (navigator.share) {
         try {
-          await navigator.share({ title: titolo, text: testo, url: url });
+          await navigator.share({ title: titolo, text: testo, url: linkCondivisioneTracciato(url,"condivisione_app") });
           return;
         } catch (err) {
           if (err && err.name === "AbortError") return;
         }
       }
-      const msg = encodeURIComponent(`${testo}\n${url}`);
+      const msg = encodeURIComponent(`${testo}\n${linkCondivisioneTracciato(url,"whatsapp")}`);
       if (isAndroid || isIOS) {
         window.location.href = `whatsapp://send?text=${msg}`;
       } else {
