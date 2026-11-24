@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <script>
+    // Avvia le richieste pubbliche in parallelo con gli SDK, senza aspettare Firebase.
+    window.csfFeedPubblico = function(nome) {
+      return fetch(nome, {cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+    };
+    window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
+  </script>
   <script src="app-extras.js"></script>
   <script src="metrics.js"></script>
 
@@ -1528,7 +1536,10 @@
     let linkEventoDaAprire = "";
     try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
     let pagineEventoPubbliche = new Set();
-    fetch("sitemap.xml", {cache:"no-store"}).then(r=>r.ok?r.text():"").then(xml=>{pagineEventoPubbliche=new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]));}).catch(()=>{});
+    function aggiornaLinkPubblici(){
+      return fetch("sitemap.xml", {cache:"no-cache"}).then(r=>r.ok?r.text():null).then(xml=>{if(xml&&xml.includes("<urlset"))pagineEventoPubbliche=new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]));}).catch(()=>{});
+    }
+    aggiornaLinkPubblici();
     const PREFERITI_KEY = "csf_eventi_preferiti_v1";
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
@@ -2253,6 +2264,7 @@
     }
 
     function renderEventi() {
+      const schedeAperte = new Set([...container.querySelectorAll("details[open][data-event-key]")].map(el=>el.dataset.eventKey));
       container.innerHTML = "";
       let filtrati = tuttiEventiAttivi.filter(ev => {
         const isToday = ev.tipoContenuto !== "esperienza" && oggi >= ev.dataInizio && oggi <= ev.dataFine;
@@ -2308,6 +2320,8 @@
       filtrati.forEach(ev => {
         const isToday = ev.tipoContenuto !== "esperienza" && oggi >= ev.dataInizio && oggi <= ev.dataFine;
         const details = document.createElement("details");
+        details.dataset.eventKey = chiaveEvento(ev);
+        if(schedeAperte.has(details.dataset.eventKey))details.open=true;
         if (isToday) details.classList.add("is-today");
         if (ev.inEvidenza) details.classList.add("is-featured");
 
@@ -2436,7 +2450,8 @@
         body.appendChild(actions);
         details.append(summary, body);
         details.appendChild(favoriteBtn);
-        details.addEventListener("toggle",()=>{if(details.open)window.CsfMetrics?.record("csf_event_open",ev);});
+        let eraAperta=details.open;
+        details.addEventListener("toggle",()=>{const aperta=details.open;if(aperta&&!eraAperta)window.CsfMetrics?.record("csf_event_open",ev);eraAperta=aperta;});
         container.appendChild(details);
         if(linkEventoDaAprire && CsfEventTools.key(ev)===linkEventoDaAprire){
           linkEventoDaAprire=""; details.open=true;
@@ -2446,36 +2461,55 @@
       aggiornaContatorePreferiti();
     }
 
+    const INTERVALLO_AGGIORNAMENTO_MS = 5 * 60 * 1000;
+    let ultimoControlloArchivio = 0, aggiornamentoArchivio = null, improntaArchivio = null;
+    function aggiornaDataCorrente(){
+      const nuovaData=getDataLocaleOggi();
+      if(nuovaData===oggi)return;
+      oggi=nuovaData;
+      if(dataSelezionata&&dataSelezionata<oggi)dataSelezionata="";
+      aggiornaListaCompleta();
+      if(!modalSegnala.classList.contains("open"))aggiornaCampiTipoSegnalazione();
+    }
+    function aggiornaArchivio(forza=false){
+      if(aggiornamentoArchivio)return aggiornamentoArchivio;
+      if(!forza&&Date.now()-ultimoControlloArchivio<INTERVALLO_AGGIORNAMENTO_MS)return Promise.resolve();
+      ultimoControlloArchivio=Date.now();
+      const richieste=window.csfFeedIniziale||Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
+      window.csfFeedIniziale=null;
+      aggiornamentoArchivio=richieste.then(([eventi,esperienze])=>{
+        aggiornaDataCorrente();
+        // Un errore temporaneo non deve cancellare gli eventi già caricati.
+        if(Array.isArray(eventi)){eventiDaJson=eventi;archivioAutomaticoCaricato=true;}
+        if(Array.isArray(esperienze))esperienzeDaJson=esperienze;
+        const impronta=JSON.stringify([eventiDaJson,esperienzeDaJson]);
+        if(impronta!==improntaArchivio){
+          improntaArchivio=impronta;
+          aggiornaListaCompleta();
+          aggiornaLinkPubblici();
+        }
+        if(archivioAutomaticoCaricato){
+          controllaNuoviEventi();
+          controllaPromemoriaInScadenza();
+        }
+      }).catch(err=>console.warn("Aggiornamento archivio non riuscito:",err)).finally(()=>{aggiornamentoArchivio=null;});
+      return aggiornamentoArchivio;
+    }
     document.addEventListener("visibilitychange",()=>{
       if(document.hidden)return;
-      const nuovaData=getDataLocaleOggi();
-      if(nuovaData!==oggi){oggi=nuovaData;if(dataSelezionata&&dataSelezionata<oggi)dataSelezionata="";aggiornaListaCompleta();if(!modalSegnala.classList.contains("open"))aggiornaCampiTipoSegnalazione();}
+      aggiornaDataCorrente();
+      aggiornaArchivio();
     });
+    window.addEventListener("online",()=>aggiornaArchivio(true));
+    setInterval(()=>{if(!document.hidden){aggiornaDataCorrente();aggiornaArchivio();}},INTERVALLO_AGGIORNAMENTO_MS);
+    let timerRicerca;
     searchInput.addEventListener("input", e => {
       queryRicerca = e.target.value;
-      renderEventi();
+      clearTimeout(timerRicerca);
+      if(!queryRicerca.trim())renderEventi();
+      else timerRicerca=setTimeout(renderEventi,100);
     });
-
-    Promise.all([
-      fetch(`eventi.json?t=${Date.now()}`, { cache: "no-store" })
-        .then(res => res.ok ? res.json() : null)
-        .catch(err => { console.error("Eventi:", err); return null; }),
-      fetch(`esperienze.json?t=${Date.now()}`, { cache: "no-store" })
-        .then(res => res.ok ? res.json() : [])
-        .catch(err => { console.error("Esperienze:", err); return []; })
-    ]).then(([eventi, esperienze]) => {
-      eventiDaJson = Array.isArray(eventi) ? eventi : [];
-      archivioAutomaticoCaricato = Array.isArray(eventi);
-      esperienzeDaJson = Array.isArray(esperienze) ? esperienze : [];
-      aggiornaListaCompleta();
-      if (archivioAutomaticoCaricato) {
-        controllaNuoviEventi();
-        controllaPromemoriaInScadenza();
-      } else {
-        const stato = document.getElementById("notification-status");
-        if (stato) stato.textContent = "Archivio eventi non raggiungibile: le nuove pubblicazioni saranno ricontrollate al prossimo accesso.";
-      }
-    });
+    aggiornaArchivio(true);
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

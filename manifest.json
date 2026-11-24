@@ -15,5 +15,19 @@
       "type": "image/jpeg",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Eventi a Cerignola",
+      "short_name": "Cerignola",
+      "description": "Agenda locale degli appuntamenti",
+      "url": "/che-si-fa-cerignola/eventi/cerignola.html"
+    },
+    {
+      "name": "Eventi del weekend",
+      "short_name": "Weekend",
+      "description": "Cosa fare nel fine settimana",
+      "url": "/che-si-fa-cerignola/eventi/weekend.html"
+    }
   ]
 }

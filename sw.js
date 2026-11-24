@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v17";
+const CACHE_NAME = "chesifa-shell-v18";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -19,6 +19,9 @@ function cacheKeyFor(request) {
     url.search = "";
     url.hash = "";
   }
+  // I parametri di attribuzione non cambiano il contenuto della pagina.
+  // Conserva invece parametri funzionali (per esempio admin o escludi).
+  for(const p of ["utm_source","utm_medium","utm_campaign","utm_term","utm_content"])url.searchParams.delete(p);
   return new Request(url.toString(), { method: "GET" });
 }
 
@@ -53,12 +56,14 @@ async function retePrima(request, key) {
   }
 }
 
-async function cachePrima(request, key) {
+async function cachePrima(request, key, event) {
   const cache = await caches.open(CACHE_NAME);
   const precedente = await cache.match(key);
   const aggiornamento = fetch(request)
     .then(response => salvaInCache(cache, key, response))
     .catch(() => null);
+  // Il fetch di aggiornamento viene mantenuto in vita dal worker.
+  if(precedente)event.waitUntil(aggiornamento);
 
   // Per le risorse statiche privilegia la risposta già disponibile e aggiorna
   // la cache in background; al primo accesso usa la rete.
@@ -112,6 +117,8 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   // Non intercettare Firebase, Analytics, font, immagini o altri servizi esterni.
   if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE_PATH)) return;
+  // L'APK è un download separato: non occupare inutilmente la cache della PWA.
+  if(/\.apk$/i.test(url.pathname))return;
 
   const key = cacheKeyFor(request);
   const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`, `${BASE_PATH}sitemap.xml`].includes(url.pathname);
@@ -120,6 +127,6 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     isData || isPage
       ? retePrima(request, key)
-      : cachePrima(request, key)
+      : cachePrima(request, key, event)
   );
 });
