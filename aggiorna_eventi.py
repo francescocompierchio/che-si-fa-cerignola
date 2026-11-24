@@ -1425,6 +1425,82 @@ def raccogli_da_feed_social(session, fonte):
     return eventi
 
 
+def estrai_eventi_puglia_da_elenco(soup, base_url, citta_default="Cerignola"):
+    """Estrae gli appuntamenti dalle card ufficiali Puglia Culture quando le singole schede non sono leggibili."""
+    if not _host_appartiene(base_url, "pugliaculture.it"):
+        return []
+
+    eventi = []
+    visti = set()
+    for link in soup.find_all("a", href=True):
+        url_evento = urljoin(base_url, link.get("href", "")).split("#")[0].strip()
+        if not _host_appartiene(url_evento, "pugliaculture.it"):
+            continue
+        if not urlparse(url_evento).path.lower().startswith("/evento/"):
+            continue
+
+        titolo = re.sub(r"\\s+", " ", link.get_text(" ", strip=True)).strip()
+        if len(titolo) < 5 or REGEX_SCARTO.search(titolo):
+            continue
+
+        chiave = (url_evento.rstrip("/").lower(), titolo.casefold())
+        if chiave in visti:
+            continue
+
+        testo_card = ""
+        data_inizio = data_fine = data_testo = ""
+        luogo = ""
+        for antenato in link.parents:
+            if getattr(antenato, "name", None) in {"body", "html"}:
+                break
+            testo_candidato = re.sub(r"\\s+", " ", antenato.get_text(" ", strip=True)).strip()
+            if not (40 <= len(testo_candidato) <= 1400):
+                continue
+            comune_card = _comune_nel_testo(testo_candidato)
+            if comune_card != citta_default:
+                continue
+            d1, d2, d_txt = estrai_date_italiano(testo_candidato)
+            if not d1:
+                continue
+            sede = estrai_luogo_documentato(antenato, citta_default)
+            if not sede:
+                continue
+            testo_card = testo_candidato
+            data_inizio, data_fine, data_testo = d1, d2, d_txt
+            luogo = sede
+            break
+
+        if not testo_card:
+            continue
+
+        indirizzo_documentato = estrai_indirizzo_documentato(testo_card, citta_default)
+        indirizzo = (
+            "Teatro Comunale Saverio Mercadante, Piazza G. Matteotti, 1, Cerignola"
+            if citta_default == "Cerignola" and "mercadante" in luogo.casefold()
+            else f"{luogo}, {indirizzo_documentato}"
+            if indirizzo_documentato
+            else f"{luogo}, {citta_default}"
+        )
+        evento = normalizza_e_valida_evento({
+            "citta": citta_default,
+            "categoria": classifica_categoria(testo_card, luogo=luogo, fonte_url=url_evento),
+            "titolo": titolo,
+            "dataTesto": data_testo,
+            "dataInizio": data_inizio,
+            "dataFine": data_fine,
+            "luogo": luogo,
+            "indirizzoMappa": indirizzo,
+            "costo": estrai_costo_documentato(testo_card),
+            "descrizione": f"{titolo} presso {luogo} ({citta_default}).",
+            "fonteUrl": url_evento,
+        }, fonte_curata_eventi=True)
+        if evento:
+            eventi.append(evento)
+            visti.add(chiave)
+
+    return eventi
+
+
 def raccogli_da_portale_generico(session, fonte):
     eventi = []
     nome = fonte["nome"]
@@ -1517,6 +1593,18 @@ def raccogli_da_portale_generico(session, fonte):
                 eventi.extend(estratti)
             except Exception:
                 continue
+
+        # Puglia Culture mostra date e sedi anche nelle card della pagina rassegna.
+        # Se la singola scheda non espone markup leggibile, usa questi dati visibili
+        # come fallback, mantenendo URL e validazione evento per evento.
+        if _host_appartiene(url, "pugliaculture.it") and (
+            "/rassegna/" in urlparse(url).path.lower()
+            or "/circuito/" in urlparse(url).path.lower()
+        ):
+            eventi_elenco = estrai_eventi_puglia_da_elenco(soup, url, c_def)
+            for evento_elenco in eventi_elenco:
+                if not any(sono_duplicati(evento_elenco, esistente) for esistente in eventi):
+                    eventi.append(evento_elenco)
 
         registra_statistica_fonte(
             nome, stato="ok", linkCandidati=len(links),
