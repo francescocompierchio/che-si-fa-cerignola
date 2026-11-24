@@ -4,7 +4,7 @@ function strumenti(){
  const slug=v=>norm(v).replace(/ /g,"-");
  const key=ev=>[ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();
  const id=ev=>[slug(ev.citta),ev.dataInizio,slug(ev.titolo).slice(0,115)].join("-");
- const validDate=v=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v);
+ const validDate=v=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&!Number.isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
  function overlaps(ev,start,end){return ev.tipoContenuto!=="esperienza"&&validDate(ev.dataInizio)&&validDate(ev.dataFine||ev.dataInizio)&&ev.dataInizio<=end&&(ev.dataFine||ev.dataInizio)>=start;}
  function weekend(oggi){const d=new Date(oggi+"T12:00:00Z"),day=d.getUTCDay(),shift=day===6?-1:day===0?-2:(5-day+7)%7;d.setUTCDate(d.getUTCDate()+shift);const start=d.toISOString().slice(0,10);d.setUTCDate(d.getUTCDate()+2);return [start,d.toISOString().slice(0,10)];}
  function duplicate(a,b){

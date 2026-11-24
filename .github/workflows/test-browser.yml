@@ -1,5 +1,17 @@
 name: Test navigazione mobile pre-pubblicazione
 on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "event-tools.js"
+      - "app-extras.js"
+      - "metrics.js"
+      - "sw.js"
+      - "manifest.json"
+      - "event-page.js"
+      - "tests/browser-smoke.cjs"
+      - ".github/workflows/test-browser.yml"
   pull_request:
     branches: [main]
     paths:

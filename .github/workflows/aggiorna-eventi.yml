@@ -4,6 +4,16 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "aggiorna_eventi.py"
+      - "genera_pagine_eventi.js"
+      - "event-tools.js"
+      - "index.html"
+      - "collabora.html"
+      - "tests/seo-integrity.cjs"
+      - ".github/workflows/aggiorna-eventi.yml"
 
 concurrency:
   group: raccolta-eventi-cerignola
@@ -91,6 +101,9 @@ jobs:
           else
             echo "Il report di copertura non è stato generato." >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      - name: Verifica integrità SEO e aggiornamento archivio
+        run: node tests/seo-integrity.cjs
 
       - name: Genera pagine HTML e sitemap SEO
         run: node genera_pagine_eventi.js

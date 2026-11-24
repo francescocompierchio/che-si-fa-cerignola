@@ -84,6 +84,8 @@ FONTI_PORTALI = [
 ]
 
 FONTI_SOCIAL_RSS = [
+    {"nome":"Serate e musica Cerignola fonti pubbliche","url":"https://news.google.com/rss/search?q=Cerignola%20(%22dj%20set%22%20OR%20karaoke%20OR%20%22musica%20dal%20vivo%22%20OR%20aperitivo%20OR%20%22dinner%20show%22%20OR%20serata%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola"},
+    {"nome":"Mercatini e feste Reali Siti","url":"https://news.google.com/rss/search?q=(Cerignola%20OR%20Stornara%20OR%20Stornarella%20OR%20%22Orta%20Nova%22%20OR%20Trinitapoli%20OR%20%22San%20Ferdinando%20di%20Puglia%22%20OR%20%22Canosa%20di%20Puglia%22%20OR%20Carapelle%20OR%20Ordona)%20(mercatini%20OR%20presepe%20OR%20sagra%20OR%20%22festa%20di%20paese%22%20OR%20%22villaggio%20di%20Natale%22)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola"},
     {"nome": "Social pubblici Instagram Cerignola", "url": "https://news.google.com/rss/search?q=site%3Ainstagram.com%2Fp%2F+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
     {"nome": "Social pubblici Facebook Cerignola", "url": "https://news.google.com/rss/search?q=site%3Afacebook.com+Cerignola+(evento+OR+serata+OR+concerto+OR+dj+OR+party+OR+locandina)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},
     {"nome": "Famiglie e weekend Cerignola e dintorni", "url": "https://news.google.com/rss/search?q=(Cerignola+OR+Canosa+OR+Barletta+OR+Trinitapoli+OR+Margherita+di+Savoia+OR+Orta+Nova)+(weekend+OR+famiglie+OR+bambini+OR+laboratorio+OR+fattoria+didattica+OR+visita+guidata+OR+gita)&hl=it&gl=IT&ceid=IT%3Ait", "citta_default": "Cerignola"},

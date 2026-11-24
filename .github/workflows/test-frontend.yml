@@ -1,6 +1,23 @@
 name: Verifica interfaccia web
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "sw.js"
+      - "manifest.json"
+      - "genera_pagine_eventi.js"
+      - "event-tools.js"
+      - "metrics.js"
+      - "event-page.js"
+      - "app-extras.js"
+      - "admin.html"
+      - "privacy.html"
+      - "collabora.html"
+      - "tests/seo-integrity.cjs"
+      - ".github/workflows/test-frontend.yml"
+  workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
@@ -31,6 +48,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Verifica integrità SEO e aggiornamento archivio
+        run: node tests/seo-integrity.cjs
       - name: Verifica sintassi JavaScript e controlli interattivi
         run: |
           node <<'NODE'
