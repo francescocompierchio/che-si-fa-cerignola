@@ -956,3 +956,56 @@ class PrezziJsonLdTests(unittest.TestCase):
             motore.estrai_costo_documentato("Biglietti disponibili a € 18,50"),
             "€ 18,50",
         )
+
+
+class DiagnosticaFontiTests(unittest.TestCase):
+    def test_statistiche_fonte_aggregano_esito_e_metriche(self):
+        motore.STATISTICHE_FONTI.clear()
+        motore.registra_statistica_fonte(
+            "Fonte test",
+            stato="ok",
+            linkCandidati=4,
+            pagineScaricate=3,
+            eventiEstratti=2,
+        )
+        motore.registra_statistica_fonte("Fonte test", errore="timeout")
+        self.assertEqual(
+            motore.STATISTICHE_FONTI["Fonte test"],
+            {
+                "stato": "ok",
+                "linkCandidati": 4,
+                "pagineScaricate": 3,
+                "eventiEstratti": 2,
+                "errore": "timeout",
+            },
+        )
+        motore.STATISTICHE_FONTI.clear()
+
+    def test_fonte_http_429_viene_registrata_nel_report(self):
+        class Risposta:
+            status_code = 429
+
+        class Sessione:
+            def get(self, *args, **kwargs):
+                return Risposta()
+
+        motore.STATISTICHE_FONTI.clear()
+        eventi = motore.raccogli_da_portale_generico(
+            Sessione(),
+            {
+                "nome": "Fonte limitata",
+                "url": "https://example.org/eventi/",
+                "dominio": "example.org",
+                "citta_default": "Cerignola",
+            },
+        )
+        self.assertEqual(eventi, [])
+        self.assertEqual(
+            motore.STATISTICHE_FONTI["Fonte limitata"]["stato"],
+            "HTTP 429",
+        )
+        self.assertEqual(
+            motore.STATISTICHE_FONTI["Fonte limitata"]["eventiEstratti"],
+            0,
+        )
+        motore.STATISTICHE_FONTI.clear()
