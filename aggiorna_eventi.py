@@ -509,21 +509,24 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
     if indirizzo:
         parti_indirizzo = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
 
-        def chiave_segmento_indirizzo(parte):
-            parte = re.sub(
-                rf"\s+{re.escape(str(citta))}(?:\s*\([A-Z]{{2}}\))?$",
-                "",
-                parte,
-                flags=re.I,
-            ) if citta else parte
+        def chiavi_segmento_indirizzo(parte):
             parte = re.sub(r"\s*\([A-Z]{{2}}\)$", "", parte)
-            return re.sub(r"[^a-z0-9]+", " ", parte.casefold()).strip()
+            senza_comune = re.sub(
+                rf"\s+{re.escape(str(citta))}$", "", parte, flags=re.I
+            ) if citta else parte
+            normalizza = lambda valore: re.sub(
+                r"[^a-z0-9]+", " ", valore.casefold()
+            ).strip()
+            return {
+                chiave for chiave in (normalizza(parte), normalizza(senza_comune))
+                if chiave
+            }
 
         i = 0
         while i < len(parti_indirizzo) - 1:
-            chiave_corrente = chiave_segmento_indirizzo(parti_indirizzo[i])
-            chiave_successiva = chiave_segmento_indirizzo(parti_indirizzo[i + 1])
-            if chiave_corrente and chiave_corrente == chiave_successiva:
+            chiavi_correnti = chiavi_segmento_indirizzo(parti_indirizzo[i])
+            chiavi_successive = chiavi_segmento_indirizzo(parti_indirizzo[i + 1])
+            if chiavi_correnti.intersection(chiavi_successive):
                 parti_indirizzo.pop(i + 1)
             else:
                 i += 1
