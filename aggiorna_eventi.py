@@ -10,6 +10,7 @@ from difflib import SequenceMatcher
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from decimal import Decimal, InvalidOperation
 from html import unescape
 from zoneinfo import ZoneInfo
 
@@ -788,10 +789,74 @@ def estrai_costo_documentato(testo_o_soup):
             if m_costo:
                 return m_costo.group(1).strip()[:70]
 
-    m_inline = re.search(r"\b(ingresso\s+(?:libero|gratuito)|gratuito|a\s+pagamento|€\s*\d+(?:[.,]\d{2})?)\b", testo_pag, re.I)
+    m_inline = re.search(
+        r"\b(ingresso\s+(?:libero|gratuito)|gratuito|a\s+pagamento)\b|(?<!\w)€\s*\d+(?:[.,]\d{1,2})?|\b\d+(?:[.,]\d{1,2})?\s*€",
+        testo_pag,
+        re.I,
+    )
     if m_inline:
-        return m_inline.group(1).strip().capitalize()
+        return (m_inline.group(1) or m_inline.group(0)).strip().capitalize()
 
+    return "Non specificato nella fonte"
+
+
+def _formatta_prezzo_jsonld(valore, valuta=""):
+    try:
+        prezzo = Decimal(str(valore).strip().replace(",", "."))
+    except (InvalidOperation, ValueError, TypeError):
+        return ""
+    if prezzo == 0:
+        return "Gratuito"
+    if valuta and str(valuta).upper() != "EUR":
+        return f"{str(valuta).upper()} {prezzo.normalize():f}"
+    if str(valuta).upper() != "EUR":
+        return ""
+    testo = f"{prezzo:.2f}".replace(".", ",")
+    if testo.endswith(",00"):
+        testo = testo[:-3]
+    return f"€ {testo}"
+
+
+def estrai_costo_jsonld(evento, testo_pagina=None):
+    """Legge price/lowPrice/highPrice dalle offerte JSON-LD e poi ripiega sul testo."""
+    offerte = evento.get("offers") or []
+    if isinstance(offerte, dict):
+        offerte = [offerte]
+    prezzi = []
+    valuta = ""
+    for offerta in offerte if isinstance(offerte, list) else []:
+        if not isinstance(offerta, dict):
+            continue
+        specifica = offerta.get("priceSpecification")
+        if isinstance(specifica, dict):
+            offerta = {**specifica, **offerta}
+        valuta = str(offerta.get("priceCurrency") or valuta or "").upper()
+        low = offerta.get("lowPrice")
+        high = offerta.get("highPrice")
+        if low not in (None, ""):
+            prezzo = _formatta_prezzo_jsonld(low, valuta)
+            if prezzo:
+                prezzi.append((Decimal(str(low).replace(",", ".")), prezzo))
+        if high not in (None, ""):
+            prezzo = _formatta_prezzo_jsonld(high, valuta)
+            if prezzo:
+                prezzi.append((Decimal(str(high).replace(",", ".")), prezzo))
+        if low in (None, "") and high in (None, ""):
+            valore = offerta.get("price")
+            if valore not in (None, ""):
+                prezzo = _formatta_prezzo_jsonld(valore, valuta)
+                if prezzo:
+                    prezzi.append((Decimal(str(valore).replace(",", ".")), prezzo))
+
+    if prezzi:
+        prezzi.sort(key=lambda x: x[0])
+        minimo, massimo = prezzi[0], prezzi[-1]
+        if minimo[0] == massimo[0]:
+            return minimo[1]
+        return f"Da {minimo[1]} a {massimo[1]}"
+
+    if testo_pagina is not None:
+        return estrai_costo_documentato(testo_pagina)
     return "Non specificato nella fonte"
 
 
@@ -955,7 +1020,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "dataTesto": formatta_data_italiano(d1, d2) if _data_iso_valida(d1) else "",
             "luogo": luogo_nome,
             "indirizzoMappa": indirizzo_completo,
-            "costo": "Non specificato nella fonte",
+            "costo": estrai_costo_jsonld(ev_ld, soup),
             "descrizione": desc,
             "fonteUrl": url_evento
         }, ref, fonte_curata_eventi=fonte_curata_eventi)
