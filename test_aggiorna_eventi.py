@@ -9,6 +9,23 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_fonti_movida_costiera(self):
+        nomi = {f["nome"] for f in crawler.FONTI_PORTALI if f.get("nightlife")}
+        for citta in ("Trani", "Barletta", "Manfredonia"):
+            self.assertIn("Tacco di Bacco Nightlife " + citta, nomi)
+        self.assertIn("ManfredoniaEventi Nightlife", nomi)
+        self.assertIn("LINEA Club Trani", nomi)
+
+    def test_date_permalinks_movida(self):
+        self.assertEqual(crawler.data_scheda_movida("https://linea.live/events/opening-2026-11-28"), "2026-11-28")
+        self.assertEqual(crawler.data_scheda_movida("https://manfredoniaeventi.com/evento/dj-set-26-novembre-2026/"), "2026-11-26")
+        self.assertEqual(crawler.data_scheda_movida("https://linea.live/events/city/trani"), "")
+
+    def test_movida_non_convegni(self):
+        self.assertTrue(crawler.evento_movida_documentato({"categoria":"Musica & Concerti","titolo":"Live music al pub"}))
+        self.assertFalse(crawler.evento_movida_documentato({"categoria":"Attività diurne","titolo":"Convegno"}))
+        self.assertEqual(crawler.classifica_categoria("Opening winter season with Stefano Andriezzi"),"Locali & Serate")
+
     def test_date_separate_non_intervallo(self):
         ref = crawler.datetime(2026, 11, 25)
         self.assertEqual(crawler.date_discontinue("Mercatini 11, 13 e 20 dicembre 2026", ref), ["2026-12-11","2026-12-13","2026-12-20"])
