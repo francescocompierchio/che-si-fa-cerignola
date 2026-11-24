@@ -1672,9 +1672,7 @@
 
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
       const numeroEventi = filtrati.length - numeroEsperienze;
-      counterBadge.textContent = numeroEsperienze
-        ? `${filtrati.length} risultati · ${numeroEventi} eventi, ${numeroEsperienze} idee da vivere`
-        : `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
+      counterBadge.textContent = `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
 
       if (filtrati.length === 0) {
         const empty = document.createElement("div");
