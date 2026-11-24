@@ -7,7 +7,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from collections import Counter
 from difflib import SequenceMatcher
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -56,6 +56,7 @@ FONTI_PORTALI = [
     {"nome": "Comune Cerignola Homepage Eventi", "url": "https://comune.cerignola.fg.it/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Roma Teatro Cerignola", "url": "https://romateatrocinema.it/", "dominio": "romateatrocinema.it", "citta_default": "Cerignola", "curata": True, "parametro_scheda": "mec-events", "max_schede": 30},
     {"nome": "Tacco di Bacco Cerignola", "url": "https://iltaccodibacco.it/cerignola/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Concerti", "url": "https://iltaccodibacco.it/cerignola/concerti/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "Tacco di Bacco Cerignola Sponsored", "url": "https://iltaccodibacco.it/cerignola/sponsored/", "dominio": "iltaccodibacco.it", "citta_default": "Cerignola", "curata": True},
@@ -1236,13 +1237,17 @@ def raccogli_da_portale_generico(session, fonte):
             pr = urlparse(full)
             if pr.scheme not in ("http", "https") or not _host_appartiene(full, dominio):
                 continue
+            p_low = pr.path.lower()
+            parametro_scheda = str(fonte.get("parametro_scheda") or "").strip()
+            valore_scheda = parse_qs(pr.query).get(parametro_scheda, [""])[0] if parametro_scheda else ""
             chiave = f"{pr.netloc.lower()}{pr.path.rstrip('/').lower()}"
+            if valore_scheda:
+                chiave += f"?{parametro_scheda}={valore_scheda}&{pr.query}"
             if chiave in visti:
                 continue
-            p_low = pr.path.lower()
             if any(x in p_low for x in ("/login", "/signup", "/privacy", "/cookie", "/contatti", "/chi-siamo", "/tag/", "/author/", "/autore/")):
                 continue
-            if p_low == urlparse(url).path.rstrip("/").lower():
+            if p_low == urlparse(url).path.rstrip("/").lower() and not valore_scheda:
                 continue
             if _url_tacco_generica(full):
                 continue
@@ -1253,7 +1258,12 @@ def raccogli_da_portale_generico(session, fonte):
             # Alcune fonti ufficiali hanno percorsi stabili per le schede evento:
             # in quel caso il prefisso configurato è una prova sufficiente.
             prefisso_schede = str(fonte.get("prefisso_schede") or "").lower()
-            if prefisso_schede:
+            if parametro_scheda:
+                # Alcuni calendari ufficiali pubblicano le schede come query
+                # sulla stessa homepage: ?mec-events=slug.
+                if not valore_scheda:
+                    continue
+            elif prefisso_schede:
                 if not p_low.startswith(prefisso_schede):
                     continue
             else:
@@ -1263,7 +1273,7 @@ def raccogli_da_portale_generico(session, fonte):
                 titolo_evento = bool(REGEX_TEMA_COERENTE.search(t_link))
                 if not (path_evento_id or titolo_evento):
                     continue
-            if len(p_low.strip("/")) >= 4:
+            if len(p_low.strip("/")) >= 4 or valore_scheda:
                 visti.add(chiave)
                 links.append(full)
 
