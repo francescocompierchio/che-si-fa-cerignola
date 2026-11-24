@@ -1387,15 +1387,18 @@
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
     function chiaveEvento(ev){return [ev.tipoContenuto||"evento",ev.titolo||"",ev.citta||"",ev.dataInizio||"",ev.luogo||""].join("|").toLowerCase();}
+    function piegaRigaICS(riga){let parti=[],corrente="",byteCount=0;for(const carattere of String(riga)){const byteSize=new TextEncoder().encode(carattere).length;if(byteCount+byteSize>73){parti.push(corrente);corrente=" "+carattere;byteCount=1+byteSize;}else{corrente+=carattere;byteCount+=byteSize;}}parti.push(corrente);return parti.join("\r\n");}
     function creaTestoICS(ev){
       const inizio=String(ev.dataInizio||""),fine=String(ev.dataFine||inizio);
       if(!/^\d{4}-\d{2}-\d{2}$/.test(inizio)||!/^\d{4}-\d{2}-\d{2}$/.test(fine))throw new Error("Data evento non valida");
+      if(fine<inizio)throw new Error("Intervallo evento non valido");
       const esc=value=>String(value||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
       const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
       const uid=encodeURIComponent([ev.titolo,ev.citta,inizio,ev.luogo].join("|"))+"@chesifacerignola";
       const descr=esc((ev.descrizione||"")+(ev.costo?"\nCosto: "+ev.costo:""));
       const fonte=isSafeHttpUrl(ev.fonteUrl)?String(ev.fonteUrl).trim():APP_URL;
-      return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Che Si Fa Cerignola//IT","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+uid,"DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+inizio.replace(/-/g,""),"DTEND;VALUE=DATE:"+spostaGiorniISO(fine,1).replace(/-/g,""),"SUMMARY:"+esc(ev.titolo||"Evento"),"DESCRIPTION:"+descr,"LOCATION:"+esc([ev.luogo,ev.citta].filter(Boolean).join(", ")),"URL:"+fonte,"STATUS:CONFIRMED","END:VEVENT","END:VCALENDAR"].join("\r\n")+"\r\n";
+      const righe=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Che Si Fa Cerignola//IT","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+uid,"DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+inizio.replace(/-/g,""),"DTEND;VALUE=DATE:"+spostaGiorniISO(fine,1).replace(/-/g,""),"SUMMARY:"+esc(ev.titolo||"Evento"),"DESCRIPTION:"+descr,"LOCATION:"+esc([ev.luogo,ev.citta].filter(Boolean).join(", ")),"URL:"+fonte,"STATUS:CONFIRMED","END:VEVENT","END:VCALENDAR"];
+      return righe.map(piegaRigaICS).join("\r\n")+"\r\n";
     }
     function scaricaCalendarioICS(ev){
       try{
