@@ -1,6 +1,20 @@
 [
   {
     "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Attività diurne",
+    "titolo": "Cenerentola 301",
+    "dataTesto": "Dal 22 Nov al 06 Gen 2027",
+    "dataInizio": "2026-11-22",
+    "dataFine": "2027-01-06",
+    "luogo": "Teatro Comunale Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Via della Crocie, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigliata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandire )",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Attività diurne",
     "titolo": "Foggia | Festival Sport Story – Il pallone è uguale per tutti",
@@ -124,6 +138,34 @@
     "costo": "Ingresso libero",
     "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Eventi",
+    "dataTesto": "Gio 26 Nov 2026",
+    "dataInizio": "2026-11-26",
+    "dataFine": "2026-11-26",
+    "luogo": "Piazza Q",
+    "indirizzoMappa": "Piazza Q, Piazza Matteotti ( piazza del Teatro), Cerignola",
+    "costo": "Gratuito",
+    "descrizione": "Pagina dedicata agli Eventi del Comune di Cerignola",
+    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Le storie del Giovedì – Biblioteca di Comunità",
+    "dataTesto": "Gio 26 Nov 2026",
+    "dataInizio": "2026-11-26",
+    "dataFine": "2026-11-26",
+    "luogo": "Biblioteca di Comunità",
+    "indirizzoMappa": "Biblioteca di Comunità, Via Cesare Battisti n. 13 - 71042 Cerignola FG",
+    "costo": "Gratuito",
+    "descrizione": "dal 26 Novembre 2026 alle 17:00 al 26 Novembre 2026 alle 18:00",
+    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/"
   },
   {
     "tipoContenuto": "evento",
@@ -366,7 +408,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Musica & Concerti",
+    "categoria": "Teatro & Spettacoli",
     "titolo": "Cerignola | Breaking Brecht – Sing’n’Song Cabaret",
     "dataTesto": "Dom 06 Dic 2026",
     "dataInizio": "2026-12-06",
@@ -418,20 +460,6 @@
     "costo": "Ingresso gratuito",
     "descrizione": "la passeggiata si svolgerà il 6 dicembre con questo programma comprendente agri aperitivo e l'assaggio delle cartellate e del panettone realizzate dallo chef al momento nonché al mercatino sarà possibile acquistare prodo",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337624.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Attività diurne",
-    "titolo": "Cenerentola 301",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Teatro Comunale Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Via della Crocie, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigliata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
   },
   {
     "tipoContenuto": "evento",
@@ -646,7 +674,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Attività diurne",
+    "categoria": "Teatro & Spettacoli",
     "titolo": "Cerignola | C’era una volta l’Africa – Bottega degli Apocrifi",
     "dataTesto": "Mar 02 Feb 2027",
     "dataInizio": "2027-02-02",
@@ -688,7 +716,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Attività diurne",
+    "categoria": "Teatro & Spettacoli",
     "titolo": "Cerignola | L’Arrago. Storia di una baby gang – Teatri di Bari",
     "dataTesto": "Ven 05 Mar 2027",
     "dataInizio": "2027-03-05",
@@ -730,7 +758,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Attività diurne",
+    "categoria": "Teatro & Spettacoli",
     "titolo": "Cerignola | Come il brutto anatroccolo – Crest",
     "dataTesto": "Mer 14 Apr 2027",
     "dataInizio": "2027-04-14",
@@ -754,6 +782,20 @@
     "costo": "A pagamento",
     "descrizione": "Luca Perri conduce il pubblico in Kaos. La vita è quantica, un viaggio tra fisica quantistica e biologia quantistica. Lo spettacolo intreccia scienza, meraviglia e interrogativi sulla realtà, proponendo una divulgazione",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331614.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Andria",
+    "categoria": "Attività diurne",
+    "titolo": "579^ Fiera d'Aprile",
+    "dataTesto": "Dal 23 Apr al 25 Apr 2027",
+    "dataInizio": "2027-04-23",
+    "dataFine": "2027-04-25",
+    "luogo": "Centro Storico",
+    "indirizzoMappa": "Centro Storico, Andria",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "579^ Fiera d'Aprile presso Centro Storico (Andria).",
+    "fonteUrl": "https://www.andriaviva.it/eventi/579-fiera-d-aprile/"
   },
   {
     "tipoContenuto": "evento",
