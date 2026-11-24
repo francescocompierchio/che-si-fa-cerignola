@@ -456,7 +456,7 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
     if str(citta or "").casefold() == "cerignola" and re.search(
         r"roma\s+teatro\s+cinema", f"{luogo} {indirizzo}", re.I
     ):
-        return "Roma Teatro Cinema E…, Via Roma, 49, Cerignola"
+        return "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola"
     for nome in sorted(set(COMUNI_50KM.values()), key=len, reverse=True):
         if nome.lower() == str(citta or "").lower():
             continue
