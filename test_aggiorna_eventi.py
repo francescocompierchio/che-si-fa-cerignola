@@ -77,6 +77,9 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(any("instagram.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
         self.assertTrue(any("facebook.com" in f["url"] for f in crawler.FONTI_SOCIAL_RSS))
 
+    def test_ocr_locandine_senza_immagini_non_blocca(self):
+        self.assertEqual(crawler.estrai_testo_locandine(None), "")
+
     def test_indirizzo_concatenato_due_volte(self):
         indirizzo = (
             "Via Boccaccio 42/44, Barletta. Barletta, "
