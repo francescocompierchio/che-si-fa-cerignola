@@ -1328,7 +1328,7 @@ def sono_duplicati(a, b):
     # per lo stesso spettacolo: confronta anche la parte distintiva iniziale.
     base_a = _titolo_base_duplicato(a.get("titolo"))
     base_b = _titolo_base_duplicato(b.get("titolo"))
-    return len(base_a) >= 7 and base_a == base_b
+    return len(base_a) >= 14 and len(base_a.split()) >= 2 and base_a == base_b
 
 
 def _fonte_appartiene_a_raccolta_automatica(url):
