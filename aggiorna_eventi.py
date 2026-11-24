@@ -53,6 +53,8 @@ FONTI_VIVA = [
 
 FONTI_PORTALI = [
     {"nome": "Puglia Culture Cerignola", "url": "https://www.pugliaculture.it/circuito/Cerignola/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
+    {"nome": "Puglia Culture Stagione Teatrale Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-stagione-teatrale-2026-27-un-teatro-per-tutti/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 30},
+    {"nome": "Puglia Culture Teatro Ragazzi Cerignola 2026/27", "url": "https://www.pugliaculture.it/rassegna/cerignola-la-scena-dei-ragazzi-2026-27-spettacoli-per-le-scuole/", "dominio": "pugliaculture.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
     {"nome": "Comune Cerignola Homepage Eventi", "url": "https://comune.cerignola.fg.it/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Comune di Cerignola Eventi", "url": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/", "dominio": "comune.cerignola.fg.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/vivere-il-comune/eventi/", "max_schede": 20},
     {"nome": "Teatro Mercadante Cerignola", "url": "https://www.teatromercadantecerignola.it/", "dominio": "teatromercadantecerignola.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/evento/", "max_schede": 20},
@@ -502,10 +504,14 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
                 "",
                 indirizzo,
             )
-    # Alcuni aggregatori concatenano due volte la stessa sede: una volta
-    # nel campo luogo e una seconda volta nei dati strutturati dell'indirizzo.
-    # Collassa soltanto segmenti consecutivi equivalenti, ignorando il comune
-    # finale del primo segmento (es. "... Foggia, ...").
+    # Alcuni aggregatori concatenano due volte l'intero indirizzo, separando
+    # la prima copia dalla seconda con un punto (es. "... Barletta. Barletta, ...").
+    # Normalizza quel separatore solo quando introduce nuovamente il comune.
+    if indirizzo and citta:
+        indirizzo = re.sub(
+            rf"\.\s+(?={re.escape(citta)}\b)", ", ", indirizzo, flags=re.I
+        )
+
     if indirizzo:
         parti_indirizzo = [parte.strip() for parte in indirizzo.split(",") if parte.strip()]
 
@@ -522,14 +528,25 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
                 if chiave
             }
 
+        # Elimina segmenti identici adiacenti.
         i = 0
         while i < len(parti_indirizzo) - 1:
-            chiavi_correnti = chiavi_segmento_indirizzo(parti_indirizzo[i])
-            chiavi_successive = chiavi_segmento_indirizzo(parti_indirizzo[i + 1])
-            if chiavi_correnti.intersection(chiavi_successive):
+            if chiavi_segmento_indirizzo(parti_indirizzo[i]).intersection(
+                chiavi_segmento_indirizzo(parti_indirizzo[i + 1])
+            ):
                 parti_indirizzo.pop(i + 1)
             else:
                 i += 1
+
+        # Se l'intera sequenza iniziale ricompare identica in coda, conserva
+        # una sola copia. Il vincolo inizio/fine evita di cancellare vie
+        # omonime che compaiono legittimamente in indirizzi più articolati.
+        chiavi = [chiavi_segmento_indirizzo(p) for p in parti_indirizzo]
+        for lunghezza in range(len(parti_indirizzo) // 2, 1, -1):
+            if chiavi[:lunghezza] == chiavi[-lunghezza:]:
+                parti_indirizzo = parti_indirizzo[:-lunghezza]
+                break
+
         indirizzo = ", ".join(parti_indirizzo)
         if citta:
             indirizzo = normalizza_nome_luogo(indirizzo, citta)
@@ -539,8 +556,11 @@ def normalizza_indirizzo_mappa(indirizzo, luogo, citta):
     return indirizzo
 
 
-def classifica_categoria(testo):
-    t = (testo or "").lower()
+def classifica_categoria(testo, luogo="", fonte_url=""):
+    t = (testo or "").casefold()
+    sede = (luogo or "").casefold()
+    url = (fonte_url or "").casefold()
+
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
@@ -550,34 +570,44 @@ def classifica_categoria(testo):
         return "Natura & Escursioni"
     if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
         return "Sagre & Food"
-    # Distingue la prosa e il teatro dalla musica, senza farsi ingannare
-    # dalla sola presenza del nome del Teatro come luogo dell'evento.
+
+    # Gli indizi teatrali espliciti prevalgono sulle parole generiche.
     if any(k in t for k in (
-        "spettacolo teatrale", "teatro inclusivo",
-        "teatro & spettacoli", "commedia teatrale", "prosa", "cabaret",
+        "spettacolo teatrale", "teatro inclusivo", "teatro & spettacoli",
+        "commedia teatrale", "prosa", "cabaret", "monologo", "drammaturgia",
+        "compagnia teatrale", "altri spettacoli teatrali",
     )):
         return "Teatro & Spettacoli"
+
     # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
     if any(k in t for k in ("dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
         return "Locali & Serate"
-    # Riconosce anche esibizioni descritte senza la parola "concerto" nel titolo.
+
+    # Un concerto resta musica anche quando si svolge in un teatro.
     if any(k in t for k in (
         "concerto", "concerti", "concert", "concerts", "symphonic concert", "in concerto",
         "concerto sinfonico", "orchestra sinfonica", "musica classica", "recital pianistico",
-        "pianoforte", "musica da camera", "opera lirica",
-        "vivaldi", "orchestra", "musica dal vivo", "musica live",
-        "live music", "live", "tribute", "tributo", "tribute band", "cover band",
-        "band", "jam", "quartet", "quatuor", "trio", "duo", "vocal harmony",
-        "sassofono", "saxophone", "chitarra", "guitar", "cantautore", "cantante",
-        "musicista", "soul", "r&b", "hendrix", "califano", "cabaret",
+        "pianoforte", "musica da camera", "opera lirica", "vivaldi", "orchestra",
+        "musica dal vivo", "musica live", "live music", " live ", "tribute", "tributo",
+        "tribute band", "cover band", "band", "jam", "quartet", "quatuor", "trio", "duo",
+        "vocal harmony", "sassofono", "saxophone", "chitarra", "guitar", "cantautore",
+        "cantante", "musicista", "soul", "r&b", "hendrix", "califano",
         "festa in piazza", "festa di piazza", "festa patronale", "festa di paese",
-        "festa della birra"
+        "festa della birra",
     )):
         return "Musica & Concerti"
-    # Le schede ufficiali del Roma Teatro marcano la categoria con questa
-    # etichetta; usarla solo dopo gli indizi musicali espliciti.
-    if any(k in t for k in ("stagione teatrale", "altri spettacoli teatrali")):
+
+    # Se la scheda proviene da una stagione teatrale o indica una sede teatrale,
+    # classifica come spettacolo solo in assenza di indizi musicali espliciti.
+    fonte_teatrale = any(d in url for d in (
+        "teatromercadantecerignola.it", "romateatrocinema.it"
+    ))
+    sede_teatrale = bool(re.search(r"\bteatro\b", sede))
+    if fonte_teatrale or sede_teatrale or any(
+        k in t for k in ("stagione teatrale", "altri spettacoli teatrali")
+    ):
         return "Teatro & Spettacoli"
+
     return "Attività diurne"
 
 def formatta_data_italiano(d_ini_iso, d_fin_iso):
@@ -1001,7 +1031,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
 
     # Ricalcola la categoria sul contenuto. Mantiene però la classe specifica
     # assegnata dalla scheda quando la fonte documenta esplicitamente il teatro.
-    cat = classifica_categoria(f"{titolo} {descrizione}")
+    cat = classifica_categoria(f"{titolo} {descrizione}", luogo=luogo, fonte_url=url)
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
 
@@ -1153,7 +1183,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
 
     ev_ok = normalizza_e_valida_evento({
         "citta": citta,
-        "categoria": classifica_categoria(testo_completo),
+        "categoria": classifica_categoria(testo_completo, luogo=luogo, fonte_url=page_url),
         "titolo": titolo,
         "dataTesto": d_txt,
         "dataInizio": d1,
