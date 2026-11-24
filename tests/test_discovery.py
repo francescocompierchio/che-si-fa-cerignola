@@ -1268,3 +1268,10 @@ class RomaTeatroUfficialeTests(unittest.TestCase):
         self.assertEqual(eventi[0]["dataInizio"], "2026-12-04")
         self.assertIn("roma teatro", eventi[0]["luogo"].casefold())
         self.assertIn("Corso Roma, 49", eventi[0]["indirizzoMappa"])
+
+    def test_schede_roma_teatro_vengono_riconosciute_come_automatiche(self):
+        self.assertTrue(
+            motore._fonte_appartiene_a_raccolta_automatica(
+                "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04"
+            )
+        )
