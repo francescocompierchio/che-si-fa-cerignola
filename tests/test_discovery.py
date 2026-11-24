@@ -1189,7 +1189,7 @@ class IndirizziSediLocaliVerificateTests(unittest.TestCase):
                 "ROMA TEATRO CINEMA E",
                 "Cerignola",
             ),
-            "Roma Teatro Cinema E…, Via Roma, 49, Cerignola",
+            "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola",
         )
 
 
