@@ -323,6 +323,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Natale in Piazza",
+    "dataTesto": "Mar 01 Dic 2026",
+    "dataInizio": "2026-12-01",
+    "dataFine": "2026-12-01",
+    "luogo": "Piazza Matteotti",
+    "indirizzoMappa": "Piazza Matteotti, Piazza Matteo, 71042, Cerignola, FG",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Natale in Piazza è l'appuntamento natalizio di Cerignola, nel cuore della Capitanata, in provincia di Foggia. Nella cornice di Piazza Matteo...",
+    "fonteUrl": "https://buzzeventmap.com/event/feba97b7-ede0-47ae-92ac-dfa00ccd3319"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
     "titolo": "Foggia | Forever Amadeus – Orchestra Sinfonica 131 della Basilicata",
