@@ -1353,7 +1353,7 @@
     function aggiornaContatorePreferiti(){const el=document.getElementById("favorites-count");if(el)el.textContent=preferiti.size;document.querySelectorAll(".favorite-toggle").forEach(b=>{const v=preferiti.has(b.dataset.favoriteKey);b.classList.toggle("saved",v);b.textContent=v?"★":"☆";b.setAttribute("aria-label",v?"Rimuovi dai salvati":"Salva nei preferiti");b.setAttribute("aria-pressed",String(v));});}
     function salvaPreferiti(){try{localStorage.setItem(PREFERITI_KEY,JSON.stringify([...preferiti]));}catch(e){}aggiornaContatorePreferiti();}
     function mostraToast(msg){const t=document.getElementById("app-toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(mostraToast.timer);mostraToast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
-    function eWeekend(data){if(!data)return false;const d=new Date(data+"T12:00:00"),oggiD=new Date(oggi+"T12:00:00"),ven=new Date(oggiD);ven.setDate(oggiD.getDate()+((5-oggiD.getDay()+7)%7));const dom=new Date(ven);dom.setDate(ven.getDate()+2);return d>=ven&&d<=dom;}
+    function eWeekend(data){if(!data)return false;const d=new Date(data+"T12:00:00"),oggiD=new Date(oggi+"T12:00:00"),ven=new Date(oggiD);const weekday=oggiD.getDay(),daysBack=weekday>=5?weekday-5:weekday+2;ven.setDate(oggiD.getDate()-daysBack);const dom=new Date(ven);dom.setDate(ven.getDate()+2);return d>=ven&&d<=dom;}
     function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");}
     function impostaModalitaRapida(m){modalitaRapida=m;filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
@@ -1687,7 +1687,7 @@
         const fascia = getFasciaCerchioCerignola(cittaEv);
 
         if (modalitaRapida === "FAVORITES" && !preferiti.has(chiaveEvento(ev))) return false;
-        if (modalitaRapida === "WEEKEND" && !(eWeekend(ev.dataInizio) || eWeekend(ev.dataFine))) return false;
+        if (modalitaRapida === "WEEKEND" && ev.tipoContenuto !== "esperienza" && !(eWeekend(ev.dataInizio) || eWeekend(ev.dataFine))) return false;
         if (filtroAttivo === "OGGI" && !isToday) return false;
         if (filtroAttivo === "ENTRO_25_KM" && fascia !== 1) return false;
         if (filtroAttivo === "RAGGIO_50_KM" && fascia > 2) return false;
