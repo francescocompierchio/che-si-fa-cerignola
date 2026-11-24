@@ -82,11 +82,16 @@ class QualitaEventiTests(unittest.TestCase):
         import json
         from pathlib import Path
         catalogo = json.loads((Path(__file__).parent / "esperienze.json").read_text(encoding="utf-8"))
-        self.assertGreaterEqual(len(catalogo), 12)
+        self.assertGreaterEqual(len(catalogo), 20)
         self.assertTrue(all(x.get("tipoContenuto") == "esperienza" for x in catalogo))
         self.assertTrue(all(x.get("titolo") and x.get("citta") and x.get("indirizzoMappa") for x in catalogo))
         self.assertTrue(any("bosco" in x.get("titolo", "").lower() for x in catalogo))
         self.assertTrue(any("famiglie" in x.get("adattoA", "").lower() for x in catalogo))
+        titoli = {x["titolo"] for x in catalogo}
+        self.assertTrue(any("Faeto" in titolo for titolo in titoli))
+        self.assertTrue(any("Foresta Umbra" in titolo for titolo in titoli))
+        self.assertTrue(any("Oasi Lago Salso" in titolo for titolo in titoli))
+        self.assertTrue(all(x.get("fonteUrl") for x in catalogo if any(k in x["titolo"] for k in ("Ripa Alta", "Faeto", "Foresta Umbra", "Oasi Lago Salso"))))
 
     def test_ocr_locandine_senza_immagini_non_blocca(self):
         self.assertEqual(crawler.estrai_testo_locandine(None), "")
