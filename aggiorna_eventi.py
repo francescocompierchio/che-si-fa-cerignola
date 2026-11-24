@@ -575,7 +575,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     if any(k in t for k in (
         "spettacolo teatrale", "teatro inclusivo", "teatro & spettacoli",
         "commedia teatrale", "prosa", "cabaret", "monologo", "drammaturgia",
-        "compagnia teatrale", "stagione teatrale", "altri spettacoli teatrali",
+        "compagnia teatrale", "altri spettacoli teatrali",
     )):
         return "Teatro & Spettacoli"
 
