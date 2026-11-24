@@ -140,3 +140,23 @@ jobs:
           assert.deepEqual(normalize("Bosco e natura").split(/\s+/), ["bosco", "e", "natura"]);
           console.log("OK: " + scripts.length + " script inline, " + requiredIds.length + " ID, date weekend e normalizzazione ricerca verificate.");
           NODE
+      - name: Configura Android SDK per diagnosticare l'APK
+        uses: android-actions/setup-android@v3
+      - name: Legge identità e firma dell'APK esistente
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager "build-tools;35.0.0"
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK="app-release.apk"
+          echo "===== PACKAGE / VERSION / SDK / PERMISSIONS ====="
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | grep -E "^(package:|sdkVersion:|targetSdkVersion:|application-label:|launchable-activity:|uses-permission:)" || true
+          echo "===== APPLICATION ID ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest application-id "$APK"
+          echo "===== VERSION ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-code "$APK"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-name "$APK" || true
+          echo "===== SIGNATURE CERTIFICATE ====="
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK" || true
+          echo "===== DEX PACKAGE SUMMARY ====="
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" dex packages --defined-only "$APK" | sed -n '1,120p'
