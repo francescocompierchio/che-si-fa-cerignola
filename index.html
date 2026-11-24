@@ -607,6 +607,14 @@
       border-top: 1px solid var(--border);
     }
 
+    .event-poster.event-poster-full {
+      max-width: 400px;
+      max-height: none;
+      height: auto;
+      object-fit: contain;
+      margin-left: auto;
+      margin-right: auto;
+    }
     .event-poster {
       width: 100%;
       max-height: 360px;
@@ -1430,6 +1438,7 @@
         "costo": "Non indicato · Contattare il locale",
         "descrizione": "Il Sabato di ADE: show cooking e music selection by Loris Ferrara, in collaborazione con Ènosi Events. Inizio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 786 1865. Evento segnalato direttamente dal locale.",
         "fonteUrl": "https://www.instagram.com/ade_rooftopluxuryspace/",
+        "locandinaUrl": "https://francescocompierchio.github.io/che-si-fa-cerignola/locandine/ade-2026-11-28.avif",
         "inEvidenza": true
       }
     ];
@@ -2206,10 +2215,18 @@
 
         if (isSafeHttpUrl(ev.locandinaUrl)) {
           const poster = document.createElement("img");
-          poster.className = "event-poster";
-          poster.src = ev.locandinaUrl.trim();
-          poster.alt = ev.titolo;
+          poster.className = ev.inEvidenza ? "event-poster event-poster-full" : "event-poster";
+          poster.alt = "Locandina: " + ev.titolo;
           poster.loading = "lazy";
+          poster.decoding = "async";
+          // Scarica la locandina soltanto quando viene aperta la scheda.
+          const caricaLocandina = () => {
+            if (details.open && !poster.hasAttribute("src")) {
+              poster.src = ev.locandinaUrl.trim();
+            }
+          };
+          details.addEventListener("toggle", caricaLocandina);
+          caricaLocandina();
           poster.onerror = () => { poster.style.display = "none"; };
           body.appendChild(poster);
         }
