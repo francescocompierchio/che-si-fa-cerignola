@@ -876,3 +876,42 @@ class ProtezioneManualiERetryHttpTests(unittest.TestCase):
             self.assertTrue(retry.respect_retry_after_header)
         finally:
             session.close()
+
+
+class ComuneHomepageEIndirizziTests(unittest.TestCase):
+    def test_homepage_comune_e_configurata_come_fonte_eventi(self):
+        fonte = next(
+            x for x in motore.FONTI_PORTALI
+            if x["nome"] == "Comune Cerignola Homepage Eventi"
+        )
+        self.assertEqual(fonte["url"], "https://comune.cerignola.fg.it/")
+        self.assertEqual(
+            fonte["prefisso_schede"],
+            "/vivere-il-comune/eventi/",
+        )
+
+    def test_evento_comune_con_sede_e_indirizzo_documentati_viene_estratto(self):
+        html = """
+        <html><body><main>
+          <h1>Le storie del Giovedì – Biblioteca di Comunità</h1>
+          <h2>dal 26 Novembre 2026 alle 17:00 al 26 Novembre 2026 alle 18:00</h2>
+          <p>Laboratorio di lettura creativa</p>
+          <p>Giovedì 26 novembre, laboratorio per bambini dedicato alle avventure di Pinocchio.</p>
+          <h2>Luogo</h2>
+          <h3>Biblioteca di Comunità - Comune di Cerignola</h3>
+          <p>Via Cesare Battisti n. 13 - 71042 Cerignola FG</p>
+          <h2>Costi</h2>
+          <p>Gratuito. E' necessaria prenotazione.</p>
+        </main></body></html>
+        """
+        eventi = motore.analizza_pagina_evento(
+            html,
+            "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
+            citta_default="Cerignola",
+            fonte_curata_eventi=True,
+        )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-11-26")
+        self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")
+        self.assertIn("Via Cesare Battisti n. 13", eventi[0]["indirizzoMappa"])
+        self.assertIn("Cerignola FG", eventi[0]["indirizzoMappa"])
