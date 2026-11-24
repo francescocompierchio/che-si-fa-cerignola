@@ -57,6 +57,17 @@ function genera(eventi, editoriali, oggi, precedenti = []) {
    const related=altri.length?`<section aria-label="Altri eventi a ${esc(row.ev.citta)}"><h2>Altri eventi a ${esc(row.ev.citta)}</h2>${lista(altri)}</section>`:"";
    files[row.path]=files[row.path].replace("<!--CSF_RELATED-->",()=>related);
  }
+ // Risposte dirette basate solo sui dati pubblici, con date leggibili e link alla scheda.
+ const todayRows=items=>items.filter(x=>CsfEventTools.overlaps(x.ev,oggi,oggi));
+ const compact=items=>"<ul>"+items.map(x=>'<li><a href="'+esc(x.url)+'">'+esc(x.ev.titolo)+'</a> · '+esc(x.ev.citta)+' · '+esc(x.ev.dataTesto||fmt(x.ev.dataInizio))+' · '+esc(x.ev.luogo)+"</li>").join("")+"</ul>";
+ const oggiBox=(items,heading,empty)=>{
+   const active=todayRows(items);
+   return "<section><h2>"+esc(heading)+"</h2>"+(active.length?"<p>"+esc(fmt(oggi))+" · "+active.length+(active.length===1?" appuntamento pubblicato.":" appuntamenti pubblicati.")+"</p>"+compact(active):"<p>"+esc(empty)+"</p>")+"</section>";
+ };
+ const prossimiBox=(items,heading)=>{
+   const next=items.filter(x=>x.ev.dataInizio>oggi).sort((a,b)=>a.ev.dataInizio.localeCompare(b.ev.dataInizio)).slice(0,3);
+   return next.length?"<section><h2>"+esc(heading)+"</h2>"+compact(next)+"</section>":"";
+ };
  // Hub stabili: solo contenuto utile, mai pagine doorway per ogni combinazione città/categoria.
  const hubSpecs=[
    {id:"serate",label:"Serate e locali",title:"Serate a Cerignola e dintorni",match:r=>CsfEventTools.evening(r.ev)},
@@ -78,7 +89,11 @@ function genera(eventi, editoriali, oggi, precedenti = []) {
    if(!indexable&&!oldHubs.has(file))continue;
    const desc=breve(spec.title+": consulta gli appuntamenti in programma con date, luoghi, informazioni sull'accesso e fonti degli eventi.",155);
    const intro="<h1>"+esc(spec.title)+"</h1><p>Appuntamenti pubblicati nell'agenda di Che Si Fa Cerignola. Apri la scheda per controllare date, indirizzi, disponibilità e fonti.</p>";
-   const body=intro+(items.length?lista(items):"<p>Non risultano appuntamenti pubblicati in questa sezione. Consulta l'agenda completa per le altre proposte.</p>");
+   const isCity=spec.id.startsWith("comune-");
+   const focus=spec.id==="serate"?items.filter(x=>slug(x.ev.citta)==="cerignola"):items;
+   const summary=oggiBox(focus,spec.id==="serate"?"Serate a Cerignola oggi":"Appuntamenti di oggi",spec.id==="serate"?"Nessuna serata in città pubblicata per oggi. Consulta anche gli appuntamenti nei dintorni: l'agenda non comprende necessariamente tutte le iniziative.":"Non risultano appuntamenti pubblicati per oggi in questa sezione.");
+   const next=prossimiBox(focus,spec.id==="serate"?"Prossime serate a Cerignola":"Prossimi appuntamenti");
+   const body=intro+summary+next+"<h2>"+(isCity?"Calendario del comune":"Tutti gli appuntamenti della categoria")+"</h2>"+(items.length?lista(items):"<p>Non risultano appuntamenti pubblicati in questa sezione. Consulta l'agenda completa per le altre proposte.</p>")+'<p><a href="'+base+'eventi/weekend.html">Eventi del fine settimana</a> · <a href="'+base+'eventi/cerignola.html">Agenda di Cerignola</a></p>';
    files[path]=layout(breve(spec.title,60),desc,url,body,breadcrumbs([...crumbsAgenda,[spec.label,url]])+(items.length?itemList(items):""),"",indexable);
    if(indexable)hubs.push({url,label:spec.label});
  }
@@ -87,11 +102,11 @@ function genera(eventi, editoriali, oggi, precedenti = []) {
  const weekend=rows.filter(x=>CsfEventTools.overlaps(x.ev,oggi>ven?oggi:ven,dom));
  const nav=`<p><a href="${base}eventi/cerignola.html">Eventi a Cerignola</a> · <a href="${base}eventi/weekend.html">Cosa fare nel weekend</a></p>`;
  const navHub=hubs.length?`<section aria-label="Esplora per argomento o comune"><h2>Esplora gli eventi per argomento e comune</h2><ul>${hubs.map(h=>`<li><a href="${esc(h.url)}">${esc(h.label)}</a></li>`).join("")}</ul></section>`:"";
- const localBody="<h1>Eventi a Cerignola: cosa fare in città</h1><p>Agenda locale con appuntamenti pubblicati e verificabili tramite le rispettive fonti. Gli eventi di oggi e dei prossimi giorni sono elencati con luogo e data.</p>"+(local.length?lista(local):"<p>Non risultano appuntamenti locali nel calendario pubblico. Consulta l'agenda completa o segnala un evento dall'app.</p>")+nav;
+ const localBody="<h1>Eventi a Cerignola: cosa fare in città</h1><p>Agenda locale con appuntamenti pubblicati e verificabili tramite le rispettive fonti. Gli eventi di oggi e dei prossimi giorni sono elencati con luogo e data.</p>"+oggiBox(local,"Cosa fare oggi a Cerignola","Non risultano eventi pubblicati in città per oggi. L'agenda potrebbe non comprendere tutte le iniziative locali.")+oggiBox(local.filter(x=>CsfEventTools.evening(x.ev)),"Cosa fare stasera a Cerignola","Non risultano serate pubblicate in città per oggi. Consulta le prossime date e gli eventi nei dintorni.")+prossimiBox(local,"Prossimi appuntamenti in città")+"<h2>Calendario degli eventi di Cerignola</h2>"+(local.length?lista(local):"<p>Non risultano appuntamenti locali nel calendario pubblico. Consulta l'agenda completa o segnala un evento dall'app.</p>")+nav;
  const weekendBody="<h1>Cosa fare a Cerignola e dintorni nel weekend</h1><p><strong>"+esc(fmt(ven))+" – "+esc(fmt(dom))+"</strong></p><p>Eventi in programma tra venerdì e domenica, a partire da Cerignola. Controlla orari, prezzi e disponibilità nella scheda dell'evento.</p>"+(weekend.length?lista(weekend):"<p>Non risultano ancora eventi confermati per questo fine settimana nell'archivio pubblico. Consulta i prossimi appuntamenti nell'agenda completa.</p>")+nav;
  files["eventi/cerignola.html"]=layout("Eventi a Cerignola oggi e nei prossimi giorni","Scopri gli appuntamenti in programma a Cerignola: serate, concerti, attività e iniziative locali con date, luoghi e link alle fonti.",base+"eventi/cerignola.html",localBody,breadcrumbs([...crumbsAgenda,["Cerignola",base+"eventi/cerignola.html"]])+itemList(local),"",local.length>0);
  files["eventi/weekend.html"]=layout("Cosa fare nel weekend a Cerignola e dintorni","Scopri cosa fare nel fine settimana tra Cerignola e dintorni: appuntamenti in programma, date, luoghi, dettagli e link alle fonti.",base+"eventi/weekend.html",weekendBody,breadcrumbs([...crumbsAgenda,["Weekend",base+"eventi/weekend.html"]])+itemList(weekend),"",weekend.length>0);
- files["eventi/index.html"]=layout("Eventi a Cerignola e dintorni | Che Si Fa Cerignola","Consulta gli eventi in programma a Cerignola e nei comuni vicini: serate, concerti, sagre, escursioni e attività per famiglie.",base+"eventi/","<h1>Eventi a Cerignola e dintorni</h1><p>Serate, concerti e attività in programma. Consulta i dettagli e la fonte di ciascun evento.</p>"+nav+navHub+lista(rows),breadcrumbs(crumbsAgenda)+itemList(rows));
+ files["eventi/index.html"]=layout("Eventi a Cerignola e dintorni | Che Si Fa Cerignola","Consulta gli eventi in programma a Cerignola e nei comuni vicini: serate, concerti, sagre, escursioni e attività per famiglie.",base+"eventi/","<h1>Eventi a Cerignola e dintorni</h1><p>Serate, concerti e attività in programma. Consulta i dettagli e la fonte di ciascun evento.</p>"+nav+navHub+lista(rows)+'<section><h2>Come funziona Che Si Fa Cerignola</h2><p>Agenda indipendente dedicata a Cerignola e ai comuni vicini. Le schede riportano data, luogo e collegamento alla fonte disponibile; gli appuntamenti provengono da fonti pubbliche e da segnalazioni del territorio. Gli organizzatori possono segnalare eventi dall’app. Per variazioni, disponibilità e prenotazioni consulta sempre la fonte indicata.</p><p><a href="'+base+'">Apri l’app e segnala un evento</a></p></section>',breadcrumbs(crumbsAgenda)+itemList(rows));
  const urls=[base,base+"eventi/",...(local.length?[base+"eventi/cerignola.html"]:[]),...(weekend.length?[base+"eventi/weekend.html"]:[]),...hubs.map(x=>x.url),...rows.map(x=>x.url)];
  files["sitemap.xml"]='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(u=>`  <url><loc>${esc(u)}</loc></url>`).join("\n")+"\n</urlset>\n";
  return files;
