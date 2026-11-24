@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v15";
+const CACHE_NAME = "chesifa-shell-v16";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -6,6 +6,7 @@ const SHELL_FILES = [
   new URL("manifest.json", self.registration.scope).href,
   new URL("event-tools.js", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
+  new URL("event-page.js", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
@@ -41,6 +42,8 @@ async function retePrima(request, key) {
       await salvaInCache(cache, key, response);
       return response;
     }
+    // Un evento rimosso dal sito non deve riapparire dalla cache.
+    if (response && (response.status === 404 || response.status === 410)) { await cache.delete(key); return response; }
     const precedente = await cache.match(key);
     return precedente || response;
   } catch (error) {
