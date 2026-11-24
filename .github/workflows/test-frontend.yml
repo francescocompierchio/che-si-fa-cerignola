@@ -92,9 +92,16 @@ jobs:
           const makeNotificationSummary = new Function(summarySource[0] + "; return riepilogoNuoviEventi;")();
           assert.equal(makeNotificationSummary([{titolo:"Concerto"},{titolo:"Teatro"},{titolo:"Festival"}]), "3 nuovi eventi: Concerto · Teatro e altri 1");
           const sw = fs.readFileSync("sw.js", "utf8");
-          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v9"'), "Versione cache service worker non aggiornata");
+          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v10"'), "Versione cache service worker non aggiornata");
           assert.ok(sw.includes('addEventListener("notificationclick"'), "Apertura app dal tocco notifica assente");
           assert.ok(html.includes("const LOCALI_CERIGNOLA_DEFAULT"), "Rubrica locali Instagram assente");
+          const editorialSource = html.match(/const eventiEditoriali = (\[[\s\S]*?\]);/);
+          assert.ok(editorialSource, "Archivio eventi editoriali assente");
+          const editoriali = JSON.parse(editorialSource[1]);
+          const ade = editoriali.find(ev => ev.titolo === "Il Sabato di ADE");
+          assert.ok(ade && ade.inEvidenza && ade.dataInizio === "2026-11-28" && ade.dataFine === "2026-11-28", "Evento ADE in evidenza assente o errato");
+          assert.ok(html.includes("const curati = [...eventiDaFirebase, ...editorialiSenzaDuplicati]"), "Integrazione eventi editoriali assente");
+          assert.ok(html.includes("Number(!!b.inEvidenza)-Number(!!a.inEvidenza)"), "Priorità in evidenza nella lista assente");
           assert.ok(html.includes("[...LOCALI_CERIGNOLA_DEFAULT, ...listaFirebase]"), "I locali Firebase devono unirsi alla rubrica predefinita");
           assert.ok(html.includes('const chiave = normalizza(loc.nome) + "|" + normalizza(citta)'), "Deduplicazione locali per nome e città assente");
           assert.ok(html.includes('navigator.serviceWorker.register("sw.js", { updateViaCache: "none" })'), "Aggiornamento Service Worker senza cache HTTP assente");

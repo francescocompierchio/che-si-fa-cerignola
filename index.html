@@ -1414,6 +1414,25 @@
     let eventiDaJson = [];
     let esperienzeDaJson = [];
     let eventiDaFirebase = [];
+    // Eventi editoriali approvati, indipendenti dalla raccolta automatica.
+    // Un eventuale evento manuale corrispondente su Firebase ha la precedenza.
+    const eventiEditoriali = [
+      {
+        "tipoContenuto": "evento",
+        "citta": "Cerignola",
+        "categoria": "Locali & Serate",
+        "titolo": "Il Sabato di ADE",
+        "dataTesto": "Sab 28 Nov 2026 · Ore 21:00",
+        "dataInizio": "2026-11-28",
+        "dataFine": "2026-11-28",
+        "luogo": "ADE - Rooftop & Luxury Space",
+        "indirizzoMappa": "ADE - Rooftop & Luxury Space, Via Tiro a Segno km 3, Cerignola",
+        "costo": "Non indicato · Contattare il locale",
+        "descrizione": "Il Sabato di ADE: show cooking e music selection by Loris Ferrara, in collaborazione con Ènosi Events. Inizio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 786 1865. Evento segnalato direttamente dal locale.",
+        "fonteUrl": "https://www.instagram.com/ade_rooftopluxuryspace/",
+        "inEvidenza": true
+      }
+    ];
     let tuttiEventiAttivi = [];
     let filtroAttivo = "ALL";
 
@@ -1765,10 +1784,14 @@
     }
 
     function aggiornaListaCompleta() {
-      const jsonSenzaDuplicati = eventiDaJson.filter(
-        evJson => !eventiDaFirebase.some(evFb => sonoEventiDuplicatiClient(evFb, evJson))
+      const editorialiSenzaDuplicati = eventiEditoriali.filter(
+        ev => !eventiDaFirebase.some(evFb => sonoEventiDuplicatiClient(evFb, ev))
       );
-      const uniti = [...eventiDaFirebase, ...jsonSenzaDuplicati, ...esperienzeDaJson];
+      const curati = [...eventiDaFirebase, ...editorialiSenzaDuplicati];
+      const jsonSenzaDuplicati = eventiDaJson.filter(
+        evJson => !curati.some(evCurato => sonoEventiDuplicatiClient(evCurato, evJson))
+      );
+      const uniti = [...curati, ...jsonSenzaDuplicati, ...esperienzeDaJson];
 
       tuttiEventiAttivi = uniti
         .filter(ev => ev && ev.dataFine && ev.dataFine >= oggi && !isCategoriaCulturaleEsclusa(ev))
@@ -2116,7 +2139,7 @@
         return true;
       });
 
-      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;return x-y||(a.dataInizio||"").localeCompare(b.dataInizio||"");});
+      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;return x-y||Number(!!b.inEvidenza)-Number(!!a.inEvidenza)||(a.dataInizio||"").localeCompare(b.dataInizio||"");});
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
       const numeroEventi = filtrati.length - numeroEsperienze;
       counterBadge.textContent = `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
