@@ -1,0 +1,32 @@
+name: Test navigazione mobile pre-pubblicazione
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'event-tools.js'
+      - 'app-extras.js'
+      - 'metrics.js'
+      - 'tests/browser-smoke.cjs'
+      - '.github/workflows/test-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installa Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test browser con servizi esterni bloccati
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/chesifa-http.log 2>&1 &
+          for i in 1 2 3 4 5; do curl -fsS http://127.0.0.1:8765/index.html >/dev/null && break || sleep 1; done
+          node tests/browser-smoke.cjs

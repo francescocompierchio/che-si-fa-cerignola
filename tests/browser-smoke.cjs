@@ -1,0 +1,37 @@
+const { chromium } = require("playwright");
+const assert = require("node:assert/strict");
+(async () => {
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",timezoneId:"Europe/Rome",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
+    const errors = []; page.on("pageerror", e => errors.push(e.message));
+    await page.route("**/*", r => r.request().url().startsWith("http://127.0.0.1:8765/") ? r.continue() : r.abort());
+    await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
+    await page.goto("http://127.0.0.1:8765/index.html");
+    await page.locator("#events-container details").first().waitFor();
+    assert.ok(await page.locator("#btn-apk-footer").isHidden());
+    await page.locator("#search-input").fill("Il Sabato di ADE");
+    const card = page.locator("#events-container details").filter({hasText:"Il Sabato di ADE"});
+    await card.first().waitFor(); assert.equal(await card.count(),1);
+    await card.locator("summary").click();
+    assert.ok(await card.evaluate(el => el.open));
+    await card.locator(".favorite-toggle").click();
+    await page.locator("#search-input").fill("");
+    await page.locator("#quick-favorites").click();
+    assert.equal(await page.locator("#events-container details").count(),1);
+    await page.reload(); await page.locator("#events-container details").first().waitFor();
+    await page.locator("#quick-favorites").click();
+    assert.equal(await page.locator("#events-container details").count(),1);
+    await page.locator("#quick-weekend").click();
+    assert.ok(await page.locator("#events-container details").filter({hasText:"Il Sabato di ADE"}).count());
+    await page.locator("#btn-segnala-evento").click();
+    assert.ok(await page.locator("#modal-segnala").isVisible());
+    await page.locator("#btn-chiudi-modale").click();
+    await page.locator("#csf-consent-no").click();
+    await page.waitForFunction(() => localStorage.getItem("csf_statistiche_consent_v1")==="no");
+    await page.locator("#events-container details").first().waitFor();
+    assert.ok(await page.locator("#csf-consent").isHidden());
+    assert.deepEqual(errors,[]);
+    console.log("OK: avvio, ricerca, scheda, preferiti persistenti, weekend, modulo, consenso.");
+  } finally { await browser.close(); }
+})().catch(e => {console.error(e);process.exitCode=1;});
