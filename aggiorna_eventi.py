@@ -3,6 +3,8 @@ import re
 import json
 import time
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from collections import Counter
 from difflib import SequenceMatcher
 from urllib.parse import urljoin, urlparse
@@ -206,6 +208,31 @@ ESCLUSIONI_PATH_VIVA = (
 def oggi_dt():
     """Data/ora corrente nel fuso operativo italiano, indipendente dal runner UTC."""
     return datetime.now(ZoneInfo("Europe/Rome"))
+
+def crea_session_raccolta():
+    """Sessione HTTP con retry controllati per errori transitori e rate limit."""
+    retry = Retry(
+        total=3,
+        connect=2,
+        read=2,
+        status=3,
+        backoff_factor=0.7,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET"}),
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(
+        max_retries=retry,
+        pool_connections=10,
+        pool_maxsize=10,
+    )
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
 
 
 def _data_iso_valida(valore):
@@ -1181,6 +1208,12 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
 
         url = str(item.get("fonteUrl") or "").strip()
         is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
+        # I record manuali sono sempre protetti, anche se la data è passata:
+        # la loro rimozione deve essere una scelta editoriale, non del crawler.
+        if is_manuale:
+            manuali.append(item)
+            continue
+
         d_fin = str(item.get("dataFine") or item.get("dataInizio") or "").strip()[:10]
         ha_data = _data_iso_valida(d_fin)
 
@@ -1188,9 +1221,7 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             scaduti_rimossi += 1
             continue
 
-        if is_manuale:
-            manuali.append(item)
-        elif ha_data:
+        if ha_data:
             evento_pulito = normalizza_e_valida_evento(
                 item, ref_dt=oggi_dt(), fonte_curata_eventi=True
             )
@@ -1227,8 +1258,7 @@ def esegui_aggiornamento():
         "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    session = crea_session_raccolta()
 
     nuovi_raccolti = []
     for fonte in FONTI_VIVA:
