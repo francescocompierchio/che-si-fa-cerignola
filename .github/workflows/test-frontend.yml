@@ -27,12 +27,12 @@ jobs:
           const fs = require("node:fs");
           const assert = require("node:assert/strict");
           const html = fs.readFileSync("index.html", "utf8");
-          const scripts = [...html.matchAll(/<script\\b(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)]
+          const scripts = [...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)]
             .map(match => match[1]).filter(source => source.trim());
           assert.ok(scripts.length > 0, "Nessuno script inline trovato");
           scripts.forEach((source, index) => {
             try { new Function(source); }
-            catch (error) { throw new Error(`Script inline ${index + 1}: ${error.message}`); }
+            catch (error) { throw new Error("Script inline " + (index + 1) + ": " + error.message); }
           });
           const requiredIds = [
             "events-container", "filters", "search-input", "quick-all",
@@ -41,11 +41,11 @@ jobs:
             "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento"
           ];
           for (const id of requiredIds) {
-            const count = (html.match(new RegExp(`id=["']${id}["']`, "g")) || []).length;
-            assert.equal(count, 1, `ID ${id}: atteso una sola occorrenza, trovate ${count}`);
+            const count = html.split('id="' + id + '"').length - 1;
+            assert.equal(count, 1, "ID " + id + ": atteso una sola occorrenza, trovate " + count);
           }
-          assert.match(html, /csf_eventi_preferiti_v1/, "Persistenza preferiti assente");
-          assert.match(html, /function eWeekend/, "Filtro weekend assente");
-          assert.match(html, /prefers-reduced-motion/, "Supporto movimento ridotto assente");
-          console.log(`OK: ${scripts.length} script inline validati e ${requiredIds.length} ID interattivi verificati.`);
+          assert.ok(html.includes("csf_eventi_preferiti_v1"), "Persistenza preferiti assente");
+          assert.ok(html.includes("function eWeekend"), "Filtro weekend assente");
+          assert.ok(html.includes("prefers-reduced-motion"), "Supporto movimento ridotto assente");
+          console.log("OK: " + scripts.length + " script inline validati e " + requiredIds.length + " ID interattivi verificati.");
           NODE
