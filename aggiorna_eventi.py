@@ -781,12 +781,11 @@ def estrai_luogo_documentato(testo_o_soup, citta=""):
 
     # La pagina ufficiale del Mercadante espone la sede come riga autonoma,
     # non come etichetta "Luogo:"; riconoscila senza inventare altre sedi.
-    if citta.lower() == "cerignola" and re.search(
-        r"\bteatro\s+comunale\s+saverio\s+mercadante\b",
-        testo_pag,
-        re.I,
-    ):
-        return "Teatro Comunale Saverio Mercadante"
+    if citta.lower() == "cerignola":
+        if re.search(r"\bteatro\s+comunale\s+saverio\s+mercadante\b", testo_pag, re.I):
+            return "Teatro Comunale Saverio Mercadante"
+        if re.search(r"\bteatro\s+comunale\s+s\.?\s*mercadante\b", testo_pag, re.I):
+            return "Teatro Comunale S. Mercadante"
 
     for raw_line in testo_pag.splitlines():
         line = re.sub(r"\s+", " ", raw_line).strip()
