@@ -970,6 +970,7 @@
     <div class="smart-filters" aria-label="Filtri intelligenti">
       <span class="smart-filters-label">Scopri per tema o compagnia</span>
       <div class="smart-filters-row">
+        <button type="button" class="smart-filter-btn" data-smart-filter="TONIGHT" aria-pressed="false">🌙 Stasera</button>
         <button type="button" class="smart-filter-btn" data-smart-filter="FREE" aria-pressed="false">🟢 Gratis</button>
         <button type="button" class="smart-filter-btn" data-smart-filter="FAMILY" aria-pressed="false">👨‍👩‍👧 Famiglie</button>
         <button type="button" class="smart-filter-btn" data-smart-filter="NATURE" aria-pressed="false">🌳 Natura</button>
@@ -1135,6 +1136,7 @@
     </div>
   </div>
 
+  <script src="event-tools.js"></script>
   <!-- SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -1458,6 +1460,10 @@
     let queryRicerca = "";
     let modalitaRapida = "ALL", ordinamentoEventi = "date", filtroSmart = "ALL";
     let dataSelezionata = "";
+    let linkEventoDaAprire = "";
+    try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
+    let pagineEventoPubbliche = new Set();
+    fetch("sitemap.xml", {cache:"no-store"}).then(r=>r.ok?r.text():"").then(xml=>{pagineEventoPubbliche=new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]));}).catch(()=>{});
     const PREFERITI_KEY = "csf_eventi_preferiti_v1";
     let preferiti = new Set();
     try { preferiti = new Set(JSON.parse(localStorage.getItem(PREFERITI_KEY) || "[]")); } catch (e) {}
@@ -1747,7 +1753,7 @@
     function aggiornaContatorePreferiti(){const el=document.getElementById("favorites-count");if(el)el.textContent=preferiti.size;document.querySelectorAll(".favorite-toggle").forEach(b=>{const v=preferiti.has(b.dataset.favoriteKey);b.classList.toggle("saved",v);b.textContent=v?"★":"☆";b.setAttribute("aria-label",v?"Rimuovi dai salvati":"Salva nei preferiti");b.setAttribute("aria-pressed",String(v));});}
     function salvaPreferiti(){try{localStorage.setItem(PREFERITI_KEY,JSON.stringify([...preferiti]));}catch(e){}aggiornaContatorePreferiti();}
     function mostraToast(msg){const t=document.getElementById("app-toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(mostraToast.timer);mostraToast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
-    function eWeekend(data){if(!data)return false;const d=new Date(data+"T12:00:00"),oggiD=new Date(oggi+"T12:00:00"),ven=new Date(oggiD);const weekday=oggiD.getDay(),daysUntilFriday=(5-weekday+7)%7,shift=weekday===6?-1:weekday===0?-2:daysUntilFriday;ven.setDate(oggiD.getDate()+shift);const dom=new Date(ven);dom.setDate(ven.getDate()+2);return d>=ven&&d<=dom;}
+    function eWeekend(ev){const [start,end]=CsfEventTools.weekend(oggi);return CsfEventTools.overlaps(ev,start,end); }
     function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");const sharePlan=document.getElementById("saved-plan-share");if(sharePlan)sharePlan.hidden=!(modalitaRapida==="FAVORITES"&&tuttiEventiAttivi.some(ev=>preferiti.has(chiaveEvento(ev))));document.querySelectorAll(".smart-filter-btn").forEach(b=>{const active=b.dataset.smartFilter===filtroSmart;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});}
     function normalizzaRicerca(v){return String(v||"").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
     function spostaGiorniISO(data,giorni){const [a,m,g]=data.split("-").map(Number),d=new Date(a,m-1,g,12);d.setDate(d.getDate()+giorni);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
@@ -1767,7 +1773,7 @@
     }
     document.getElementById("clear-selected-date").addEventListener("click",()=>{dataSelezionata="";renderAgendaRapida();renderEventi();});
     function entroSetteGiorni(ev){if(!ev.dataInizio||ev.tipoContenuto==="esperienza")return false;const oggiD=new Date(oggi+"T00:00:00"),limite=new Date(oggiD);limite.setDate(limite.getDate()+6);const inizio=new Date(ev.dataInizio+"T12:00:00"),fine=new Date((ev.dataFine||ev.dataInizio)+"T12:00:00");return inizio<=limite&&fine>=oggiD;}
-    function impostaFiltroSmart(modo){filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaFiltroSmart(modo){filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";renderAgendaRapida();document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
     function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderAgendaRapida();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
@@ -1810,7 +1816,7 @@
       const jsonSenzaDuplicati = eventiDaJson.filter(
         evJson => !curati.some(evCurato => sonoEventiDuplicatiClient(evCurato, evJson))
       );
-      const uniti = [...curati, ...jsonSenzaDuplicati, ...esperienzeDaJson];
+      const uniti = CsfEventTools.dedup([...curati, ...jsonSenzaDuplicati, ...esperienzeDaJson]);
 
       tuttiEventiAttivi = uniti
         .filter(ev => ev && ev.dataFine && ev.dataFine >= oggi && !isCategoriaCulturaleEsclusa(ev))
@@ -2127,12 +2133,13 @@
         const fascia = getFasciaCerchioCerignola(cittaEv);
 
         if (modalitaRapida === "FAVORITES" && !preferiti.has(chiaveEvento(ev))) return false;
-        if (modalitaRapida === "WEEKEND" && ev.tipoContenuto !== "esperienza" && !(eWeekend(ev.dataInizio) || eWeekend(ev.dataFine))) return false;
+        if (modalitaRapida === "WEEKEND" && ev.tipoContenuto !== "esperienza" && !eWeekend(ev)) return false;
         const categoriaSmart=(ev.categoria||"").toLowerCase(),targetSmart=(ev.adattoA||"").toLowerCase(),tipoSmart=(ev.tipoEsperienza||"").toLowerCase(),testoSmart=(ev.titolo+" "+ev.descrizione).toLowerCase();
         if(filtroSmart==="FREE"&&!/gratis|gratuit|ingresso libero|free/i.test(ev.costo||""))return false;
         if(filtroSmart==="FAMILY"&&!(/famigl|bambin|ragazz|famiglie|children/i.test(categoriaSmart+" "+targetSmart+" "+testoSmart)))return false;
         if(filtroSmart==="NATURE"&&!(/natura|escursion|outdoor|parco|bosco|lago|birdwatch|passeggiat/i.test(categoriaSmart+" "+tipoSmart+" "+testoSmart)))return false;
         if(filtroSmart==="NEXT7"&&!entroSetteGiorni(ev))return false;
+        if(filtroSmart==="TONIGHT"&&(!isToday||!CsfEventTools.evening(ev)))return false;
         const contestoOccasione=normalizzaRicerca([ev.categoria,ev.adattoA,ev.tipoEsperienza,ev.titolo,ev.descrizione,ev.luogo].join(" "));
         if(filtroSmart==="COUPLE"&&!(/copp|romant|degustaz|cantin|agritur|panoram|passeggiat|ristor|teatro|cen|aperitiv|natura|borgo|benessere/.test(contestoOccasione)))return false;
         if(filtroSmart==="FRIENDS"&&!(/amic|grupp|bowling|dj|live|karaoke|quiz|concert|sport|sagra|festival|aperitiv|serat|locale|birr|street food/.test(contestoOccasione)))return false;
@@ -2140,7 +2147,7 @@
         if(filtroSmart==="CULTURE"&&!(/teatro|spettacol|mostra|museo|storia|arte|archeolog|cultura|letter|libro|cinema|monument|castello|torre/.test(contestoOccasione)))return false;
         if(dataSelezionata&&(ev.tipoContenuto==="esperienza"||!ev.dataInizio||ev.dataInizio>dataSelezionata||(ev.dataFine||ev.dataInizio)<dataSelezionata))return false;
         if (filtroAttivo === "OGGI" && !isToday) return false;
-        if (filtroAttivo === "ENTRO_25_KM" && fascia !== 1) return false;
+        if (filtroAttivo === "ENTRO_25_KM" && fascia > 1) return false;
         if (filtroAttivo === "RAGGIO_50_KM" && fascia > 2) return false;
         if (filtroAttivo.startsWith("CITY:")) {
           const cittaRichiesta = filtroAttivo.replace("CITY:", "").toLowerCase();
@@ -2158,7 +2165,7 @@
         return true;
       });
 
-      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;return x-y||Number(!!b.inEvidenza)-Number(!!a.inEvidenza)||(a.dataInizio||"").localeCompare(b.dataInizio||"");});
+      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;return x-y||Number(!!b.inEvidenza)-Number(!!a.inEvidenza)||(a.dataInizio||"").localeCompare(b.dataInizio||"")||getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||CsfEventTools.quality(b)-CsfEventTools.quality(a);});
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
       const numeroEventi = filtrati.length - numeroEsperienze;
       counterBadge.textContent = `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
@@ -2273,7 +2280,7 @@
             ev.tipoContenuto === "esperienza"
               ? `🌿 *${ev.titolo}*\n📍 ${ev.luogo}\n${ev.dataTesto}\n\nScopri idee per il tempo libero su Che Si Fa Cerignola:`
               : `📅 *${ev.titolo}*\n🗓 ${ev.dataTesto}\n📍 ${ev.luogo}\n\nTutti gli eventi su Che Si Fa Cerignola:`,
-            APP_URL
+            CsfEventTools.shareUrl(ev,pagineEventoPubbliche,APP_URL)
           );
         });
 
@@ -2300,6 +2307,10 @@
         details.append(summary, body);
         details.appendChild(favoriteBtn);
         container.appendChild(details);
+        if(linkEventoDaAprire && CsfEventTools.key(ev)===linkEventoDaAprire){
+          linkEventoDaAprire=""; details.open=true;
+          requestAnimationFrame(()=>details.scrollIntoView({block:"start"}));
+        }
       });
       aggiornaContatorePreferiti();
     }
