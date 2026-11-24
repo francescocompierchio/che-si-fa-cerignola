@@ -1412,7 +1412,7 @@
     function entroSetteGiorni(ev){if(!ev.dataInizio||ev.tipoContenuto==="esperienza")return false;const oggiD=new Date(oggi+"T00:00:00"),limite=new Date(oggiD);limite.setDate(limite.getDate()+6);const inizio=new Date(ev.dataInizio+"T12:00:00"),fine=new Date((ev.dataFine||ev.dataInizio)+"T12:00:00");return inizio<=limite&&fine>=oggiD;}
     function impostaFiltroSmart(modo){filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
-    function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderAgendaRapida();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
     document.getElementById("quick-weekend").addEventListener("click",()=>impostaModalitaRapida("WEEKEND"));
     document.getElementById("quick-favorites").addEventListener("click",()=>impostaModalitaRapida("FAVORITES"));
@@ -1691,6 +1691,7 @@
       modalitaRapida = "ALL";
       filtroSmart = "ALL";
       filtroAttivo = "ALL";
+      dataSelezionata = "";
       queryRicerca = "";
       searchInput.value = "";
       queryLocali = "";
@@ -1701,6 +1702,7 @@
         b.classList.toggle("active", idx === 0);
       });
       aggiornaComandiRapidi();
+      renderAgendaRapida();
       renderEventi();
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
@@ -1787,7 +1789,7 @@
         const empty = document.createElement("div");
         empty.className = "empty-state";
         empty.textContent = modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : "Nessun evento o attività trovata con i filtri selezionati.";
-        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>impostaModalitaRapida("ALL"));empty.appendChild(document.createElement("br"));empty.appendChild(reset);container.appendChild(empty);
+        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{dataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);container.appendChild(empty);
         return;
       }
 
