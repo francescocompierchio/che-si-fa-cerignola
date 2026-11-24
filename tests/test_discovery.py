@@ -1179,3 +1179,80 @@ class FiltriSchedeGenericheTests(unittest.TestCase):
                     raw, ref_dt=datetime(2026, 11, 24), fonte_curata_eventi=True
                 )
             )
+
+
+class RomaTeatroUfficialeTests(unittest.TestCase):
+    def test_fonte_ufficiale_roma_teatro_usa_parametro_mec_events(self):
+        fonte = next(
+            x for x in motore.FONTI_PORTALI
+            if x["nome"] == "Roma Teatro Cerignola"
+        )
+        self.assertEqual(fonte["url"], "https://romateatrocinema.it/")
+        self.assertEqual(fonte["parametro_scheda"], "mec-events")
+
+    def test_raccoglie_link_evento_con_query_sulla_stessa_homepage(self):
+        homepage = "https://romateatrocinema.it/"
+        html = '''
+        <html><body>
+          <a href="/?mec-events=viva-la-mamma&occurrence=2026-12-04">VIVA LA MAMMA</a>
+          <a href="/?mec-events=babbo-natale&occurrence=2026-11-29">BABBO NATALE VA IN PENSIONE</a>
+          <a href="/contatti/">Contatti</a>
+        </body></html>
+        '''
+        class Risposta:
+            status_code = 200
+            apparent_encoding = "utf-8"
+            def __init__(self, text):
+                self.text = text
+        class SessioneFinta:
+            def __init__(self):
+                self.urls = []
+            def get(self, url, timeout=None):
+                self.urls.append(url)
+                return Risposta(html if url == homepage else "<html><h1>Scheda evento</h1></html>")
+        sessione = SessioneFinta()
+        fonte = {
+            "nome": "Roma Teatro test",
+            "url": homepage,
+            "dominio": "romateatrocinema.it",
+            "citta_default": "Cerignola",
+            "curata": True,
+            "parametro_scheda": "mec-events",
+            "max_schede": 30,
+        }
+        with patch.object(motore, "analizza_pagina_evento", return_value=[] ) as analizza:
+            motore.raccogli_da_portale_generico(sessione, fonte)
+        analizzate = [call.args[1] for call in analizza.call_args_list]
+        self.assertEqual(len(analizzate), 2)
+        self.assertTrue(any("mec-events=viva-la-mamma" in x for x in analizzate))
+        self.assertTrue(any("mec-events=babbo-natale" in x for x in analizzate))
+
+    def test_scheda_ufficiale_roma_teatro_estrare_data_e_sede(self):
+        html = '''
+        <html><body><main>
+          <h1>VIVA LA MAMMA! – IVA ZANICCHI</h1>
+          <p>Viva la Mamma! è la brillante commedia scritta e diretta da Diego Ruiz.</p>
+          <h3>Programmazione oraria</h3>
+          <p>venerdì 4 dicembre</p>
+          <p>20:30 porta</p>
+          <p>21:00 sipario</p>
+          <h3>Data</h3>
+          <p>04 12 2026</p>
+          <h3>Luogo</h3>
+          <p>ROMA Teatro Cinema e...</p>
+          <p>Corso Roma, 49 - Cerignola (FG)</p>
+          <h3>Categoria</h3>
+          <p>Spettacoli - Stagione teatrale - Teatro</p>
+        </main></body></html>
+        '''
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-12-04")
+        self.assertIn("Roma Teatro", eventi[0]["luogo"])
+        self.assertIn("Corso Roma, 49", eventi[0]["indirizzoMappa"])
