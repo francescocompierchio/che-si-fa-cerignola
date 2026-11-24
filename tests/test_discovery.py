@@ -1314,3 +1314,43 @@ class DeduplicazioneRomaTeatroTests(unittest.TestCase):
             "fonteUrl": "https://romateatrocinema.it/?mec-events=viva-la-mamma&occurrence=2026-12-04",
         }
         self.assertTrue(motore.sono_duplicati(aggregatore, ufficiale))
+
+
+class PugliaCultureCircuitoCerignolaTests(unittest.TestCase):
+    def test_fonte_puglia_culture_usa_pagina_completa_cerignola(self):
+        fonte = next(
+            x for x in motore.FONTI_PORTALI
+            if x["nome"] == "Puglia Culture Cerignola"
+        )
+        self.assertEqual(
+            fonte["url"],
+            "https://www.pugliaculture.it/circuito/Cerignola/",
+        )
+        self.assertEqual(fonte["prefisso_schede"], "/evento/")
+
+
+class PugliaCultureSchedeEventiTests(unittest.TestCase):
+    def test_scheda_puglia_culture_estrare_data_sede_categoria_e_prezzo(self):
+        html = '''
+        <html><body><main>
+          <h1>MIO, SEMPRE, MIO ANDREA</h1>
+          <p>29 gennaio venerdì 29 gennaio 2027</p>
+          <p>H: 21:00</p>
+          <p>Prosa</p>
+          <p>Teatro: Teatro Comunale S. Mercadante - Cerignola</p>
+          <p>Prezzo: a partire da € 12</p>
+          <p>Un viaggio teatrale tra lettere, poesie e canzoni di Andrea Pazienza.</p>
+        </main></body></html>
+        '''
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://www.pugliaculture.it/evento/mio-sempre-mio-andrea/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2027-01-29")
+        self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
+        self.assertIn("Mercadante", eventi[0]["luogo"])
+        self.assertIn("12", eventi[0]["costo"])
