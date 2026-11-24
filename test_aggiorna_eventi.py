@@ -9,6 +9,21 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_xceed_scheda_data_e_sede(self):
+        data = crawler.oggi_dt() + crawler.timedelta(days=3)
+        mese = next(k for k,v in crawler.MESI_IT.items() if v == data.month)
+        date = f"{data.day} {mese} {data.year}"
+        url = "https://xceed.me/it/barletta/event/serata/1234"
+        html = f"<h1>Classic Saturday DJ set</h1><p>{date} alle ore 22:00</p><h2>Info</h2><p>Una serata in discoteca con DJ set e musica.</p><h2>Location</h2><p>Atrio22, Barletta</p><h2>Indirizzo</h2><p>Via Leonardo da Vinci 15, Barletta</p>"
+        ev = crawler.analizza_xceed(html,url,"Barletta")
+        self.assertEqual(len(ev),1)
+        self.assertEqual(ev[0]["dataInizio"],data.strftime("%Y-%m-%d"))
+        self.assertEqual(ev[0]["categoria"],"Locali & Serate")
+        self.assertEqual(crawler.analizza_xceed(html,url,"Trani"),[])
+        self.assertEqual(crawler.analizza_xceed(html.replace("Una serata",f"{data.day} {mese} {data.year-1} Una serata"),url,"Barletta"),[])
+        self.assertEqual(crawler.analizza_xceed(html,"https://xceed.me/it/barletta/events","Barletta"),[])
+
+
     def test_fonti_movida_costiera(self):
         nomi = {f["nome"] for f in crawler.FONTI_PORTALI if f.get("nightlife")}
         for citta in ("Trani", "Barletta", "Manfredonia"):

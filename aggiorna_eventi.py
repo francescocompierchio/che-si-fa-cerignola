@@ -38,7 +38,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me"
 )
 
 FONTI_VIVA = [
@@ -57,6 +57,15 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
+    {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
+    {"nome":"ManfredoniaEventi Cafe des Artistes","url":"https://manfredoniaeventi.com/luogo/cafe-des-artistes/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
+    {"nome":"ManfredoniaEventi Al Molo 20","url":"https://manfredoniaeventi.com/organizzatore/al-molo-20/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
+    {"nome":"Xceed Barletta","url":"https://xceed.me/it/barletta/events","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
+    {"nome":"Xceed Trani","url":"https://xceed.me/it/trani/events","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
+    {"nome":"Xceed Atrio22","url":"https://xceed.me/it/barletta/venue/atrio22","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
+    {"nome":"Xceed Aphelion Club","url":"https://xceed.me/it/trani/venue/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
+    {"nome":"Xceed Baia Nha","url":"https://xceed.me/it/trani/venue/baia-nha","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Tacco di Bacco Nightlife Cerignola","url":"https://iltaccodibacco.it/cerignola/nightlife/","dominio":"iltaccodibacco.it","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/puglia/eventi/","max_schede":14},
     {"nome":"Tacco di Bacco Nightlife Trani","url":"https://iltaccodibacco.it/trani/nightlife/","dominio":"iltaccodibacco.it","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/puglia/eventi/","max_schede":14},
     {"nome":"Tacco di Bacco Nightlife Barletta","url":"https://iltaccodibacco.it/barletta/nightlife/","dominio":"iltaccodibacco.it","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/puglia/eventi/","max_schede":14},
@@ -94,6 +103,11 @@ FONTI_PORTALI = [
 ]
 
 FONTI_SOCIAL_RSS = [
+    {"nome":"2night BAT weekend","url":"https://news.google.com/rss/search?q=site%3A2night.it%20(Barletta%20OR%20Trani%20OR%20Bisceglie%20OR%20Canosa)%20(%22dj%20set%22%20OR%20%22dinner%20show%22%20OR%20karaoke%20OR%20discoteca)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Resident Advisor costa","url":"https://news.google.com/rss/search?q=site%3Ara.co%2Fevents%20(Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"KODO promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Akodocollective.it%20(Barletta%20OR%20Trani%20OR%20Foggia)%20(DJ%20OR%20party%20OR%20club)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Club e promoter Capitanata","url":"https://news.google.com/rss/search?q=(Foggia%20OR%20Manfredonia%20OR%20Cerignola%20OR%20%22Margherita%20di%20Savoia%22%20OR%20Zapponeta)%20(discoteca%20OR%20%22dj%20set%22%20OR%20%22club%20night%22%20OR%20%22opening%20party%22%20OR%20%22dinner%20show%22)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Nightz Puglia nord","url":"https://news.google.com/rss/search?q=site%3Anightz.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(DJ%20OR%20club%20OR%20serata)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Movida Trani DJ e discoteche","url":"https://news.google.com/rss/search?q=Trani%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Barletta DJ e discoteche","url":"https://news.google.com/rss/search?q=Barletta%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Manfredonia DJ e discoteche","url":"https://news.google.com/rss/search?q=Manfredonia%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
@@ -1599,6 +1613,9 @@ def raccogli_da_feed_social(session, fonte):
             classificati.append((punteggio, item, titolo, link, descrizione))
         # Ordina tutti i candidati: il budget di rete resta invariato.
         classificati.sort(key=lambda x: -x[0])
+        if fonte.get("solo_scoperta"):
+            registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=0, eventiEstratti=0, candidatiDaVerificare=[{"titolo": x[2][:160], "url": x[3]} for x in classificati[:12]])
+            return []
         visti_link = set()
         for _, item, titolo, link, descrizione in classificati:
             if tentativi_scheda >= 6:
@@ -1742,6 +1759,58 @@ def evento_movida_documentato(ev):
     return ev.get("categoria") in {"Musica & Concerti", "Attività diurne", "Sagre & Food"} and indizi_movida(" ".join(str(ev.get(k) or "") for k in ("titolo", "descrizione", "luogo")))
 
 
+def analizza_xceed(html_text, url, citta):
+    """Biglietteria nightlife: scheda individuale, data e sede esplicite.
+    Niente date estratte da menu, eventi correlati o testo promozionale."""
+    if not re.fullmatch(r"/it/[^/]+/event/[^/]+/\d+/?", urlparse(url).path):
+        return []
+    soup = BeautifulSoup(html_text, "html.parser")
+    h1 = soup.find("h1")
+    if not h1:
+        return []
+    titolo = h1.get_text(" ", strip=True)
+    # Il blocco immediatamente successivo all'H1 contiene la data della scheda.
+    mesi = "|".join(MESI_IT)
+    pat = rf"\b(\d{{1,2}})\s+({mesi})\s+(20\d{{2}})\b"
+    righe = list(soup.stripped_strings)
+    try:
+        pos = righe.index(titolo)
+    except ValueError:
+        return []
+    prima = " ".join(righe[pos+1:pos+7])
+    m = re.search(pat, prima, re.I)
+    if not m:
+        return []
+    dt = _costruisci_data_sicura(int(m.group(1)), MESI_IT[m.group(2).lower()], int(m.group(3)))
+    if not dt:
+        return []
+    data = dt.strftime("%Y-%m-%d")
+    for m2 in re.finditer(pat, titolo, re.I):
+        if (int(m2.group(1)), MESI_IT[m2.group(2).lower()], int(m2.group(3))) != (dt.day, dt.month, dt.year):
+            return []
+    def valore_etichetta(etichette):
+        for idx, riga in enumerate(righe[:-1]):
+            if riga.casefold().strip(": ") in etichette:
+                return righe[idx+1]
+        return ""
+    luogo = valore_etichetta({"location", "luogo", "venue"})
+    indirizzo = valore_etichetta({"indirizzo", "address"})
+    if not luogo or not indirizzo or _comune_nel_testo(indirizzo) != citta:
+        return []
+    info = valore_etichetta({"info", "informazioni", "description"})
+    # Rileva il riuso di una locandina con la stessa data ma anno differente.
+    for old in re.finditer(pat, info, re.I):
+        if int(old.group(1)) == dt.day and MESI_IT[old.group(2).lower()] == dt.month and int(old.group(3)) != dt.year:
+            return []
+    ora = re.search(r"\b(?:alle ore|ore)\s*([01]\d|2[0-3]):([0-5]\d)", prima, re.I)
+    d_txt = formatta_data_italiano(data,data) + (" · Ore "+ora.group(1)+":"+ora.group(2) if ora else "")
+    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "dataInizio":data, "dataFine":data, "dataTesto":d_txt, "luogo":luogo, "indirizzoMappa":indirizzo, "descrizione":("Serata in club. " + info)[:220], "fonteUrl":url, "costo":"Consulta la biglietteria"}, fonte_curata_eventi=True)
+    if not ev or evento_non_attivo(ev):
+        return []
+    ev["categoria"] = "Locali & Serate"
+    return [ev]
+
+
 def raccogli_da_portale_generico(session, fonte):
     eventi = []
     nome = fonte["nome"]
@@ -1834,12 +1903,16 @@ def raccogli_da_portale_generico(session, fonte):
                 rp.encoding = rp.apparent_encoding or "utf-8"
                 if "evento si è già concluso" in rp.text.lower() or "fa parte del nostro archivio" in rp.text.lower():
                     continue
-                if fonte.get("solo_jsonld"):
+                if fonte.get("xceed"):
+                    if registra_stati_negativi(rp.text, link):
+                        continue
+                    estratti = analizza_xceed(rp.text, link, c_def)
+                elif fonte.get("solo_jsonld"):
                     markup = BeautifulSoup(rp.text, "html.parser").find_all("script", type="application/ld+json")
                     estratti = analizza_pagina_evento("".join(str(x) for x in markup), link, citta_default="", fonte_curata_eventi=True)
                 else:
                     estratti = analizza_pagina_evento(rp.text, link, citta_default=c_def, fonte_curata_eventi=curata)
-                if not estratti and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
+                if not estratti and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
                     testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
                     if testo_locandina:
                         h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
