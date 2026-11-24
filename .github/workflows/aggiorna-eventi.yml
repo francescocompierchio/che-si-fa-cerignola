@@ -37,7 +37,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y tesseract-ocr tesseract-ocr-ita
-          pip install requests beautifulsoup4 pillow pytesseract
+          pip install requests beautifulsoup4 lxml pillow pytesseract
 
       - name: Pulisce il report del ciclo precedente
         run: rm -f report_copertura.json

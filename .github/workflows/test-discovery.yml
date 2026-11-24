@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Installa dipendenze
-        run: pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4 lxml
       - name: Controlla sintassi Python
         run: python -m compileall -q aggiorna_eventi.py tests
       - name: Controlla sintassi Service Worker
