@@ -22,7 +22,7 @@
     "dataInizio": "2026-11-24",
     "dataFine": "2026-11-28",
     "luogo": "Biblioteca di Foggia “La Magna Capitana” Foggia",
-    "indirizzoMappa": "Biblioteca di Foggia “La Magna Capitana” Foggia, Biblioteca di Foggia “La Magna Capitana”, Foggia",
+    "indirizzoMappa": "Biblioteca di Foggia “La Magna Capitana” Foggia",
     "costo": "Ingresso libero",
     "descrizione": "Dal 24 al 28 novembre 2026 torna a Foggia l’undicesima edizione del Foggia Festival Sport Story, dedicata quest’anno al tema «Il pallone è uguale per tutti». La manifestazione propone incontri e riflessioni sul rapporto",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337004.html"
@@ -78,7 +78,7 @@
     "dataInizio": "2026-11-24",
     "dataFine": "2026-11-24",
     "luogo": "Biblioteca storica dell’Ordine degli Avvocati di Trani",
-    "indirizzoMappa": "Biblioteca storica dell’Ordine degli Avvocati di Trani Trani, Biblioteca storica dell’Ordine degli Avvocati di Trani",
+    "indirizzoMappa": "Biblioteca storica dell’Ordine degli Avvocati di Trani",
     "costo": "Ingresso libero",
     "descrizione": "24 novembre 2026, ore 14:30 – La Biblioteca storica dell’Ordine degli Avvocati di Trani ospita l’incontro “La Verità degli Avvocati: un’indagine sul cinema italiano”, dedicato al rapporto tra verità storica, verità proce",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337404.html"
@@ -106,7 +106,7 @@
     "dataInizio": "2026-11-25",
     "dataFine": "2026-11-25",
     "luogo": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia, Sala “Rosa del Vento” della Fondazione dei Monti Uniti, Foggia",
+    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
     "costo": "Ingresso libero",
     "descrizione": "In occasione della Giornata internazionale per l'eliminazione della violenza contro le donne, la Fondazione dei Monti Uniti di Foggia propone una serata di memoria, riflessione e sensibilizzazione sul tema della violenza",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337262.html"
@@ -138,20 +138,6 @@
     "costo": "Ingresso libero",
     "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Attività diurne",
-    "titolo": "Eventi",
-    "dataTesto": "Gio 26 Nov 2026",
-    "dataInizio": "2026-11-26",
-    "dataFine": "2026-11-26",
-    "luogo": "Piazza Q",
-    "indirizzoMappa": "Piazza Q, Piazza Matteotti ( piazza del Teatro), Cerignola",
-    "costo": "Gratuito",
-    "descrizione": "Pagina dedicata agli Eventi del Comune di Cerignola",
-    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/"
   },
   {
     "tipoContenuto": "evento",
@@ -190,7 +176,7 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
     "luogo": "Viale Vittorio Veneto",
-    "indirizzoMappa": "Viale Vittorio Veneto, Viale Vittorio Veneto, 76015, Trinitapoli, BT",
+    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
     "costo": "Non specificato nella fonte",
     "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
     "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
@@ -218,7 +204,7 @@
     "dataInizio": "2026-11-27",
     "dataFine": "2026-11-27",
     "luogo": "Via Boccaccio 42/44, Barletta",
-    "indirizzoMappa": "Via Boccaccio 42/44, Barletta. Barletta, Via Boccaccio 42/44, Barletta., Barletta",
+    "indirizzoMappa": "Via Boccaccio 42/44, Barletta. Barletta, Via Boccaccio 42/44, Barletta",
     "costo": "Ingresso libero",
     "descrizione": "I RAINBOW BRIDGE CELEBRANO JIMI HENDRIX AL BOHEMIEN DI BARLETTA Venerdì 27 novembre – Una serata rock-blues dedicata al chitarrista statunitense BARLETTA – Venerdì 27 novembre, in occasione dell'anniversario della nascit",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337667.html"
@@ -260,7 +246,7 @@
     "dataInizio": "2026-11-28",
     "dataFine": "2026-11-29",
     "luogo": "Centro Storico Minervino Murge",
-    "indirizzoMappa": "Centro Storico Minervino Murge, Centro Storico, Minervino Murge",
+    "indirizzoMappa": "Centro Storico Minervino Murge",
     "costo": "Ingresso libero",
     "descrizione": "MINERVINO MURGE CELEBRA L’ECCELLENZA DELLA TERRA: IL 28 E 29 NOVEMBRE 2026 TORNA LA SAGRA DELLA CIMA DI RAPA. Due giornate dedicate al \"Balcone delle Puglie\" per riscoprire la cima di rapa minervinese e gli ortaggi unici",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/334751.html"
@@ -344,7 +330,7 @@
     "dataInizio": "2026-12-04",
     "dataFine": "2026-12-04",
     "luogo": "ROMA TEATRO CINEMA E",
-    "indirizzoMappa": "ROMA TEATRO CINEMA E..., Cerignola",
+    "indirizzoMappa": "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola",
     "costo": "Non specificato nella fonte",
     "descrizione": "Autore: Diego Ruiz Regia: Diego Ruiz Protagonista: Iva Zanicchi, Milena Miconi, Samuel Peron, Diego Ruiz Produzione: RB Spettacoli Durata: 90 minuti Numero atti: 2",
     "fonteUrl": "https://buzzeventmap.com/event/456318e1-763d-4d98-8068-3cbc3b4629c4"
@@ -358,7 +344,7 @@
     "dataInizio": "2026-12-04",
     "dataFine": "2026-12-06",
     "luogo": "Festival della Letteratura Mediterranea Lucera",
-    "indirizzoMappa": "Festival della Letteratura Mediterranea Lucera, Festival della Letteratura Mediterranea, Lucera",
+    "indirizzoMappa": "Festival della Letteratura Mediterranea Lucera",
     "costo": "A pagamento",
     "descrizione": "Il Festival della Letteratura Mediterranea torna a Lucera con la sua XIX edizione, in programma dal 4 al 6 dicembre 2026. Il tema scelto per questa edizione è “Guarirsi”, una parola attraverso cui la manifestazione inten",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336619.html"
@@ -380,7 +366,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
-    "categoria": "Attività diurne",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Arriva Babbo Natale| Gelsomino Home",
     "dataTesto": "Sab 05 Dic 2026",
     "dataInizio": "2026-12-05",
@@ -442,7 +428,7 @@
     "dataInizio": "2026-12-06",
     "dataFine": "2026-12-06",
     "luogo": "Piazza Vittorio Veneto",
-    "indirizzoMappa": "Piazza Vittorio Veneto, Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
+    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
     "costo": "Non specificato nella fonte",
     "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
     "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
@@ -526,7 +512,7 @@
     "dataInizio": "2026-12-17",
     "dataFine": "2026-12-17",
     "luogo": "ROMA TEATRO CINEMA E",
-    "indirizzoMappa": "ROMA TEATRO CINEMA E..., Cerignola",
+    "indirizzoMappa": "Roma Teatro Cinema E…, Corso Roma, 49, Cerignola",
     "costo": "Non specificato nella fonte",
     "descrizione": "Protagonista: Biagio Izzo Regia: Augusto Fornari Autore: Augusto Fornari, Toni Fornari, Andrea Maia, Vincenzo Sinopoli Produzione: AG Spettacoli, Tradizione e Turismo Durata: 90 minuti Numero atti: 2",
     "fonteUrl": "https://buzzeventmap.com/event/ade92b92-9080-4b5d-92fd-a8b90da25540"
@@ -540,7 +526,7 @@
     "dataInizio": "2026-12-19",
     "dataFine": "2026-12-19",
     "luogo": "Via Michele Zezza",
-    "indirizzoMappa": "Via Michele Zezza, Via Michele Zezza, 71030, Zapponeta, FG",
+    "indirizzoMappa": "Via Michele Zezza, 71030, Zapponeta, FG",
     "costo": "Non specificato nella fonte",
     "descrizione": "Ogni dicembre il centro di Zapponeta, piccolo comune costiero della provincia di Foggia, si trasforma nell'antica Betlemme. Il Presepe Viven...",
     "fonteUrl": "https://buzzeventmap.com/event/b83b88e4-1b34-4f33-8d63-90dd3633d1dd"
@@ -674,7 +660,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Cerignola | C’era una volta l’Africa – Bottega degli Apocrifi",
     "dataTesto": "Mar 02 Feb 2027",
     "dataInizio": "2027-02-02",
@@ -716,7 +702,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Cerignola | L’Arrago. Storia di una baby gang – Teatri di Bari",
     "dataTesto": "Ven 05 Mar 2027",
     "dataInizio": "2027-03-05",
@@ -758,7 +744,7 @@
   {
     "tipoContenuto": "evento",
     "citta": "Cerignola",
-    "categoria": "Teatro & Spettacoli",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Cerignola | Come il brutto anatroccolo – Crest",
     "dataTesto": "Mer 14 Apr 2027",
     "dataInizio": "2027-04-14",
