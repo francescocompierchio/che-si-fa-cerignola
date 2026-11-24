@@ -1,6 +1,6 @@
 "use strict";
 const CsfEventTools = require("./event-tools.js");
-function genera(eventi, editoriali, oggi) {
+function genera(eventi, editoriali, oggi, precedenti = []) {
  const base="https://francescocompierchio.github.io/che-si-fa-cerignola/";
  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
  const slug=v=>String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
@@ -50,23 +50,49 @@ function genera(eventi, editoriali, oggi) {
  for(const a of alias){files[a.path]=`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><link rel="canonical" href="${esc(a.canonical)}"><meta http-equiv="refresh" content="0;url=${esc(a.canonical)}"><title>${esc(a.title)}</title></head><body><p>Evento unificato: <a href="${esc(a.canonical)}">apri la scheda aggiornata</a>.</p></body></html>\n`;}
  rows.sort((a,b)=>Number(b.ev.citta.toLowerCase()==="cerignola")-Number(a.ev.citta.toLowerCase()==="cerignola")||Number(!!b.ev.inEvidenza)-Number(!!a.ev.inEvidenza)||a.ev.dataInizio.localeCompare(b.ev.dataInizio));
  const fmt=v=>new Intl.DateTimeFormat("it-IT",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(v+"T12:00:00Z"));
- const lista=items=>"<ul>"+items.map(x=>`<li><a href="${esc(x.url)}"><strong>${esc(x.ev.titolo)}</strong></a><br><span class="muted">${esc(x.ev.citta)} · ${esc(x.ev.dataTesto||fmt(x.ev.dataInizio))} · ${esc(x.ev.luogo)} · ${esc(x.ev.categoria||"Evento")}</span>${x.ev.descrizione?`<p>${esc(String(x.ev.descrizione).slice(0,180))}</p>`:""}</li>`).join("")+"</ul>";
+ const lista=items=>"<ul>"+items.map(x=>`<li><a href="${esc(x.url)}"><strong>${esc(x.ev.titolo)}</strong></a><br><span class="muted">${esc(x.ev.citta)} · ${esc(x.ev.dataTesto||fmt(x.ev.dataInizio))} · ${esc(x.ev.luogo)} · ${esc(x.ev.categoria||"Evento")}</span>${x.ev.descrizione?`<p>${esc(breve(x.ev.descrizione,180))}</p>`:""}</li>`).join("")+"</ul>";
  // Suggerimenti realmente pertinenti: altri appuntamenti pubblicati nello stesso comune.
  for(const row of rows){
    const altri=rows.filter(x=>x.path!==row.path&&slug(x.ev.citta)===slug(row.ev.citta)).sort((a,b)=>a.ev.dataInizio.localeCompare(b.ev.dataInizio)).slice(0,3);
    const related=altri.length?`<section aria-label="Altri eventi a ${esc(row.ev.citta)}"><h2>Altri eventi a ${esc(row.ev.citta)}</h2>${lista(altri)}</section>`:"";
    files[row.path]=files[row.path].replace("<!--CSF_RELATED-->",()=>related);
  }
+ // Hub stabili: solo contenuto utile, mai pagine doorway per ogni combinazione città/categoria.
+ const hubSpecs=[
+   {id:"serate",label:"Serate e locali",title:"Serate a Cerignola e dintorni",match:r=>CsfEventTools.evening(r.ev)},
+   {id:"concerti",label:"Musica e concerti",title:"Concerti a Cerignola e dintorni",match:r=>/musica|concert/.test(slug(r.ev.categoria))},
+   {id:"sagre",label:"Sagre e food",title:"Sagre a Cerignola e dintorni",match:r=>/sagr|food/.test(slug(r.ev.categoria))},
+   {id:"famiglie",label:"Famiglie e bambini",title:"Eventi per bambini a Cerignola e dintorni",match:r=>/famigli|bambin/.test(slug(r.ev.categoria))},
+   {id:"escursioni",label:"Natura ed escursioni",title:"Escursioni ed eventi nella natura vicino Cerignola",match:r=>/natura|escursion/.test(slug(r.ev.categoria))}
+ ];
+ const hubs=[],oldHubs=new Set(precedenti.filter(p=>/^hub-[a-z0-9-]+\.html$/.test(p)));
+ const comuni=new Map();
+ for(const row of rows)if(slug(row.ev.citta)!=="cerignola")comuni.set(slug(row.ev.citta),row.ev.citta);
+ // Conserva le URL dei comuni già pubblicati anche durante periodi senza appuntamenti.
+ for(const p of oldHubs){const m=p.match(/^hub-comune-([a-z0-9-]+)\.html$/);if(m&&!comuni.has(m[1]))comuni.set(m[1],m[1].split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));}
+ for(const [id,nome] of comuni)hubSpecs.push({id:"comune-"+id,label:"Eventi a "+nome,title:"Eventi a "+nome+" oggi e nei prossimi giorni",match:r=>slug(r.ev.citta)===id});
+ const itemList=items=>jsonld({"@context":"https://schema.org","@type":"ItemList",itemListElement:items.map((x,i)=>({"@type":"ListItem",position:i+1,url:x.url,name:x.ev.titolo}))});
+ for(const spec of hubSpecs){
+   const items=rows.filter(spec.match),file="hub-"+spec.id+".html",path="eventi/"+file,url=base+path;
+   const indexable=items.length>=3&&new Set(items.map(x=>x.ev.dataInizio)).size>=2;
+   if(!indexable&&!oldHubs.has(file))continue;
+   const desc=breve(spec.title+": consulta gli appuntamenti in programma con date, luoghi, informazioni sull'accesso e fonti degli eventi.",155);
+   const intro="<h1>"+esc(spec.title)+"</h1><p>Appuntamenti pubblicati nell'agenda di Che Si Fa Cerignola. Apri la scheda per controllare date, indirizzi, disponibilità e fonti.</p>";
+   const body=intro+(items.length?lista(items):"<p>Non risultano appuntamenti pubblicati in questa sezione. Consulta l'agenda completa per le altre proposte.</p>");
+   files[path]=layout(breve(spec.title,60),desc,url,body,breadcrumbs([...crumbsAgenda,[spec.label,url]])+(items.length?itemList(items):""),"",indexable);
+   if(indexable)hubs.push({url,label:spec.label});
+ }
  const local=rows.filter(x=>x.ev.citta.toLowerCase()==="cerignola");
  const [ven,dom]=CsfEventTools.weekend(oggi);
  const weekend=rows.filter(x=>CsfEventTools.overlaps(x.ev,oggi>ven?oggi:ven,dom));
  const nav=`<p><a href="${base}eventi/cerignola.html">Eventi a Cerignola</a> · <a href="${base}eventi/weekend.html">Cosa fare nel weekend</a></p>`;
+ const navHub=hubs.length?`<section aria-label="Esplora per argomento o comune"><h2>Esplora gli eventi per argomento e comune</h2><ul>${hubs.map(h=>`<li><a href="${esc(h.url)}">${esc(h.label)}</a></li>`).join("")}</ul></section>`:"";
  const localBody="<h1>Eventi a Cerignola: cosa fare in città</h1><p>Agenda locale con appuntamenti pubblicati e verificabili tramite le rispettive fonti. Gli eventi di oggi e dei prossimi giorni sono elencati con luogo e data.</p>"+(local.length?lista(local):"<p>Non risultano appuntamenti locali nel calendario pubblico. Consulta l'agenda completa o segnala un evento dall'app.</p>")+nav;
  const weekendBody="<h1>Cosa fare a Cerignola e dintorni nel weekend</h1><p><strong>"+esc(fmt(ven))+" – "+esc(fmt(dom))+"</strong></p><p>Eventi in programma tra venerdì e domenica, a partire da Cerignola. Controlla orari, prezzi e disponibilità nella scheda dell'evento.</p>"+(weekend.length?lista(weekend):"<p>Non risultano ancora eventi confermati per questo fine settimana nell'archivio pubblico. Consulta i prossimi appuntamenti nell'agenda completa.</p>")+nav;
- files["eventi/cerignola.html"]=layout("Eventi a Cerignola oggi e nei prossimi giorni | Che Si Fa Cerignola","Scopri gli appuntamenti in programma a Cerignola: serate, concerti, attività e iniziative locali con date, luoghi e link alle fonti.",base+"eventi/cerignola.html",localBody,breadcrumbs([...crumbsAgenda,["Cerignola",base+"eventi/cerignola.html"]]),"",local.length>0);
- files["eventi/weekend.html"]=layout("Cosa fare nel weekend a Cerignola e dintorni | Che Si Fa Cerignola","Scopri cosa fare nel fine settimana tra Cerignola e dintorni: appuntamenti in programma, date, luoghi, dettagli e link alle fonti.",base+"eventi/weekend.html",weekendBody,breadcrumbs([...crumbsAgenda,["Weekend",base+"eventi/weekend.html"]]),"",weekend.length>0);
- files["eventi/index.html"]=layout("Eventi a Cerignola e dintorni | Che Si Fa Cerignola","Consulta gli eventi in programma a Cerignola e nei comuni vicini: serate, concerti, sagre, escursioni e attività per famiglie.",base+"eventi/","<h1>Eventi a Cerignola e dintorni</h1><p>Serate, concerti e attività in programma. Consulta i dettagli e la fonte di ciascun evento.</p>"+nav+lista(rows),breadcrumbs(crumbsAgenda));
- const urls=[base,base+"eventi/",...(local.length?[base+"eventi/cerignola.html"]:[]),...(weekend.length?[base+"eventi/weekend.html"]:[]),...rows.map(x=>x.url)];
+ files["eventi/cerignola.html"]=layout("Eventi a Cerignola oggi e nei prossimi giorni","Scopri gli appuntamenti in programma a Cerignola: serate, concerti, attività e iniziative locali con date, luoghi e link alle fonti.",base+"eventi/cerignola.html",localBody,breadcrumbs([...crumbsAgenda,["Cerignola",base+"eventi/cerignola.html"]])+itemList(local),"",local.length>0);
+ files["eventi/weekend.html"]=layout("Cosa fare nel weekend a Cerignola e dintorni","Scopri cosa fare nel fine settimana tra Cerignola e dintorni: appuntamenti in programma, date, luoghi, dettagli e link alle fonti.",base+"eventi/weekend.html",weekendBody,breadcrumbs([...crumbsAgenda,["Weekend",base+"eventi/weekend.html"]])+itemList(weekend),"",weekend.length>0);
+ files["eventi/index.html"]=layout("Eventi a Cerignola e dintorni | Che Si Fa Cerignola","Consulta gli eventi in programma a Cerignola e nei comuni vicini: serate, concerti, sagre, escursioni e attività per famiglie.",base+"eventi/","<h1>Eventi a Cerignola e dintorni</h1><p>Serate, concerti e attività in programma. Consulta i dettagli e la fonte di ciascun evento.</p>"+nav+navHub+lista(rows),breadcrumbs(crumbsAgenda)+itemList(rows));
+ const urls=[base,base+"eventi/",...(local.length?[base+"eventi/cerignola.html"]:[]),...(weekend.length?[base+"eventi/weekend.html"]:[]),...hubs.map(x=>x.url),...rows.map(x=>x.url)];
  files["sitemap.xml"]='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(u=>`  <url><loc>${esc(u)}</loc></url>`).join("\n")+"\n</urlset>\n";
  return files;
 }
@@ -92,9 +118,20 @@ if (require.main === module) {
  const match=html.match(/const eventiEditoriali = (\[[\s\S]*?\]);/);
  if(!match) throw Error("Archivio editoriale assente");
  const oggi=new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Rome",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
- const files=genera(JSON.parse(fs.readFileSync("eventi.json","utf8")),JSON.parse(match[1]),oggi);
+ const precedenti=fs.existsSync("eventi")?fs.readdirSync("eventi"):[];
+ const files=genera(JSON.parse(fs.readFileSync("eventi.json","utf8")),JSON.parse(match[1]),oggi,precedenti);
  const leggi=p=>{try{return fs.readFileSync(p,"utf8")}catch(_){return ""}};
  genera.conLastmod(files,leggi("sitemap.xml"),leggi,oggi);
+ // Prima di scrivere o eliminare pagine, verifica l'integrità degli URL pubblici.
+ const base="https://francescocompierchio.github.io/che-si-fa-cerignola/";
+ const urls=[...files["sitemap.xml"].matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+ if(new Set(urls).size!==urls.length)throw Error("URL duplicati nella sitemap");
+ for(const url of urls){
+   if(url===base)continue;
+   if(!url.startsWith(base))throw Error("URL esterno nella sitemap: "+url);
+   const p=url.slice(base.length)+(url.endsWith("/")?"index.html":"");
+   if(!files[p]||!files[p].includes('<link rel="canonical" href="'+url+'">')||files[p].includes('name="robots" content="noindex,follow"'))throw Error("Pagina SEO incoerente: "+p);
+ }
  fs.mkdirSync("eventi",{recursive:true});
  for(const name of fs.readdirSync("eventi"))if(name.endsWith(".html")&&!Object.hasOwn(files,"eventi/"+name))fs.unlinkSync(path.join("eventi",name));
  for(const [name,content] of Object.entries(files))fs.writeFileSync(name,content);
