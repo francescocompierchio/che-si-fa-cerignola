@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - "aggiorna_eventi.py"
+      - "stato_raccolta.py"
+      - "test_stato_raccolta.py"
       - "genera_pagine_eventi.js"
       - "event-tools.js"
       - "index.html"
@@ -49,8 +51,17 @@ jobs:
           sudo apt-get install -y tesseract-ocr tesseract-ocr-ita
           pip install requests beautifulsoup4 lxml pillow pytesseract
 
-      - name: Pulisce il report del ciclo precedente
-        run: rm -f report_copertura.json
+      - name: Ripristina memoria delle fonti
+        uses: actions/cache/restore@v4
+        with:
+          path: .csf-state
+          key: fonti-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: fonti-v1-
+
+      - name: Pulisce report e salva copia precedente
+        run: |
+          rm -f report_copertura.json
+          cp eventi.json backup-eventi.json
 
       - name: Verifica parser, categorie e indirizzi
         run: python -m unittest discover -s . -p "test_*.py" -v
@@ -59,7 +70,14 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           OMP_THREAD_LIMIT: "1"
+          CSF_FORZA_FONTI: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: python aggiorna_eventi.py
+
+      - name: Salva memoria delle fonti
+        uses: actions/cache/save@v4
+        with:
+          path: .csf-state
+          key: fonti-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Pubblica riepilogo della raccolta
         if: always()
@@ -83,6 +101,13 @@ jobs:
           print(f"- Eventi automatici riconvalidati: {report.get('automaticiRiconvalidati', 0)}")
           print(f"- Eventi manuali JSON protetti: {report.get('manualiConservati', 0)}")
           print(f"- Scaduti rimossi: {report.get('scadutiEliminati', 0)}")
+          salute = report.get("saluteFonti", {})
+          print("### Salute delle fonti")
+          print(f"- Fonti monitorate: {salute.get('fontiMonitorate', 0)}")
+          print(f"- Fonti in pausa: {', '.join(salute.get('fontiInPausa', [])) or 'nessuna'}")
+          print(f"- Fonti da rivedere: {', '.join(salute.get('fontiDaRivedere', [])) or 'nessuna'}")
+          if not report.get("serateCerignola", 0):
+              print("**Attenzione:** nessuna serata automatica a Cerignola nell'archivio.")
           print("### Distribuzione per comune")
           for comune, count in sorted(report.get("eventiPerComune", {}).items(), key=lambda x: (-x[1], x[0])):
               print(f"- {comune}: {count}")
@@ -111,7 +136,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: copertura-eventi-${{ github.run_id }}
-          path: report_copertura.json
+          path: |
+            report_copertura.json
+            backup-eventi.json
           if-no-files-found: ignore
           retention-days: 14
 

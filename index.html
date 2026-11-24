@@ -1892,7 +1892,7 @@
     document.getElementById("dock-weekend").addEventListener("click",()=>{impostaModalitaRapida("WEEKEND");document.getElementById("events-container").scrollIntoView({behavior:"smooth"});});
     document.getElementById("dock-saved").addEventListener("click",()=>{impostaModalitaRapida("FAVORITES");document.getElementById("events-container").scrollIntoView({behavior:"smooth"});});
     document.getElementById("dock-suggest").addEventListener("click",()=>document.getElementById("btn-segnala-evento").click());
-    document.getElementById("surprise-me").addEventListener("click",()=>{const a=[...document.querySelectorAll("#events-container details")];if(!a.length){mostraToast("Nessuna proposta con questi filtri");return;}const c=a[Math.floor(Math.random()*a.length)];c.open=true;c.scrollIntoView({behavior:"smooth",block:"center"});mostraToast("Ecco una proposta da scoprire!");});
+    document.getElementById("surprise-me").addEventListener("click",()=>{const a=[...document.querySelectorAll("#events-container details")];if(!a.length){mostraToast("Nessuna proposta con questi filtri");return;}const map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));const interessi=new Set(tuttiEventiAttivi.filter(ev=>preferiti.has(chiaveEvento(ev))).map(ev=>ev.categoria));const candidati=a.map(el=>{const ev=map.get(el.dataset.eventKey)||{};return {el,locale:ev.citta==="Cerignola",imminente:entroSetteGiorni(ev),categoria:ev.categoria};});const c=(CsfExtras.propostaPonderata?.(candidati,interessi)||candidati[0]).el;c.open=true;c.scrollIntoView({behavior:"smooth",block:"center"});mostraToast("Ecco una proposta da scoprire!");});
     aggiornaContatorePreferiti();
 
 
@@ -2545,6 +2545,12 @@
       else timerRicerca=setTimeout(()=>{renderEventi();window.CsfMetrics?.action?.("csf_search_used");},100);
     });
     aggiornaArchivio(true);
+    const precompilazione=CsfExtras.datiSegnalazione?.(urlParams);
+    if(precompilazione){
+      if(precompilazione.luogo)document.getElementById("seg-luogo").value=precompilazione.luogo;
+      if(precompilazione.citta)document.getElementById("seg-citta").value=precompilazione.citta;
+      document.getElementById("btn-segnala-evento").click();
+    }
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

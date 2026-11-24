@@ -34,6 +34,10 @@ const assert = require("node:assert/strict");
     await page.waitForFunction(() => localStorage.getItem("csf_statistiche_consent_v1")==="no");
     await page.locator("#events-container details").first().waitFor();
     assert.ok(await page.locator("#csf-consent").isHidden());
+    await page.goto("http://127.0.0.1:8765/index.html?segnala=1&luogo=Locale%20Test&citta=Cerignola");
+    assert.ok(await page.locator("#modal-segnala").isVisible());
+    assert.equal(await page.locator("#seg-luogo").inputValue(),"Locale Test");
+    assert.equal(await page.locator("#seg-citta").inputValue(),"Cerignola");
     assert.deepEqual(errors,[]);
     console.log("OK: avvio, ricerca, scheda, preferiti persistenti, weekend, modulo, consenso.");
   } finally { await browser.close(); }

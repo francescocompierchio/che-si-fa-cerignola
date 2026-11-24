@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from html import escape, unescape
 from zoneinfo import ZoneInfo
+import stato_raccolta
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -37,7 +38,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live"
 )
 
 FONTI_VIVA = [
@@ -56,6 +57,7 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome": "Cose di Casa Mercatini Cerignola", "url": "https://www.cosedicasa.live/mercatini/cerignola-antiquariando", "dominio": "cosedicasa.live", "citta_default": "Cerignola", "curata": True, "scheda_diretta": True, "max_schede": 1},
     {"nome": "Lanotiziaweb Cerignola", "url": "https://www.lanotiziaweb.it/", "dominio": "lanotiziaweb.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi Cerignola", "url": "https://www.foggiareporter.it/comune/comune-cerignola", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
     {"nome": "Foggia Reporter Eventi", "url": "https://www.foggiareporter.it/category/eventi", "dominio": "foggiareporter.it", "citta_default": "", "curata": False, "notizie_locali": True, "max_schede": 8},
@@ -1670,6 +1672,11 @@ def raccogli_da_portale_generico(session, fonte):
         r.encoding = r.apparent_encoding or "utf-8"
         soup = BeautifulSoup(r.text, "html.parser")
 
+        if fonte.get("scheda_diretta"):
+            eventi = analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata)
+            registra_statistica_fonte(nome, stato="ok", linkCandidati=1, pagineScaricate=1, eventiEstratti=len(eventi))
+            return eventi
+
         # Una pagina elenco non è di per sé un evento: si analizzano solo
         # collegamenti che sembrano schede evento individuali.
         links = []
@@ -1984,8 +1991,17 @@ def esegui_aggiornamento():
         + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
         + [(raccogli_da_feed_social, fonte) for fonte in FONTI_SOCIAL_RSS]
     )
-    print(f"Raccolta parallela: {len(compiti)} fonti, massimo {MAX_WORKER_FONTI} domini contemporanei", flush=True)
+    percorso_stato = os.path.join(".csf-state", "fonti.json")
+    memoria = stato_raccolta.carica(percorso_stato)
+    now = int(time.time())
+    compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
+    for nome in pause:
+        registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
+    print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     nuovi_raccolti = raccogli_fonti_parallele(compiti)
+    memoria = stato_raccolta.aggiorna(memoria, STATISTICHE_FONTI, now)
+    os.makedirs(".csf-state", exist_ok=True)
+    _scrivi_json_atomico(percorso_stato, memoria)
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
     precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e)]
@@ -2035,6 +2051,7 @@ def esegui_aggiornamento():
         "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),
         "controlloStato": controllo_stato,
+        "saluteFonti": stato_raccolta.riepilogo(memoria, pause),
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "serateCerignola": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and e.get("categoria") == "Locali & Serate"),
