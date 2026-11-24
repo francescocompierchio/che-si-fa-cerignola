@@ -1106,3 +1106,53 @@ class RecuperoFontiUfficialiETeatroTests(unittest.TestCase):
             "fonteUrl": "https://example.org/b",
         }
         self.assertFalse(motore.sono_duplicati(primo, secondo))
+
+
+class DateSemanticheFontiUfficialiTests(unittest.TestCase):
+    def test_scheda_comune_con_data_in_tag_time_viene_estratta(self):
+        html = '''
+        <html><body><main>
+          <h1>Le storie del Giovedì – Biblioteca di Comunità</h1>
+          <h2><time datetime="2026-11-26T17:00">26 Novembre 2026</time></h2>
+          <p>Laboratorio di lettura creativa.</p>
+          <h2>Luogo</h2>
+          <h3>Biblioteca di Comunità - Comune di Cerignola</h3>
+          <p>Via Cesare Battisti n. 13 - 71042 Cerignola FG</p>
+          <p>Gratuito. E' necessaria prenotazione.</p>
+        </main></body></html>
+        '''
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-11-26")
+        self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")
+
+    def test_scheda_teatro_con_data_in_tag_time_viene_estratta(self):
+        html = '''
+        <html><body><main>
+          <h1>BREAKING BRECHT – Lo strano caso di Bertolt Brecht</h1>
+          <div>Spettacolo teatrale</div>
+          <div>Prosa</div>
+          <div><time datetime="2026-12-06T21:00">domenica 06 Dicembre 2026</time></div>
+          <div>ore 21:00</div>
+          <div>Teatro Comunale Saverio Mercadante</div>
+          <div>piazza G. Matteotti, 1</div>
+          <div>Cerignola FG</div>
+          <p>Con Veronica Pivetti e Manuela Mandracchia.</p>
+        </main></body></html>
+        '''
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://www.teatromercadantecerignola.it/evento/breaking-brecht-lo-strano-caso-di-bertolt-brecht/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["dataInizio"], "2026-12-06")
+        self.assertEqual(eventi[0]["categoria"], "Teatro & Spettacoli")
