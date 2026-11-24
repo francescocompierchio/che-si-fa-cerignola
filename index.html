@@ -1846,7 +1846,7 @@
         if (ev.inEvidenza) details.classList.add("is-featured");
 
         const summary = document.createElement("summary");
-        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);mostraToast("Aggiunto ai salvati");}salvaPreferiti();if(modalitaRapida==="FAVORITES")renderEventi();});
+        const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);mostraToast("Aggiunto ai salvati");}salvaPreferiti();aggiornaComandiRapidi();if(modalitaRapida==="FAVORITES")renderEventi();});
         const metaTop = document.createElement("div");
         metaTop.className = "meta-top";
 
