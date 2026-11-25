@@ -52,5 +52,8 @@
    document.getElementById("csf-consent-settings").addEventListener("click",()=>{banner.hidden=false;banner.scrollIntoView({block:"center"});});
    startAggregate();
    start();
+   if(location.hostname==="francescocompierchio.github.io"&&/^\/che-si-fa-cerignola\/(?:index\.html|eventi\/.*)?$/.test(location.pathname)){
+     const views=document.createElement("script");views.src="/che-si-fa-cerignola/public-views.js";views.async=true;document.body.appendChild(views);
+   }
  });
 })();
