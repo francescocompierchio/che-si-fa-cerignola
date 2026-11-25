@@ -1161,6 +1161,28 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 .agenda-special{flex:1 1 auto;cursor:pointer;white-space:nowrap}
 .agenda-special[aria-pressed="true"]{background:var(--accent);color:#fff}
 .agenda-selected-info{margin:10px 0 0;font-size:.77rem;color:var(--muted);font-weight:650}
+
+/* Agenda compatta: nessuna seconda riga di ordinamento, bersagli di tocco >=44px. */
+.discovery-toolbar{margin-bottom:8px}
+.discovery-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 44px;width:100%;gap:6px}
+.discovery-actions .discovery-btn{min-width:0;min-height:44px;padding:5px 3px;white-space:nowrap}
+.discovery-actions #surprise-me{font-size:1.1rem;padding:0}
+.agenda-panel{padding:8px 9px;margin-bottom:9px}
+.agenda-heading{margin:0 1px 5px;font-size:.78rem}
+.agenda-date-buttons{gap:4px}
+.agenda-date-btn{min-height:48px;padding:3px 0;border-radius:10px;gap:0;line-height:1.13}
+.agenda-date-weekday{font-size:.57rem}
+.agenda-date-number{font-size:.94rem;line-height:1.08}
+.agenda-date-count{font-size:.57rem}
+.agenda-more{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;padding-top:0;border-top:0}
+.agenda-more .agenda-picker,.agenda-more .agenda-special{min-height:44px;margin:0;padding:5px 7px;display:flex;align-items:center;justify-content:center;position:relative;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-size:.73rem;font-weight:750;box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom)}
+.agenda-picker span{pointer-events:none}
+.agenda-more .agenda-picker input{position:absolute;inset:0;width:100%;height:100%;min-height:0;opacity:0;cursor:pointer;margin:0;padding:0}
+.agenda-picker input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;padding:0;cursor:pointer}
+.agenda-picker:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.agenda-more .agenda-special[aria-pressed="true"]{background:#1746a2;color:#fff}
+.agenda-selected-info{margin:5px 0 0;font-size:.72rem}
+@media(max-width:360px){.discovery-actions{gap:4px}.discovery-actions .discovery-btn{font-size:.69rem}.agenda-date-buttons{gap:3px}.agenda-date-count{font-size:.52rem}}
   </style>
 </head>
 <body>
@@ -1205,7 +1227,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
   <main>
     <input type="search" id="search-input" class="search-box" placeholder="Es. discoteche a Trani sabato sera..." aria-label="Cerca evento o attività" />
 
-    <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><div class="discovery-secondary"><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="smart">Ordina: consigliati</option><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></div></section>
+    <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button><button type="button" class="discovery-btn" id="surprise-me" aria-label="Sorprendimi" title="Sorprendimi">🎲</button></div></section>
     <section id="saved-plan-share" class="saved-plan-share" hidden><div><strong>Il tuo piano è pronto?</strong><span>Condividi in un messaggio tutti gli eventi e le idee che hai salvato</span></div><button type="button" id="btn-share-saved-plan" class="discovery-btn active">↗ Condividi il mio piano</button></section>
     <section id="weekend-share" class="saved-plan-share" hidden><div><strong>Organizza il weekend con gli amici</strong><span>Condividi una selezione aggiornata delle proposte del fine settimana.</span></div><button type="button" id="btn-share-weekend" class="discovery-btn active">↗ Condividi weekend</button></section>
     <div class="smart-filters" aria-label="Filtri intelligenti">
@@ -1226,8 +1248,10 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       <div class="agenda-heading"><div><strong>Agenda rapida</strong><span> · prossimi 7 giorni</span></div><button type="button" id="clear-selected-date" class="agenda-clear" hidden>Tutte le date</button></div>
       <div id="agenda-date-buttons" class="agenda-date-buttons"></div>
       <div class="agenda-more">
-        <label for="agenda-future-date">Scegli un'altra data</label>
-        <input type="date" id="agenda-future-date" aria-label="Scegli una data futura">
+        <label class="agenda-picker" for="agenda-future-date">
+          <span id="agenda-picker-label">📅 Altra data</span>
+          <input type="date" id="agenda-future-date" aria-label="Scegli una data futura">
+        </label>
         <button type="button" id="agenda-new-year" class="agenda-special" aria-pressed="false">🎆 Capodanno</button>
       </div>
       <p id="agenda-selected-info" class="agenda-selected-info" aria-live="polite" hidden></p>
@@ -2246,7 +2270,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     let filtroAttivo = "ALL";
 
     let queryRicerca = "";
-    let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", ordinamentoEventi = "smart", filtroSmart = "ALL";
+    let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", filtroSmart = "ALL";
     let dataSelezionata = "", fineDataSelezionata = "";
     let linkEventoDaAprire = "";
     try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
@@ -2569,7 +2593,11 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       host.innerHTML="";if(clear)clear.hidden=!dataSelezionata;
       const picker=document.getElementById("agenda-future-date"),ny=document.getElementById("agenda-new-year"),info=document.getElementById("agenda-selected-info");
       const [nyStart,nyEnd]=dateCapodanno();
-      if(picker){picker.min=oggi;picker.value=dataSelezionata&&!fineDataSelezionata?dataSelezionata:"";}
+      if(picker){
+        picker.min=oggi;picker.value=dataSelezionata&&!fineDataSelezionata?dataSelezionata:"";
+        const label=document.getElementById("agenda-picker-label");
+        if(label)label.textContent=picker.value?"📅 "+new Date(picker.value+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"short"}):"📅 Altra data";
+      }
       const nyActive=dataSelezionata===nyStart&&fineDataSelezionata===nyEnd;
       const nyCount=eventi.filter(ev=>CsfEventTools.overlaps(ev,nyStart,nyEnd)).length;
       if(ny){ny.setAttribute("aria-pressed",String(nyActive));ny.textContent="🎆 Capodanno · "+nyCount;}
@@ -2619,7 +2647,6 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
     document.getElementById("quick-weekend").addEventListener("click",()=>impostaModalitaRapida("WEEKEND"));
     document.getElementById("quick-favorites").addEventListener("click",()=>impostaModalitaRapida("FAVORITES"));
-    document.getElementById("sort-events").addEventListener("change",e=>{ordinamentoEventi=e.target.value;renderEventi();});
     document.getElementById("dock-home").addEventListener("click",()=>{impostaModalitaRapida("ALL");window.scrollTo({top:0,behavior:"smooth"});});
     document.getElementById("dock-weekend").addEventListener("click",()=>{impostaModalitaRapida("WEEKEND");document.getElementById("events-container").scrollIntoView({behavior:"smooth"});});
     document.getElementById("dock-saved").addEventListener("click",()=>{impostaModalitaRapida("FAVORITES");document.getElementById("events-container").scrollIntoView({behavior:"smooth"});});
@@ -3132,7 +3159,14 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       if (dataSelezionata) {
         filtrati = filtrati.filter(ev => CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata));
       }
-      filtrati.sort((a,b)=>{if(fineDataSelezionata&&ordinamentoEventi==="smart"){const distanza=getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta);if(distanza)return distanza;}if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;const priorita=ordinamentoEventi==="smart"&&CsfEventTools.prioritaScoperta?CsfEventTools.prioritaScoperta(a,oggi,getFasciaCerchioCerignola(a.citta))-CsfEventTools.prioritaScoperta(b,oggi,getFasciaCerchioCerignola(b.citta)):0;return x-y||(ordinamentoEventi==="smart"?Number(!!b.inEvidenza)-Number(!!a.inEvidenza):0)||priorita||(a.dataInizio||"").localeCompare(b.dataInizio||"")||getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||CsfEventTools.quality(b)-CsfEventTools.quality(a);});
+      // Eventi in evidenza, poi cronologia; esperienze senza data sempre in fondo.
+      filtrati.sort((a,b)=>{
+        const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;
+        return x-y||Number(!!b.inEvidenza)-Number(!!a.inEvidenza)||
+          (a.dataInizio||"9999-12-31").localeCompare(b.dataInizio||"9999-12-31")||
+          getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||
+          (a.titolo||"").localeCompare(b.titolo||"","it");
+      });
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
       const numeroEventi = filtrati.length - numeroEsperienze;
       counterBadge.textContent = `${numeroEventi} ${numeroEventi === 1 ? "evento" : "eventi"}`;

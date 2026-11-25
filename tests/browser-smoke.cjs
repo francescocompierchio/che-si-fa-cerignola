@@ -57,11 +57,12 @@ const assert = require("node:assert/strict");
     for(const width of [320,360,393,430]){
       await page.setViewportSize({width,height:852});
       const layout=await page.evaluate(()=>{
-        const a=document.getElementById("sort-events").getBoundingClientRect(),b=document.getElementById("surprise-me").getBoundingClientRect();
-        return {a:{left:a.left,right:a.right,top:a.top,height:a.height},b:{left:b.left,right:b.right,top:b.top,height:b.height},w:document.documentElement.clientWidth};
+        const rect=id=>{const r=document.getElementById(id).getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,height:r.height};};
+        const buttons=["quick-all","quick-weekend","quick-favorites","surprise-me"].map(rect);
+        return {buttons,agenda:document.querySelector(".agenda-panel").getBoundingClientRect().height,w:document.documentElement.clientWidth};
       });
-      assert.ok(Math.abs(layout.a.top-layout.b.top)<2&&layout.a.right<=layout.b.left&&layout.a.left>=0&&layout.b.right<=layout.w,"Comandi ordinamento/sorpresa fuori riga a "+width);
-      assert.ok(layout.a.height>=44&&layout.b.height>=44,"Area di tocco insufficiente");
+      assert.ok(layout.buttons.every(r=>Math.abs(r.top-layout.buttons[0].top)<2&&r.left>=0&&r.right<=layout.w&&r.height>=44),"Comandi rapidi fuori riga a "+width);
+      assert.ok(layout.agenda<155,"Agenda non compatta a "+width+": "+layout.agenda);
     }
     await page.setViewportSize({width:393,height:852});
     assert.match(await page.locator("#author-signature").textContent(),/Francesco Compierchio/);
@@ -79,9 +80,12 @@ const assert = require("node:assert/strict");
     assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Capodanno non limitato al weekend corrente");
     await page.locator("#clear-selected-date").click();
     assert.equal(await page.locator("#agenda-date-buttons button").count(),7);
-    await page.locator("#sort-events").selectOption("date");
-    assert.equal(await page.locator("#sort-events").inputValue(),"date");
-    await page.locator("#sort-events").selectOption("smart");
+    assert.equal(await page.locator("#sort-events").count(),0,"Ordinamento manuale eliminato");
+    const ordinati=await page.evaluate(()=>{
+      const map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));
+      return [...document.querySelectorAll("#events-container details")].map(el=>map.get(el.dataset.eventKey)).filter(ev=>ev&&ev.tipoContenuto!=="esperienza");
+    });
+    assert.ok(ordinati.every((ev,i)=>i===0||Number(!!ordinati[i-1].inEvidenza)>Number(!!ev.inEvidenza)||(!!ordinati[i-1].inEvidenza===!!ev.inEvidenza&&ordinati[i-1].dataInizio<=ev.dataInizio)),"Prima evidenza, poi cronologia");
     await page.locator("#surprise-me").click();
     assert.ok(await page.locator("#events-container details[open]").count()>0);
     await page.locator("#search-input").fill("Cosa fare nel weekend a Cerignola?");

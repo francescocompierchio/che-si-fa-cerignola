@@ -72,7 +72,7 @@ jobs:
           const requiredIds = [
             "events-container", "filters", "search-input", "quick-all",
             "quick-weekend", "quick-favorites", "favorites-count",
-            "sort-events", "surprise-me", "dock-home", "dock-weekend",
+            "surprise-me", "dock-home", "dock-weekend",
             "dock-saved", "dock-suggest", "app-toast", "btn-segnala-evento",
             "agenda-date-buttons", "clear-selected-date", "saved-plan-share", "btn-share-saved-plan", "weekend-share", "btn-share-weekend",
           ];
@@ -143,6 +143,7 @@ jobs:
           assert.ok(html.includes("event-poster event-poster-full"), "Locandina in evidenza non adattata");
           assert.ok(html.includes("const curati = [...eventiDaFirebase, ...editorialiSenzaDuplicati]"), "Integrazione eventi editoriali assente");
           assert.ok(html.includes("Number(!!b.inEvidenza)-Number(!!a.inEvidenza)"), "Priorità in evidenza nella lista assente");
+          assert.ok(!html.includes('id="sort-events"'),"Ordinamento manuale rimosso");
           assert.ok(html.includes("[...LOCALI_CERIGNOLA_DEFAULT, ...listaFirebase]"), "I locali Firebase devono unirsi alla rubrica predefinita");
           assert.ok(html.includes('const chiave = normalizza(loc.nome) + "|" + normalizza(citta)'), "Deduplicazione locali per nome e città assente");
           assert.ok(html.includes('navigator.serviceWorker.register("sw.js", { updateViaCache: "none" })'), "Aggiornamento Service Worker senza cache HTTP assente");
