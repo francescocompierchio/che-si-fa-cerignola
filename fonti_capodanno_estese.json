@@ -1,0 +1,485 @@
+[
+  {
+    "nome": "Blubar",
+    "alias": [
+      "Blubar"
+    ],
+    "evidenza": "https://lapugliashopping.it/attivita/blubar-bar-cerignola-fg/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Gold Fashion Pub",
+    "alias": [
+      "Gold Fashion"
+    ],
+    "evidenza": "https://www.waze.com/live-map/directions/it/puglia/cerignola/gold-fashion-pub?to=place.ChIJK1rD55QxOBMRuZrI3Y26EKE",
+    "social": "https://www.instagram.com/goldfashion_pub/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Hermes Club",
+    "alias": [
+      "Hermes Club"
+    ],
+    "evidenza": "https://hermesclub.it/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Antica Enotria",
+    "alias": [
+      "Antica Enotria"
+    ],
+    "evidenza": "https://anticaenotria.it/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Caffè Plaza",
+    "alias": [
+      "Caffè Plaza"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Bramo",
+    "alias": [
+      "Bramo"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Generi Alimentari",
+    "alias": [
+      "Generi Alimentari"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Scalo 111",
+    "alias": [
+      "Scalo 111"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Bar Gorizia",
+    "alias": [
+      "Bar Gorizia"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Il Paladino",
+    "alias": [
+      "Il Paladino"
+    ],
+    "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d5853981-Reviews-Il_Paladino-Cerignola_Province_of_Foggia_Puglia.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "L'Arcimboldo",
+    "alias": [
+      "Arcimboldo"
+    ],
+    "evidenza": "https://www.sluurpy.it/cerignola/ristorante/98879/pub-birreria-l-arcimboldo",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Pikò",
+    "alias": [
+      "Pikò",
+      "Pikò Club"
+    ],
+    "evidenza": "https://angelipierre.it/discoteca/piko-di-cerignola/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Baraonda",
+    "alias": [
+      "Baraonda"
+    ],
+    "evidenza": "https://amelipasticceria.it/baraonda/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Bar Roma",
+    "alias": [
+      "Bar Roma"
+    ],
+    "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Cantine Paradiso",
+    "alias": [
+      "Cantine Paradiso"
+    ],
+    "evidenza": "https://www.cantineparadiso.it/azienda/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Mandwinery",
+    "alias": [
+      "Mandwinery"
+    ],
+    "evidenza": "https://www.sommelierpuglia.it/convenzioni-con-ais-puglia/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "U Vulesce",
+    "alias": [
+      "U Vulesce"
+    ],
+    "evidenza": "https://www.sommelierpuglia.it/convenzioni-con-ais-puglia/",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Vito Losciale and Friends",
+    "alias": [
+      "Vito Losciale",
+      "Vito Losciale and Friends"
+    ],
+    "evidenza": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Botanical 22",
+    "alias": [
+      "Botanical 22"
+    ],
+    "evidenza": "https://www.aperitribe.com/aperitivo/cerignola",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Cafè Noir",
+    "alias": [
+      "Cafè Noir"
+    ],
+    "evidenza": "https://www.aperitribe.com/aperitivo/cerignola",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Birreria con vizio di cucina",
+    "alias": [
+      "Birreria con vizio di cucina"
+    ],
+    "evidenza": "https://www.aperitribe.com/aperitivo/cerignola",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Caffetteria Blanco",
+    "alias": [
+      "Caffetteria Blanco"
+    ],
+    "evidenza": "https://www.aperitribe.com/aperitivo/cerignola",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Bar Melluso al Palazzo Ducale",
+    "alias": [
+      "Bar Melluso al Palazzo Ducale"
+    ],
+    "evidenza": "https://www.aperitribe.com/aperitivo/cerignola",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Civico 10 Wine & Coffee Bar",
+    "alias": [
+      "Civico 10"
+    ],
+    "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d23068086-Reviews-CIVICO_10_Wine_Coffee_Bar-Cerignola_Province_of_Foggia_Puglia.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Hollywood Pub",
+    "alias": [
+      "Hollywood Pub"
+    ],
+    "evidenza": "https://www.oraridiapertura24.it/filiale/Cerignola-Hollywood%2520Pub-729640Z.html",
+    "stato": "anagrafica; evento non confermato"
+  },
+  {
+    "nome": "Terramia Osteria Moderna",
+    "alias": [
+      "Terramia Osteria Moderna"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Ossobuco Steakhouse & Restaurant",
+    "alias": [
+      "Ossobuco Steakhouse & Restaurant"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Alfredo Pizza e Cucina",
+    "alias": [
+      "Alfredo Pizza e Cucina"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Alchimia Cucina & Vino",
+    "alias": [
+      "Alchimia Cucina & Vino"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "L'Habituel Cafè",
+    "alias": [
+      "L'Habituel Cafè"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Regina Pizzeria",
+    "alias": [
+      "Regina Pizzeria"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Maximilian Pub & Grill",
+    "alias": [
+      "Maximilian Pub & Grill"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Pizzeria 10 Fontane",
+    "alias": [
+      "Pizzeria 10 Fontane"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "31 Grani",
+    "alias": [
+      "31 Grani"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Pizzeria Quattro Archi",
+    "alias": [
+      "Pizzeria Quattro Archi"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Civico 10 Bistrot",
+    "alias": [
+      "Civico 10 Bistrot"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Somnia Pizza & Burger",
+    "alias": [
+      "Somnia Pizza & Burger"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "L'Incontro",
+    "alias": [
+      "L'Incontro"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Mistella - Vino Pizza e Cucina",
+    "alias": [
+      "Mistella - Vino Pizza e Cucina"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Sayuri",
+    "alias": [
+      "Sayuri"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "HANA Ristorante Giapponese",
+    "alias": [
+      "HANA Ristorante Giapponese"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Bistrò 24",
+    "alias": [
+      "Bistrò 24"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "La Grotta di Pulcinella",
+    "alias": [
+      "La Grotta di Pulcinella"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Lo Chalet",
+    "alias": [
+      "Lo Chalet"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Braciamo",
+    "alias": [
+      "Braciamo"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "La Volpe e L'Uva",
+    "alias": [
+      "La Volpe e L'Uva"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Verve Restaurant",
+    "alias": [
+      "Verve Restaurant"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Plebiscito 77",
+    "alias": [
+      "Plebiscito 77"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Al Vecchio Casello",
+    "alias": [
+      "Al Vecchio Casello"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Il Caminetto",
+    "alias": [
+      "Il Caminetto"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "L'Antico Uliveto",
+    "alias": [
+      "L'Antico Uliveto"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Gambero d'Oro",
+    "alias": [
+      "Gambero d'Oro"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Pizzeria Giro Pizza",
+    "alias": [
+      "Pizzeria Giro Pizza"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "I Tre Comignoli",
+    "alias": [
+      "I Tre Comignoli"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Atelier il Mago dei Fornelli",
+    "alias": [
+      "Atelier il Mago dei Fornelli"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Ristorante Al Cantuccio",
+    "alias": [
+      "Ristorante Al Cantuccio"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/locali-pubblici/",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Torre Brayda",
+    "alias": [
+      "Torre Brayda"
+    ],
+    "evidenza": "https://www.misterimprese.it/puglia/foggia/cerignola/ricevimenti-e-banchetti-sale-e-servizi.html",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Il Principe Azzurro",
+    "alias": [
+      "Il Principe Azzurro"
+    ],
+    "evidenza": "https://trova-aperto.it/cerignola/location-per-eventi",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Pizzeria al Castello da Francesco",
+    "alias": [
+      "Pizzeria al Castello da Francesco"
+    ],
+    "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
+    "stato": "candidato; nessun evento presunto"
+  },
+  {
+    "nome": "Pizzeria dei Mille",
+    "alias": [
+      "Pizzeria dei Mille"
+    ],
+    "evidenza": "https://www.webristoranti.com/cerignola",
+    "stato": "candidato; nessun evento presunto"
+  }
+]

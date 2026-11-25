@@ -14,8 +14,20 @@ def registro():
     except (OSError, ValueError):
         return []
 
+def registro_esteso():
+    try:
+        extra=json.loads(Path(__file__).with_name("fonti_capodanno_estese.json").read_text(encoding="utf-8"))
+    except (OSError,ValueError):
+        extra=[]
+    return registro()+[r for r in extra if isinstance(r,dict) and r.get("nome") and r.get("alias")]
+
+def registro_dintorni():
+    return [{"nome":"Posta Bassi","alias":["Posta Bassi","Postabassi"],"citta":"Foggia","sito":"https://www.postabassi.it/eventi-speciali/"},{"nome":"Regiohotel Manfredi","alias":["Regiohotel Manfredi","Regiohotel"],"citta":"Manfredonia","sito":"https://regiohotel.it/it/promo/capodanno-benessere-con-spa-in-puglia"},{"nome":"Sala Fontana","alias":["Sala Fontana"],"citta":"San Ferdinando di Puglia","evidenza":"https://www.puglia.com/salafontana/"}]
+
+COMUNI_RADAR = ["Stornara","Stornarella","San Ferdinando di Puglia","Orta Nova","Canosa di Puglia","Trinitapoli","Carapelle","Ordona","Margherita di Savoia","Lavello","Ascoli Satriano","Barletta","Foggia","Manfredonia","Andria","Trani","Candela","Minervino Murge","Melfi","Venosa","Zapponeta","Rionero in Vulture"]
+
 def stagione(oggi):
-    if oggi.month in (11, 12):
+    if oggi.month in (10, 11, 12):
         return oggi.year
     if oggi.month == 1 and oggi.day == 1:
         return oggi.year - 1
@@ -67,4 +79,34 @@ def fonti(oggi, dati=None):
         rss.append({"nome":"Capodanno Cerignola "+nome,
                     "url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),
                     "anno_capodanno":anno,"solo_cerignola":True,"prioritaria":True,"max_schede_rss":4})
+    return dirette,rss
+
+def radar_esteso(oggi):
+    anno=stagione(oggi)
+    if anno is None:
+        return [],[]
+    dirette,rss=fonti(oggi,registro_esteso())
+    def feed(nome,q,comune,locale=False):
+        return {"nome":nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"anno_capodanno":anno,"prioritaria":locale,"solo_cerignola":locale,"focus_serate":True,"max_schede_rss":6 if locale else 3,"comune_capodanno":comune}
+    tema='(capodanno OR cenone OR veglione OR "San Silvestro" OR "31 dicembre" OR "1 gennaio")'
+    for nome,query in [
+        ("ristoranti", "(ristorante OR trattoria OR pizzeria OR braceria OR osteria)"),
+        ("ricevimenti", "(villa OR sala OR ricevimenti OR tenuta OR resort)"),
+        ("agriturismi", "(agriturismo OR masseria OR hotel OR relais)"),
+        ("movida", "(pub OR club OR discoteca OR rooftop OR dj OR aperitivo)"),
+        ("menu e prenotazioni", '(menu OR menù OR prenota OR prenotazioni OR locandina OR prezzo)'),
+        ("Instagram Facebook", "(site:instagram.com OR site:facebook.com)"),
+        ("portali specializzati", "(site:cenonecapodanno.com OR site:capodanno31.com OR site:capodannofoggia.com OR site:iltaccodibacco.it)")]:
+        rss.append(feed("Radar Capodanno Cerignola "+nome,"Cerignola "+tema+" "+query+" when:90d","Cerignola",True))
+    for f in dirette+rss:
+        f["focus_serate"]=True
+        f["max_schede_rss"]=6
+        if f.get("solo_cerignola"):
+            f["comune_capodanno"]="Cerignola"
+    for r in registro_dintorni():
+        if r.get("sito"):
+            dirette.append({"nome":"Capodanno dintorni sito - "+r["nome"],"url":r["sito"],"dominio":urlparse(r["sito"]).hostname,"sede":r["nome"],"comune_capodanno":r["citta"],"anno_capodanno":anno,"focus_serate":True})
+        rss.append(feed("Radar Capodanno struttura "+r["nome"],'"'+r["citta"]+'" "'+r["nome"]+'" '+tema+" when:90d",r["citta"]))
+    for comune in COMUNI_RADAR:
+        rss.append(feed("Radar Capodanno "+comune,'"'+comune+'" '+tema+' (ristorante OR agriturismo OR sala OR hotel OR festa OR dj OR piazza) when:90d',comune))
     return dirette,rss

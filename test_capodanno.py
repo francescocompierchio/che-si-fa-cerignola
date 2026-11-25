@@ -25,6 +25,13 @@ class TestCapodanno(unittest.TestCase):
         q=" ".join(parse_qs(urlparse(f["url"]).query)["q"][0] for f in rss)
         for r in c.registro():
             self.assertTrue(all(alias in q for alias in r["alias"]))
+    def test_radar_esteso(self):
+        dirette,rss=c.radar_esteso(date(2026,11,25))
+        self.assertGreater(len(c.registro_esteso()),50)
+        self.assertTrue(any(f.get("comune_capodanno")=="Manfredonia" and f.get("sede") for f in dirette))
+        self.assertTrue(all(any(f.get("comune_capodanno")==comune for f in rss) for comune in c.COMUNI_RADAR))
+        self.assertTrue(any("Instagram Facebook" in f["nome"] for f in rss))
+        self.assertTrue(any("Ossobuco" in parse_qs(urlparse(f["url"]).query)["q"][0] for f in rss))
     def test_dup(self):
         ev={"citta":"Cerignola","dataInizio":"2026-12-31","dataFine":"2026-12-31","titolo":"Cenone di Capodanno","luogo":"Villa Bautier"}
         self.assertFalse(a.sono_duplicati(ev,dict(ev,luogo="Villa Demetra")))
