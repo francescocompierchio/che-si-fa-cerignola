@@ -1,0 +1,76 @@
+name: Verifica contatori Firebase in produzione
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verifica-contatori-live.yml']
+permissions:
+  contents: read
+jobs:
+  verifica:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Leggi contatori pubblici senza modificare il database
+        run: |
+          node <<'NODE'
+          const base="https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/statistiche/";
+          (async()=>{
+            for(const k of ["visiteTotali","utentiOnline"]){
+              const r=await fetch(base+k+".json",{signal:AbortSignal.timeout(15000),cache:"no-store"});
+              if(!r.ok)throw Error(k+": HTTP "+r.status);
+              const v=await r.json();
+              if(k==="visiteTotali"&&(!Number.isSafeInteger(v)||v<0))throw Error("Contatore visite non valido");
+              if(k==="utentiOnline"&&v!==null&&(typeof v!=="object"||Array.isArray(v)))throw Error("Contatore online non valido");
+              console.log(k+": "+(k==="visiteTotali"?v:Object.keys(v||{}).length));
+            }
+          })().catch(e=>{console.error(e.message);process.exitCode=1;});
+          NODE
+      - name: Installa browser di verifica
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verifica una normale apertura pubblica senza consenso Google Analytics
+        run: |
+          node <<'NODE'
+          const { chromium }=require("playwright");
+          const assert=require("node:assert/strict");
+          const site="https://francescocompierchio.github.io/che-si-fa-cerignola/";
+          const db="https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/statistiche/";
+          async function read(k){const r=await fetch(db+k+".json",{signal:AbortSignal.timeout(15000),cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);return r.json();}
+          (async()=>{
+            const before=await read("visiteTotali"), onlineBefore=Object.keys(await read("utentiOnline")||{}).length;
+            const browser=await chromium.launch();
+            let during, onlineDuring, displayedVisits, displayedOnline;
+            try{
+              const page=await browser.newPage({viewport:{width:393,height:852},isMobile:true,serviceWorkers:"block"});
+              // Non inviare traffico di test a Cloudflare o Google Analytics.
+              await page.route("**/*",r=>/cloudflareinsights\.com|googletagmanager\.com|google-analytics\.com/.test(new URL(r.request().url()).hostname)?r.abort():r.continue());
+              page.on("console",m=>{if(m.type()==="warning"&&m.text().includes("Contatori Firebase"))console.log("Avviso contatori: "+m.text().slice(0,300));});
+              await page.goto(site,{waitUntil:"domcontentloaded",timeout:30000});
+              assert.equal(await page.evaluate(()=>window.CsfMetrics?.allowed()),false);
+              assert.equal(await page.evaluate(()=>window.CsfMetrics?.aggregateAllowed()),true);
+              await page.locator("#visits-pill").waitFor({state:"visible",timeout:25000});
+              await page.locator("#live-pill").waitFor({state:"visible",timeout:25000});
+              await page.waitForFunction(()=>Number(document.getElementById("online-users-count").textContent)>0,{},{timeout:25000});
+              for(let i=0;i<8;i++){
+                during=await read("visiteTotali");onlineDuring=Object.keys(await read("utentiOnline")||{}).length;
+                if(during>before&&onlineDuring>0)break;
+                await new Promise(r=>setTimeout(r,1000));
+              }
+              displayedVisits=await page.locator("#total-visits-count").textContent();
+              displayedOnline=await page.locator("#online-users-count").textContent();
+              console.log("Visite prima: "+before+"; durante: "+during+"; visibili: "+displayedVisits);
+              console.log("Online prima: "+onlineBefore+"; durante: "+onlineDuring+"; visibili: "+displayedOnline);
+              assert.ok(during>before,"Nessun incremento osservato");
+              assert.ok(onlineDuring>0,"Nessuna connessione rilevata");
+              assert.ok(Number(displayedOnline)>0,"Contatore online non aggiornato");
+            }finally{await browser.close();}
+            const after=Object.keys(await read("utentiOnline")||{}).length;
+            console.log("Online dopo chiusura browser: "+after+" (puo variare per altri utenti)");
+            console.log("Verifica completata: una apertura di test puo essere inclusa nelle visite pubbliche.");
+          })().catch(e=>{console.error(e.message);process.exitCode=1;});
+          NODE
