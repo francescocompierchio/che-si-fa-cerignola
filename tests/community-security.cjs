@@ -11,7 +11,10 @@ const rules=read("community-database.rules.json");
 test("config disattivata e modulo valido: nessun accesso DOM o Firebase a freddo",()=>{
   const context={window:{}};
   vm.runInNewContext(read("community-config.js"),context);
-  assert.equal(context.window.CSF_COMMUNITY_CONFIG,null);
+  const config=context.window.CSF_COMMUNITY_CONFIG;
+  assert.equal(config.enabled,false);
+  assert.equal(config.firebase.projectId,"che-si-fa-community");
+  assert.equal(new URL(config.firebase.databaseURL).hostname,"che-si-fa-community-default-rtdb.europe-west1.firebasedatabase.app");
   vm.runInNewContext(read("community.js"),context);
   for(const firebase of [{projectId:"chesifa-cerignola",databaseURL:"https://example.com"},{projectId:"altro",databaseURL:"https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app"}]){
     vm.runInNewContext(read("community.js"),{window:{CSF_COMMUNITY_CONFIG:{enabled:true,firebase}}});
