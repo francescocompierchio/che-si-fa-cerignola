@@ -18,6 +18,7 @@ from html import escape, unescape
 from zoneinfo import ZoneInfo
 import stato_raccolta
 import capodanno
+import festivita
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -656,6 +657,12 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     if "capodanno" in t and "pranzo" in t:
         return "Sagre & Food"
 
+    if festivita.TEMA.search(t) and re.search(r"\b(?:pranzo|cena|cenone|brunch)\b", t):
+        return "Sagre & Food"
+    if festivita.TEMA.search(t) and re.search(r"\b(?:dj set|party|serata)\b", t):
+        return "Locali & Serate"
+    if festivita.TEMA.search(t) and re.search(r"\b(?:presepe|befana|tombolata|villaggio|laboratorio)\b", t):
+        return "Famiglie & Bambini"
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
@@ -1677,6 +1684,54 @@ def evento_capodanno_documentato(testo, url, fonte, poster=""):
     return [ev] if ev else []
 
 
+def evento_festivita_documentato(testo, url, fonte, poster=""):
+    """Richiede un singolo annuncio, data esplicita e sede documentata."""
+    testo=re.sub(r"\s+"," ",testo or "").strip()
+    if re.search(r"\b(?:annullat[oa]|rinviat[oa]|si è svolto|si è concluso|evento passato|matrimonio)\b",testo,re.I):
+        return []
+    date=festivita.date_documentate(testo,fonte["anno_festivita"])
+    if len(date)!=1:
+        return []
+    d=date[0]
+    sede=fonte.get("sede")
+    comune=_comune_nel_testo(testo)
+    if sede and comune not in ("",None,"Cerignola"):
+        return []
+    if not sede:
+        if comune!="Cerignola":
+            return []
+        nomi=[r["nome"] for r in capodanno.registro() if any(re.search(r"(?<!\w)"+re.escape(a)+r"(?!\w)",testo,re.I) for a in r["alias"])]
+        if len(nomi)==1:
+            sede=nomi[0]
+        else:
+            sede=estrai_luogo_documentato(testo,"Cerignola")
+    if not _luogo_utilizzabile(sede):
+        return []
+    titolo=festivita.titolo_pasto(testo,d)
+    if not titolo:
+        for pat, label in ((r"\bpresepe\s+vivente\b","Presepe vivente"),(r"\bmercatin[oi]\b","Mercatini natalizi"),(r"\btombolat[ae]\b","Tombolata natalizia"),(r"\b(?:befana|epifania)\b","Festa dell'Epifania"),(r"\bvillaggio\b","Villaggio di Natale"),(r"\blaborator[io]+\b","Laboratorio natalizio"),(r"\bconcert[oi]\b","Concerto natalizio"),(r"\bluminarie\b","Accensione delle luminarie")):
+            if re.search(pat,testo,re.I):
+                titolo=label
+                break
+    if not titolo:
+        return []
+    titolo+=" – "+sede
+    orari=list(dict.fromkeys(re.findall(r"\b(?:ore|h)\s*([01]?\d|2[0-3])[:.]([0-5]\d)\b",testo,re.I)))
+    prezzi=list(dict.fromkeys(re.findall(r"\b\d{1,3}(?:[.,]\d{2})?\s*€",testo)))
+    raw={"titolo":titolo,"citta":"Cerignola","luogo":sede,"indirizzoMappa":sede+", Cerignola","dataInizio":d,"dataFine":d,"dataTesto":formatta_data_italiano(d,d)+(f" · Ore {int(orari[0][0]):02d}:{orari[0][1]}" if len(orari)==1 else ""),"costo":prezzi[0] if len(prezzi)==1 else "Consulta la fonte","descrizione":testo[:220],"fonteUrl":url,"locandinaUrl":poster}
+    ev=normalizza_e_valida_evento(raw,fonte_curata_eventi=True)
+    return [ev] if ev else []
+
+
+def eventi_stagionali_documentati(testo,url,fonte,poster=""):
+    eventi=[]
+    if fonte.get("anno_capodanno"):
+        eventi.extend(evento_capodanno_documentato(testo,url,fonte,poster))
+    if fonte.get("anno_festivita"):
+        eventi.extend(evento_festivita_documentato(testo,url,fonte,poster))
+    return eventi
+
+
 def analizza_capodanno_pubblico(session, html, url, fonte):
     soup = BeautifulSoup(html or "", "html.parser")
     for tag in soup(["script","style","nav","footer","header","aside"]):
@@ -1689,31 +1744,32 @@ def analizza_capodanno_pubblico(session, html, url, fonte):
             continue
         testo = block.get_text(" ",strip=True)
         if 30 <= len(testo) <= 3500:
-            eventi.extend(evento_capodanno_documentato(testo,url,fonte))
+            eventi.extend(eventi_stagionali_documentati(testo,url,fonte))
     if not blocks:
         cont = soup.find("main") or soup.body or soup
         testo = cont.get_text(" ",strip=True)
         if len(testo)<=3500:
-            eventi.extend(evento_capodanno_documentato(testo,url,fonte))
+            eventi.extend(eventi_stagionali_documentati(testo,url,fonte))
     # OCR per singola immagine, senza fondere locandine di date diverse.
     immagini = []
     for img in soup.find_all("img",limit=100):
         src = urljoin(url,str(img.get("data-src") or img.get("src") or ""))
         hint = " ".join(str(img.get(k,"")) for k in ("alt","title","src","data-src"))
-        if urlparse(src).scheme in ("http","https") and re.search(r"capodanno|cenone|veglione|silvestro|new.?year|31.?12|locandina|menu",hint,re.I):
+        if urlparse(src).scheme in ("http","https") and (re.search(r"capodanno|cenone|veglione|silvestro|new.?year|31.?12|locandina|menu",hint,re.I) or (fonte.get("anno_festivita") and festivita.LINK.search(hint))):
             immagini.append(src)
     for meta in soup.select('meta[property="og:image"]'):
-        if capodanno.TEMA.search((soup.title.get_text(" ",strip=True) if soup.title else "")+" "+url):
+        titolo_pagina=(soup.title.get_text(" ",strip=True) if soup.title else "")+" "+url
+        if capodanno.TEMA.search(titolo_pagina) or (fonte.get("anno_festivita") and festivita.TEMA.search(titolo_pagina)):
             immagini.append(urljoin(url,str(meta.get("content") or "")))
     for img in list(dict.fromkeys(immagini))[:3]:
         if urlparse(img).scheme not in ("http","https"):
             continue
         testo = estrai_testo_locandine(session,'<article><img src="'+escape(img,quote=True)+'"></article>',max_immagini=1,base_url=url)
-        eventi.extend(evento_capodanno_documentato(testo,url,fonte,img))
+        eventi.extend(eventi_stagionali_documentati(testo,url,fonte,img))
     # Preferire la scheda dotata di locandina, ma conservare solo un evento per sede e giorno.
     unici = {}
     for ev in eventi:
-        k=(ev["luogo"].casefold(),ev["dataInizio"])
+        k=(ev["luogo"].casefold(),ev["dataInizio"],ev["titolo"].casefold())
         if k not in unici or ev.get("locandinaUrl"):
             unici[k]=ev
     return list(unici.values())
@@ -1740,7 +1796,8 @@ def raccogli_capodanno_sito(session, fonte):
             link=urljoin(r.url or url,a["href"]).split("#")[0]
             if not _host_appartiene(link,fonte["dominio"]) or urlparse(link).scheme not in ("http","https"):
                 continue
-            if re.search(r"capodanno|cenone|veglione|silvestro|new.?year",link+" "+a.get_text(" ",strip=True),re.I):
+            hint=link+" "+a.get_text(" ",strip=True)
+            if re.search(r"capodanno|cenone|veglione|silvestro|new.?year",hint,re.I) or (fonte.get("anno_festivita") and festivita.LINK.search(hint)):
                 if not _contiene_anno_passato(urlparse(link).path):
                     links.append(link)
         for link in list(dict.fromkeys(links))[:3]:
@@ -1794,6 +1851,8 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             if fonte.get("anno_capodanno") and not capodanno.TEMA.search(titolo + " " + descrizione):
                 continue
+            if fonte.get("anno_festivita") and not festivita.TEMA.search(titolo + " " + descrizione):
+                continue
             if fonte.get("nightlife") and not indizi_movida(titolo + " " + descrizione):
                 continue
             classificati.append((punteggio, item, titolo, link, descrizione))
@@ -1824,7 +1883,7 @@ def raccogli_da_feed_social(session, fonte):
             # La pagina intermedia di Google News non è la fonte originale.
             if _host_appartiene(url_finale, "news.google.com"):
                 html_pagina = ""
-            if fonte.get("anno_capodanno"):
+            if fonte.get("anno_capodanno") or fonte.get("anno_festivita"):
                 # Non pubblicare da snippet Google News senza fonte primaria leggibile.
                 if html_pagina:
                     eventi.extend(analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte))
@@ -2888,10 +2947,21 @@ def esegui_aggiornamento():
 
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
-    dirette_capodanno, rss_capodanno = capodanno.fonti(oggi_dt().date())
+    oggi_stagionale=oggi_dt().date()
+    dirette_capodanno, rss_capodanno = capodanno.fonti(oggi_stagionale)
+    anno_festivita=festivita.stagione(oggi_stagionale)
+    if anno_festivita is not None:
+        if not dirette_capodanno:
+            # Dal 2 al 6 gennaio restano attive le stesse strutture, senza Capodanno.
+            dirette_capodanno,_=capodanno.fonti(oggi_stagionale.replace(day=1))
+            for fonte in dirette_capodanno:
+                fonte.pop("anno_capodanno",None)
+        for fonte in dirette_capodanno:
+            fonte["anno_festivita"]=anno_festivita
+    rss_festivita=festivita.fonti(oggi_stagionale,capodanno.registro())
     compiti = (
         [(raccogli_capodanno_sito, fonte) for fonte in dirette_capodanno]
-        + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno]
+        + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
         + [(raccogli_da_feed_social, fonte) for fonte in fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
@@ -2972,6 +3042,7 @@ def esegui_aggiornamento():
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),
         "registroOrganizzatoriCerignola": len(registro_cerignola()),
         "registroCapodanno": len(capodanno.registro()),
+        "festivitaCerignola": sum(1 for e in lista_finale if e.get("citta")=="Cerignola" and festivita.TEMA.search(e.get("titolo","")) and e.get("dataFine","")>=oggi_iso() and e.get("dataInizio","")<=(oggi_dt()+timedelta(days=45)).strftime("%Y-%m-%d")),
         "capodannoCerignola": sum(1 for e in lista_finale if e.get("citta")=="Cerignola" and capodanno.TEMA.search(e.get("titolo","")) and e.get("dataInizio","").endswith(("12-31","01-01"))),
         "registroLocaliMovida": {c:len(v) for c,v in registro_locali_movida().items()},
         "movidaProssimoWeekend": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e) and prossimo_weekend_movida(e))),

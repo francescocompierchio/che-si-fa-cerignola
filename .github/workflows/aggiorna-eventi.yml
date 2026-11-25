@@ -14,6 +14,8 @@ on:
       - "fonti_capodanno.json"
       - "capodanno.py"
       - "test_capodanno.py"
+      - "festivita.py"
+      - "test_festivita.py"
       - "test_fonti_cerignola.py"
       - "test_stato_raccolta.py"
       - "genera_pagine_eventi.js"
@@ -116,6 +118,8 @@ jobs:
           print(f"- Fonti da rivedere: {', '.join(salute.get('fontiDaRivedere', [])) or 'nessuna'}")
           if not report.get("serateCerignola", 0):
               print("**Attenzione:** nessuna serata automatica a Cerignola nell'archivio.")
+          print("### Festivita Cerignola")
+          print(f"- Appuntamenti festivi in archivio nei prossimi 45 giorni: {report.get('festivitaCerignola', 0)}")
           print("### Capodanno Cerignola")
           print(f"- Strutture censite: {report.get('registroCapodanno', 0)}")
           print(f"- Appuntamenti confermati: {report.get('capodannoCerignola', 0)}")
