@@ -57,11 +57,11 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
-    {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
+    {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "browser_pubblico": True, "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
     {"nome": "Nightz Divine Club", "url": "https://nightz.it/locali/divine-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome": "Nightz Aphelion Club", "url": "https://nightz.it/locali/aphelion-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome": "Nightz Vyon Club", "url": "https://nightz.it/locali/vyon-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome":"TicketSms Idol Club Bisceglie","url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
+    {"nome":"TicketSms Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
     {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -2054,6 +2054,59 @@ def esplora_lineup_atlas(session, fonte):
     return []
 
 
+def calendario_ha_link_movida(html_text, url, dominio, tipo):
+    soup = BeautifulSoup(html_text,"html.parser")
+    pattern = r"^/eventi/[^/]+/?$" if tipo == "nightz" else r"^/(?:it/)?event/[^/]+/?$"
+    return any(_host_appartiene(urljoin(url,a["href"]),dominio) and re.fullmatch(pattern,urlparse(urljoin(url,a["href"])).path,re.I) for a in soup.find_all("a",href=True))
+
+
+def render_calendario_pubblico(session, url, html_text, dominio, tipo):
+    """Fallback browser normale per calendari con contenuti JS.
+    Non usa login, proxy, stealth, CAPTCHA o accessi a endpoint privati.
+    Rispetta robots.txt e non riprova pagine che mostrano un blocco esplicito."""
+    from urllib.robotparser import RobotFileParser
+    if not _host_appartiene(url,dominio):
+        return "", "dominio non ammesso"
+    title = BeautifulSoup(html_text,"html.parser").title
+    if title and re.search(r"just a moment|access denied|attention required|captcha|verify you are human", title.get_text(" ",strip=True),re.I):
+        return "", "blocco esplicito"
+    pr = urlparse(url)
+    try:
+        robots = session.get(f"{pr.scheme}://{pr.netloc}/robots.txt",timeout=(3,5),allow_redirects=False)
+        if robots.status_code == 200:
+            rp = RobotFileParser()
+            rp.parse(robots.text.splitlines())
+            if not rp.can_fetch("*",url):
+                return "", "robots.txt non consente la pagina"
+        elif robots.status_code not in (404,410):
+            return "", f"robots HTTP {robots.status_code}"
+    except requests.RequestException:
+        return "", "robots.txt non verificabile"
+    try:
+        from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(channel="chrome",headless=True)
+            try:
+                page = browser.new_page()
+                page.route("**/*",lambda route: route.abort() if route.request.resource_type in {"image","media","font"} else route.continue_())
+                response = page.goto(url,wait_until="domcontentloaded",timeout=12000)
+                if not response or response.status != 200 or not _host_appartiene(page.url,dominio):
+                    return "", "navigazione non riuscita"
+                if re.search(r"just a moment|access denied|attention required|captcha|verify you are human",page.title(),re.I):
+                    return "", "blocco esplicito"
+                selettore = 'a[href*="/eventi/"]' if tipo=="nightz" else 'a[href*="/event/"]'
+                try:
+                    page.wait_for_selector(selettore,state="attached",timeout=7000)
+                except PlaywrightTimeout:
+                    pass
+                rendered = page.content()
+                return rendered, "ok" if calendario_ha_link_movida(rendered,url,dominio,tipo) else "nessuna scheda dopo rendering"
+            finally:
+                browser.close()
+    except Exception as exc:
+        return "", "browser non disponibile: "+type(exc).__name__
+
+
 def raccogli_da_portale_generico(session, fonte):
     eventi = []
     nome = fonte["nome"]
@@ -2072,7 +2125,18 @@ def raccogli_da_portale_generico(session, fonte):
             print(f"{nome}: HTTP {r.status_code}")
             return []
         r.encoding = r.apparent_encoding or "utf-8"
-        soup = BeautifulSoup(r.text, "html.parser")
+        html_calendario = r.text
+        tipo_browser = "nightz" if fonte.get("nightz") else "ticketsms" if fonte.get("ticketsms") else ""
+        if tipo_browser and not calendario_ha_link_movida(html_calendario,url,dominio,tipo_browser):
+            # Il budget browser è limitato ai due calendari principali;
+            # le altre fonti rimangono leggere, senza aprire decine di browser.
+            if fonte.get("browser_pubblico"):
+                rendered, esito = render_calendario_pubblico(session,url,html_calendario,dominio,tipo_browser)
+                registra_statistica_fonte(nome, renderingBrowser=esito)
+                print(f"{nome}: rendering pubblico: {esito}")
+                if rendered:
+                    html_calendario = rendered
+        soup = BeautifulSoup(html_calendario, "html.parser")
 
         if fonte.get("scheda_diretta"):
             eventi = analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata)

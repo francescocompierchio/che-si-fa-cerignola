@@ -49,7 +49,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y tesseract-ocr tesseract-ocr-ita
-          pip install requests beautifulsoup4 lxml pillow pytesseract
+          pip install requests beautifulsoup4 lxml pillow pytesseract playwright
+          google-chrome --version || echo "Chrome non disponibile: il fallback browser resta disattivato"
 
       - name: Ripristina memoria delle fonti
         uses: actions/cache/restore@v4

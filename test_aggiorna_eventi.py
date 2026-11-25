@@ -9,6 +9,14 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_link_calendari_movida(self):
+        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
+        self.assertFalse(crawler.calendario_ha_link_movida('<a href="/eventi/">Eventi</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
+        self.assertFalse(crawler.calendario_ha_link_movida('<a href="https://example.org/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
+        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/it/event/Golden-28-11-2026">Golden</a>', "https://www.ticketsms.it/it/location/Idol-Club", "ticketsms.it", "ticketsms"))
+    def test_browser_non_aggira_blocchi(self):
+        self.assertEqual(crawler.render_calendario_pubblico(None,"https://nightz.it/eventi/","<title>Just a moment...</title>","nightz.it","nightz"),("","blocco esplicito"))
+
     def test_xceed_jsonld_data_sede_e_categoria(self):
         import json
         dt = crawler.oggi_dt() + crawler.timedelta(days=3)
