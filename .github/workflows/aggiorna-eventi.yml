@@ -18,6 +18,8 @@ on:
       - "test_festivita.py"
       - "ricorrenze.py"
       - "discovery_locale.py"
+      - "apprendimento.py"
+      - "test_apprendimento.py"
       - "test_discovery_locale.py"
       - "test_ricorrenze.py"
       - "test_fonti_cerignola.py"
@@ -144,6 +146,10 @@ jobs:
               print(f"- {fonte}: {count}")
           print(f"- Locandine in archivio: {report.get('locandineInArchivio', 0)}")
           print(f"- Fonti con candidati pertinenti ma nessun evento estratto: {', '.join(report.get('fontiConCandidatiNonEstratti', [])) or 'nessuna'}")
+          appr = report.get("apprendimento", {})
+          print("### Apprendimento operativo")
+          print(f"- Cicli di apprendimento: {appr.get('cicli', 0)}")
+          print(f"- Copertura Cerignola prossimi 14 giorni: {appr.get('lacune14Giorni', {})}")
           print("### Esito interrogazione fonti")
           print(f"- Fonti che hanno restituito eventi: {report.get('fontiConEventi', 0)}")
           print(f"- Fonti senza eventi: {len(report.get('fontiSenzaEventi', []))}")

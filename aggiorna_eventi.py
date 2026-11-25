@@ -21,6 +21,7 @@ import capodanno
 import festivita
 import ricorrenze
 import discovery_locale
+import apprendimento
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -2921,7 +2922,7 @@ def _scrivi_json_atomico(percorso, dati):
             os.remove(temporaneo)
 
 
-def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI):
+def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI, risultati_per_fonte=None):
     """Parallelismo limitato fra domini; ogni dominio mantiene richieste sequenziali.
 
     Ogni gruppo ha una Session HTTP indipendente. I risultati sono restituiti
@@ -2957,6 +2958,9 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI):
     with ThreadPoolExecutor(max_workers=max(1, min(MAX_WORKER_FONTI, max_worker))) as pool:
         for blocco in pool.map(raccogli_gruppo, gruppi.values()):
             risultati.extend(blocco)
+    if risultati_per_fonte is not None:
+        for indice,eventi in risultati:
+            risultati_per_fonte[compiti[indice][1]["nome"]]=eventi
     return [evento for _, eventi in sorted(risultati, key=lambda x: x[0]) for evento in eventi]
 
 
@@ -3047,16 +3051,15 @@ def esegui_aggiornamento():
     percorso_stato = os.path.join(".csf-state", "fonti.json")
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
+    compiti += [(raccogli_da_feed_social, fonte) for fonte in apprendimento.fonti(memoria,manuali_admin+precedenti_auto,oggi_stagionale)]
     compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
     for _, fonte in compiti:
         registra_statistica_fonte(fonte["nome"], prioritaria=bool(fonte.get("prioritaria") or fonte.get("citta_default")=="Cerignola" or fonte.get("solo_cerignola")))
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
-    nuovi_raccolti = raccogli_fonti_parallele(compiti)
-    memoria = stato_raccolta.aggiorna(memoria, STATISTICHE_FONTI, now)
-    os.makedirs(".csf-state", exist_ok=True)
-    _scrivi_json_atomico(percorso_stato, memoria)
+    risultati_per_fonte={}
+    nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
     precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]
@@ -3105,6 +3108,12 @@ def esegui_aggiornamento():
     if not isinstance(lista_finale, list) or any(not isinstance(e, dict) for e in lista_finale):
         raise RuntimeError("Controllo integrità fallito: archivio eventi non valido")
     _scrivi_json_atomico("eventi.json", lista_finale)
+    for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto,lista_finale,sono_duplicati).items():
+        registra_statistica_fonte(nome,**dati)
+    memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
+    stato_apprendimento=apprendimento.aggiorna(memoria,lista_finale,oggi_stagionale,now)
+    os.makedirs(".csf-state",exist_ok=True)
+    _scrivi_json_atomico(percorso_stato,memoria)
 
     eventi_per_fonte = Counter(
         (urlparse(str(e.get("fonteUrl") or "")).hostname or "fonte non specificata").lower()
@@ -3121,6 +3130,7 @@ def esegui_aggiornamento():
         "totaleContenuti": len(lista_finale),
         "controlloStato": controllo_stato,
         "saluteFonti": stato_raccolta.riepilogo(memoria, pause),
+        "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"]},
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),

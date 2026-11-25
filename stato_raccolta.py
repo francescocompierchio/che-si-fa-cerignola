@@ -22,7 +22,7 @@ def pianifica(compiti, memoria, now, forza=False):
         else:
             attivi.append(task)
     # Priorità alle fonti produttive e stagionali; ordine stabile a parità.
-    attivi.sort(key=lambda t: (not bool(t[1].get("prioritaria") or t[1].get("solo_cerignola") or t[1].get("citta_default")=="Cerignola"), -memoria.get("fonti",{}).get(t[1]["nome"],{}).get("produttivita",0)))
+    attivi.sort(key=lambda t: (not bool(t[1].get("prioritaria") or t[1].get("solo_cerignola") or t[1].get("citta_default")=="Cerignola"), -memoria.get("fonti",{}).get(t[1]["nome"],{}).get("valoreAppreso",memoria.get("fonti",{}).get(t[1]["nome"],{}).get("produttivita",0))))
     return attivi, pause
 
 def aggiorna(memoria, diagnostica, now):
@@ -42,7 +42,10 @@ def aggiorna(memoria, diagnostica, now):
             pausa = min(14400, 3600 * 2 ** min((vuoti-8)//4,2))
         utili = int(dati.get("eventiEstratti", 0))
         media = round(0.7 * prima.get("produttivita", utili) + 0.3 * utili, 2)
-        fonti[nome] = {"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
+        # Il punteggio premia novità effettivamente pubblicate e copertura locale.
+        valore = min(20, 0.15*dati.get("eventiUtili",0)+dati.get("novitaUtili",0)+2*dati.get("novitaCerignola",0)+3*dati.get("nuoveSerateCerignola",0))
+        appreso=round(0.8*prima.get("valoreAppreso",valore)+0.2*valore,3)
+        fonti[nome] = {"valoreAppreso":appreso,"novitaUtili":dati.get("novitaUtili",0),"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
                        "blocchiConsecutivi": serie, "cicliVuoti": vuoti,
                        "produttivita": media, "prossimoTentativo": now + pausa if pausa else 0,
                        "tentativi": prima.get("tentativi", 0) + 1}
