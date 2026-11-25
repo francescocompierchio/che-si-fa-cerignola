@@ -92,7 +92,9 @@
     "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dream%20Catcher.mp3"
   }
 ];
-  const key="csf_music_v1",lastKey="csf_music_last_v1";
+  const key="csf_music_v1",lastKey="csf_music_last_v1",resumeKey="csf_music_resume_v1";
+  let resumePoint=null;
+  try{resumePoint=JSON.parse(sessionStorage.getItem(resumeKey)||"null");}catch(_){}
   let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,credits=null,started=false,blocked=false,attempt=0;
   const Audio=window.AudioContext||window.webkitAudioContext;
   let available=tracks.filter(t=>["USUAN1200054","USUAN1300033","USUAN1100757","USUAN2400001","USUAN1800019"].includes(t.id)),manifestReady=true,mode=null,ctx=null,sourceNode=null,buffer=null,gain=null;
@@ -248,11 +250,13 @@
       for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
       if(bag[0].id===last&&bag.length>1)[bag[0],bag[1]]=[bag[1],bag[0]];
     }
+    if(resumePoint){const index=bag.findIndex(t=>t.id===resumePoint.id);if(index>=0){const chosen=bag.splice(index,1)[0];bag.unshift(chosen);}else resumePoint=null;}
     track=bag.shift();last=track.id;
     blocked=false;
     audio.preload="auto";audio.autoplay=enabled&&!document.hidden;
     audio.src=new URL("audio/"+track.id+".mp3",base).href;audio.loop=false;
     audio.volume=.20;
+    if(resumePoint?.id===track.id){const position=Number(resumePoint.time)||0;resumePoint=null;audio.addEventListener("loadedmetadata",()=>{if(Number.isFinite(audio.duration)&&position>0&&position<audio.duration-1)try{audio.currentTime=position;}catch(_){}},{once:true});}
     render();
   }
   function render(){
@@ -320,7 +324,9 @@
     audio.addEventListener("playing",()=>{if(mode!=="recorded"||!enabled||document.hidden){audio.pause();return;}started=true;blocked=false;failed=0;try{localStorage.setItem(lastKey,track.id);}catch(_){}render();});
     for(const ev of ["pause","canplay","waiting"])audio.addEventListener(ev,render);
     audio.addEventListener("canplay",()=>{if(enabled&&mode==="recorded"&&!blocked&&audio.paused&&!document.hidden)play();});
-    audio.addEventListener("ended",()=>{if(enabled&&mode==="recorded"){choose();play();}else render();});
+    const rememberPosition=()=>{if(mode==="recorded"&&track&&Number.isFinite(audio.currentTime)&&!audio.ended){try{sessionStorage.setItem(resumeKey,JSON.stringify({id:track.id,time:audio.currentTime}));}catch(_){}}};
+    audio.addEventListener("timeupdate",rememberPosition);
+    audio.addEventListener("ended",()=>{try{sessionStorage.removeItem(resumeKey);}catch(_){}if(enabled&&mode==="recorded"){choose();play();}else render();});
     audio.addEventListener("error",()=>{
       if(!enabled||mode!=="recorded"||!track)return;
       attempt++;
@@ -338,7 +344,7 @@
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
     document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&(manifestReady||mode))play();});
-    window.addEventListener("pagehide",pause);
+    window.addEventListener("pagehide",()=>{rememberPosition();pause();});
     window.addEventListener("pageshow",()=>{if(enabled&&(manifestReady||mode))play();});
     render();
     // Avvio immediato della sorgente locale già verificata, senza fetch preliminare.

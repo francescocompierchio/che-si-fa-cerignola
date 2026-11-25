@@ -1,0 +1,28 @@
+name: Genera icone Android PNG
+on:
+  push:
+    branches: [main]
+    paths: ['genera_icone.py', '.github/workflows/icone-png.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  icone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install Pillow
+      - run: python genera_icone.py
+      - name: Pubblica PNG e manifest insieme
+        run: |
+          git config user.name "CSF icons"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add csf-icon-192-v3.png csf-icon-512-v3.png csf-maskable-512-v3.png manifest.json index.html sw.js .github/workflows/test-frontend.yml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Pubblica icone Android PNG quadrate e maskable"
+          git pull --rebase origin main
+          git push origin HEAD:main
