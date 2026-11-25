@@ -44,6 +44,26 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:foggia-2026-11-28-acquolina-in-cena-spettacolo@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Acquolina in Cena Spettacolo – Foggia
+LOCATION:Mirage Village\, Via Camporeale 48\, 71122 Foggia
+DESCRIPTION:Sab 28 Nov 2026 · Cena spettacolo\nCena spettacolo con lo show
+ man Antonio Di Pietro\, DJ set Floyd e Michele Luciani\, percussioni live 
+ Diego Pellicano. In collaborazione con Enjoy e DBA Events. Info e prenotaz
+ ioni: 320 0203517 · 331 4114663. Orario e prezzo non indicati nella locan
+ dina: contattare gli organizzatori. Fonte: reel Instagram di eventi_enjoy 
+ segnalato dall’utente.\nAccesso: Non indicato · Contattare il locale\nV
+ erifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompier
+ chio.github.io/che-si-fa-cerignola/eventi/foggia-2026-11-28-acquolina-in-c
+ ena-spettacolo.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-28-acquolina-in-cena-spettacolo.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:manfredonia-2026-11-05-lisistrata-lella-costa@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261105
