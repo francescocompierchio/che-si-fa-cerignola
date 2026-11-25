@@ -57,7 +57,7 @@
 })();
 
 
-// Sottofondo originale CSF: lounge sintetizzato localmente, volume contenuto.
+// Sottofondo originale CSF: Luci della sera, melodic deep house stereo.
 // Nessuna musica scaricata, servizio esterno, cookie o richiesta di rete.
 (function(){
   const Audio=window.AudioContext||window.webkitAudioContext;
@@ -65,55 +65,97 @@
   let enabled=true,ctx=null,source=null,master=null,buffer=null,button=null;
   try{enabled=localStorage.getItem(key)!=="off";}catch(_){}
   function loop(context){
-    const rate=22050,beat=60/98,frames=Math.round(32*beat*rate);
-    const out=context.createBuffer(1,frames,rate),data=out.getChannelData(0);
+    // "Luci della sera": 16 battute, 114 BPM, piano elettrico, pad stereo,
+    // bassline morbida, batteria house e melodia originale a due frasi.
+    const rate=22050,beat=60/114,frames=Math.round(64*beat*rate);
+    const out=context.createBuffer(2,frames,rate),L=out.getChannelData(0),R=out.getChannelData(1);
     const freq=m=>440*Math.pow(2,(m-69)/12),tau=2*Math.PI;
-    function tone(at,duration,note,amp,kind){
+    function mix(i,value,pan=0){
+      i%=frames;
+      L[i]+=value*(1-.35*pan);R[i]+=value*(1+.35*pan);
+    }
+    function tone(at,duration,note,amp,kind,pan=0){
       const offset=Math.round(at*rate),n=Math.round(duration*rate),f=freq(note);
       for(let i=0;i<n;i++){
-        const x=i/rate;
+        const x=i/rate,phase=tau*f*x;
         let env,val;
         if(kind==="pad"){
-          env=Math.min(1,x/.22)*Math.min(1,(duration-x)/.30);
-          val=.80*Math.sin(tau*f*x)+.14*Math.sin(tau*(f*2.002)*x)+.06*Math.sin(tau*f*.997*x);
+          env=Math.min(1,x/.24)*Math.min(1,(duration-x)/.5);
+          val=.57*Math.sin(phase)+.20*Math.sin(phase*1.003)+.12*Math.sin(phase*.997)+.08*Math.sin(phase*2);
         }else if(kind==="bass"){
-          env=Math.min(1,x/.018)*Math.exp(-x*3.2)*Math.min(1,(duration-x)/.05);
-          val=.85*Math.sin(tau*f*x)+.15*Math.sin(tau*f*2*x);
+          env=Math.min(1,x/.012)*Math.exp(-x*2.7)*Math.min(1,(duration-x)/.045);
+          val=.75*Math.sin(phase)+.19*Math.sin(phase*2)+.06*Math.sin(phase*3);
+        }else if(kind==="piano"){
+          env=Math.min(1,x/.009)*Math.exp(-x*2.9)*Math.min(1,(duration-x)/.09);
+          val=.64*Math.sin(phase)+.23*Math.sin(phase*2.001)*Math.exp(-x*3)+.10*Math.sin(phase*3.003)*Math.exp(-x*5)+.03*Math.sin(phase*5.01)*Math.exp(-x*12);
         }else{
-          env=Math.min(1,x/.012)*Math.exp(-x*6)*Math.min(1,(duration-x)/.06);
-          val=.70*Math.sin(tau*f*x)+.23*Math.sin(tau*f*2*x)+.07*Math.sin(tau*f*3*x);
+          env=Math.min(1,x/.035)*Math.exp(-x*2.1)*Math.min(1,(duration-x)/.13);
+          val=.71*Math.sin(phase+.22*Math.sin(tau*5*x))+.21*Math.sin(phase*2)+.08*Math.sin(phase*3)*Math.exp(-x*2);
         }
-        data[(offset+i)%frames]+=amp*env*val;
+        mix(offset+i,amp*env*val,pan);
       }
     }
-    const chords=[[53,57,60,64],[50,53,57,60],[48,52,55,59],[48,55,62,64]];
-    const bass=[38,34,41,36];
-    for(let bar=0;bar<8;bar++){
-      const n=bar%4,at=bar*4*beat;
-      chords[n].forEach(note=>tone(at,4*beat+.14,note,.038,"pad"));
-      for(const step of [0,1.5,2.5,3.5])tone(at+step*beat,.46*beat,bass[n]+(step===2.5?12:0),.15,"bass");
-      [0.5,1.75,2.5,3.25].forEach((step,j)=>tone(at+step*beat,.88*beat,chords[n][(j+bar)%4]+12,.040,"pluck"));
+    // Am9, Fmaj7, Cmaj9, G6: accordi aperti e bassi coerenti.
+    const chords=[[57,60,64,67,71],[53,57,60,64],[55,60,64,67,74],[55,59,62,64,69]];
+    const bass=[45,41,36,43];
+    const phrases=[
+      [[.5,76,.8],[1.5,79,.65],[2.5,81,1.15]],
+      [[0,79,.7],[1,76,.8],[2.5,74,1.2]],
+      [[.5,76,.6],[1.25,79,.55],[2,83,1.45]],
+      [[0,81,.7],[1.5,79,.7],[2.75,74,.95]],
+      [[.5,76,.8],[1.5,79,.65],[2.5,84,1.15]],
+      [[0,81,.7],[1,79,.8],[2.5,76,1.2]],
+      [[.5,74,.6],[1.25,76,.55],[2,79,1.45]],
+      [[0,76,.7],[1.5,74,.6],[2.5,72,1.35]]
+    ];
+    for(let bar=0;bar<16;bar++){
+      const n=bar%4,at=bar*4*beat,chord=chords[n];
+      chord.forEach((note,j)=>tone(at,4*beat+.25,note,.026,"pad",j%2?.65:-.65));
+      for(const step of [.5,1.5,2.5,3.25]){
+        tone(at+step*beat,.40*beat,bass[n]+(step===3.25?12:0),.18,"bass");
+      }
+      for(const step of [0,1.75,3]){
+        chord.slice(0,4).forEach((note,j)=>tone(at+step*beat+j*.009,1.35*beat,note,.044,"piano",j%2?.55:-.55));
+      }
+      for(const [step,note,duration] of phrases[bar%8]){
+        tone(at+step*beat,duration*beat,note,.095,"lead",-.12);
+        tone(at+(step+.75)*beat,duration*beat,note,.023,"lead",.8);
+      }
     }
     let seed=12571;
     function noise(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296*2-1;}
-    for(let step=0;step<64;step++){
+    for(let step=0;step<128;step++){
       const at=Math.round(step*.5*beat*rate);
-      if(step%4===0||step%4===2){
-        for(let i=0;i<rate*.24;i++){
-          const x=i/rate,phase=tau*(50*x+38*(1-Math.exp(-30*x))/30);
-          data[(at+i)%frames]+=.17*Math.min(1,x/.006)*Math.exp(-x*17)*Math.sin(phase);
+      if(step%2===0){
+        for(let i=0;i<rate*.29;i++){
+          const x=i/rate,phase=tau*(47*x+54*(1-Math.exp(-36*x))/36);
+          mix(at+i,.23*Math.min(1,x/.005)*Math.exp(-x*15)*Math.sin(phase));
         }
       }
-      const off=step%2===1;
-      if(off||step%8===4){
-        for(let i=0;i<rate*.065;i++){
-          const x=i/rate;
-          data[(at+i)%frames]+=(off?.019:.013)*Math.exp(-x*64)*noise();
+      if(step%4===2){
+        let prev=0;
+        for(let i=0;i<rate*.12;i++){
+          const x=i/rate,z=noise(),high=z-prev*.78;prev=z;
+          mix(at+i,.037*high*Math.exp(-x*36)*(1+.25*Math.sin(tau*34*x)),.15);
+        }
+      }
+      if(step%2===1||step%8===6){
+        let prev=0;
+        for(let i=0;i<rate*.075;i++){
+          const x=i/rate,z=noise(),high=z-prev;prev=z;
+          mix(at+i,.023*high*Math.exp(-x*58),step%4===1?-.65:.65);
         }
       }
     }
-    // Headroom per evitare clipping anche quando si sommano gli strumenti.
-    for(let i=0;i<frames;i++)data[i]=Math.max(-.92,Math.min(.92,data[i]));
+    // Compressione morbida, senza clipping; piccolo crossfade sulla cucitura.
+    for(let i=0;i<frames;i++){
+      L[i]=Math.tanh(L[i]*1.3)*.85;R[i]=Math.tanh(R[i]*1.3)*.85;
+    }
+    const fade=128;
+    for(let i=0;i<fade;i++){
+      const g=i/fade;
+      L[i]*=g;R[i]*=g;L[frames-1-i]*=g;R[frames-1-i]*=g;
+    }
     return out;
   }
   function running(){return Boolean(enabled&&ctx?.state==="running"&&source&&!document.hidden);}
