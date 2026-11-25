@@ -14,6 +14,8 @@ on:
     paths:
       - "aggiorna_eventi.py"
       - "radar_natura.py"
+      - "radar_food.py"
+      - "test_radar_food.py"
       - "test_radar_natura.py"
       - "esperienze.json"
       - "stato_raccolta.py"

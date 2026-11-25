@@ -23,6 +23,7 @@ import ricorrenze
 import discovery_locale
 import apprendimento
 import radar_natura
+import radar_food
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -33,6 +34,7 @@ HEADERS = {
 }
 
 DOMINI_AUTO = (
+    "comune.trinitapoli.bt.it", "sagradelcarciofotrinitapoli.it", "eventivicino.it", "ilborghista.it", "lovojo.it",
     "visitmonticchio.it", "caifoggia.it", "parcoofanto.it", "dauniatur.it", "csvfoggia.it", "oasilagosalso.it", "parcoaltamurgia.it", "pugliarte.it", "coopcommargherita.wixsite.com",
     "canosaweb.it", "minervinoviva.it", "volontariperminervino.it", "andiamoinpuglia.it",
     "news.google.com", "iltaccodibacco.it", "viaggiareinpuglia.it",
@@ -1129,6 +1131,14 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     # Un articolo del febbraio 2026 non può documentare il Carnevale 2027.
     if (raw.get("fonteUrl") or "").rstrip("/") == "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova":
         return None
+    # La Pro Loco Canosa ha annunciato l'edizione 2026 per l'11-13 dicembre.
+    if (raw.get("citta")=="Canosa di Puglia" and str(raw.get("dataInizio") or "").startswith("2026-12-")
+            and re.search(r"sagra.*(?:sfogliatella|sfeggh)",str(raw.get("titolo") or ""),re.I)):
+        raw=dict(raw,titolo="Sagra della Sfogliatella – 3ª edizione",dataInizio="2026-12-11",dataFine="2026-12-13",
+                 dataTesto="Dall'11 al 13 Dic 2026",luogo="Villa Comunale Aldo Moro – Piazza Vittorio Veneto",
+                 indirizzoMappa="Piazza Vittorio Veneto, Canosa di Puglia",
+                 fonteUrl="https://www.canosaviva.it/notizie/l-11-12-e-13-dicembre-la-3-edizione-della-sagra-della-sfogliatella-a-canosa/",
+                 descrizione="Terza edizione della sagra del dolce natalizio canosino, con degustazioni, musica e animazione. Date annunciate dalla Pro Loco; verificare orari e programma definitivo.")
     # Riconciliazione delle schede del medesimo programma documentato su due giorni.
     if (raw.get("citta") == "Minervino Murge"
             and raw.get("dataInizio") in ("2026-11-28", "2026-11-29")
@@ -1995,6 +2005,11 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
+            if fonte.get("food"):
+                if not radar_food.pertinente(testo_candidato):
+                    continue
+                if _comune_nel_testo(testo_candidato):
+                    punteggio=max(punteggio,10 if locale_esplicito else 5)
             if fonte.get("natura") and not radar_natura.pertinente(testo_candidato):
                 continue
             if punteggio < 0 or not link or not titolo:
@@ -2063,6 +2078,8 @@ def raccogli_da_feed_social(session, fonte):
                 # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
                 for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
                     estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
+            if fonte.get("food"):
+                estratti=[e if e.get("categoria") in ("Locali & Serate","Natura & Escursioni") else dict(e,categoria="Sagre & Food") for e in estratti if radar_food.evento_documentato(e)]
             if fonte.get("natura"):
                 estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
             if fonte.get("nightlife"):
@@ -2825,6 +2842,8 @@ def raccogli_da_portale_generico(session, fonte):
                         estratti.extend(eventi_da_locandina(testo,poster,titolo_immagine,link))
                 if fonte.get("data_nel_link"):
                     estratti = [e for e in estratti if e.get("dataInizio") == data_scheda_movida(link)]
+                if fonte.get("food"):
+                    estratti=[e if e.get("categoria") in ("Locali & Serate","Natura & Escursioni") else dict(e,categoria="Sagre & Food") for e in estratti if radar_food.evento_documentato(e)]
                 if fonte.get("natura"):
                     estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
                 if fonte.get("nightlife"):
@@ -3212,8 +3231,11 @@ def esegui_aggiornamento():
                 f["ricorrenze_annuali"]=per_url[f["url"]]
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
     dirette_natura, rss_natura = radar_natura.fonti()
+    dirette_food, rss_food = radar_food.fonti()
     compiti = (
-        [(raccogli_da_portale_generico, fonte) for fonte in dirette_natura]
+        [(raccogli_da_portale_generico, fonte) for fonte in dirette_food]
+        + [(raccogli_da_feed_social, fonte) for fonte in rss_food]
+        + [(raccogli_da_portale_generico, fonte) for fonte in dirette_natura]
         + [(raccogli_da_feed_social, fonte) for fonte in rss_natura]
         +         [(raccogli_calendario_kodo, {"nome":"KODO calendario DJ e promoter","url":"https://www.kodocollective.it/","dominio":"kodocollective.it","focus_serate":True,"nightlife":True})]
         + [(raccogli_capodanno_sito, fonte) for fonte in dirette_capodanno + dirette_annuali]

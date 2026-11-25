@@ -274,18 +274,19 @@
   {
     "id": "antica-enotria",
     "tipoContenuto": "esperienza",
-    "titolo": "Antica Enotria – visita in cantina e vigneti",
+    "titolo": "Antica Enotria – degustazioni e visite in cantina",
     "citta": "Cerignola",
-    "categoria": "Esperienze enogastronomiche",
+    "categoria": "Sagre & Food",
     "dataInizio": "2000-01-01",
     "dataFine": "2099-12-31",
-    "dataTesto": "Esperienza su prenotazione · verificare degustazioni disponibili",
+    "dataTesto": "Esperienza su prenotazione · da 20 €",
     "luogo": "Masseria Contessa Staffa · SP65",
     "indirizzoMappa": "Antica Enotria, SP65, Cerignola FG, Italy",
-    "descrizione": "Azienda agricola biologica con cantina e vigneti. Sono proposte visite e degustazioni con prodotti del territorio, generalmente da prenotare e verificare direttamente con l'azienda. Proposta per adulti e coppie; per famiglie informarsi prima sulle modalità.",
+    "descrizione": "Visita in cantina con degustazione di vini, olive Bella di Cerignola e prodotti locali. Tre percorsi da 60 minuti a 2 ore, minimo 2 persone; prenotazione e disponibilità da verificare sul sito ufficiale.",
     "adattoA": "Coppie e adulti; famiglie da concordare",
     "tipoEsperienza": "Cantina e prodotti locali",
-    "fonteUrl": ""
+    "fonteUrl": "https://anticaenotria.it/degustazione-in-cantina-antica-enotria-apulian-organic-farm/",
+    "costo": "20–40 € secondo il percorso"
   },
   {
     "id": "oasi-lago-salso",

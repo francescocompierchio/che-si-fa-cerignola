@@ -341,6 +341,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "titolo": "Vinyl di Wine – cena con musica",
+    "citta": "Manfredonia",
+    "categoria": "Sagre & Food",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 21:00",
+    "luogo": "Café Des Artistes",
+    "indirizzoMappa": "Café Des Artistes, Manfredonia",
+    "costo": "25 € – menù fisso",
+    "descrizione": "Ultima cena della rassegna Vinyl di Wine di novembre. Menù fisso e musica. Verificare disponibilità e prenotazione con il locale.",
+    "fonteUrl": "https://manfredoniaeventi.com/evento/vinyl-di-wine-al-cafe-des-artistes-manfredonia-28-novembre-2026/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Famiglie & Bambini",
     "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
@@ -556,20 +570,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra della Sfogliatella",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Piazza Vittorio Veneto",
-    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
-    "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Barletta",
     "categoria": "Attività diurne",
     "titolo": "\"Christmas Wonderland\", si aprono le porte del villaggio al Castello di Barletta",
@@ -681,6 +681,20 @@
     "costo": "A pagamento",
     "descrizione": "Paladini di Francia. Spada avete voi, spada avete io! del Teatro Koreja è uno spettacolo tragicomico dedicato ai paladini di Carlo Magno. Giochi di bambini, guerra, pupi e lo spirito di Pasolini si incontrano in una prop",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335514.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra della Sfogliatella – 3ª edizione",
+    "dataTesto": "Dall'11 al 13 Dic 2026",
+    "dataInizio": "2026-12-11",
+    "dataFine": "2026-12-13",
+    "luogo": "Villa Comunale Aldo Moro – Piazza Vittorio Veneto",
+    "indirizzoMappa": "Piazza Vittorio Veneto, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Terza edizione della sagra del dolce natalizio canosino, con degustazioni, musica e animazione. Date annunciate dalla Pro Loco; verificare orari e programma definitivo.",
+    "fonteUrl": "https://www.canosaviva.it/notizie/l-11-12-e-13-dicembre-la-3-edizione-della-sagra-della-sfogliatella-a-canosa/"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/habibi-with-octave-one-live-venerdi-11-dicembre-2026-barletta-xceed-square-b7aa.jpg?w=1920&h=1080&ar=16:9&fm=auto",
