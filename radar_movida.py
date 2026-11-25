@@ -45,7 +45,10 @@ def fonti(registro,anagrafiche):
     # https://www.cerignolaviva.it/notizie/cerignola-summer-mood-chiude-con-stasera-con-uccio-in-piazza-duomo-arrivano-i-mudu/
     # https://www.cerignolaviva.it/notizie/notte-fantastica-2024-a-cerignola-guest-star-paola-chiara/
     # https://www.lanotiziaweb.it/venerdi-12-luglio-a-cerignola-il-music-beach-soccer-con-maninni-e-aka-7even/
-    organizzatori_locali={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi"]}
+    # DJ e vocalist del Beer Fun Fest 2025, programma pubblico:
+    # https://www.cerignolaviva.it/notizie/festa-della-birra-in-piazza-della-repubblica-a-cerignola-birra-food-giochi-e-musica/
+    # https://www.andreaordinemusic.it/ (sito professionale, non calendario)
+    organizzatori_locali={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi","Andrea Ordine","Antonio Depalma","Nicola Lomuscio","Christian Antonacci"]}
     for comune,locali_reg in registro.items():
         for r in locali_reg:
             for nome in r.get("organizzatori",[]):
