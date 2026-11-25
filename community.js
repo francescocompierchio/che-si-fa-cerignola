@@ -22,19 +22,17 @@
   const rulesNotice=$("small","Community riservata ai maggiorenni. ",{id:"csfc-rules-notice"});
   const privacy=$("a","Regole e informativa privacy",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});rulesNotice.append(privacy);
   const login=$("button","Accedi con Google",{type:"button",class:"csfc-primary"});
-  const googleSlot=$("div",null,{id:"csfc-google-signin",hidden:"","aria-label":"Accesso Google"});
-  const alternate=$("button","Accesso Google alternativo",{type:"button",id:"csfc-login-alternate",hidden:""});
-  const browserHint=$("small","Se Google mostra una pagina bianca, torna alla Community con Indietro. Se non sei collegato, prova l’accesso alternativo in una normale scheda Chrome (non nel browser interno di un’altra app).",{hidden:""});
+  const browserHint=$("small","L’accesso si apre nella stessa pagina e torna direttamente alla Community.",{hidden:""});
   const logout=$("button","Esci",{type:"button",hidden:""});
   const nick=$("input",null,{required:"",maxlength:"24",minlength:"2",placeholder:"Nickname pubblico","aria-label":"Nickname pubblico",autocomplete:"off"});
   const msg=$("textarea",null,{required:"",maxlength:"300",rows:"3",placeholder:"Scrivi un messaggio sugli eventi…","aria-label":"Messaggio"});
   const send=$("button","Invia per moderazione",{type:"submit",class:"csfc-primary"});
   const form=$("form",null,{hidden:""});form.append(nick,msg,send);
   const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Coda moderazione"});
-  panel.append(header,info,status,feed,rulesNotice,login,googleSlot,alternate,browserHint,logout,form,mod);
+  panel.append(header,info,status,feed,rulesNotice,login,browserHint,logout,form,mod);
   root.append(toggle,panel);document.body.append(root);
   let app,auth,db,user,authUnsub,off=[],generation=0,opening=false,moderator=false,blocked=false;
-  let gisLoad,gisReady=false,googleFlow=false,authBusy=false,alternateOffered=false,authInit,persistenceLimited=false;
+  let authInit,persistenceLimited=false;
   const stop=()=>{generation++;for(const f of off.splice(0))f();feed.replaceChildren();mod.replaceChildren();if(db)db.goOffline();};
   const error=()=>{status.textContent="Community temporaneamente non disponibile. Nessun messaggio è stato pubblicato automaticamente.";};
   const listen=(q,cb)=>{q.on("value",cb,error);off.push(()=>q.off("value",cb));};
@@ -45,70 +43,16 @@
     if(window.firebase?.auth)return;
     await new Promise((resolve,reject)=>{const s=$("script",null,{src:"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"});s.onload=resolve;s.onerror=reject;document.head.append(s);});
   }
-  function loadGoogle(){
-    if(window.google?.accounts?.id)return Promise.resolve(window.google.accounts.id);
-    if(!gisLoad){
-      gisLoad=new Promise((resolve,reject)=>{
-        const s=$("script",null,{src:"https://accounts.google.com/gsi/client?hl=it",async:""});
-        s.onload=()=>window.google?.accounts?.id?resolve(window.google.accounts.id):reject(Error("google-sdk"));
-        s.onerror=()=>{s.remove();reject(Error("google-sdk"));};
-        document.head.append(s);
-      }).catch(e=>{gisLoad=null;throw e;});
-    }
-    return gisLoad;
-  }
-  async function receiveGoogle(response){
-    if(panel.hidden||!auth||authBusy||user||!googleFlow)return;
-    if(typeof response?.credential!=="string"||!response.credential){status.textContent="Accesso non riuscito. Riprova con il pulsante Google.";return;}
-    authBusy=true;
-    status.textContent="Verifica dell’account Google…";
+  function beginGoogle(){
+    if(panel.hidden||user||login.disabled)return;
     try{
-      await auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(response.credential));
-      googleFlow=false;
-    }catch(e){
-      status.textContent="Accesso Google non riuscito ("+(e?.code||"verifica credenziale")+"). Riprova in Chrome.";
-      browserHint.hidden=false;
-    }finally{authBusy=false;}
-  }
-  async function alternateGoogle(){
-    if(panel.hidden||!auth||authBusy||user)return;
-    authBusy=true;googleFlow=false;googleSlot.hidden=true;alternate.disabled=true;
-    status.textContent="Completa l’accesso Google nella nuova finestra. Poi torna alla Community.";
-    try{
-      // Alternativa esplicita: il flusso Firebase è utilizzabile in Chrome
-      // quando il popup GIS non restituisce la credenziale.
-      await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-    }catch(e){
-      status.textContent="Accesso alternativo non riuscito ("+(e?.code||"sessione")+"). Apri l’app in una normale scheda Chrome e riprova.";
-      browserHint.hidden=false;
-    }finally{
-      authBusy=false;alternate.disabled=false;
-      if(!user)login.hidden=false;
-    }
-  }
-  async function prepareGoogle(){
-    if(panel.hidden||user||authBusy||login.disabled)return;
-    if(!auth){status.textContent="Connessione non disponibile. Chiudi e riapri la Community.";browserHint.hidden=false;return;}
-    if(!/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/i.test(config.googleClientId||"")){status.textContent="Accesso Google non ancora configurato.";return;}
-    login.disabled=true;alternateOffered=true;alternate.hidden=false;browserHint.hidden=false;
-    status.textContent="Caricamento accesso Google…";
-    try{
-      const id=await loadGoogle();
-      if(panel.hidden||user)return;
-      if(!gisReady){
-        id.initialize({client_id:config.googleClientId,callback:receiveGoogle,ux_mode:"popup",auto_select:false,use_fedcm_for_button:true});
-        gisReady=true;
-      }
-      googleFlow=true;googleSlot.hidden=false;
-      googleSlot.replaceChildren();
-      id.renderButton(googleSlot,{type:"standard",theme:"outline",size:"large",text:"signin_with",shape:"rectangular",width:Math.min(300,Math.max(180,googleSlot.clientWidth||220)),locale:"it"});
-      login.hidden=true;
-      browserHint.hidden=false;
-      status.textContent="Premi il pulsante ufficiale Google e scegli il tuo account.";
+      login.disabled=true;
+      status.textContent="Apertura accesso Google…";
+      location.assign(window.CsfCommunityOIDC.start(config.googleClientId,localStorage,window.crypto));
     }catch{
-      googleFlow=false;googleSlot.hidden=true;login.hidden=false;browserHint.hidden=false;
-      status.textContent="Impossibile caricare l’accesso Google. Riprova in Chrome.";
-    }finally{login.disabled=false;}
+      login.disabled=false;browserHint.hidden=false;
+      status.textContent="Il browser non consente di avviare l’accesso. Apri la Community in Chrome e riprova.";
+    }
   }
   async function init(){
     if(authInit)return authInit;
@@ -134,13 +78,8 @@
   async function refresh(){
     stop();const g=generation;moderator=false;blocked=false;
     const signed=!!user;
-    login.hidden=signed||googleFlow;googleSlot.hidden=signed||!googleFlow;alternate.hidden=signed||!alternateOffered;rulesNotice.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;
-    if(!signed){
-      if(!authBusy)status.textContent=googleFlow?"Premi il pulsante ufficiale Google. Se la pagina resta bianca, torna qui e prova l’accesso alternativo.":"Accedi per leggere e partecipare.";
-      if(!googleFlow&&!alternateOffered&&!authBusy)prepareGoogle();
-      return;
-    }
-    googleFlow=false;alternateOffered=false;googleSlot.hidden=true;alternate.hidden=true;browserHint.hidden=true;
+    login.hidden=signed;login.disabled=false;rulesNotice.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;browserHint.hidden=signed;
+    if(!signed){status.textContent="Accedi con Google per leggere e partecipare.";return;}
     db.goOnline();status.textContent="Connessione…";
     try{
       const [m,b,c]=await Promise.all([db.ref("moderators/"+user.uid).once("value"),db.ref("bans/"+user.uid).once("value"),db.ref("settings/open").once("value")]);
@@ -207,17 +146,21 @@
     }catch{if(g===generation)error();}
   }
   async function open(){if(opening)return;opening=true;panel.hidden=false;toggle.setAttribute("aria-expanded","true");status.textContent="Caricamento…";try{await init();if(!panel.hidden)await refresh();}catch{error();}finally{opening=false;}}
-  function shut(){panel.hidden=true;googleFlow=false;alternateOffered=false;googleSlot.hidden=true;googleSlot.replaceChildren();alternate.hidden=true;browserHint.hidden=true;toggle.setAttribute("aria-expanded","false");stop();toggle.focus();}
+  function shut(){panel.hidden=true;browserHint.hidden=true;toggle.setAttribute("aria-expanded","false");stop();toggle.focus();}
   toggle.onclick=()=>panel.hidden?open():shut();close.onclick=shut;
   panel.addEventListener("keydown",e=>{if(e.key==="Escape")shut();});
-  login.onclick=prepareGoogle;
-  alternate.onclick=alternateGoogle;
-  logout.onclick=async()=>{try{window.google?.accounts?.id?.disableAutoSelect();googleFlow=false;alternateOffered=false;await auth.signOut();}catch{error();}};
+  login.onclick=beginGoogle;
+  logout.onclick=async()=>{try{await auth.signOut();}catch{error();}};
   form.onsubmit=async e=>{
     e.preventDefault();if(!user||blocked)return;
     const n=nick.value.trim(),t=msg.value.trim();if(!checkText(n,t)){status.textContent="Usa 2–24 caratteri per il nickname e 1–300 per il messaggio, senza link o recapiti.";return;}
     send.disabled=true;
     try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="In attesa di moderazione.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
   };
+  // Il callback torna qui e riapre automaticamente il pannello.
+  if(typeof location!=="undefined"&&new URLSearchParams(location.search).get("community")==="1"){
+    const u=new URL(location.href);u.searchParams.delete("community");history.replaceState(null,"",u.pathname+u.search+u.hash);open();
+  }
+  window.addEventListener?.("pageshow",()=>{login.disabled=false;if(!panel.hidden&&auth){user=auth.currentUser;refresh();}});
   document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app){if(auth)user=auth.currentUser;refresh();}});
 })();

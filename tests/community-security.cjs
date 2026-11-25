@@ -15,8 +15,9 @@ test("config Community separata e disattivazione sicura: nessun accesso DOM o Fi
   assert.equal(config.enabled,true);
   assert.match(config.googleClientId,/^1064417630484-[a-z0-9]+\.apps\.googleusercontent\.com$/);
   assert.ok(!/signInWithRedirect\s*\(/.test(read("community.js")));
-  assert.equal((read("community.js").match(/signInWithPopup\s*\(/g)||[]).length,1);
-  assert.ok(read("community.js").includes("signInWithCredential"));
+  assert.ok(!/signInWithPopup\s*\(/.test(read("community.js")));
+  assert.ok(read("community-auth-callback.js").includes("signInWithCredential"));
+  assert.ok(read("community-auth-callback.js").includes("history.replaceState"));
   assert.equal(config.firebase.projectId,"che-si-fa-community");
   assert.equal(new URL(config.firebase.databaseURL).hostname,"che-si-fa-community-default-rtdb.europe-west1.firebasedatabase.app");
   for (const disabled of [null,{...config,enabled:false}]) {
@@ -31,8 +32,8 @@ test("config Community separata e disattivazione sicura: nessun accesso DOM o Fi
 test("modulo collegato senza modificare la logica eventi",()=>{
   const h=read("index.html");
   assert.ok(h.includes('src="community-config.js?v=2"'));
-  assert.ok(h.includes('src="community.js?v=5"'));
-  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=5"'));
+  assert.ok(h.includes('src="community.js?v=6"'));
+  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=6"'));
 });
 test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:process.env.CSFC_EMULATOR!=="1"},async()=>{
   assert.match(process.env.FIREBASE_DATABASE_EMULATOR_HOST||"",/^127\.0\.0\.1:\d+$/);
@@ -68,41 +69,49 @@ test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:
   }finally{await env.cleanup();}
 });
 
-test("accesso Google senza checkbox, sessione locale ripristinata e accesso alternativo",async()=>{
-  const nodes=[];
-  class El{
-    constructor(tag){this.tag=tag;this.children=[];this.hidden=false;this.clientWidth=260;this.events={};nodes.push(this);}
-    setAttribute(k,v){this[k]=v;if(k==="hidden")this.hidden=true;}
-    append(...x){this.children.push(...x);}
-    replaceChildren(...x){this.children=x;}
-    addEventListener(k,f){this.events[k]=f;}
-    focus(){}
-    remove(){}
+test("OIDC: ritorno diretto, nonce, state monouso, scadenza, nessun access token",()=>{
+  const {webcrypto}=require("node:crypto");
+  const window={};vm.runInNewContext(read("community-auth-flow.js"),{window,URL,URLSearchParams,Uint8Array,atob});
+  const api=window.CsfCommunityOIDC;
+  const client="1064417630484-example.apps.googleusercontent.com",now=1700000000000;
+  const store=new Map(),storage={setItem:(k,v)=>store.set(k,v),getItem:k=>store.get(k),removeItem:k=>store.delete(k)};
+  const start=()=>new URL(api.start(client,storage,webcrypto,now));
+  function fragment(u,override={},state=u.searchParams.get("state")){
+    const data={aud:client,iss:"https://accounts.google.com",sub:"test",email_verified:true,nonce:u.searchParams.get("nonce"),iat:now/1000,exp:now/1000+3600,...override};
+    const tok="header."+Buffer.from(JSON.stringify(data)).toString("base64url")+".signature";
+    return "#"+new URLSearchParams({state,id_token:tok}).toString();
   }
-  let opts,rendered=0,exchanges=0,popupCalls=0,credentialInput=null,callback,persistence;
-  const auth={currentUser:null,setPersistence:async p=>{persistence=p;},onAuthStateChanged:f=>{callback=f;f(auth.currentUser);return ()=>{}},signInWithCredential:async c=>{exchanges++;credentialInput=c;},signInWithPopup:async()=>{popupCalls++;},signOut:async()=>{}};
+  let u=start();
+  assert.equal(u.origin,"https://accounts.google.com");
+  assert.equal(u.searchParams.get("response_type"),"id_token");
+  assert.equal(u.searchParams.get("redirect_uri"),api.CALLBACK);
+  assert.equal(u.searchParams.get("state").length,64);
+  assert.notEqual(u.searchParams.get("state"),u.searchParams.get("nonce"));
+  assert.throws(()=>api.consume(fragment(u,{},"wrong"),client,storage,now),/session/);
+  assert.ok(api.consume(fragment(u),client,storage,now).endsWith(".signature"));
+  assert.throws(()=>api.consume(fragment(u),client,storage,now),/session/);
+  for(const bad of [{nonce:"wrong"},{aud:"other"},{iss:"https://evil.example"},{email_verified:false},{exp:now/1000-1}]){
+    u=start();assert.throws(()=>api.consume(fragment(u,bad),client,storage,now),/credential/);
+  }
+  u=start();assert.throws(()=>api.consume(fragment(u),client,storage,now+600001),/session/);
+  u=start();assert.throws(()=>api.consume("#"+new URLSearchParams({state:u.searchParams.get("state"),error:"access_denied"}),client,storage,now),/cancelled/);
+});
+test("sessione Community LOCAL: riapertura senza nuovo login",async()=>{
+  const nodes=[];
+  class El{constructor(tag){this.tag=tag;this.hidden=false;this.children=[];nodes.push(this);}setAttribute(k,v){this[k]=v;if(k==="hidden")this.hidden=true;}append(...x){this.children.push(...x);}replaceChildren(...x){this.children=x;}addEventListener(){}focus(){}}
+  let persistence,callback,navigations=0;
+  const auth={currentUser:{uid:"test",emailVerified:true},setPersistence:async p=>{persistence=p;},onAuthStateChanged:f=>{callback=f;f(auth.currentUser);return()=>{}},signOut:async()=>{}};
   const db={goOffline(){},goOnline(){},ref:()=>({once:async()=>({val:()=>false})})};
-  class GoogleAuthProvider{static credential(t){return {idToken:t};}}
-  const firebase={initializeApp:()=>({auth:()=>auth,database:()=>db}),auth:{GoogleAuthProvider,Auth:{Persistence:{LOCAL:"local"}}}};
-  const google={accounts:{id:{initialize:o=>opts=o,renderButton:()=>rendered++,disableAutoSelect(){}}}};
-  const window={firebase,google};const document={createElement:t=>new El(t),createTextNode:t=>t,body:new El("body"),head:new El("head"),addEventListener(){}};
+  const firebase={initializeApp:()=>({auth:()=>auth,database:()=>db}),auth:{Auth:{Persistence:{LOCAL:"local"}}}};
+  const window={firebase,CsfCommunityOIDC:{start:()=>"https://accounts.google.com/test"}},document={createElement:t=>new El(t),body:new El("body"),head:new El("head"),addEventListener(){}};
+  const location={search:"",assign:()=>navigations++};
   vm.runInNewContext(read("community-config.js"),{window});
-  vm.runInNewContext(read("community.js"),{window,document,firebase,console});
+  vm.runInNewContext(read("community.js"),{window,document,firebase,location,URLSearchParams});
   const el=id=>nodes.find(n=>n.id===id),login=nodes.find(n=>n.textContent==="Accedi con Google");
-  assert.equal(el("csfc-consent"),undefined);
-  await el("csfc-toggle").onclick();await new Promise(r=>setImmediate(r));
-  assert.equal(typeof callback,"function");
+  await el("csfc-toggle").onclick();
   assert.equal(persistence,"local");
-  assert.equal(rendered,1);
-  assert.equal(opts.ux_mode,"popup");assert.equal(opts.auto_select,false);
-  assert.equal(opts.client_id,window.CSF_COMMUNITY_CONFIG.googleClientId);
-  assert.equal(el("csfc-login-alternate").hidden,false);
-  await opts.callback({credential:"mock-token"});assert.equal(exchanges,1);assert.equal(credentialInput.idToken,"mock-token");
-  await el("csfc-login-alternate").onclick();assert.equal(popupCalls,1);
-  await el("csfc-toggle").onclick();await opts.callback({credential:"ignored"});assert.equal(exchanges,1);
-  auth.currentUser={uid:"test-user",emailVerified:true};callback(auth.currentUser);
-  await el("csfc-toggle").onclick();await new Promise(r=>setImmediate(r));
-  assert.equal(rendered,1,"Sessione già presente: nessuna nuova richiesta Google");
   assert.equal(login.hidden,true);
-  assert.equal(el("csfc-login-alternate").hidden,true);
+  assert.equal(el("csfc-consent"),undefined);
+  await el("csfc-toggle").onclick();await el("csfc-toggle").onclick();
+  assert.equal(login.hidden,true);assert.equal(navigations,0);
 });
