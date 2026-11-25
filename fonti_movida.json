@@ -1,0 +1,80 @@
+{
+  "Cerignola": [
+    {
+      "nome": "ADE",
+      "alias": [
+        "ade rooftop",
+        "ade luxury space"
+      ],
+      "calendario": "https://www.instagram.com/ade_rooftopluxuryspace/"
+    }
+  ],
+  "Barletta": [
+    {
+      "nome": "Atrio22",
+      "alias": [
+        "atrio22",
+        "atrio 22"
+      ],
+      "calendario": "https://xceed.me/it/barletta/venue/atrio22"
+    }
+  ],
+  "Trani": [
+    {
+      "nome": "Aphelion Club",
+      "alias": [
+        "aphelion club"
+      ],
+      "calendario": "https://xceed.me/it/trani/venue/aphelion-club-1"
+    },
+    {
+      "nome": "Baia Nhà",
+      "alias": [
+        "baia nha",
+        "baia nhà"
+      ],
+      "calendario": "https://xceed.me/it/trani/venue/baia-nha"
+    }
+  ],
+  "Bisceglie": [
+    {
+      "nome": "Idol Club",
+      "alias": [
+        "idol club",
+        "vyon club"
+      ],
+      "calendario": "https://www.ticketsms.it/it/location/Idol-Club"
+    },
+    {
+      "nome": "Divine Club",
+      "alias": [
+        "divine club"
+      ],
+      "calendario": "https://nightz.it/locali/divine-club/"
+    }
+  ],
+  "Manfredonia": [
+    {
+      "nome": "Minami Restaurant & Lounge",
+      "alias": [
+        "minami"
+      ],
+      "calendario": "https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/"
+    },
+    {
+      "nome": "Café des Artistes",
+      "alias": [
+        "cafe des artistes",
+        "café des artistes"
+      ],
+      "calendario": "https://manfredoniaeventi.com/luogo/cafe-des-artistes/"
+    },
+    {
+      "nome": "Al Molo 20",
+      "alias": [
+        "al molo 20"
+      ],
+      "calendario": "https://manfredoniaeventi.com/organizzatore/al-molo-20/"
+    }
+  ]
+}

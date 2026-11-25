@@ -38,7 +38,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com"
 )
 
 FONTI_VIVA = [
@@ -1138,7 +1138,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     cat = classifica_categoria(f"{titolo} {descrizione}", luogo=luogo, fonte_url=url)
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
-    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it")):
+    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","lineupatlas.com")):
         cat = "Locali & Serate"
 
     if not d_txt:
@@ -2018,11 +2018,105 @@ def diagnostica_scheda_movida(html_text, url):
     return {"url":url, "h1":h1.get_text(" ",strip=True)[:120] if h1 else "", "jsonld":len(soup.find_all("script", type="application/ld+json")), "eventiStrutturati":dettagli, "etichette":[x for x in ("Location","Indirizzo","Data e orario","Info") if x.casefold() in soup.get_text(" ",strip=True).casefold()], "lunghezzaHTML":len(html_text)}
 
 
+def registro_locali_movida():
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "fonti_movida.json"), encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d,dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def atlas_data_locale(val):
+    if not isinstance(val,str) or not re.match(r"^20\d{2}-\d{2}-\d{2}T",val):
+        return None
+    try:
+        dt = datetime.fromisoformat(val.replace("Z","+00:00"))
+        # Un timestamp senza fuso non permette di determinare con certezza la data italiana.
+        return dt.astimezone(ZoneInfo("Europe/Rome")) if dt.tzinfo is not None else None
+    except ValueError:
+        return None
+
+
+def analizza_evento_atlas(ev, registro=None):
+    """Legge il record della API pubblica; fonte citata e link alla pagina della data.
+    Non interpreta valori di stato ignoti e non inventa sede, giorno o tariffa."""
+    if not isinstance(ev,dict) or ev.get("kind") != "PARTY" or ev.get("countryCode") != "IT":
+        return None,"tipo/paese"
+    if not isinstance(ev.get("city"),str):
+        return None,"comune non testuale"
+    citta = COMUNI_50KM.get(ev["city"].strip().casefold())
+    if not citta:
+        return None,"fuori area"
+    url = ev.get("webUrl")
+    if not isinstance(url,str) or not _host_appartiene(url,"lineupatlas.com") or urlparse(url).scheme!="https" or not re.search(r"/(?:soirees|parties|serate)/[^/]+/?$",urlparse(url).path):
+        return None,"scheda non individuale"
+    dt = atlas_data_locale(ev.get("startsAt"))
+    if not dt:
+        return None,"data/fuso non validi"
+    d = dt.strftime("%Y-%m-%d")
+    if not oggi_iso() <= d <= (oggi_dt()+timedelta(days=90)).strftime("%Y-%m-%d"):
+        return None,"fuori finestra"
+    stato = str(ev.get("cancelState") or "").strip().casefold()
+    if stato in {"cancelled","canceled","postponed","eventcancelled","eventpostponed"} or ev.get("postponedTo"):
+        # Elimina soltanto la stessa scheda Atlas e la stessa data, non una
+        # corrispondenza approssimativa di un'altra fonte.
+        key = chiave_stato_evento(url,d)
+        if key:
+            with _LOCK_STATISTICHE:
+                STATI_EVENTI_NEGATIVI.add(key)
+        return None,"annullamento/rinvio"
+    if "cancelState" not in ev or stato not in {"","none","active","scheduled","normal","confirmed","not_cancelled","not_canceled"}:
+        return None,"stato non riconosciuto"
+    titolo = ev.get("title")
+    luogo = ev.get("venue")
+    indirizzo = ev.get("venueAddress")
+    if not all(isinstance(x,str) and x.strip() for x in (titolo,luogo,indirizzo)):
+        return None,"sede o titolo incompleto"
+    if re.search(r"\b(?:secret|riservat\w*|segreta|tba|tbc|to be announced)\b",luogo+" "+indirizzo,re.I):
+        return None,"sede riservata"
+    if _comune_nel_testo(indirizzo) != citta:
+        return None,"indirizzo senza comune concordante"
+    # Due schede con descrizioni discordanti già riscontrate nelle fonti primarie.
+    # Atlas aggrega le stesse biglietterie: non usarlo per aggirarne le anomalie.
+    if (("haivai" in titolo.casefold() and d=="2026-11-27") or ("natale" in titolo.casefold() and "atrio22" in titolo.casefold() and d=="2026-12-25")):
+        return None,"discordanza primaria nota"
+    mesi = "|".join(MESI_IT)
+    for m in re.finditer(rf"\b(\d{{1,2}})\s+({mesi})\s*(20\d{{2}})?\b",titolo,re.I):
+        if int(m.group(1))!=dt.day or MESI_IT[m.group(2).casefold()]!=dt.month or (m.group(3) and int(m.group(3))!=dt.year):
+            return None,"data titolo discordante"
+    # PARTY non basta: la stessa API ha restituito anche un concerto di Baglioni.
+    registro = registro if isinstance(registro,dict) else registro_locali_movida()
+    noto = any(alias.casefold() in luogo.casefold() for club in registro.get(citta,[]) for alias in club.get("alias",[]))
+    generi = ev.get("genres")
+    generi = " ".join(x for x in generi if isinstance(x,str)) if isinstance(generi,list) else str(generi or "")
+    elettronica = bool(re.search(r"\b(?:techno|house|electronic\w*|elettronic\w*|trance|hardstyle|drum\s*(?:and|&|n)\s*bass|reggaeton|disco|minimal|afro house|garage|dubstep)\b",generi,re.I))
+    if not (noto or elettronica or indizi_movida(titolo)):
+        return None,"non nightlife"
+    # Il prezzo dell'API è indicativo; non convertire valute e non inventare un prezzo.
+    prezzo = ev.get("priceFromCents")
+    costo = "Consulta la fonte e la biglietteria"
+    if isinstance(prezzo,int) and not isinstance(prezzo,bool) and prezzo>=0 and ev.get("currency")=="EUR":
+        costo = ("Da "+format(prezzo/100,".2f").replace(".",",")+" € (indicativo)") if prezzo else "Prezzo indicato da 0 €; verifica la biglietteria"
+    if ev.get("soldOut") is True:
+        costo += " · Esaurito secondo la fonte"
+    testo = "Fonte: Lineup Atlas. Serata in locale. Verifica prevendita e disponibilità nella scheda."
+    if generi:
+        testo += " Generi: "+generi[:100]+"."
+    d_txt = formatta_data_italiano(d,d)
+    if ev.get("timeTbd") is False:
+        d_txt += " · Ore "+dt.strftime("%H:%M")
+    record = normalizza_e_valida_evento({"titolo":titolo,"citta":citta,"luogo":luogo,"indirizzoMappa":indirizzo,"dataInizio":d,"dataFine":d,"dataTesto":d_txt,"descrizione":testo,"costo":costo,"fonteUrl":url,"categoria":"Locali & Serate"},fonte_curata_eventi=True)
+    if not record:
+        return None,"validazione generale"
+    record["categoria"] = "Locali & Serate"
+    return record,"ok"
+
+
 def esplora_lineup_atlas(session, fonte):
-    """API ufficiale: cache di un'ora come da documentazione.
-    Risultati solo diagnostici finché lo schema reale non è verificato."""
+    """API ufficiale, un'ora di cache per query, massimo 50 record per richiesta."""
     nome = fonte["nome"]
-    path = os.path.join(".csf-state", "lineup-atlas-bat.json")
+    path = os.path.join(".csf-state", "lineup-atlas-"+fonte.get("cache","bat")+".json")
     dati = {}
     try:
         with open(path, encoding="utf-8") as f:
@@ -2030,28 +2124,38 @@ def esplora_lineup_atlas(session, fonte):
     except (OSError, ValueError):
         pass
     try:
-        if not isinstance(dati, dict) or time.time() - dati.get("timestamp", 0) >= 3600:
-            r = session.get(fonte["url"], timeout=(5,10))
-            if r.status_code != 200:
-                registra_statistica_fonte(nome, stato=f"HTTP {r.status_code}", eventiEstratti=0)
+        if not isinstance(dati,dict) or time.time()-dati.get("timestamp",0)>=3600:
+            r = session.get(fonte["url"],timeout=(5,10))
+            if r.status_code!=200:
+                registra_statistica_fonte(nome,stato=f"HTTP {r.status_code}",eventiEstratti=0)
                 return []
-            payload = r.json()
-            dati = {"timestamp":time.time(),"payload":payload}
+            payload=r.json()
+            dati={"timestamp":time.time(),"payload":payload}
             os.makedirs(".csf-state",exist_ok=True)
             _scrivi_json_atomico(path,dati)
-        payload = dati.get("payload")
-        righe = payload if isinstance(payload,list) else next((payload[k] for k in ("events","items","data","results") if isinstance(payload,dict) and isinstance(payload.get(k),list)),[])
-        candidati = []
-        for ev in righe[:15]:
-            if not isinstance(ev,dict):
-                continue
-            # Non presumere la semantica dei campi: registra chiavi e riferimenti pubblici.
-            candidati.append({"campi":sorted(ev.keys())[:35],"titolo":str(ev.get("title") or ev.get("name") or "")[:160],"url":str(ev.get("webUrl") or ev.get("url") or "")[:250]})
-        registra_statistica_fonte(nome,stato="ok",linkCandidati=len(righe),pagineScaricate=1,eventiEstratti=0,candidatiDaVerificare=candidati,chiaviRisposta=sorted(payload.keys()) if isinstance(payload,dict) else [])
-        print(f"{nome}: {len(righe)} candidati API; non pubblicati automaticamente")
+        payload=dati.get("payload")
+        if not isinstance(payload,dict) or not isinstance(payload.get("items"),list):
+            registra_statistica_fonte(nome,stato="errore",errore="schema API non riconosciuto",eventiEstratti=0)
+            return []
+        righe=payload["items"]
+        registro=registro_locali_movida()
+        eventi=[]
+        scarti=Counter()
+        dettagli=[]
+        for ev in righe[:50]:
+            record,motivo=analizza_evento_atlas(ev,registro)
+            if record:
+                eventi.append(record)
+            else:
+                scarti[motivo]+=1
+                if isinstance(ev,dict):
+                    dettagli.append({"titolo":str(ev.get("title") or "")[:120],"comune":str(ev.get("city") or "")[:70],"sede":str(ev.get("venue") or "")[:100],"stato":str(ev.get("cancelState"))[:40],"motivo":motivo})
+        registra_statistica_fonte(nome,stato="ok",linkCandidati=len(righe),pagineScaricate=1,eventiEstratti=len(eventi),scartiMovida=dict(scarti),candidatiDaVerificare=dettagli[:20],paginaSuccessiva=bool(payload.get("nextCursor")))
+        print(f"{nome}: {len(righe)} candidati API, {len(eventi)} eventi validati; scarti {dict(scarti)}")
+        return eventi
     except Exception as exc:
         registra_statistica_fonte(nome,stato="errore",errore=str(exc)[:120],eventiEstratti=0)
-    return []
+        return []
 
 
 def calendario_ha_link_movida(html_text, url, dominio, tipo):
@@ -2501,6 +2605,14 @@ def evento_sede_riservata(ev):
     return "stefano andriezzi" in t and "opening" in t and ev.get("dataInizio") == "2026-11-28"
 
 
+def prossimo_weekend_movida(ev):
+    oggi = oggi_dt().date()
+    venerdi = oggi + timedelta(days=(4-oggi.weekday())%7)
+    if oggi.weekday() in (5,6):
+        venerdi = oggi-timedelta(days=oggi.weekday()-4)
+    return venerdi.strftime("%Y-%m-%d") <= ev.get("dataInizio","") <= (venerdi+timedelta(days=2)).strftime("%Y-%m-%d")
+
+
 def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
@@ -2516,7 +2628,7 @@ def esegui_aggiornamento():
         [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
         + [(raccogli_da_feed_social, fonte) for fonte in FONTI_SOCIAL_RSS]
-        + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com"})]
+        + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com","cache":"bat"}), (esplora_lineup_atlas, {"nome":"Lineup Atlas API raggio costiero","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&rayon=50&limit=50","dominio":"lineupatlas.com","cache":"raggio-bat"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
     memoria = stato_raccolta.carica(percorso_stato)
@@ -2536,7 +2648,11 @@ def esegui_aggiornamento():
     esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []
+    # Biglietteria diretta prima dell’aggregatore, anche quando la fonte primaria è già in archivio.
+    nuovi_raccolti.sort(key=lambda e: _host_appartiene(e.get("fonteUrl"), "lineupatlas.com"))
     for ev in nuovi_raccolti:
+        if _host_appartiene(ev.get("fonteUrl"), "lineupatlas.com") and any(sono_duplicati(x,ev) and not _host_appartiene(x.get("fonteUrl"),"lineupatlas.com") for x in precedenti_auto):
+            continue
         if not any(sono_duplicati(x, ev) for x in nuovi_unici):
             nuovi_unici.append(ev)
 
@@ -2585,6 +2701,8 @@ def esegui_aggiornamento():
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),
+        "registroLocaliMovida": {c:len(v) for c,v in registro_locali_movida().items()},
+        "movidaProssimoWeekend": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e) and prossimo_weekend_movida(e))),
         "serateCerignola": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and e.get("categoria") == "Locali & Serate"),
         "nuoviAggiunti": aggiunti_nuovi,
         "automaticiRitrovati": ritrovati,

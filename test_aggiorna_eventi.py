@@ -9,6 +9,23 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_atlas_citta_data_tipo_attribuzione(self):
+        dt=crawler.oggi_dt()+crawler.timedelta(days=3)
+        raw={"kind":"PARTY","countryCode":"IT","city":"Barletta","webUrl":"https://lineupatlas.com/fr/soirees/habibi-barletta-abc","startsAt":dt.strftime("%Y-%m-%d")+"T21:00:00Z","cancelState":None,"title":"Habibi DJ set","venue":"Atrio22","venueAddress":"Via Leonardo da Vinci 15, Barletta","genres":["house"],"currency":"EUR","priceFromCents":1500,"timeTbd":False}
+        ev,motivo=crawler.analizza_evento_atlas(raw,{})
+        self.assertEqual(motivo,"ok")
+        self.assertEqual(ev["categoria"],"Locali & Serate")
+        self.assertIn("Lineup Atlas",ev["descrizione"])
+        self.assertIn("15,00",ev["costo"])
+        self.assertEqual(crawler.normalizza_e_valida_evento(ev,fonte_curata_eventi=True)["categoria"],"Locali & Serate")
+        for change in ({"city":"Bari"},{"countryCode":"FR"},{"venue":"Secret Location"},{"venueAddress":"Via Roma, Trani"},{"kind":"CONCERT"},{"cancelState":"unknown"},{"startsAt":"2026-11-28"},{"title":"Claudio Baglioni","genres":[],"venue":"Auditorium"}):
+            self.assertIsNone(crawler.analizza_evento_atlas(dict(raw,**change),{})[0],change)
+        self.assertIsNone(crawler.analizza_evento_atlas(dict(raw,cancelState="CANCELLED"),{})[0])
+        self.assertIsNone(crawler.analizza_evento_atlas(dict(raw,startsAt="2026-11-27T21:00:00Z",title="Shake IT with HAIVAI B"),{})[0])
+    def test_atlas_registry(self):
+        reg=crawler.registro_locali_movida()
+        self.assertTrue(any(x["nome"]=="Atrio22" for x in reg["Barletta"]))
+
     def test_link_calendari_movida(self):
         self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
         self.assertFalse(crawler.calendario_ha_link_movida('<a href="/eventi/">Eventi</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))

@@ -9,6 +9,7 @@ on:
     paths:
       - "aggiorna_eventi.py"
       - "stato_raccolta.py"
+      - "fonti_movida.json"
       - "test_stato_raccolta.py"
       - "genera_pagine_eventi.js"
       - "event-tools.js"
@@ -110,6 +111,9 @@ jobs:
           print(f"- Fonti da rivedere: {', '.join(salute.get('fontiDaRivedere', [])) or 'nessuna'}")
           if not report.get("serateCerignola", 0):
               print("**Attenzione:** nessuna serata automatica a Cerignola nell'archivio.")
+          print("### Registro locali e copertura weekend")
+          for comune,count in sorted(report.get("registroLocaliMovida", {}).items()):
+              print(f"- {comune}: {count} locali censiti; {report.get('movidaProssimoWeekend', {}).get(comune,0)} appuntamenti automatici nel weekend")
           print("### Movida automatica per comune")
           for comune,count in sorted(report.get("movidaPerComune", {}).items()):
               print(f"- {comune}: {count}")
