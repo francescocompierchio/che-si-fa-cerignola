@@ -265,7 +265,9 @@ class ControlliQualitaTests(unittest.TestCase):
             percorso = os.path.join(cartella, "eventi.json")
             with open(percorso, "w", encoding="utf-8") as f:
                 json.dump([automatico, generico, manuale], f, ensure_ascii=False)
-            manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
+            # Il fixture contiene appuntamenti del 24 novembre 2026: congela l'orologio.
+            with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24, 12, 0)):
+                manuali, automatici, scaduti = motore.carica_esistenti_protetti(percorso)
 
         self.assertEqual(scaduti, 0)
         self.assertEqual(len(manuali), 1)
