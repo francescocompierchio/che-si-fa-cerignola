@@ -332,7 +332,9 @@ jobs:
           const valid=new Function(src+";return recordEventoValido")();
           const ev={titolo:"Test",citta:"Cerignola",luogo:"Piazza",dataInizio:"2030-01-01",dataFine:"2030-01-01"};
           assert.ok(valid(ev));assert.ok(!valid(null));assert.ok(!valid({...ev,categoria:123}));assert.ok(!valid({...ev,dataFine:"2020-01-01"}));
-          assert.ok(html.includes('if (isAndroidApp || isStandalone)'));
+          assert.ok(html.includes('const isAndroidApp =')&&html.includes('const isStandalone ='),"Rilevamento modalità app");
+          assert.ok(html.includes('if(homeShortcut)homeShortcut.hidden=false;'),"Comandi installazione sempre accessibili");
+          assert.ok(html.includes('id="agenda-future-date"')&&html.includes('id="agenda-new-year"'),"Agenda futura e Capodanno");
           assert.ok(html.includes('beforeinstallprompt')&&html.includes('appinstalled'));
           assert.ok(html.includes('id="btn-apk-alternativo"'));
           const manifest=JSON.parse(require("node:fs").readFileSync("manifest.json","utf8"));

@@ -107,6 +107,12 @@ def radar_esteso(oggi):
         if r.get("sito"):
             dirette.append({"nome":"Capodanno dintorni sito - "+r["nome"],"url":r["sito"],"dominio":urlparse(r["sito"]).hostname,"sede":r["nome"],"comune_capodanno":r["citta"],"anno_capodanno":anno,"focus_serate":True})
         rss.append(feed("Radar Capodanno struttura "+r["nome"],'"'+r["citta"]+'" "'+r["nome"]+'" '+tema+" when:90d",r["citta"]))
+    # Portali di settore: link diretti, mai pubblicare offerte senza sede e data.
+    for nome,url,comune in [
+        ("Capodanno Foggia","https://www.capodannofoggia.com/","Foggia"),
+        ("Cenone Capodanno Foggia","https://www.cenonecapodanno.com/foggia/","Foggia"),
+        ("Capodanno31 Barletta","https://www.capodanno31.com/offerte/capodanno-gran-cenone-con-delitto-al-ristorante-al-tettuccio-bt/","Barletta")]:
+        dirette.append({"nome":"Radar portale "+nome,"url":url,"dominio":urlparse(url).hostname,"comune_capodanno":comune,"anno_capodanno":anno,"focus_serate":True})
     for comune in COMUNI_RADAR:
         rss.append(feed("Radar Capodanno "+comune,'"'+comune+'" '+tema+' (ristorante OR agriturismo OR sala OR hotel OR festa OR dj OR piazza) when:90d',comune))
     return dirette,rss

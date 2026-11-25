@@ -44,7 +44,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it", "regiohotel.it", "postabassi.it", "uvulesce.com", "lavolpeeluvarestaurant.it", "anticaenotria.it", "cantineparadiso.it", "hermesclub.it", "capodannofoggia.com", "capodanno31.com", "cenonecapodanno.com"
 )
 
 FONTI_VIVA = [

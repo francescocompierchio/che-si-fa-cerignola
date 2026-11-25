@@ -22,7 +22,8 @@
       "Hermes Club"
     ],
     "evidenza": "https://hermesclub.it/",
-    "stato": "anagrafica; evento non confermato"
+    "stato": "anagrafica; evento non confermato",
+    "sito": "https://hermesclub.it/"
   },
   {
     "nome": "Antica Enotria",
@@ -30,7 +31,8 @@
       "Antica Enotria"
     ],
     "evidenza": "https://anticaenotria.it/",
-    "stato": "anagrafica; evento non confermato"
+    "stato": "anagrafica; evento non confermato",
+    "sito": "https://anticaenotria.it/"
   },
   {
     "nome": "Caffè Plaza",
@@ -119,7 +121,8 @@
       "Cantine Paradiso"
     ],
     "evidenza": "https://www.cantineparadiso.it/azienda/",
-    "stato": "anagrafica; evento non confermato"
+    "stato": "anagrafica; evento non confermato",
+    "sito": "https://www.cantineparadiso.it/azienda/"
   },
   {
     "nome": "Mandwinery",
@@ -135,7 +138,8 @@
       "U Vulesce"
     ],
     "evidenza": "https://www.sommelierpuglia.it/convenzioni-con-ais-puglia/",
-    "stato": "anagrafica; evento non confermato"
+    "stato": "anagrafica; evento non confermato",
+    "sito": "https://uvulesce.com/"
   },
   {
     "nome": "Vito Losciale and Friends",
@@ -368,7 +372,8 @@
       "La Volpe e L'Uva"
     ],
     "evidenza": "https://eatoutmap.com/it/italy/cerignola/restaurants",
-    "stato": "candidato; nessun evento presunto"
+    "stato": "candidato; nessun evento presunto",
+    "sito": "https://www.lavolpeeluvarestaurant.it/"
   },
   {
     "nome": "Verve Restaurant",

@@ -17,6 +17,7 @@ on:
       - "fonti_movida.json"
       - "fonti_cerignola.json"
       - "fonti_capodanno.json"
+      - "fonti_capodanno_estese.json"
       - "capodanno.py"
       - "test_capodanno.py"
       - "festivita.py"
