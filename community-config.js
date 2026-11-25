@@ -1,6 +1,6 @@
 /* Configurazione web pubblica del progetto Spark dedicato alla Community. */
 window.CSF_COMMUNITY_CONFIG = {
-  enabled: false,
+  enabled: true,
   firebase: {
     apiKey: "AIzaSyDH4ZsFwaIctB-Gwa0-kShX_3-spoz8SwU",
     authDomain: "che-si-fa-community.firebaseapp.com",

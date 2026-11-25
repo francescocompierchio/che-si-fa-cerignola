@@ -8,14 +8,16 @@ const path=require("node:path");
 const vm=require("node:vm");
 const read=f=>fs.readFileSync(path.join(__dirname,"..",f),"utf8");
 const rules=read("community-database.rules.json");
-test("config disattivata e modulo valido: nessun accesso DOM o Firebase a freddo",()=>{
+test("config Community separata e disattivazione sicura: nessun accesso DOM o Firebase quando spenta",()=>{
   const context={window:{}};
   vm.runInNewContext(read("community-config.js"),context);
   const config=context.window.CSF_COMMUNITY_CONFIG;
-  assert.equal(config.enabled,false);
+  assert.equal(config.enabled,true);
   assert.equal(config.firebase.projectId,"che-si-fa-community");
   assert.equal(new URL(config.firebase.databaseURL).hostname,"che-si-fa-community-default-rtdb.europe-west1.firebasedatabase.app");
-  vm.runInNewContext(read("community.js"),context);
+  for (const disabled of [null,{...config,enabled:false}]) {
+    vm.runInNewContext(read("community.js"),{window:{CSF_COMMUNITY_CONFIG:disabled}});
+  }
   for(const firebase of [{projectId:"chesifa-cerignola",databaseURL:"https://example.com"},{projectId:"altro",databaseURL:"https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app"}]){
     vm.runInNewContext(read("community.js"),{window:{CSF_COMMUNITY_CONFIG:{enabled:true,firebase}}});
   }
