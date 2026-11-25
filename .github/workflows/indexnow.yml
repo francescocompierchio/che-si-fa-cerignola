@@ -1,0 +1,40 @@
+name: Distribuzione organica IndexNow
+on:
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "indexnow_submit.py"
+      - "test_indexnow_submit.py"
+      - "4efda12986bc4ea58704d2a938cf1f51.txt"
+      - ".github/workflows/indexnow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: csf-indexnow
+  cancel-in-progress: false
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test perimetro e modifiche
+        run: python -m unittest test_indexnow_submit -v
+      - uses: actions/cache/restore@v4
+        with:
+          path: .indexnow-state
+          key: indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: indexnow-v1-
+      - name: Notifica URL pubblici aggiunti, modificati o rimossi
+        run: python indexnow_submit.py
+      - uses: actions/cache/save@v4
+        if: success() && hashFiles('.indexnow-state/sent.json') != ''
+        with:
+          path: .indexnow-state
+          key: indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
