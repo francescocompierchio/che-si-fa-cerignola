@@ -9,6 +9,22 @@ const assert = require("node:assert/strict");
     await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
+    // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
+    for(const [width,height] of [[320,568],[393,852],[430,740]]){
+      await page.setViewportSize({width,height});
+      await page.locator("#csfc-toggle").click();
+      const panel=page.locator("#csfc-panel");
+      await panel.waitFor({state:"visible"});
+      const login=panel.getByRole("button",{name:"Accedi con Google"});
+      await panel.locator("#csfc-consent").check();
+      await login.click({trial:true});
+      const bounds=await panel.evaluate(el=>{const p=el.getBoundingClientRect(),d=document.querySelector(".mobile-dock").getBoundingClientRect();return {top:p.top,bottom:p.bottom,left:p.left,right:p.right,dock:d.top,width:document.documentElement.clientWidth};});
+      assert.ok(bounds.top>=0&&bounds.left>=0&&bounds.right<=bounds.width+1&&bounds.bottom<=bounds.dock,"Community sopra il dock: "+JSON.stringify(bounds));
+      await panel.getByRole("button",{name:"Chiudi community"}).click();
+      assert.ok(await panel.isHidden());
+    }
+    await page.setViewportSize({width:393,height:852});
+
     const acq=page.locator("#events-container details").filter({hasText:"Acquolina in Cena Spettacolo"});
     assert.equal(await acq.count(),1,"Acquolina deve essere presente");
     assert.ok(await acq.evaluate(el=>el.classList.contains("is-featured")),"Acquolina in evidenza");

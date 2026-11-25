@@ -16,3 +16,16 @@
 #csfc-panel form{display:grid;gap:7px}
 #csfc-panel a{color:#235686;text-decoration:underline}
 @media(prefers-color-scheme:dark){#csfc-panel{background:#18252f;color:#eef5fa;border-color:#41515f}#csfc-panel article{background:#253746}#csfc-panel small,#csfc-status{color:#c1cdd6}#csfc-panel a{color:#a6d3ff}#csfc-panel input:not([type=checkbox]),#csfc-panel textarea{background:#243440;color:#fff;border-color:#647584}}
+
+/* Il pannello aperto resta sopra il dock, ma sotto i dialoghi principali. */
+#csfc:has(#csfc-toggle[aria-expanded="true"]){z-index:280}
+#csfc-panel{box-sizing:border-box;max-width:calc(100vw - 24px);scroll-padding:12px}
+#csfc-panel>header,#csfc-panel>small,#csfc-panel>label,#csfc-panel>button,#csfc-panel>form,#csfc-status{flex-shrink:0}
+#csfc-panel button{min-height:44px}
+@media(max-width:600px){
+  #csfc-panel{left:12px;right:12px;width:auto;bottom:calc(100px + env(safe-area-inset-bottom,0px));max-height:calc(100vh - 124px - env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 124px - env(safe-area-inset-bottom,0px));}
+  #csfc-panel input:not([type=checkbox]),#csfc-panel textarea{font-size:16px}
+}
+@media(max-width:600px) and (max-height:460px){
+  #csfc-panel{top:8px;bottom:calc(80px + env(safe-area-inset-bottom,0px));max-height:none}
+}
