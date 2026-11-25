@@ -40,26 +40,6 @@ def fonti(registro,anagrafiche):
         ("Ballo e serate a tema",'(bachata OR salsa OR "serata latina" OR "serata anni" OR "serata a tema")'),
     ]:
         rss.append(feed("Cerignola "+nome,"Cerignola "+tema,"Cerignola"))
-    # Organizzatori pubblicamente documentati: indizi di ricerca, mai alias
-    # di una sede. Fonti storiche, non annunci di eventi futuri:
-    # https://www.cerignolaviva.it/notizie/cerignola-summer-mood-chiude-con-stasera-con-uccio-in-piazza-duomo-arrivano-i-mudu/
-    # https://www.cerignolaviva.it/notizie/notte-fantastica-2024-a-cerignola-guest-star-paola-chiara/
-    # https://www.lanotiziaweb.it/venerdi-12-luglio-a-cerignola-il-music-beach-soccer-con-maninni-e-aka-7even/
-    # DJ e vocalist del Beer Fun Fest 2025, programma pubblico:
-    # https://www.cerignolaviva.it/notizie/festa-della-birra-in-piazza-della-repubblica-a-cerignola-birra-food-giochi-e-musica/
-    # https://www.andreaordinemusic.it/ (sito professionale, non calendario)
-    organizzatori_locali={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi","Andrea Ordine","Antonio Depalma","Nicola Lomuscio","Christian Antonacci"]}
-    for comune,locali_reg in registro.items():
-        for r in locali_reg:
-            for nome in r.get("organizzatori",[]):
-                if isinstance(nome,str) and 5<=len(nome)<=100 and '"' not in nome:
-                    organizzatori_locali.setdefault(comune,[]).append(nome)
-    for comune,nomi in organizzatori_locali.items():
-        unici=list(dict.fromkeys(nomi))
-        for i in range(0,len(unici),4):
-            gruppo=unici[i:i+4]
-            q='"'+comune+'" ('+" OR ".join('"'+n+'"' for n in gruppo)+") "+temi
-            rss.append(feed(comune+" organizzatori "+str(i//4+1),q,comune))
     # Ricerche per gruppi piccoli, anche senza comune nello snippet: il luogo
     # e la data devono comunque essere documentati nella pagina originale.
     locali=list(registro.get("Cerignola",[]))+[r for r in anagrafiche if r.get("gruppo")=="movida"]
