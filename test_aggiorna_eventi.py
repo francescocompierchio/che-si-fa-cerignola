@@ -20,6 +20,8 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertIn('"Cerignola"',q)
         self.assertIn('"Neverland Cerignola"',q)
         self.assertTrue(any('"Andrea Ordine"' in parse_qs(urlparse(s["url"]).query)["q"][0] for s in sources if s["comune_radar"]=="Cerignola"))
+        for nome in ("Cosimo Mancino","New Top Music"):
+            self.assertTrue(any('"'+nome+'"' in parse_qs(urlparse(s["url"]).query)["q"][0] for s in sources if s["comune_radar"]=="Cerignola" and s["solo_cerignola"] and not s["alias_movida"]))
         self.assertTrue(cer["solo_cerignola"])
         self.assertEqual(cer["alias_movida"],[])
         qf=parse_qs(urlparse(fog["url"]).query)["q"][0]
