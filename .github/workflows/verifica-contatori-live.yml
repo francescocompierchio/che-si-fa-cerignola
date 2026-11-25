@@ -33,7 +33,7 @@ jobs:
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Verifica i tre contatori e l'esclusione amministratore
+      - name: Verifica contatori pubblici, visite interne ed esclusione amministratore
         run: |
           node <<'NODE'
           const { chromium }=require("playwright");
@@ -53,19 +53,23 @@ jobs:
               return p;
             }
             try{
+              let pubblicata=false;
+              for(let i=0;i<40;i++){const r=await fetch(site+"?verifica="+Date.now(),{cache:"no-store",signal:AbortSignal.timeout(10000)});if(r.ok){const html=await r.text();if(!html.includes('id="visits-pill"')&&html.includes('id="views-pill"')){pubblicata=true;break;}}await new Promise(r=>setTimeout(r,2000));}
+              assert.ok(pubblicata,"Nuova intestazione non ancora pubblicata");
               const before=await snapshot();console.log("PRIMA "+JSON.stringify(before));
               const page=await pagina();
               await page.goto(site,{waitUntil:"domcontentloaded",timeout:30000});
               assert.equal(await page.evaluate(()=>window.CsfMetrics?.allowed()),false);
               assert.equal(await page.evaluate(()=>window.CsfMetrics?.aggregateAllowed()),true);
-              for(const id of ["visits-pill","views-pill","live-pill"])await page.locator("#"+id).waitFor({state:"visible",timeout:25000});
+              for(const id of ["views-pill","live-pill"])await page.locator("#"+id).waitFor({state:"visible",timeout:25000});
+              assert.equal(await page.locator("#visits-pill").count(),0,"Il contatore visite non deve comparire");
               const home=await until(s=>s.visite>before.visite&&s.visualizzazioni>before.visualizzazioni&&s.online>=1);
               await page.waitForFunction(n=>Number(document.getElementById("total-views-count").textContent.replace(/\D/g,""))>=n,home.visualizzazioni+1367,{timeout:20000});
               console.log("HOME "+JSON.stringify(home));
               const visualizzazioniMostrate=Number((await page.locator("#total-views-count").textContent()).replace(/\D/g,""));
               const raw=await snapshot();
               assert.ok(visualizzazioniMostrate>=home.visualizzazioni+1367&&visualizzazioniMostrate<=raw.visualizzazioni+1367,"Totale storico + Firebase non coerente");
-              console.log("VISIBILI "+JSON.stringify({visite:await page.locator("#total-visits-count").textContent(),visualizzazioni:await page.locator("#total-views-count").textContent(),online:await page.locator("#online-users-count").textContent()}));
+              console.log("VISIBILI "+JSON.stringify({visualizzazioni:await page.locator("#total-views-count").textContent(),online:await page.locator("#online-users-count").textContent()}));
               await page.goto(site+"eventi/weekend.html",{waitUntil:"domcontentloaded",timeout:30000});
               const evento=await until(s=>s.visualizzazioni>home.visualizzazioni);
               console.log("PAGINA EVENTI "+JSON.stringify(evento));

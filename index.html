@@ -925,9 +925,6 @@
           <span class="live-dot"></span>
           <span title="Connessioni attive rilevate nell’app; non persone uniche"><strong id="online-users-count">0</strong> online ora</span>
         </span>
-        <span class="live-pill" id="visits-pill" style="display:none;">
-          <span title="Conteggio storico delle aperture rilevate; comprende il precedente totale, non persone uniche">👁 <strong id="total-visits-count">0</strong> visite</span>
-        </span>
         <span class="live-pill" id="views-pill" style="display:none;">
           <span title="1.367 visualizzazioni storiche GA4 fino al 24 novembre 2026 (possibili accessi admin inclusi) + aperture rilevate da Firebase dal 25 novembre, esclusi i dispositivi admin riconosciuti. Non persone uniche.">📄 <strong id="total-views-count">0</strong> visualizzazioni</span>
         </span>
@@ -2329,10 +2326,11 @@
       const db = firebase.database();
       dbGlobal = db;
       contatoriGlobal = creaContatori(db, () => window.CsfMetrics?.aggregateAllowed(), isDispositivoEscluso, () => !document.hidden, (tipo, valore) => {
-        const visita = tipo === "visite";
-        const pill = document.getElementById(visita ? "visits-pill" : "live-pill");
+        // Le visite restano registrate in Firebase, senza contatore nell'intestazione.
+        if (tipo !== "online") return;
+        const pill = document.getElementById("live-pill");
         if (valore === null) { pill.style.display = "none"; return; }
-        document.getElementById(visita ? "total-visits-count" : "online-users-count").textContent = valore.toLocaleString("it-IT");
+        document.getElementById("online-users-count").textContent = valore.toLocaleString("it-IT");
         pill.style.display = "inline-flex";
       }, (msg, err) => console.warn(msg, err));
       document.addEventListener("visibilitychange", () => contatoriGlobal?.aggiorna());
@@ -2566,7 +2564,7 @@
           if (installBox) installBox.style.display = "none";
           contatoriGlobal?.aggiorna();
           window.CsfPublicViews?.aggiorna();
-          alert("Dispositivo Admin attivato: da ora le tue visite non verranno più contate.");
+          alert("Dispositivo Admin attivato: da ora le tue visite, visualizzazioni e presenze non verranno più contate.");
         } else {
           localStorage.removeItem(ADMIN_FLAG_KEY);
           contatoriGlobal?.aggiorna();
@@ -2576,7 +2574,7 @@
       }
     }
 
-    document.getElementById("visits-pill").addEventListener("click", registraToccoAdmin);
+    document.getElementById("views-pill").addEventListener("click", registraToccoAdmin);
     document.getElementById("author-signature").addEventListener("click", registraToccoAdmin);
 
     document.getElementById("btn-home").addEventListener("click", () => {
