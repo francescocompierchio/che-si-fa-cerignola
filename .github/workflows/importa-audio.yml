@@ -17,6 +17,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Installa strumenti audio
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          ffprobe -version
       - name: Scarica i cinque brani CC BY e valida durata e formato
         run: |
           python3 audio/importa.py
@@ -25,7 +32,7 @@ jobs:
           set -euo pipefail
           git config user.name "CSF audio"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add audio/*.mp3
+          git add audio/*.mp3 audio/playlist.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Importa registrazioni CC BY Luxury Spa"
           git pull --rebase origin main

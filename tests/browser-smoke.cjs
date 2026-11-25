@@ -115,6 +115,7 @@ const assert = require("node:assert/strict");
     wav.write("RIFF",0);wav.writeUInt32LE(36+size,4);wav.write("WAVEfmt ",8);wav.writeUInt32LE(16,16);
     wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);
     wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(size,40);
+    await chrome.route(/\/audio\/playlist\.json$/,r=>r.fulfill({json:{ids:["USUAN1200054","USUAN1300033","USUAN1100757","USUAN2400001","USUAN1800019"]}}));
     await chrome.route(/\/audio\/USUAN\d+\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
     await chrome.route(/https:\/\/incompetech\.com\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
     await chrome.addInitScript(()=>{
@@ -203,6 +204,26 @@ const assert = require("node:assert/strict");
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#home-shortcut").isHidden());
     await chrome.close();
+    // No files or manifest: the actual WebAudio fallback must produce non-silent samples.
+    const fallback=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block"});
+    fallback.on("pageerror",e=>errors.push(e.message));
+    await fallback.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
+    await fallback.route(/\/audio\/(?:playlist\.json|.*\.mp3)$/,r=>r.fulfill({status:404,body:"Not found"}));
+    await fallback.addInitScript(()=>{
+      const start=AudioBufferSourceNode.prototype.start;
+      AudioBufferSourceNode.prototype.start=function(...args){
+        if(this.buffer)window.__csfFallback={duration:this.buffer.duration,nonSilent:this.buffer.getChannelData(0).some(v=>Math.abs(v)>.001)};
+        return start.apply(this,args);
+      };
+    });
+    await fallback.goto("http://127.0.0.1:8765/index.html");
+    await fallback.locator(".hero h1").tap();
+    await fallback.waitForFunction(()=>document.querySelector("#csf-music-toggle")?.dataset.musicState==="playing");
+    assert.equal(await fallback.locator("#csf-music-toggle").getAttribute("data-music-mode"),"local");
+    assert.deepEqual(await fallback.evaluate(()=>window.__csfFallback),{duration:180,nonSilent:true});
+    await fallback.locator("#csf-music-toggle").click();
+    assert.equal(await fallback.locator("#csf-music-toggle").getAttribute("data-music-state"),"off");
+    await fallback.close();
     const social=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36 Instagram"});
     social.on("pageerror",e=>errors.push(e.message));
     await social.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
