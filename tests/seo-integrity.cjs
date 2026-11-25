@@ -17,6 +17,13 @@ assert.equal(u.overlaps(invalid,"2027-02-01","2027-03-31"),false);
 const links=[...files["sitemap.xml"].matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
 assert.equal(new Set(links).size,links.length);
 for(const url of links){if(url===base||url===base+"collabora.html")continue;const p=url.slice(base.length)+(url.endsWith("/")?"index.html":"");assert.ok(files[p]?.includes('<link rel="canonical" href="'+url+'">'));assert.ok(!files[p].includes('name="robots" content="noindex,follow"'));}
+const digest=u.weekendDigest([ev,second,third,invalid,{...ev,dataInizio:"2026-11-20",dataFine:"2026-11-20"},{...ev,tipoContenuto:"esperienza",titolo:"Esperienza"}],"2026-11-24");
+assert.ok(digest.includes("Serata di prova")&&digest.includes("Serata due")&&digest.includes("Serata tre"));
+assert.ok(!digest.includes("Esperienza")&&!digest.includes("Data impossibile"));
+assert.equal(u.weekendDigest([ev],"2026-12-01"),"");
+assert.ok(files["eventi/weekend.html"].includes('id="csf-share-weekend"'));
+assert.ok(files["eventi/weekend.html"].includes("vista=weekend"));
+assert.ok(files["eventi/cerignola-2026-11-28-serata-di-prova.html"].includes("data-csf-install"));
 const empty=genera([],[],"2026-11-24",["hub-serate.html"]);
 assert.ok(empty["eventi/hub-serate.html"].includes('content="noindex,follow"'));
 assert.ok(!empty["sitemap.xml"].includes("hub-serate.html"));

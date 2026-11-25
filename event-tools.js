@@ -22,7 +22,21 @@ function strumenti(){
  function quality(ev){return Number(!!ev.locandinaUrl)*2+Number(!!ev.luogo)+Number(String(ev.descrizione||"").length>=60)+Number(!!ev.costo&& !/non indicato|da definire/i.test(ev.costo));}
  function evening(ev){if(ev.tipoContenuto==="esperienza")return false;const text=norm(ev.categoria);return /locali|serat/.test(text)||/\b(?:ore|start|inizio|dalle|h)\s*(?:1[89]|2[0-3])(?=[:.\s]|$)/i.test([ev.dataTesto,ev.descrizione].join(" "));}
  function shareUrl(ev,available,base){const candidate=base+"eventi/"+id(ev)+".html";return available.has(candidate)?candidate:base+"#evento="+encodeURIComponent(key(ev));}
- return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl};
+ // Riepilogo aggiornato, senza esperienze non datate, eventi scaduti o doppioni.
+ function weekendDigest(eventi,oggi){
+   if(!validDate(oggi))return "";
+   const [start,end]=weekend(oggi),from=oggi>start?oggi:start;
+   const fmt=v=>new Intl.DateTimeFormat("it-IT",{timeZone:"UTC",weekday:"short",day:"numeric",month:"short"}).format(new Date(v+"T12:00:00Z"));
+   const rows=dedup(eventi.filter(ev=>ev&&overlaps(ev,from,end)&&ev.titolo&&ev.citta&&ev.luogo)).sort((a,b)=>Number(norm(b.citta)==="cerignola")-Number(norm(a.citta)==="cerignola")||Number(evening(b))-Number(evening(a))||a.dataInizio.localeCompare(b.dataInizio)||String(a.titolo).localeCompare(String(b.titolo)));
+   if(!rows.length)return "";
+   // Limita a due appuntamenti per comune nel primo giro, poi completa fino a sei.
+   const chosen=[],counts=new Map();
+   for(const ev of rows){const c=norm(ev.citta);if((counts.get(c)||0)>=2)continue;chosen.push(ev);counts.set(c,(counts.get(c)||0)+1);if(chosen.length===6)break;}
+   for(const ev of rows){if(chosen.length===6)break;if(!chosen.includes(ev))chosen.push(ev);}
+   const lines=chosen.map(ev=>"• "+String(ev.titolo).replace(/\s+/g," ").slice(0,95)+" — "+fmt(ev.dataInizio)+ (ev.dataFine&&ev.dataFine!==ev.dataInizio?"–"+fmt(ev.dataFine):"")+" · "+ev.citta+" · "+String(ev.luogo).replace(/\s+/g," ").slice(0,70));
+   return "CHE SI FA CERIGNOLA | Weekend "+fmt(start)+" – "+fmt(end)+"\n\n"+lines.join("\n")+(rows.length>chosen.length?"\n… e altri "+(rows.length-chosen.length)+" appuntamenti":"")+"\n\nConsulta il programma aggiornato, orari e fonti. Aggiungi l’app gratis al telefono.";
+ }
+ return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest};
 }
 const CsfEventTools = strumenti();
 if (typeof module !== "undefined" && module.exports) module.exports=CsfEventTools;

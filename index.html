@@ -981,6 +981,7 @@
 
     <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></section>
     <section id="saved-plan-share" class="saved-plan-share" hidden><div><strong>Il tuo piano è pronto?</strong><span>Condividi in un messaggio tutti gli eventi e le idee che hai salvato</span></div><button type="button" id="btn-share-saved-plan" class="discovery-btn active">↗ Condividi il mio piano</button></section>
+    <section id="weekend-share" class="saved-plan-share" hidden><div><strong>Organizza il weekend con gli amici</strong><span>Condividi una selezione aggiornata delle proposte del fine settimana.</span></div><button type="button" id="btn-share-weekend" class="discovery-btn active">↗ Condividi weekend</button></section>
     <div class="smart-filters" aria-label="Filtri intelligenti">
       <span class="smart-filters-label">Scopri per tema o compagnia</span>
       <div class="smart-filters-row">
@@ -1234,7 +1235,7 @@
         if(u.origin!=="https://francescocompierchio.github.io"||!u.pathname.startsWith("/che-si-fa-cerignola/"))return raw;
         u.searchParams.set("utm_source",source);
         u.searchParams.set("utm_medium","social");
-        u.searchParams.set("utm_campaign","condivisione_eventi");
+        u.searchParams.set("utm_campaign",u.pathname.endsWith("/eventi/weekend.html")?"condivisione_weekend":u.searchParams.get("installa")==="1"?"installa_app":"condivisione_eventi");
         return u.href;
       }catch(_){return raw;}
     }
@@ -1791,7 +1792,7 @@
     let filtroAttivo = "ALL";
 
     let queryRicerca = "";
-    let modalitaRapida = "ALL", ordinamentoEventi = "date", filtroSmart = "ALL";
+    let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", ordinamentoEventi = "date", filtroSmart = "ALL";
     let dataSelezionata = "";
     let linkEventoDaAprire = "";
     try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
@@ -2063,6 +2064,12 @@
       condividiContenuto("Il mio piano · Che Si Fa Cerignola",creaTestoPianoSalvati(salvati),APP_URL);
     }
     document.getElementById("btn-share-saved-plan").addEventListener("click",condividiPianoSalvati);
+    document.getElementById("btn-share-weekend").addEventListener("click",()=>{
+      const testo=CsfEventTools.weekendDigest?.(tuttiEventiAttivi,oggi);
+      if(!testo){mostraToast("Nessun appuntamento del weekend da condividere");return;}
+      window.CsfMetrics?.action?.("csf_weekend_share");
+      condividiContenuto("Weekend · Che Si Fa Cerignola",testo,APP_URL+"eventi/weekend.html");
+    });
 
     function piegaRigaICS(riga){let parti=[],corrente="",byteCount=0;for(const carattere of String(riga)){const byteSize=new TextEncoder().encode(carattere).length;if(byteCount+byteSize>73){parti.push(corrente);corrente=" "+carattere;byteCount=1+byteSize;}else{corrente+=carattere;byteCount+=byteSize;}}parti.push(corrente);return parti.join("\r\n");}
     function creaTestoICS(ev){
@@ -2090,7 +2097,7 @@
     function salvaPreferiti(){try{localStorage.setItem(PREFERITI_KEY,JSON.stringify([...preferiti]));}catch(e){}aggiornaContatorePreferiti();}
     function mostraToast(msg){const t=document.getElementById("app-toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(mostraToast.timer);mostraToast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
     function eWeekend(ev){const [start,end]=CsfEventTools.weekend(oggi);return CsfEventTools.overlaps(ev,start,end); }
-    function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");const sharePlan=document.getElementById("saved-plan-share");if(sharePlan)sharePlan.hidden=!(modalitaRapida==="FAVORITES"&&tuttiEventiAttivi.some(ev=>preferiti.has(chiaveEvento(ev))));document.querySelectorAll(".smart-filter-btn").forEach(b=>{const active=b.dataset.smartFilter===filtroSmart;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});}
+    function aggiornaComandiRapidi(){const m={ALL:"quick-all",WEEKEND:"quick-weekend",FAVORITES:"quick-favorites"};Object.entries(m).forEach(([k,id])=>{const b=document.getElementById(id);if(b){b.classList.toggle("active",modalitaRapida===k);b.setAttribute("aria-pressed",String(modalitaRapida===k));}});document.querySelectorAll(".dock-btn").forEach(b=>b.classList.remove("active"));document.getElementById(modalitaRapida==="WEEKEND"?"dock-weekend":modalitaRapida==="FAVORITES"?"dock-saved":"dock-home")?.classList.add("active");const weekendShare=document.getElementById("weekend-share");if(weekendShare)weekendShare.hidden=!(modalitaRapida==="WEEKEND"&&tuttiEventiAttivi.some(ev=>ev.tipoContenuto!=="esperienza"&&eWeekend(ev)));const sharePlan=document.getElementById("saved-plan-share");if(sharePlan)sharePlan.hidden=!(modalitaRapida==="FAVORITES"&&tuttiEventiAttivi.some(ev=>preferiti.has(chiaveEvento(ev))));document.querySelectorAll(".smart-filter-btn").forEach(b=>{const active=b.dataset.smartFilter===filtroSmart;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});}
     function normalizzaRicerca(v){return String(v||"").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
     function spostaGiorniISO(data,giorni){const [a,m,g]=data.split("-").map(Number),d=new Date(a,m-1,g,12);d.setDate(d.getDate()+giorni);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
     function contaEventiGiorno(data){return tuttiEventiAttivi.filter(ev=>ev.tipoContenuto!=="esperienza"&&ev.dataInizio&&ev.dataInizio<=data&&(ev.dataFine||ev.dataInizio)>=data).length;}

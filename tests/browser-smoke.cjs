@@ -28,6 +28,7 @@ const assert = require("node:assert/strict");
     await page.locator("#quick-favorites").click();
     assert.equal(await page.locator("#events-container details").count(),1);
     await page.locator("#quick-weekend").click();
+    assert.ok(await page.locator("#weekend-share").isVisible());
     assert.ok(await page.locator("#events-container details").filter({hasText:"Il Sabato di ADE"}).count());
     await page.locator("#btn-segnala-evento").click();
     assert.ok(await page.locator("#modal-segnala").isVisible());
