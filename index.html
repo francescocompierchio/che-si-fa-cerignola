@@ -1075,6 +1075,22 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
 #install-box .install-guide{padding:0;margin:0;border:0}
 #install-box .install-guide p{margin:0 0 6px}
 #install-box .install-guide .btn{white-space:normal;min-height:42px}
+
+/* Strumenti rapidi in alto: pannelli fuori dal flusso della homepage. */
+.nav-actions{gap:5px;flex:0 1 auto;min-width:0}
+.nav-tool{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:42px;padding:6px 9px;border:1px solid var(--border);background:var(--card);color:var(--accent);font-size:.75rem;font-weight:800;border-radius:13px;cursor:pointer;white-space:nowrap}
+.nav-tool>span:first-child{font-size:1.1rem;line-height:1}
+.nav-tool.nav-locali{color:#b32163}
+html[data-csf-theme="dark"] .nav-tool.nav-locali{color:#f8a8cf}
+.venues-drawer:not(.open){visibility:hidden;pointer-events:none}
+#install-box{position:fixed;top:0;right:0;bottom:0;width:min(370px,92vw);height:100%;height:100dvh;margin:0;padding:0;border:0;box-shadow:-10px 0 35px #10213c33;background:var(--card);border-radius:0}
+.install-drawer .drawer-header{background:linear-gradient(135deg,#102b61,#1746a2)}
+#install-box .install-guide{font-size:.93rem;line-height:1.55;padding:0;margin:0}
+#install-box .install-guide p{margin:0 0 14px}
+#install-box .install-guide .btn{width:100%;margin:4px 0 12px}
+#install-box .install-strip-row{display:none}
+@media(max-width:600px){.top-nav-inner{gap:5px}.nav-actions{gap:4px}.nav-tool{min-height:42px;padding:5px 7px;font-size:.7rem}.top-nav .home-btn{padding-inline:7px}.top-nav .nav-share-btn{padding-inline:7px;font-size:.72rem;white-space:nowrap}.top-nav .theme-toggle{width:36px;flex-basis:36px}}
+@media(max-width:370px){.nav-tool{padding-inline:5px;gap:2px}.nav-tool>span:first-child{font-size:.95rem}.top-nav .nav-share-btn{font-size:.67rem;padding-inline:5px}.top-nav .home-btn{font-size:.72rem;padding-inline:5px}.top-nav{padding-inline:7px}.nav-actions{gap:3px}.top-nav .theme-toggle{width:32px;flex-basis:32px}}
   </style>
 </head>
 <body>
@@ -1086,6 +1102,8 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
         <span>Home</span>
       </button>
       <div class="nav-actions">
+        <span id="home-shortcut" hidden><button type="button" class="nav-tool" id="btn-add-home" aria-label="Aggiungi alla Home" title="Aggiungi alla Home" aria-controls="install-box" aria-expanded="false"><span aria-hidden="true">＋</span><span>Installa</span></button></span>
+        <button type="button" class="nav-tool nav-locali" id="btn-open-venues" aria-label="Pagine Instagram Locali: apri il pannello" aria-controls="venues-drawer" aria-expanded="false"><span aria-hidden="true">◎</span><span>Locali</span></button>
         <button type="button" class="theme-toggle" id="csf-theme-toggle" aria-label="Modalità notturna" aria-pressed="false" title="Modalità notturna">☾</button>
         <button type="button" class="nav-share-btn" id="btn-share-nav">
           <span>Condividi app</span>
@@ -1112,58 +1130,6 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
   </header>
 
   <main>
-    <section class="home-shortcut" id="home-shortcut" aria-label="Aggiungi alla schermata Home" hidden>
-      <div><strong>Porta Che Si Fa sempre con te</strong><small>Aggiungi l'icona, senza scaricare l'APK.</small></div>
-      <button type="button" class="btn btn-map" id="btn-add-home" aria-controls="install-box" aria-expanded="false">＋ Aggiungi alla Home</button>
-      <section id="install-box" style="display:none" aria-label="Come aggiungere alla Home">
-      <div class="install-strip-row">
-        <p class="install-strip-text" id="install-title">📲 Installa l'app sul telefono</p>
-        <div class="install-strip-actions">
-          <button type="button" class="btn-strip btn-strip-primary" id="btn-apk-top">
-            Installa App
-          </button>
-          <button type="button" class="btn-strip btn-strip-soft" id="btn-toggle-guide">
-            iPhone
-          </button>
-          <button type="button" class="btn-strip-close" id="btn-close-install" aria-label="Chiudi avviso">
-            ✕
-          </button>
-        </div>
-      </div>
-      <div class="install-guide" id="install-guide">
-        <p id="guide-social" hidden><strong>Se sei dentro Instagram o Facebook:</strong> apri il menu e scegli Apri nel browser esterno (Chrome o Safari).</p>
-        <p id="guide-android"><strong>Se non compare la conferma:</strong> in Chrome tocca ⋮ → Aggiungi alla schermata Home (o Installa app).</p>
-        <p id="guide-open-chrome" hidden><a class="btn btn-map" id="btn-open-install-chrome" href="https://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1">Apri in Chrome</a></p>
-        <p id="guide-ios"><strong>iPhone (Safari):</strong> Condividi → Aggiungi alla schermata Home → se disponibile, Apri come app web → Aggiungi.</p>
-        <p id="guide-desktop" hidden><strong>Computer:</strong> cerca l'opzione Installa app o Crea scorciatoia nel menu del browser, se disponibile.</p>
-        <p id="guide-apk" hidden></p>
-      </div>
-      </section>
-    </section>
-
-    <!-- LINGUETTA COMPATTA PER APRIRE IL PANNELLO LATERALE INSTAGRAM LOCALI -->
-    <div class="venues-launcher-row">
-      <button type="button" class="venues-side-tab" id="btn-open-venues" aria-label="Pagine Instagram Locali: apri il pannello">
-        <span class="venues-tab-left">
-          <span class="ig-badge-icon" aria-hidden="true">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </svg>
-          </span>
-          <span class="venues-tab-texts">
-            <span class="venues-tab-title">Pagine Instagram Locali</span>
-            <span class="venues-tab-sub">Storie, serate e navigatore rapido</span>
-          </span>
-        </span>
-        <span class="venues-tab-right">
-          <span id="venues-counter">4 locali</span>
-          <span>›</span>
-        </span>
-      </button>
-    </div>
-
     <input type="search" id="search-input" class="search-box" placeholder="Es. discoteche a Trani sabato sera..." aria-label="Cerca evento o attività" />
 
     <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><div class="discovery-secondary"><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="smart">Ordina: consigliati</option><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></div></section>
@@ -1192,13 +1158,45 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
     <div id="events-container"></div>
   </main>
 
+  <div class="drawer-backdrop" id="install-drawer-backdrop"></div>
+  <aside id="install-box" class="venues-drawer install-drawer" role="dialog" aria-modal="true" aria-labelledby="install-drawer-title" inert>
+    <div class="drawer-header"><div><h2 id="install-drawer-title">Aggiungi alla Home</h2><p>Accedi con un tocco, senza scaricare l’APK</p></div><button type="button" class="drawer-close-btn" id="close-install-drawer" aria-label="Chiudi installazione">✕</button></div>
+    <div class="drawer-body">
+      <div class="install-strip-row">
+        <p class="install-strip-text" id="install-title">📲 Installa l'app sul telefono</p>
+        <div class="install-strip-actions">
+          <button type="button" class="btn-strip btn-strip-primary" id="btn-apk-top">
+            Installa App
+          </button>
+          <button type="button" class="btn-strip btn-strip-soft" id="btn-toggle-guide">
+            iPhone
+          </button>
+          <button type="button" class="btn-strip-close" id="btn-close-install" aria-label="Chiudi avviso">
+            ✕
+          </button>
+        </div>
+      </div>
+      <div class="install-guide" id="install-guide">
+        <p id="guide-native" hidden>Il browser è pronto: tocca il pulsante qui sotto per confermare.</p>
+        <button type="button" class="btn btn-map" id="btn-native-install" hidden>＋ Aggiungi alla Home</button>
+        <p id="guide-social" hidden><strong>Se sei dentro Instagram o Facebook:</strong> apri il menu e scegli Apri nel browser esterno (Chrome o Safari).</p>
+        <p id="guide-android"><strong>Se non compare la conferma:</strong> in Chrome tocca ⋮ → Aggiungi alla schermata Home (o Installa app).</p>
+        <p id="guide-open-chrome" hidden><a class="btn btn-map" id="btn-open-install-chrome" href="https://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1">Apri in Chrome</a></p>
+        <p id="guide-ios"><strong>iPhone (Safari):</strong> Condividi → Aggiungi alla schermata Home → se disponibile, Apri come app web → Aggiungi.</p>
+        <p id="guide-desktop" hidden><strong>Computer:</strong> cerca l'opzione Installa app o Crea scorciatoia nel menu del browser, se disponibile.</p>
+        <p id="guide-apk" hidden></p>
+      </div>
+
+    </div>
+  </aside>
+
   <!-- CASSETTO LATERALE A SCOMPARSA PAGINE INSTAGRAM LOCALI -->
   <div class="drawer-backdrop" id="venues-drawer-backdrop"></div>
-  <aside class="venues-drawer" id="venues-drawer" aria-label="Pagine Instagram Locali a Cerignola">
+  <aside class="venues-drawer" id="venues-drawer" role="dialog" aria-modal="true" aria-label="Pagine Instagram Locali a Cerignola" inert>
     <div class="drawer-header">
       <div>
         <h2>Locali &amp; Pagine Instagram</h2>
-        <p id="venues-drawer-sub">Apri i profili Instagram disponibili o avvia il navigatore</p>
+        <p id="venues-drawer-sub"><span id="venues-counter">4 locali</span> · Profili Instagram e navigatore</p>
       </div>
       <button type="button" class="drawer-close-btn" id="btn-close-venues" aria-label="Chiudi pannello locali">✕</button>
     </div>
@@ -1499,27 +1497,46 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
       if(btnApkTop)btnApkTop.style.display="none";
       if(btnApkFooter)btnApkFooter.style.display="none";
     }
-    if(isStandalone||isAndroidApp||isDispositivoEscluso()||(!richiestaInstallazione&&localStorage.getItem(HIDE_INSTALL_KEY)==="1")){
-      if(installBox)installBox.style.display="none";
-    }else if(richiestaInstallazione){
-      if(installBox)installBox.style.display="";
-      installGuide?.classList.add("open");
-      btnAddHome?.setAttribute("aria-expanded","true");
+    const installBackdrop=document.getElementById("install-drawer-backdrop");
+    const nativeInstall=document.getElementById("btn-native-install");
+    const closeInstall=document.getElementById("close-install-drawer");
+    let installInvoker=null;
+    function aggiornaDisponibilitaHome(){
+      const available=!!window.csfInstallPrompt&&!isSocialBrowser;
+      if(nativeInstall)nativeInstall.hidden=!available;
+      guidaVisibile("guide-native",available);
+      guidaVisibile("guide-android",isAndroid&&!available);
+      guidaVisibile("guide-open-chrome",isAndroid&&!available);
+      guidaVisibile("guide-ios",isIOS&&!available);
+      guidaVisibile("guide-desktop",!isAndroid&&!isIOS&&!available);
     }
-    function suggerisciInstallazioneDopoUtilizzo(){
-      // Il pulsante Home è già visibile: non aprire automaticamente altre sezioni.
+    function chiudiInstallazione(ripristinaFocus=true){
+      installBox?.classList.remove("open");
+      installBox?.setAttribute("inert","");
+      installBackdrop?.classList.remove("open");
+      installGuide?.classList.remove("open");
+      btnAddHome?.setAttribute("aria-expanded","false");
+      if(ripristinaFocus&&installInvoker?.isConnected&&!homeShortcut?.hidden)installInvoker.focus();
     }
+    function suggerisciInstallazioneDopoUtilizzo(){}
     function mostraGuidaInstallazione(esplicita=false){
       if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
-      if(installBox)installBox.style.display="";
+      if(document.getElementById("venues-drawer")?.classList.contains("open"))chiudiDrawerLocali();
+      installInvoker=document.activeElement;
+      aggiornaDisponibilitaHome();
+      installBox?.removeAttribute("inert");
+      installBox?.classList.add("open");
+      installBackdrop?.classList.add("open");
       installGuide?.classList.add("open");
       btnAddHome?.setAttribute("aria-expanded","true");
+      closeInstall?.focus();
       window.CsfMetrics?.action?.("csf_install_guide");
     }
     async function richiestaInstallaApp(esplicita=false){
       if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
       const prompt=window.csfInstallPrompt;
       if(!prompt||isSocialBrowser){mostraGuidaInstallazione(esplicita);return;}
+      chiudiInstallazione(false);
       window.csfInstallPrompt=null;
       window.CsfMetrics?.action?.("csf_install_prompt");
       try{
@@ -1528,37 +1545,23 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
         if(esito?.outcome==="accepted")window.CsfMetrics?.action?.("csf_install_accepted");
       }catch(_){mostraGuidaInstallazione(esplicita);}
     }
-    btnAddHome?.addEventListener("click",()=>{
-      if(!window.csfInstallPrompt||isSocialBrowser){
-        if(installBox&&installBox.style.display!=="none"&&installGuide?.classList.contains("open")){
-          installBox.style.display="none";installGuide.classList.remove("open");btnAddHome.setAttribute("aria-expanded","false");
-        }else mostraGuidaInstallazione(true);
-      }else{
-        if(installBox)installBox.style.display="none";
-        installGuide?.classList.remove("open");
-        btnAddHome.setAttribute("aria-expanded","false");
-        richiestaInstallaApp(true);
-      }
-    });
+    btnAddHome?.addEventListener("click",()=>richiestaInstallaApp(true));
+    nativeInstall?.addEventListener("click",()=>richiestaInstallaApp(true));
+    closeInstall?.addEventListener("click",()=>chiudiInstallazione());
+    installBackdrop?.addEventListener("click",()=>chiudiInstallazione());
     btnApkTop?.addEventListener("click",()=>richiestaInstallaApp(true));
-    btnApkFooter?.addEventListener("click",e=>{
-      e.preventDefault();
-      if(!isStandalone&&!isAndroidApp){homeShortcut?.scrollIntoView({block:"center"});richiestaInstallaApp(true);}
-    });
-    btnToggleGuide?.addEventListener("click",()=>{
-      if(installGuide?.classList.contains("open"))installGuide.classList.remove("open");
-      else mostraGuidaInstallazione();
-    });
-    btnCloseInstall?.addEventListener("click",()=>{
-      if(installBox)installBox.style.display="none";
-      localStorage.setItem(HIDE_INSTALL_KEY,"1");
-    });
+    btnApkFooter?.addEventListener("click",e=>{e.preventDefault();richiestaInstallaApp(true);});
+    btnToggleGuide?.addEventListener("click",()=>mostraGuidaInstallazione(true));
+    btnCloseInstall?.addEventListener("click",()=>chiudiInstallazione());
+    window.addEventListener("beforeinstallprompt",aggiornaDisponibilitaHome);
+    aggiornaDisponibilitaHome();
+    if(richiestaInstallazione&&!isStandalone&&!isAndroidApp)mostraGuidaInstallazione(true);
     document.getElementById("btn-apk-alternativo")?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
     window.addEventListener("appinstalled",()=>{
       installataOra=true;window.csfInstallPrompt=null;
       if(homeShortcut)homeShortcut.hidden=true;
       guidaVisibile("btn-apk-alternativo",false);
-      if(installBox)installBox.style.display="none";
+      chiudiInstallazione(false);
       if(btnApkFooter)btnApkFooter.style.display="none";
       window.CsfMetrics?.action?.("csf_pwa_installed");
     });
@@ -1636,15 +1639,37 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
     const venuesDrawer = document.getElementById("venues-drawer");
     const venuesBackdrop = document.getElementById("venues-drawer-backdrop");
 
+    const venuesLauncher=document.getElementById("btn-open-venues");
     function apriDrawerLocali() {
+      chiudiInstallazione(false);
+      venuesDrawer.removeAttribute("inert");
       venuesDrawer.classList.add("open");
       venuesBackdrop.classList.add("open");
+      venuesLauncher.setAttribute("aria-expanded","true");
+      document.getElementById("btn-close-venues")?.focus();
     }
 
     function chiudiDrawerLocali() {
       venuesDrawer.classList.remove("open");
+      venuesDrawer.setAttribute("inert","");
       venuesBackdrop.classList.remove("open");
+      venuesLauncher.setAttribute("aria-expanded","false");
+      venuesLauncher.focus();
     }
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape"){
+        if(installBox?.classList.contains("open"))chiudiInstallazione();
+        else if(venuesDrawer.classList.contains("open"))chiudiDrawerLocali();
+      }
+      if(e.key==="Tab"){
+        const open=installBox?.classList.contains("open")?installBox:venuesDrawer.classList.contains("open")?venuesDrawer:null;
+        if(!open)return;
+        const items=[...open.querySelectorAll("button,a[href],input,select,textarea")].filter(el=>!el.disabled&&el.getClientRects().length&&getComputedStyle(el).visibility!=="hidden");
+        if(!items.length)return;
+        if(e.shiftKey&&(document.activeElement===items[0]||!open.contains(document.activeElement))){e.preventDefault();items.at(-1).focus();}
+        else if(!e.shiftKey&&(document.activeElement===items.at(-1)||!open.contains(document.activeElement))){e.preventDefault();items[0].focus();}
+      }
+    });
 
     document.getElementById("btn-open-venues").addEventListener("click", apriDrawerLocali);
     document.getElementById("btn-close-venues").addEventListener("click", chiudiDrawerLocali);
