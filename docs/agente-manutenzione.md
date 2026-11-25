@@ -21,3 +21,7 @@
 ## Arresto
 
 L'apprendimento operativo resta parte della raccolta programmata. L'agente IA può essere sospeso dalle attività programmate di ChatGPT. Il workflow di verifica non ha un proprio timer e non pubblica sul sito.
+
+## Guardiano tecnico (15 minuti)
+
+Il workflow `guardiano.yml` controlla la disponibilità dell'archivio pubblico, la validità JSON e lo stato della raccolta. Se l'ultima raccolta risulta riuscita o annullata da almeno 90 minuti e non vi sono esecuzioni attive, richiede una nuova raccolta sul ramo main, senza ignorare le pause delle fonti. Non riattiva workflow disabilitati, non ripete errori non diagnosticati, non annulla job e non cambia codice o dati. Le esecuzioni manuali e su push verificano senza recupero. Gli avvisi sono nei riepiloghi Actions. Il timer GitHub è best effort. L'agente IA mantiene il proprio timer separato.
