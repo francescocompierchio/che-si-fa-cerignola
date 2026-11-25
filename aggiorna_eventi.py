@@ -3247,6 +3247,7 @@ def esegui_aggiornamento():
     dirette_natura, rss_natura = radar_natura.fonti()
     dirette_food, rss_food = radar_food.fonti()
     dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola())
+    rss_movida += discovery_locale.fonti_organizzatori_movida(registro_locali_movida())
     esistenti={f["url"] for f in FONTI_PORTALI+calendari_registro_cerignola()}
     dirette_movida=[f for f in dirette_movida if f["url"] not in esistenti]
     compiti = (
