@@ -308,22 +308,26 @@ window.CsfShare = (() => {
     }
     link("WhatsApp","https://wa.me/?text="+enc(testo+"\n"+tracked("whatsapp")));
     link("Telegram","https://t.me/share/url?url="+enc(tracked("telegram"))+"&text="+enc(testo));
-    link("Facebook","https://www.facebook.com/sharer/sharer.php?u="+enc(tracked("facebook")));
-    async function copia(source,instagram=false,messaggio=false){
+    // I messaggi privati non sono post Facebook. Non fingere un invio
+    // diretto quando il contenitore Android non espone la condivisione nativa.
+    async function copia(source,messaggio=false){
       const value=messaggio?testo+"\n"+tracked(source):tracked(source);
       let copied=false;
       try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);copied=true;}}catch(_){}
       if(!copied){
-        const input=document.createElement("textarea");input.value=value;input.setAttribute("aria-label","Link da copiare");input.readOnly=true;input.style.width="100%";dialog.append(input);input.focus();input.select();
+        const input=document.createElement("textarea");input.value=value;input.setAttribute("aria-label","Testo da copiare");input.readOnly=true;input.style.width="100%";dialog.append(input);input.focus();input.select();
         try{copied=document.execCommand("copy");}catch(_){}
         if(copied)input.remove();
       }
-      status.textContent=copied?(instagram?"Link copiato. Apri Instagram e incollalo in un messaggio o nello sticker Link di una storia.":messaggio?"Messaggio copiato. Apri WhatsApp dal telefono e incollalo nella chat.":"Link copiato."):"Seleziona e copia manualmente il testo.";
+      const nome={instagram:"Instagram Direct",messenger:"Messenger",whatsapp:"WhatsApp"}[source];
+      status.textContent=copied?(nome?"Copiato. Apri "+nome+" dal pulsante qui sotto o dal telefono, scegli una chat e incolla il messaggio.":"Link copiato."):"Seleziona e copia manualmente il testo prima di aprire la chat.";
     }
-    button("WhatsApp · copia messaggio",()=>copia("whatsapp",false,true));
-    button("Instagram · copia link",()=>copia("instagram",true));
+    button("WhatsApp · copia messaggio",()=>copia("whatsapp",true));
+    button("Instagram Direct · copia messaggio",()=>copia("instagram",true));
+    link("Apri Direct","https://www.instagram.com/direct/inbox/");
+    button("Messenger · copia messaggio",()=>copia("messenger",true));
+    link("Apri Messenger","https://www.messenger.com/");
     button("Copia link",()=>copia("link_copiato"));
-    link("Apri Instagram","https://www.instagram.com/");
     dialog.append(grid,status);
     const close=document.createElement("button");close.type="button";close.textContent="Chiudi";close.style.width="100%";close.addEventListener("click",()=>{if(dialog.open&&typeof dialog.close==="function")dialog.close();else dialog.remove();});dialog.append(close);
     dialog.addEventListener("close",()=>{dialog.remove();if(invocante?.isConnected)invocante.focus();});
