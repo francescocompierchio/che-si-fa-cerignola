@@ -31,6 +31,8 @@ const assert = require("node:assert/strict");
     await page.reload();
     await page.locator("#events-container details").first().waitFor();
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
+    assert.ok(await page.locator("#btn-apk-alternativo").isVisible(),"APK sempre recuperabile anche da WebView");
+    assert.equal(await page.locator("#btn-apk-alternativo").getAttribute("href"),"app-release.apk");
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
     const conteggioOriginale = await page.locator("#event-counter").textContent();
     await page.evaluate(()=>{
@@ -155,6 +157,7 @@ const assert = require("node:assert/strict");
     await chrome.locator("#btn-add-home").click();
     assert.ok(await chrome.locator("#install-guide").isVisible());
     assert.ok(await chrome.locator("#btn-apk-top").isHidden(),"Nessun secondo pulsante di installazione");
+    assert.ok(await chrome.locator("#btn-apk-drawer").isVisible(),"Download APK nel pannello installazione");
     await chrome.locator("#close-install-drawer").click();
     assert.ok(await chrome.locator("#install-box").isHidden());
     for(const width of [320,360,393,430]){
@@ -186,6 +189,7 @@ const assert = require("node:assert/strict");
     await chrome.evaluate(()=>window.dispatchEvent(new Event("appinstalled")));
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#home-shortcut").isHidden());
+    assert.ok(await chrome.locator("#btn-apk-alternativo").isVisible(),"Installazione PWA non nasconde il download APK");
     await chrome.close();
     const social=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36 Instagram"});
     social.on("pageerror",e=>errors.push(e.message));

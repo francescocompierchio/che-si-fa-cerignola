@@ -1249,6 +1249,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
         <p id="guide-ios"><strong>iPhone (Safari):</strong> Condividi → Aggiungi alla schermata Home → se disponibile, Apri come app web → Aggiungi.</p>
         <p id="guide-desktop" hidden><strong>Computer:</strong> cerca l'opzione Installa app o Crea scorciatoia nel menu del browser, se disponibile.</p>
         <p id="guide-apk" hidden></p>
+        <p><a class="btn btn-soft" href="app-release.apk" download="CheSiFaCerignola.apk" id="btn-apk-drawer">Scarica app Android (APK)</a></p>
       </div>
 
     </div>
@@ -1287,7 +1288,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       <a class="btn btn-soft" id="btn-apk-footer" href="?installa=1#home-shortcut">
         Installa App
       </a>
-      <a class="btn btn-soft" href="app-release.apk" download="CheSiFaCerignola.apk" id="btn-apk-alternativo" hidden>Scarica APK Android</a>
+      <a class="btn btn-soft" href="app-release.apk" download="CheSiFaCerignola.apk" id="btn-apk-alternativo">Scarica app Android (APK)</a>
       <button type="button" class="btn btn-wa" id="btn-share-footer">
         Condividi app
       </button>
@@ -1551,7 +1552,8 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     guidaVisibile("guide-ios",!isAndroid);
     guidaVisibile("guide-desktop",!isAndroid&&!isIOS);
     guidaVisibile("guide-apk",false);
-    guidaVisibile("btn-apk-alternativo",isAndroid&&!isSocialBrowser&&!isStandalone&&!isAndroidApp);
+    // Il download APK rimane sempre accessibile: il tipo di browser non prova che l’APK sia installato.
+    guidaVisibile("btn-apk-alternativo",true);
     guidaVisibile("guide-open-chrome",isAndroid);
     const chromeLink=document.getElementById("btn-open-install-chrome");
     if(chromeLink&&isAndroid){const target="https://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1";chromeLink.href="intent://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(target)+";end";}
@@ -1624,11 +1626,11 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       // Il link apre il pannello una volta sola; un reload di consenso non lo riapre.
       try{const clean=new URL(location.href);clean.searchParams.delete("installa");history.replaceState(history.state,"",clean.href);}catch(_){}
     }
-    document.getElementById("btn-apk-alternativo")?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
+    for(const id of ["btn-apk-alternativo","btn-apk-drawer"])document.getElementById(id)?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
     window.addEventListener("appinstalled",()=>{
       installataOra=true;window.csfInstallPrompt=null;
       if(homeShortcut)homeShortcut.hidden=true;
-      guidaVisibile("btn-apk-alternativo",false);
+      // Il download APK è indipendente dall’installazione PWA.
       chiudiInstallazione(false);
       if(btnApkFooter)btnApkFooter.style.display="none";
       window.CsfMetrics?.action?.("csf_pwa_installed");
