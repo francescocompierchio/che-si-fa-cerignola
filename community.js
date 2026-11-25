@@ -25,17 +25,18 @@
   const privacy=$("a","l’informativa Community",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});consentLabel.append(privacy);
   const login=$("button","Accedi con Google",{type:"button",class:"csfc-primary"});
   const googleSlot=$("div",null,{id:"csfc-google-signin",hidden:"","aria-label":"Accesso Google"});
-  const browserHint=$("small","Se il browser integrato non consente l’accesso Google, apri Che Si Fa Cerignola direttamente in Chrome e riprova.",{hidden:""});
+  const alternate=$("button","Accesso Google alternativo",{type:"button",id:"csfc-login-alternate",hidden:""});
+  const browserHint=$("small","Se Google mostra una pagina bianca, torna alla Community con Indietro. Se non sei collegato, prova l’accesso alternativo in una normale scheda Chrome (non nel browser interno di un’altra app).",{hidden:""});
   const logout=$("button","Esci",{type:"button",hidden:""});
   const nick=$("input",null,{required:"",maxlength:"24",minlength:"2",placeholder:"Nickname pubblico","aria-label":"Nickname pubblico",autocomplete:"off"});
   const msg=$("textarea",null,{required:"",maxlength:"300",rows:"3",placeholder:"Scrivi un messaggio sugli eventi…","aria-label":"Messaggio"});
   const send=$("button","Invia per moderazione",{type:"submit",class:"csfc-primary"});
   const form=$("form",null,{hidden:""});form.append(nick,msg,send);
   const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Coda moderazione"});
-  panel.append(header,info,status,feed,consentLabel,login,googleSlot,browserHint,logout,form,mod);
+  panel.append(header,info,status,feed,consentLabel,login,googleSlot,alternate,browserHint,logout,form,mod);
   root.append(toggle,panel);document.body.append(root);
   let app,auth,db,user,authUnsub,off=[],generation=0,opening=false,moderator=false,blocked=false;
-  let gisLoad,gisReady=false,googleFlow=false,authBusy=false;
+  let gisLoad,gisReady=false,googleFlow=false,authBusy=false,alternateOffered=false;
   const stop=()=>{generation++;for(const f of off.splice(0))f();feed.replaceChildren();mod.replaceChildren();if(db)db.goOffline();};
   const error=()=>{status.textContent="Community temporaneamente non disponibile. Nessun messaggio è stato pubblicato automaticamente.";};
   const listen=(q,cb)=>{q.on("value",cb,error);off.push(()=>q.off("value",cb));};
@@ -71,11 +72,27 @@
       browserHint.hidden=false;
     }finally{authBusy=false;}
   }
+  async function alternateGoogle(){
+    if(panel.hidden||!consent.checked||!auth||authBusy||user)return;
+    authBusy=true;googleFlow=false;googleSlot.hidden=true;alternate.disabled=true;
+    status.textContent="Completa l’accesso Google nella nuova finestra. Poi torna alla Community.";
+    try{
+      // Alternativa esplicita: il flusso Firebase è utilizzabile in Chrome
+      // quando il popup GIS non restituisce la credenziale.
+      await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }catch(e){
+      status.textContent="Accesso alternativo non riuscito ("+(e?.code||"sessione")+"). Apri l’app in una normale scheda Chrome e riprova.";
+      browserHint.hidden=false;
+    }finally{
+      authBusy=false;alternate.disabled=false;
+      if(!user)login.hidden=false;
+    }
+  }
   async function prepareGoogle(){
     if(!consent.checked){status.textContent="Conferma età e informativa prima di accedere.";return;}
     if(!auth){status.textContent="Connessione non disponibile. Chiudi e riapri la Community.";browserHint.hidden=false;return;}
     if(!/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/i.test(config.googleClientId||"")){status.textContent="Accesso Google non ancora configurato.";return;}
-    login.disabled=true;
+    login.disabled=true;alternateOffered=true;alternate.hidden=false;browserHint.hidden=false;
     status.textContent="Caricamento accesso Google…";
     try{
       const id=await loadGoogle();
@@ -105,9 +122,9 @@
   async function refresh(){
     stop();const g=generation;moderator=false;blocked=false;
     const signed=!!user;
-    login.hidden=signed||googleFlow;googleSlot.hidden=signed||!googleFlow;consentLabel.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;
-    if(!signed){if(!authBusy)status.textContent=googleFlow?"Premi il pulsante ufficiale Google e scegli il tuo account.":"Accedi per leggere e partecipare.";return;}
-    googleFlow=false;googleSlot.hidden=true;browserHint.hidden=true;
+    login.hidden=signed||googleFlow;googleSlot.hidden=signed||!googleFlow;alternate.hidden=signed||!alternateOffered||!consent.checked;consentLabel.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;
+    if(!signed){if(!authBusy)status.textContent=googleFlow?"Premi il pulsante ufficiale Google. Se la pagina resta bianca, torna qui e prova l’accesso alternativo.":"Accedi per leggere e partecipare.";return;}
+    googleFlow=false;alternateOffered=false;googleSlot.hidden=true;alternate.hidden=true;browserHint.hidden=true;
     db.goOnline();status.textContent="Connessione…";
     try{
       const [m,b,c]=await Promise.all([db.ref("moderators/"+user.uid).once("value"),db.ref("bans/"+user.uid).once("value"),db.ref("settings/open").once("value")]);
@@ -174,13 +191,14 @@
     }catch{if(g===generation)error();}
   }
   async function open(){if(opening)return;opening=true;panel.hidden=false;toggle.setAttribute("aria-expanded","true");status.textContent="Caricamento…";try{await init();if(!panel.hidden)await refresh();}catch{error();}finally{opening=false;}}
-  function shut(){panel.hidden=true;googleFlow=false;googleSlot.hidden=true;googleSlot.replaceChildren();browserHint.hidden=true;toggle.setAttribute("aria-expanded","false");stop();toggle.focus();}
+  function shut(){panel.hidden=true;googleFlow=false;alternateOffered=false;googleSlot.hidden=true;googleSlot.replaceChildren();alternate.hidden=true;browserHint.hidden=true;toggle.setAttribute("aria-expanded","false");stop();toggle.focus();}
   toggle.onclick=()=>panel.hidden?open():shut();close.onclick=shut;
   panel.addEventListener("keydown",e=>{if(e.key==="Escape")shut();});
   login.onclick=prepareGoogle;
+  alternate.onclick=alternateGoogle;
   consent.addEventListener("change",()=>{
     if(!consent.checked){
-      googleFlow=false;googleSlot.hidden=true;googleSlot.replaceChildren();login.hidden=!!user;browserHint.hidden=true;
+      googleFlow=false;alternateOffered=false;googleSlot.hidden=true;googleSlot.replaceChildren();alternate.hidden=true;login.hidden=!!user;browserHint.hidden=true;
       status.textContent="Conferma età e informativa prima di accedere.";
     }
   });
@@ -191,5 +209,5 @@
     send.disabled=true;
     try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="In attesa di moderazione.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
   };
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app)refresh();});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app){if(auth?.currentUser)user=auth.currentUser;refresh();}});
 })();
