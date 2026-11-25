@@ -196,7 +196,7 @@ jobs:
           const genera = require("./genera_pagine_eventi.js");
           const ev = {titolo:"Test <script>",citta:"Cerignola",luogo:"Piazza",categoria:"Locali & Serate",dataInizio:"2030-01-01",dataFine:"2030-01-01",fonteUrl:"https://example.org/evento",descrizione:"Test </script>"};
           const files=genera([ev,ev,{...ev,dataInizio:"2020-01-01",dataFine:"2020-01-01"}],[],"2026-11-24");
-          assert.equal(Object.keys(files).length,5);
+          assert.equal(Object.keys(files).length,7);
           const page=files["eventi/cerignola-2030-01-01-test-script.html"];
           assert.ok(page.includes("Test &lt;script&gt;"));
           assert.ok(page.includes('application/ld+json'));
