@@ -22,6 +22,7 @@ import festivita
 import ricorrenze
 import discovery_locale
 import apprendimento
+import radar_natura
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -32,6 +33,7 @@ HEADERS = {
 }
 
 DOMINI_AUTO = (
+    "visitmonticchio.it", "caifoggia.it", "parcoofanto.it", "dauniatur.it", "csvfoggia.it", "oasilagosalso.it", "parcoaltamurgia.it", "pugliarte.it", "coopcommargherita.wixsite.com",
     "canosaweb.it", "minervinoviva.it", "volontariperminervino.it", "andiamoinpuglia.it",
     "news.google.com", "iltaccodibacco.it", "viaggiareinpuglia.it",
     "pugliaevents.it", "eventiesagre.it", "eventbrite.it",
@@ -1993,6 +1995,8 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
+            if fonte.get("natura") and not radar_natura.pertinente(testo_candidato):
+                continue
             if punteggio < 0 or not link or not titolo:
                 continue
             if urlparse(link).scheme not in ("http", "https") or not urlparse(link).hostname:
@@ -2059,6 +2063,8 @@ def raccogli_da_feed_social(session, fonte):
                 # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
                 for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
                     estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
+            if fonte.get("natura"):
+                estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
             if fonte.get("nightlife"):
                 estratti = [e for e in estratti if evento_movida_documentato(e)]
             if fonte.get("cene_show"):
@@ -2819,6 +2825,8 @@ def raccogli_da_portale_generico(session, fonte):
                         estratti.extend(eventi_da_locandina(testo,poster,titolo_immagine,link))
                 if fonte.get("data_nel_link"):
                     estratti = [e for e in estratti if e.get("dataInizio") == data_scheda_movida(link)]
+                if fonte.get("natura"):
+                    estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
                 if fonte.get("nightlife"):
                     estratti = [e for e in estratti if evento_movida_documentato(e)]
                 if fonte.get("solo_cerignola"):
@@ -3203,8 +3211,11 @@ def esegui_aggiornamento():
             if f["url"] in per_url:
                 f["ricorrenze_annuali"]=per_url[f["url"]]
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
+    dirette_natura, rss_natura = radar_natura.fonti()
     compiti = (
-        [(raccogli_calendario_kodo, {"nome":"KODO calendario DJ e promoter","url":"https://www.kodocollective.it/","dominio":"kodocollective.it","focus_serate":True,"nightlife":True})]
+        [(raccogli_da_portale_generico, fonte) for fonte in dirette_natura]
+        + [(raccogli_da_feed_social, fonte) for fonte in rss_natura]
+        +         [(raccogli_calendario_kodo, {"nome":"KODO calendario DJ e promoter","url":"https://www.kodocollective.it/","dominio":"kodocollective.it","focus_serate":True,"nightlife":True})]
         + [(raccogli_capodanno_sito, fonte) for fonte in dirette_capodanno + dirette_annuali]
         + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita + rss_annuali]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]

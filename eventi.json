@@ -627,6 +627,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "titolo": "Wild & Water – river trekking sull’Ofanto",
+    "citta": "Monticchio",
+    "categoria": "Natura & Escursioni",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "dataTesto": "Dom 06 Dic 2026 · Ore 09:00",
+    "luogo": "Centro Visite VisitMonticchio",
+    "indirizzoMappa": "Centro Visite VisitMonticchio, Monticchio Bagni",
+    "costo": "22 € a persona",
+    "descrizione": "Trekking guidato di circa 8 km con risalita del fiume. Difficoltà medio-difficile; rientro in navetta incluso. Verificare condizioni del fiume, equipaggiamento e disponibilità con l’organizzatore.",
+    "fonteUrl": "https://www.visitmonticchio.it/esperienze/calendario-esperienze-2/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Bisceglie",
     "categoria": "Locali & Serate",
     "titolo": "Que Pasa Noche Sinfonica",
@@ -811,6 +825,20 @@
     "costo": "evento in beneficenza.",
     "descrizione": "Riccardo Cocciante live al Teatro Umberto Giordano a Foggia (FG), Puglia: concerto in programma sabato 19 dicembre 2026. Margherita, Se stiamo insieme, Bella senz'anima, Cervo a primavera, Celeste nostalgia, Questione di",
     "fonteUrl": "https://experience-app.com/evento/2411"
+  },
+  {
+    "tipoContenuto": "evento",
+    "titolo": "Anello di Siponto – itinerario archeologico e degustazione",
+    "citta": "Manfredonia",
+    "categoria": "Natura & Escursioni",
+    "dataInizio": "2026-12-19",
+    "dataFine": "2026-12-19",
+    "dataTesto": "Sab 19 Dic 2026",
+    "luogo": "Anello di Siponto",
+    "indirizzoMappa": "Siponto, Manfredonia",
+    "costo": "Consulta l’organizzatore",
+    "descrizione": "Itinerario archeologico organizzato da Daunia TuR APS con degustazione finale. Posti limitati, prenotazione obbligatoria. Confermare ritrovo e orario con l’organizzatore: 0884 660558.",
+    "fonteUrl": "https://www.csvfoggia.it/capitanata-escursioni-con-daunia-tur-aps/"
   },
   {
     "tipoContenuto": "evento",

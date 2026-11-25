@@ -13,7 +13,7 @@
     "descrizione": "Un invaso immerso nella campagna del Tavoliere, adatto a una sosta panoramica, fotografie e una pausa all'aperto. Non sono attestati servizi, sentieri attrezzati o balneazione: verificare viabilità, accessibilità e condizioni prima della partenza.",
     "adattoA": "Coppie e famiglie",
     "tipoEsperienza": "Lago e paesaggio",
-    "fonteUrl": ""
+    "fonteUrl": "https://www.cicloviadellofanto.it/le-escursioni/"
   },
   {
     "id": "rupe-ripalta",
@@ -318,5 +318,37 @@
     "adattoA": "Coppie e famiglie",
     "tipoEsperienza": "Oasi e birdwatching",
     "fonteUrl": "https://www.italia.it/it/puglia/cosa-fare/weekend-puglia-4-parchi-naturali-saline-visitare"
+  },
+  {
+    "tipoContenuto": "esperienza",
+    "categoria": "Natura & Escursioni",
+    "dataInizio": "2000-01-01",
+    "dataFine": "2099-12-31",
+    "dataTesto": "Esperienza · verifica disponibilità e accessi",
+    "id": "monticchio-sentieri",
+    "titolo": "Laghi di Monticchio – Sentiero del Borgo e Abbazia",
+    "citta": "Monticchio",
+    "luogo": "Monticchio Laghi",
+    "indirizzoMappa": "Laghi di Monticchio, Rionero in Vulture",
+    "descrizione": "Percorsi tra i laghi vulcanici, il borgo e l’Abbazia di San Michele. Consulta la mappa dei sentieri e verifica accessi, condizioni e difficoltà prima della partenza.",
+    "tipoEsperienza": "Lago e sentieri",
+    "adattoA": "Coppie e gruppi",
+    "fonteUrl": "https://www.visitmonticchio.it/scopri-monticchio/sentieri-e-itinerari-monticchio/"
+  },
+  {
+    "tipoContenuto": "esperienza",
+    "categoria": "Natura & Escursioni",
+    "dataInizio": "2000-01-01",
+    "dataFine": "2099-12-31",
+    "dataTesto": "Esperienza · verifica disponibilità e accessi",
+    "id": "monticchio-creste-lava",
+    "titolo": "Creste di lava – trekking guidato nella foresta vulcanica",
+    "citta": "Monticchio",
+    "luogo": "Abbazia di San Michele",
+    "indirizzoMappa": "Abbazia di San Michele Arcangelo, Monticchio Laghi",
+    "descrizione": "Escursione guidata di circa 6,5 km, difficoltà media. L’organizzatore propone partenze su disponibilità. Verificare prenotazioni, prezzo e condizioni prima di partire.",
+    "tipoEsperienza": "Trekking guidato",
+    "adattoA": "Escursionisti",
+    "fonteUrl": "https://www.visitmonticchio.it/esperienze/"
   }
 ]
