@@ -2259,6 +2259,8 @@
       let contata=leggi("csf_visitato"), confermata=leggi("csf_contata_confermata_v2");
       const permesso=()=>{try{return !!consentito()&&!escluso();}catch(_){return false;}};
       const errore=(nome,e)=>avvisa("Contatori Firebase: "+nome,e);
+      const ultimi={visite:null,online:null};
+      const ricevuto=(tipo,valore)=>{ultimi[tipo]=valore;mostra(tipo,collegato?valore:null);};
       const ritira=async r=>{if(r)try{await r.remove();}catch(e){errore("rimozione presenza",e);}};
       async function conta(){
         if(!collegato||operazione||!permesso()||contata)return;
@@ -2309,13 +2311,13 @@
       }
       visite.on("value",s=>{
         const n=s.val();
-        mostra("visite",n===null?0:Number.isSafeInteger(n)&&n>=0?n:null);
-      },e=>{mostra("visite",null);errore("lettura visite",e);});
-      online.on("value",s=>mostra("online",s.numChildren()),e=>{mostra("online",null);errore("lettura online",e);});
+        ricevuto("visite",n===null?0:Number.isSafeInteger(n)&&n>=0?n:null);
+      },e=>{ricevuto("visite",null);errore("lettura visite",e);});
+      online.on("value",s=>ricevuto("online",s.numChildren()),e=>{ricevuto("online",null);errore("lettura online",e);});
       conn.on("value",s=>{
         const attivo=s.val()===true;
         if(attivo!==collegato){collegato=attivo;epoca++;if(!attivo)presenza=null;}
-        if(attivo)aggiorna();
+        if(attivo){mostra("visite",ultimi.visite);mostra("online",ultimi.online);aggiorna();}
         else {mostra("visite",null);mostra("online",null);}
       },e=>{collegato=false;epoca++;presenza=null;mostra("visite",null);mostra("online",null);errore("connessione",e);});
       return {aggiorna};

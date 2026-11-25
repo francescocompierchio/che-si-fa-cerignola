@@ -25,6 +25,6 @@ async function verifica(crea,assert){
   t=scenario({fallisciPresenza:true});t.connetti(true);await tick();assert(t.stato.registrazioni===0,"nessuna presenza senza onDisconnect");
   t.stato.fallisciPresenza=false;t.api.aggiorna();await tick();assert(t.stato.registrazioni===1,"recupero presenza");
   t.l["statistiche/visiteTotali"].cb({val:()=>11});assert(t.schermata.visite===11,"lettura visite");t.l["statistiche/visiteTotali"].fail(Error("denied"));assert(t.schermata.visite===null,"errore lettura");
-  t.l["statistiche/utentiOnline"].cb({numChildren:()=>3});assert(t.schermata.online===3,"lettura online");t.connetti(false);assert(t.schermata.online===null&&t.schermata.visite===null,"offline");
+  t.l["statistiche/utentiOnline"].cb({numChildren:()=>3});assert(t.schermata.online===3,"lettura online");t.connetti(false);assert(t.schermata.online===null&&t.schermata.visite===null,"offline");t.connetti(true);await tick();assert(t.schermata.online===3&&t.schermata.visite===null,"ripristino ultimo dato anche senza nuovo snapshot");
 }
 verifica(crea,assert.ok).then(()=>console.log("OK: contatori Firebase simulati, consenso, admin, conferme e riconnessioni.")).catch(e=>{console.error(e);process.exitCode=1;});
