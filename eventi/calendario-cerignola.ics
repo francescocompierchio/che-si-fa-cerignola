@@ -83,6 +83,24 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:cerignola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos@chesiface
+ rignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:Babbo Natale va in pensione – Teatro Eidos – Cerignola
+LOCATION:Roma Teatro\, Cerignola
+DESCRIPTION:Dom 29 Nov 2026 · Ore 18:00\nSpettacolo della rassegna per bam
+ bini e famiglie\, in programma alle 18:00. Verifica disponibilità e bigli
+ etti presso il teatro.\nAccesso: Consulta il botteghino\nVerifica variazio
+ ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
+ he-si-fa-cerignola/eventi/cerignola-2026-11-29-babbo-natale-va-in-pensione
+ -teatro-eidos.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:cerignola-2026-12-01-natale-in-piazza@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261201
