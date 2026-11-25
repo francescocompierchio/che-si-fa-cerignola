@@ -3139,6 +3139,25 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       });
     }
 
+    function eventoNatura(ev) {
+      const norm = v => String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      const cat=norm(ev.categoria), titolo=norm(ev.titolo), tipo=norm(ev.tipoEsperienza);
+      const esperienza=ev.tipoContenuto==="esperienza";
+      // Le categorie estranee non entrano nel filtro per una parola nella descrizione.
+      if (!["natura escursioni","luoghi da visitare","attivita diurne","altro",""].includes(cat)) return false;
+      const esclusi=/\b(?:teatro|teatrale|balletto|lago dei cigni|concerto|mercatin\w*|villaggio di natale|presepe|spettacolo teatrale|cabaret|cinema|dj set|discoteca|sagra|gara podistica|trail running|maratona|convegno|fattoria didattica|masseria didattica|laboratorio creativo|animazione per bambini)\b/;
+      if(esclusi.test(titolo+" "+tipo)) return false;
+      const attivita=/\b(?:\w*trekking|escursion\w*|birdwatching|cicloturismo|e bike|cammino naturalistico|cammini naturalistici|river trekking|passeggiat\w* naturalistic\w*|camminat\w* naturalistic\w*|visita naturalistica|osservazione fauna)\b/;
+      const ambiente=/\b(?:natura\w*|naturalistic\w*|bosco|boschi|foresta|oasi|lag[oi]|salin[ae]|riserva|fiume|campagna|fauna|sentier\w*|parco naturale|parco urbano|ofanto|murgia|monticchio|paesaggi\w*|rupe|calanchi)\b/;
+      const movimento=/\b(?:passeggiat\w*|camminat\w*|cammin[oi]|visita\w*|itinerari\w*|percors\w*|sentier\w*|panorama\w*|outdoor)\b/;
+      const principale=titolo+" "+tipo;
+      if(attivita.test(principale)) return true;
+      if(esperienza) return ambiente.test(principale)&&(cat==="natura escursioni"||movimento.test(principale));
+      if(movimento.test(titolo)&&ambiente.test(titolo+" "+norm(ev.luogo))) return true;
+      // Un itinerario documentato in Natura può avere un titolo archeologico.
+      return cat==="natura escursioni"&&/\b(?:anello|itinerario|percorso)\b/.test(titolo)&&/\b(?:escursion\w*|trekking|sentier\w*|itinerario archeologico)\b/.test(norm([ev.descrizione,ev.fonteUrl].join(" ")));
+    }
+
     function renderEventi() {
       const schedeAperte = new Set([...container.querySelectorAll("details[open][data-event-key]")].map(el=>el.dataset.eventKey));
       container.innerHTML = "";
@@ -3153,7 +3172,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         const categoriaSmart=(ev.categoria||"").toLowerCase(),targetSmart=(ev.adattoA||"").toLowerCase(),tipoSmart=(ev.tipoEsperienza||"").toLowerCase(),testoSmart=(ev.titolo+" "+ev.descrizione).toLowerCase();
         if(filtroSmart==="FREE"&&!/gratis|gratuit|ingresso libero|free/i.test(ev.costo||""))return false;
         if(filtroSmart==="FAMILY"&&!(/famigl|bambin|ragazz|famiglie|children/i.test(categoriaSmart+" "+targetSmart+" "+testoSmart)))return false;
-        if(filtroSmart==="NATURE"&&!(/natura|escursion|outdoor|parco|bosco|lago|birdwatch|passeggiat/i.test(categoriaSmart+" "+tipoSmart+" "+testoSmart)))return false;
+        if(filtroSmart==="NATURE"&&!eventoNatura(ev))return false;
         if(filtroSmart==="NEXT7"&&!entroSetteGiorni(ev))return false;
         if(filtroSmart==="TONIGHT"&&(!isToday||!CsfEventTools.evening(ev)))return false;
         const contestoOccasione=normalizzaRicerca([ev.categoria,ev.adattoA,ev.tipoEsperienza,ev.titolo,ev.descrizione,ev.luogo].join(" "));
@@ -3171,6 +3190,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         if (filtroAttivo.startsWith("CAT:")) {
           const catRichiesta = filtroAttivo.replace("CAT:", "");
           if (ev.categoria !== catRichiesta) return false;
+          if (catRichiesta === "Natura & Escursioni" && !eventoNatura(ev)) return false;
         }
         if (queryRicerca.trim() !== "") {
           if(CsfExtras.corrispondeRicerca&&CsfEventTools.discoteca){
