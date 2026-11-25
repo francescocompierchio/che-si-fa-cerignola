@@ -578,23 +578,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:manfredonia-2026-11-05-lisistrata-lella-costa@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261105
-DTEND;VALUE=DATE:20261129
-SUMMARY:Lisistrata – Lella Costa – Manfredonia
-LOCATION:Teatro Greco di Siracusa e al Teatro Grande di Pompei\, Via della 
- Crocie\, Manfredonia
-DESCRIPTION:Dal 05 Nov al 28 Nov 2026\nManfredonia (Foggia) Teatro Comunale
-  Lucio Dalla Via della Crocie ore 21:00 ingresso a pagamento Info. 0884 53
- 2829 (clicca per ingrandire )\nAccesso: A pagamento\nVerifica variazioni\,
-  orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-s
- i-fa-cerignola/eventi/manfredonia-2026-11-05-lisistrata-lella-costa.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-05-lisistrata-lella-costa.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:manfredonia-2026-11-22-cenerentola-301@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261122
@@ -971,43 +954,20 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/canos
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:minervino-murge-2026-11-28-minervino-murge-sagra-della-cima-di-rapa-di-
- minervino-murge@chesifacerignola
+UID:minervino-murge-2026-11-28-sagra-della-cima-di-rapa-di-minervino-murge@
+ chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261130
-SUMMARY:Minervino Murge | Sagra della Cima di Rapa di Minervino Murge – M
- inervino Murge
-LOCATION:Centro Storico Minervino Murge
-DESCRIPTION:Dal 28 Nov al 29 Nov 2026\nMINERVINO MURGE CELEBRA L’ECCELLEN
- ZA DELLA TERRA: IL 28 E 29 NOVEMBRE 2026 TORNA LA SAGRA DELLA CIMA DI RAPA
- . Due giornate dedicate al "Balcone delle Puglie" per riscoprire la cima d
- i rapa minervinese e gli ortaggi unici\nAccesso: Ingresso libero\nVerifica
-  variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.gi
- thub.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-28-minervino-mu
- rge-sagra-della-cima-di-rapa-di-minervino-murge.html
+SUMMARY:Sagra della Cima di Rapa di Minervino Murge – Minervino Murge
+LOCATION:Centro storico\, Minervino Murge
+DESCRIPTION:Dal 28 Nov al 29 Nov 2026\nDue giornate nel borgo antico dedica
+ te alla cima di rapa e ai prodotti locali.\nAccesso: Ingresso libero\nVeri
+ fica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchi
+ o.github.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-28-sagra-de
+ lla-cima-di-rapa-di-minervino-murge.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
- vino-murge-2026-11-28-minervino-murge-sagra-della-cima-di-rapa-di-minervin
- o-murge.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:minervino-murge-2026-11-28-tra-biodiversita-e-tradizione-a-minervino-to
- rna-la-sagra-della-cima-di-rapa@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261128
-DTEND;VALUE=DATE:20261129
-SUMMARY:Tra biodiversità e tradizione: a Minervino torna la Sagra della Ci
- ma di Rapa – Minervino Murge
-LOCATION:borgo antico di Minervino Murge
-DESCRIPTION:Sab 28 Nov 2026\nLa nuova edizione della sagra si terrà il wee
- kend del 28 e 29 novembre\nAccesso: Non specificato nella fonte\nVerifica 
- variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
- hub.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-28-tra-biodivers
- ita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
- vino-murge-2026-11-28-tra-biodiversita-e-tradizione-a-minervino-torna-la-s
- agra-della-cima-di-rapa.html
+ vino-murge-2026-11-28-sagra-della-cima-di-rapa-di-minervino-murge.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -1125,25 +1085,6 @@ DESCRIPTION:Dom 29 Nov 2026\nSerata in club pubblicata sul calendario Xceed
  etta-2026-11-29-kayma-at-atrio22.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
  tta-2026-11-29-kayma-at-atrio22.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:minervino-murge-2026-11-29-tra-biodiversita-e-tradizione-a-minervino-to
- rna-la-sagra-della-cima-di-rapa@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261129
-DTEND;VALUE=DATE:20261130
-SUMMARY:Tra biodiversità e tradizione: a Minervino torna la Sagra della Ci
- ma di Rapa – Minervino Murge
-LOCATION:borgo antico di Minervino Murge
-DESCRIPTION:Dom 29 Nov 2026\nLa nuova edizione della sagra si terrà il wee
- kend del 28 e 29 novembre\nAccesso: Non specificato nella fonte\nVerifica 
- variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
- hub.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-29-tra-biodivers
- ita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
- vino-murge-2026-11-29-tra-biodiversita-e-tradizione-a-minervino-torna-la-s
- agra-della-cima-di-rapa.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -1431,6 +1372,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:bisceglie-2026-12-07-que-pasa-noche-sinfonica@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261207
+DTEND;VALUE=DATE:20261208
+SUMMARY:Que Pasa Noche Sinfonica – Bisceglie
+LOCATION:Divine Club\, Bisceglie
+DESCRIPTION:Lun 07 Dic 2026\nSerata nel calendario ufficiale KODO con Deeza
+ . Orari e condizioni di ingresso da verificare con il locale.\nAccesso: Co
+ nsulta la fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps:
+ //francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisceglie-2026
+ -12-07-que-pasa-noche-sinfonica.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-12-07-que-pasa-noche-sinfonica.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-12-09-macy-gray-live-al-teatro-giordano-l-icona-mondiale-de
  l-soul-e-dell-r-b-in-concerto-a@chesifacerignola
 DTSTAMP:20261125T000000Z
@@ -1607,6 +1564,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-12-25-deeza-dj-set@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20261226
+SUMMARY:Deeza DJ Set – Barletta
+LOCATION:Atrio22\, Barletta
+DESCRIPTION:Ven 25 Dic 2026\nSerata nel calendario ufficiale KODO con Deeza
+ . Orari e condizioni di ingresso da verificare con il locale.\nAccesso: Co
+ nsulta la fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps:
+ //francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-2026-
+ 12-25-deeza-dj-set.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-25-deeza-dj-set.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-12-26-foggia-i-fantasmi-di-dickens@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261226
@@ -1722,6 +1695,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:manfredonia-2027-01-15-lisistrata-lella-costa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270115
+DTEND;VALUE=DATE:20270116
+SUMMARY:Lisistrata – Lella Costa – Manfredonia
+LOCATION:Teatro Comunale Lucio Dalla\, Via della Croce\, Manfredonia
+DESCRIPTION:Ven 15 Gen 2027 · Ore 21:00\nLisistrata di Aristofane con Lell
+ a Costa\, regia di Serena Sinigaglia. Data verificata sul calendario uffic
+ iale del teatro.\nAccesso: A pagamento\nVerifica variazioni\, orari e font
+ e nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignol
+ a/eventi/manfredonia-2027-01-15-lisistrata-lella-costa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2027-01-15-lisistrata-lella-costa.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2027-01-30-barletta-arvo-part-vs-david-bowie@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270130
@@ -1737,44 +1726,6 @@ DESCRIPTION:Sab 30 Gen 2027\nArvo Pärt vs David Bowie è il dittico coreog
  bowie.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
  tta-2027-01-30-barletta-arvo-part-vs-david-bowie.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:orta-nova-2027-02-12-il-carnevale-ortese-2026-e-pronto-a-colorare-le-st
- rade-di-orta-nova@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20270212
-DTEND;VALUE=DATE:20270213
-SUMMARY:Il Carnevale Ortese 2026 è pronto a colorare le strade di Orta Nov
- a – Orta Nova
-LOCATION:Villa Comunale Partenza della grande sfilata\, Orta Nova
-DESCRIPTION:Ven 12 Feb 2027\nRisate\, musica\, maschere e tanta allegria ne
- i giorni 12 e 15 Febbraio\nAccesso: Non specificato nella fonte\nVerifica 
- variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
- hub.io/che-si-fa-cerignola/eventi/orta-nova-2027-02-12-il-carnevale-ortese
- -2026-e-pronto-a-colorare-le-strade-di-orta-nova.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/orta-
- nova-2027-02-12-il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-
- orta-nova.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:orta-nova-2027-02-15-il-carnevale-ortese-2026-e-pronto-a-colorare-le-st
- rade-di-orta-nova@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20270215
-DTEND;VALUE=DATE:20270216
-SUMMARY:Il Carnevale Ortese 2026 è pronto a colorare le strade di Orta Nov
- a – Orta Nova
-LOCATION:Villa Comunale Partenza della grande sfilata\, Orta Nova
-DESCRIPTION:Lun 15 Feb 2027\nRisate\, musica\, maschere e tanta allegria ne
- i giorni 12 e 15 Febbraio\nAccesso: Non specificato nella fonte\nVerifica 
- variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
- hub.io/che-si-fa-cerignola/eventi/orta-nova-2027-02-15-il-carnevale-ortese
- -2026-e-pronto-a-colorare-le-strade-di-orta-nova.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/orta-
- nova-2027-02-15-il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-
- orta-nova.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT

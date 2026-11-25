@@ -43,6 +43,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Attività diurne",
+    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
+    "dataTesto": "Mer 25 Nov 2026",
+    "dataInizio": "2026-11-25",
+    "dataFine": "2026-11-25",
+    "luogo": "Piazza della Repubblica",
+    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
+    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Attività diurne",
     "titolo": "Foggia | La Fondazione per il 25 novembre con Lorenzo Sepalone e Alfredo Traiano",
@@ -68,20 +82,6 @@
     "costo": "Ingresso libero",
     "descrizione": "La Contemporanea Galleria d’Arte di Foggia presenta l’appuntamento espositivo “Mario Schifano e gli altri”, in programma da 25 novembre 2026 a 7 gennaio 2027. La mostra sarà ospitata negli spazi della galleria in Viale M",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336684.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Attività diurne",
-    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Piazza della Repubblica",
-    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
-    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
   },
   {
     "tipoContenuto": "evento",
@@ -127,6 +127,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Trinitapoli",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
+    "dataTesto": "Ven 27 Nov 2026",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Viale Vittorio Veneto",
+    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
+    "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Barletta",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Barletta | People, Places and Things – Anna Ferzetti",
@@ -169,20 +183,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Trinitapoli",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Viale Vittorio Veneto",
-    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
-    "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Trani",
     "categoria": "Musica & Concerti",
     "titolo": "Trani | Impromptu Jazz Quartet live Feel the Music Festival",
@@ -194,6 +194,20 @@
     "costo": "Ingresso libero",
     "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d'autore, fino a quei brani italiani che, pur nascendo altrove, sembra",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336732.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra della Cima di Rapa di Minervino Murge",
+    "dataTesto": "Dal 28 Nov al 29 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-29",
+    "luogo": "Borgo antico di Minervino Murge",
+    "indirizzoMappa": "Centro storico, Minervino Murge",
+    "costo": "Ingresso libero",
+    "descrizione": "Due giornate nel borgo antico dedicate alla cima di rapa e ai prodotti locali.",
+    "fonteUrl": "https://volontariperminervino.it/sagra-della-cima-di-rapa/"
   },
   {
     "tipoContenuto": "evento",
@@ -292,20 +306,6 @@
     "costo": "40€",
     "descrizione": "Sabato 28 novembre 2026, alle ore 20:30, 𝗩𝗶𝗹𝗹𝗮 𝗔𝗿𝘁𝗲𝗺𝗶𝗱𝗲 𝗮 𝗠𝗮𝗻𝗳𝗿𝗲𝗱𝗼𝗻𝗶𝗮 ospita 𝗣𝗶𝗮𝘁𝘁𝗼 𝗱𝗶𝗩𝗶𝗻𝗼, una serata enogastronomica dedicata ai sapori autunnali e alla scoperta degli abbinamenti tra cucina e vino, organizzata in coll",
     "fonteUrl": "https://www.manfredoniaeventi.com/evento/piatto-divino-cena-dautunno-degustazione-vini-e-musica-dal-vivo-villa-artemide-manfredonia-28-novembre-2026/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Minervino Murge",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra della Cima di Rapa di Minervino Murge",
-    "dataTesto": "Dal 28 Nov al 29 Nov 2026",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-29",
-    "luogo": "Borgo antico di Minervino Murge",
-    "indirizzoMappa": "Centro storico, Minervino Murge",
-    "costo": "Ingresso libero",
-    "descrizione": "Due giornate nel borgo antico dedicate alla cima di rapa e ai prodotti locali.",
-    "fonteUrl": "https://volontariperminervino.it/sagra-della-cima-di-rapa/"
   },
   {
     "tipoContenuto": "evento",
@@ -435,6 +435,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Mercatini di Natale – La Città del Natale",
+    "dataTesto": "Dal 05 Dic al 08 Dic 2026",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-08",
+    "luogo": "Villa Comunale, Corso San Sabino e Piazza della Repubblica",
+    "indirizzoMappa": "Villa Comunale, Corso San Sabino e Piazza della Repubblica, 76012, Canosa di Puglia, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Nel primo weekend dell'Immacolata, Canosa di Puglia si trasforma nella \"Città del Natale\": mercatini artigianali in Villa Comunale, casette...",
+    "fonteUrl": "https://buzzeventmap.com/event/374d6b0f-e310-4653-a1e2-251060eba4b5"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Famiglie & Bambini",
     "titolo": "Arriva Babbo Natale| Gelsomino Home",
@@ -460,20 +474,6 @@
     "costo": "A pagamento",
     "descrizione": "La gatta con gli stivali è il secondo appuntamento di Merende da Favola. Lo spettacolo è scritto da Michele Ciuffreda e diretto da M. Ciuffreda e Maggie Salice. La produzione del Teatro dei Limoni propone al pubblico del",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332948.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Mercatini di Natale – La Città del Natale",
-    "dataTesto": "Dal 05 Dic al 08 Dic 2026",
-    "dataInizio": "2026-12-05",
-    "dataFine": "2026-12-08",
-    "luogo": "Villa Comunale, Corso San Sabino e Piazza della Repubblica",
-    "indirizzoMappa": "Villa Comunale, Corso San Sabino e Piazza della Repubblica, 76012, Canosa di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Nel primo weekend dell'Immacolata, Canosa di Puglia si trasforma nella \"Città del Natale\": mercatini artigianali in Villa Comunale, casette...",
-    "fonteUrl": "https://buzzeventmap.com/event/374d6b0f-e310-4653-a1e2-251060eba4b5"
   },
   {
     "tipoContenuto": "evento",
@@ -516,6 +516,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Appuntamento conclusivo della rassegna natalizia di quartiere.",
     "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra della Sfogliatella",
+    "dataTesto": "Dom 06 Dic 2026",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Piazza Vittorio Veneto",
+    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
+    "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
   },
   {
     "tipoContenuto": "evento",
@@ -575,22 +589,8 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra della Sfogliatella",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Piazza Vittorio Veneto",
-    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
-    "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Bisceglie",
-    "categoria": "Locali & Serate",
+    "categoria": "Attività diurne",
     "titolo": "Que Pasa Noche Sinfonica",
     "dataTesto": "Lun 07 Dic 2026",
     "dataInizio": "2026-12-07",
@@ -813,20 +813,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Teatro & Spettacoli",
-    "titolo": "Barletta | Capodanno al Curci – Dado, Angelo Mellone e Andrea Perroni",
-    "dataTesto": "Gio 31 Dic 2026",
-    "dataInizio": "2026-12-31",
-    "dataFine": "2026-12-31",
-    "luogo": "Teatro Curci",
-    "indirizzoMappa": "Teatro Curci, Corso Vittorio Emanuele II, 72, Barletta",
-    "costo": "Ingresso libero",
-    "descrizione": "Capodanno al Curci riunisce musica, comicità e spettacolo in una serata speciale. Il programma prevede lo spettacolo comico Il ripetente di Dado, seguito da Mezzanotte d’autore con Angelo Mellone e Andrea Perroni, per la",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331492.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "San Ferdinando di Puglia",
     "categoria": "Locali & Serate",
     "titolo": "Capodanno in Piazza",
@@ -838,6 +824,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Il Capodanno in Piazza è il tradizionale veglione di fine anno del Comune di San Ferdinando di Puglia, nella provincia di Barletta-Andria-Tr...",
     "fonteUrl": "https://buzzeventmap.com/event/c0a05424-3cb8-40fe-b729-bec0dfb0208d"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Teatro & Spettacoli",
+    "titolo": "Barletta | Capodanno al Curci – Dado, Angelo Mellone e Andrea Perroni",
+    "dataTesto": "Gio 31 Dic 2026",
+    "dataInizio": "2026-12-31",
+    "dataFine": "2026-12-31",
+    "luogo": "Teatro Curci",
+    "indirizzoMappa": "Teatro Curci, Corso Vittorio Emanuele II, 72, Barletta",
+    "costo": "Ingresso libero",
+    "descrizione": "Capodanno al Curci riunisce musica, comicità e spettacolo in una serata speciale. Il programma prevede lo spettacolo comico Il ripetente di Dado, seguito da Mezzanotte d’autore con Angelo Mellone e Andrea Perroni, per la",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331492.html"
   },
   {
     "tipoContenuto": "evento",

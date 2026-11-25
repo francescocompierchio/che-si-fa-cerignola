@@ -134,23 +134,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:manfredonia-2026-11-05-lisistrata-lella-costa@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261105
-DTEND;VALUE=DATE:20261129
-SUMMARY:Lisistrata – Lella Costa – Manfredonia
-LOCATION:Teatro Greco di Siracusa e al Teatro Grande di Pompei\, Via della 
- Crocie\, Manfredonia
-DESCRIPTION:Dal 05 Nov al 28 Nov 2026\nManfredonia (Foggia) Teatro Comunale
-  Lucio Dalla Via della Crocie ore 21:00 ingresso a pagamento Info. 0884 53
- 2829 (clicca per ingrandire )\nAccesso: A pagamento\nVerifica variazioni\,
-  orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-s
- i-fa-cerignola/eventi/manfredonia-2026-11-05-lisistrata-lella-costa.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-05-lisistrata-lella-costa.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:manfredonia-2026-11-22-cenerentola-301@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261122
@@ -500,6 +483,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-12-25-deeza-dj-set@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20261226
+SUMMARY:Deeza DJ Set – Barletta
+LOCATION:Atrio22\, Barletta
+DESCRIPTION:Ven 25 Dic 2026\nSerata nel calendario ufficiale KODO con Deeza
+ . Orari e condizioni di ingresso da verificare con il locale.\nAccesso: Co
+ nsulta la fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps:
+ //francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-2026-
+ 12-25-deeza-dj-set.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-25-deeza-dj-set.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:san-ferdinando-di-puglia-2026-12-31-capodanno-in-piazza@chesifacerignol
  a
 DTSTAMP:20261125T000000Z
@@ -515,6 +514,22 @@ DESCRIPTION:Gio 31 Dic 2026\nIl Capodanno in Piazza è il tradizionale vegl
  danno-in-piazza.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/san-f
  erdinando-di-puglia-2026-12-31-capodanno-in-piazza.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2027-01-15-lisistrata-lella-costa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270115
+DTEND;VALUE=DATE:20270116
+SUMMARY:Lisistrata – Lella Costa – Manfredonia
+LOCATION:Teatro Comunale Lucio Dalla\, Via della Croce\, Manfredonia
+DESCRIPTION:Ven 15 Gen 2027 · Ore 21:00\nLisistrata di Aristofane con Lell
+ a Costa\, regia di Serena Sinigaglia. Data verificata sul calendario uffic
+ iale del teatro.\nAccesso: A pagamento\nVerifica variazioni\, orari e font
+ e nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignol
+ a/eventi/manfredonia-2027-01-15-lisistrata-lella-costa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2027-01-15-lisistrata-lella-costa.html
 TRANSP:TRANSPARENT
 END:VEVENT
 END:VCALENDAR
