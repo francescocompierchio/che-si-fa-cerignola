@@ -1,0 +1,172 @@
+[
+  {
+    "nome": "ADE Rooftop & Luxury Space",
+    "gruppo": "movida",
+    "alias": [
+      "ADE rooftop",
+      "ADE luxury space"
+    ],
+    "evidenza": "https://www.instagram.com/ade_rooftopluxuryspace/"
+  },
+  {
+    "nome": "Safarà",
+    "gruppo": "movida",
+    "alias": [
+      "Safarà",
+      "Safara"
+    ],
+    "evidenza": "https://iltaccodibacco.it/cerignola/safara",
+    "calendario": "https://iltaccodibacco.it/cerignola/safara",
+    "social": "https://www.facebook.com/ilsafara"
+  },
+  {
+    "nome": "NONZAI",
+    "gruppo": "movida",
+    "alias": [
+      "NONZAI"
+    ],
+    "evidenza": "https://www.cerignolaviva.it/notizie/sbarca-a-cerignola-il-soft-clubbing-il-format-mattutino-che-cambia-il-modo-di-divertirsi/"
+  },
+  {
+    "nome": "Blubar",
+    "gruppo": "movida",
+    "alias": [
+      "Blubar"
+    ],
+    "evidenza": "https://lapugliashopping.it/attivita/blubar-bar-cerignola-fg/"
+  },
+  {
+    "nome": "Gold Fashion Pub",
+    "gruppo": "movida",
+    "alias": [
+      "Gold Fashion"
+    ],
+    "evidenza": "https://www.waze.com/live-map/directions/it/puglia/cerignola/gold-fashion-pub?to=place.ChIJK1rD55QxOBMRuZrI3Y26EKE",
+    "social": "https://www.instagram.com/goldfashion_pub/"
+  },
+  {
+    "nome": "Hermes Club",
+    "gruppo": "movida",
+    "alias": [
+      "Hermes Club"
+    ],
+    "evidenza": "https://hermesclub.it/",
+    "nota": "Tesseramento obbligatorio; pubblicare solo appuntamenti datati con condizioni di accesso verificabili."
+  },
+  {
+    "nome": "Pro Loco Cerignola",
+    "gruppo": "associazioni",
+    "alias": [
+      "Pro Loco"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Sud Music",
+    "gruppo": "associazioni",
+    "alias": [
+      "Sud Music"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/sud-music/"
+  },
+  {
+    "nome": "Oltre Babele",
+    "gruppo": "associazioni",
+    "alias": [
+      "Oltre Babele",
+      "Oltrebabele"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/oltre-babele/"
+  },
+  {
+    "nome": "Art&Fatti",
+    "gruppo": "associazioni",
+    "alias": [
+      "Art&Fatti",
+      "Officine Art"
+    ],
+    "evidenza": "https://luoghicomuni.regione.puglia.it/progetti/officine-artfatti/"
+  },
+  {
+    "nome": "Motus",
+    "gruppo": "associazioni",
+    "alias": [
+      "Motus"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Federico II Eventi",
+    "gruppo": "famiglie",
+    "alias": [
+      "Federico II Eventi"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Eroi della Fiaba",
+    "gruppo": "famiglie",
+    "alias": [
+      "Eroi della Fiaba"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Maschere e Suoni",
+    "gruppo": "famiglie",
+    "alias": [
+      "Maschere e Suoni"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Il Titolo",
+    "gruppo": "famiglie",
+    "alias": [
+      "Il Titolo"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Palazzo Fornari",
+    "gruppo": "famiglie",
+    "alias": [
+      "Palazzo Fornari",
+      "Distese di Grano"
+    ],
+    "evidenza": "https://www.puglialive.net/cerignola-jazz-in-piazza-2026-apre-gli-eventi-del-progetto-distese-di-grano-venti-di-opportunita/"
+  },
+  {
+    "nome": "Villa Torre Quarto",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Villa Torre Quarto",
+      "Villa Torrequarto"
+    ],
+    "evidenza": "https://www.villatorrequarto.it/"
+  },
+  {
+    "nome": "Antica Enotria",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Antica Enotria"
+    ],
+    "evidenza": "https://anticaenotria.it/"
+  },
+  {
+    "nome": "Masseria Pavoni",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Masseria Pavoni"
+    ],
+    "evidenza": "https://www.masseriapavoni.com/"
+  },
+  {
+    "nome": "Agriturismo Moschella",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Agriturismo Moschella"
+    ],
+    "evidenza": "https://www.agriturismomoschella.com/"
+  }
+]

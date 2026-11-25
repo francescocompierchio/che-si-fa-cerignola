@@ -10,7 +10,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock, BoundedSemaphore
 from difflib import SequenceMatcher
-from urllib.parse import parse_qs, urljoin, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse, urlencode
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -123,8 +123,6 @@ FONTI_PORTALI = [
 ]
 
 FONTI_SOCIAL_RSS = [
-    {"nome":"Cerignola organizzatori e locali","url":"https://news.google.com/rss/search?q=Cerignola%20(%22ADE%22%20OR%20%22NONZAI%22%20OR%20%22Safar%C3%A0%22%20OR%20%22Blubar%22%20OR%20%22Villa%20Torre%20Quarto%22%20OR%20%22Moving%20Music%22)%20(serata%20OR%20evento%20OR%20dj%20OR%20live%20OR%20cena%20OR%20aperitivo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
-    {"nome":"Cerignola associazioni e feste","url":"https://news.google.com/rss/search?q=Cerignola%20(%22Pro%20Loco%22%20OR%20%22Sud%20Music%22%20OR%20%22Art%26fatti%22%20OR%20%22Palazzo%20Fornari%22%20OR%20%22Oltrebabele%22)%20(festa%20OR%20musica%20OR%20laboratorio%20OR%20mercatini%20OR%20spettacolo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
     {"nome":"Cerignola gastronomia e cene","url":"https://news.google.com/rss/search?q=Cerignola%20(%22cena%20evento%22%20OR%20%22cena%20di%20beneficenza%22%20OR%20%22serata%20gastronomica%22%20OR%20%22menu%20a%22%20OR%20degustazione%20OR%20%22show%20cooking%22%20OR%20%22cena%20a%20tema%22)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
     {"nome":"Cerignola stampa locale eventi","url":"https://news.google.com/rss/search?q=Cerignola%20(site%3Alanotiziaweb.it%20OR%20site%3Amarchiodoc.it%20OR%20site%3Acerignolaviva.it%20OR%20site%3Afoggiareporter.it%20OR%20site%3Alucera.it)%20(serata%20OR%20festa%20OR%20musica%20OR%20mercatino%20OR%20concerto%20OR%20laboratorio%20OR%20cena)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
     {"nome":"Cerignola pubblicazioni social locali","url":"https://news.google.com/rss/search?q=Cerignola%20(site%3Ainstagram.com%20OR%20site%3Afacebook.com)%20(%22NONZAI%22%20OR%20%22ADE%20rooftop%22%20OR%20%22Safar%C3%A0%22%20OR%20%22Blubar%22%20OR%20%22Villa%20Torre%20Quarto%22%20OR%20%22Sud%20Music%22)%20(evento%20OR%20serata%20OR%20dj%20OR%20live%20OR%20aperitivo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
@@ -1656,7 +1654,7 @@ def raccogli_da_feed_social(session, fonte):
             return []
         visti_link = set()
         for _, item, titolo, link, descrizione in classificati:
-            if tentativi_scheda >= 6:
+            if tentativi_scheda >= min(6, int(fonte.get("max_schede_rss", 6))):
                 break
             if link in visti_link:
                 continue
@@ -2063,6 +2061,63 @@ def registro_locali_movida():
         return {}
 
 
+def registro_cerignola():
+    """Anagrafica di organizzatori: non costituisce prova di un evento."""
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "fonti_cerignola.json"), encoding="utf-8") as f:
+            dati = json.load(f)
+        return [r for r in dati if isinstance(r, dict)] if isinstance(dati, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def fonti_registro_cerignola(registro=None):
+    """Quattro ricerche raggruppate, per contenere il budget di rete.
+    Le pagine anagrafiche non vengono convertite in eventi.
+    """
+    registro = registro_cerignola() if registro is None else registro
+    temi = {
+        "movida": '(serata OR "dj set" OR party OR karaoke OR aperitivo OR "musica dal vivo" OR clubbing)',
+        "associazioni": '(festa OR concerto OR festival OR spettacolo OR musica OR mercatini)',
+        "famiglie": '(laboratorio OR bambini OR festa OR spettacolo OR mercatini OR Natale)',
+        "gastronomia": '(degustazione OR "cena evento" OR "cena a tema" OR "dinner show" OR "show cooking" OR sagra OR "visita guidata")',
+    }
+    fonti = []
+    for gruppo, tema in temi.items():
+        alias = list(dict.fromkeys(
+            a.strip().replace('"', '') for r in registro if r.get("gruppo") == gruppo
+            for a in r.get("alias", []) if isinstance(a, str) and len(a.strip()) >= 3
+        ))
+        if not alias:
+            continue
+        nomi = " OR ".join('"' + a + '"' for a in alias[:20])
+        q = f"Cerignola ({nomi}) {tema} when:30d"
+        url = "https://news.google.com/rss/search?" + urlencode(
+            {"q": q, "hl": "it", "gl": "IT", "ceid": "IT:it"}
+        )
+        fonti.append({"nome": "Registro Cerignola - " + gruppo, "url": url,
+                      "citta_default": "", "solo_cerignola": True,
+                      "max_schede_rss": 4})
+    return fonti
+
+
+def calendari_registro_cerignola(registro=None):
+    registro = registro_cerignola() if registro is None else registro
+    fonti = []
+    for r in registro:
+        url = r.get("calendario", "")
+        # Solo calendari individuali con schema di link già supportato.
+        if not isinstance(url, str) or not _host_appartiene(url, "iltaccodibacco.it"):
+            continue
+        if urlparse(url).scheme != "https" or not re.fullmatch(r"/cerignola/[^/]+/?", urlparse(url).path):
+            continue
+        fonti.append({"nome": "Calendario Cerignola - " + r["nome"], "url": url,
+                      "dominio": "iltaccodibacco.it", "citta_default": "",
+                      "curata": True, "prefisso_schede": "/puglia/eventi/",
+                      "max_schede": 8, "solo_cerignola": True})
+    return fonti
+
+
 def atlas_data_locale(val):
     if not isinstance(val,str) or not re.match(r"^20\d{2}-\d{2}-\d{2}T",val):
         return None
@@ -2385,6 +2440,8 @@ def raccogli_da_portale_generico(session, fonte):
                     estratti = [e for e in estratti if e.get("dataInizio") == data_scheda_movida(link)]
                 if fonte.get("nightlife"):
                     estratti = [e for e in estratti if evento_movida_documentato(e)]
+                if fonte.get("solo_cerignola"):
+                    estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
                 eventi.extend(estratti)
             except Exception:
                 continue
@@ -2671,8 +2728,8 @@ def esegui_aggiornamento():
     STATI_EVENTI_NEGATIVI.clear()
     compiti = (
         [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
-        + [(raccogli_da_portale_generico, fonte) for fonte in FONTI_PORTALI]
-        + [(raccogli_da_feed_social, fonte) for fonte in FONTI_SOCIAL_RSS]
+        + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
+        + [(raccogli_da_feed_social, fonte) for fonte in fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
         + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com","cache":"bat"}), (esplora_lineup_atlas, {"nome":"Lineup Atlas API raggio costiero","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&rayon=50&limit=50","dominio":"lineupatlas.com","cache":"raggio-bat"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
@@ -2746,6 +2803,7 @@ def esegui_aggiornamento():
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),
+        "registroOrganizzatoriCerignola": len(registro_cerignola()),
         "registroLocaliMovida": {c:len(v) for c,v in registro_locali_movida().items()},
         "movidaProssimoWeekend": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e) and prossimo_weekend_movida(e))),
         "serateCerignola": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and e.get("categoria") == "Locali & Serate"),

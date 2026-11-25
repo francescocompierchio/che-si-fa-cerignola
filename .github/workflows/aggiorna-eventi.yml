@@ -10,6 +10,8 @@ on:
       - "aggiorna_eventi.py"
       - "stato_raccolta.py"
       - "fonti_movida.json"
+      - "fonti_cerignola.json"
+      - "test_fonti_cerignola.py"
       - "test_stato_raccolta.py"
       - "genera_pagine_eventi.js"
       - "event-tools.js"
@@ -112,6 +114,7 @@ jobs:
           if not report.get("serateCerignola", 0):
               print("**Attenzione:** nessuna serata automatica a Cerignola nell'archivio.")
           print("### Registro locali e copertura weekend")
+          print(f"- Organizzatori e locali censiti a Cerignola: {report.get('registroOrganizzatoriCerignola', 0)}")
           for comune,count in sorted(report.get("registroLocaliMovida", {}).items()):
               print(f"- {comune}: {count} locali censiti; {report.get('movidaProssimoWeekend', {}).get(comune,0)} appuntamenti automatici nel weekend")
           print("### Movida automatica per comune")
