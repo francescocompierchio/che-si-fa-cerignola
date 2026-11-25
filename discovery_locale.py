@@ -65,12 +65,19 @@ def fonti_guide_movida(registro):
             aggiungi("Guida movida "+g["nome"]+" "+str(i+1),g["alias"]+" "+area+" "+tema,g["profilo"])
     # Ricerca anche i singoli locali segnalati, senza richiedere il formato cena-show.
     for comune,locali in registro.items():
-        alias=list(dict.fromkeys(a for r in locali for a in r.get("alias",[]) if isinstance(a,str) and len(a)>=5 and '"' not in a))
+        alias=list(dict.fromkeys(a for r in locali for a in r.get("alias",[])+r.get("organizzatori",[]) if isinstance(a,str) and len(a)>=5 and '"' not in a))
         for i in range(0,len(alias),8):
             nomi="("+" OR ".join('"'+a+'"' for a in alias[i:i+8])+")"
             aggiungi("Annunci locali "+comune+" "+str(i//8+1),comune+" "+nomi+" "+tema,"")
             if comune=="Cerignola":
                 out[-1]["solo_cerignola"]=True
+    # Ricerca locale anche per format emergenti e pubblicazioni indicizzate sui social.
+    # Nessun evento viene creato soltanto a partire da un nome o da un giorno ricorrente.
+    for comune in ("Cerignola", "Orta Nova", "Canosa di Puglia", "Trani", "Barletta", "Manfredonia", "Bisceglie", "Foggia"):
+        aggiungi("Radar weekend "+comune, '"'+comune+'" (venerdì OR sabato OR domenica) ("dj set" OR karaoke OR "dinner show" OR "serata latina" OR "live music" OR "quiz game" OR "tributo live" OR "soft clubbing")',"")
+        if comune=="Cerignola":
+            out[-1]["solo_cerignola"]=True
+            out[-1]["prioritaria"]=True
     return out
 
 def alias_locale(testo,registro):
