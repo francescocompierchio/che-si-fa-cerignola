@@ -29,7 +29,8 @@
  document.addEventListener("DOMContentLoaded",()=>{
    const banner=document.getElementById("csf-consent");
    if(!banner)return;
-   banner.hidden=choice==="yes"||choice==="no"||excluded();
+   // Nessuna richiesta automatica: le statistiche restano facoltative e disattivate salvo consenso esplicito.
+   banner.hidden=true;
    document.getElementById("csf-consent-yes").addEventListener("click",()=>decide("yes"));
    document.getElementById("csf-consent-no").addEventListener("click",()=>decide("no"));
    document.getElementById("csf-consent-settings").addEventListener("click",()=>{banner.hidden=false;banner.scrollIntoView({block:"center"});});
