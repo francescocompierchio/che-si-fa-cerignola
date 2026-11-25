@@ -19,6 +19,36 @@
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
+  <script>
+    // Preferenza visiva locale: nessuna telemetria né dipendenza esterna.
+    (function(){
+      const key="csf_theme_v1",root=document.documentElement;
+      let dark=false;
+      try{dark=localStorage.getItem(key)==="dark";}catch(_){}
+      function render(){
+        root.dataset.csfTheme=dark?"dark":"light";
+        const button=document.getElementById("csf-theme-toggle");
+        if(button){
+          button.setAttribute("aria-pressed",String(dark));
+          button.textContent=dark?"☀":"☾";
+          button.title=dark?"Torna al tema chiaro":"Modalità notturna";
+        }
+        const meta=document.querySelector('meta[name="theme-color"]');
+        if(meta)meta.content=dark?"#0c1424":"#004aad";
+      }
+      render();
+      document.addEventListener("DOMContentLoaded",()=>{
+        render();
+        const button=document.getElementById("csf-theme-toggle");
+        if(button)button.addEventListener("click",()=>{
+          dark=!dark;
+          try{localStorage.setItem(key,dark?"dark":"light");}catch(_){}
+          render();
+        });
+      });
+    })();
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eventi a Cerignola oggi e nel weekend | Che Si Fa Cerignola</title>
   <meta name="description" content="Cosa fare a Cerignola oggi, stasera e nel weekend: eventi, serate nei locali, concerti, sagre, attività per famiglie ed escursioni nei dintorni." />
@@ -942,7 +972,97 @@
   #events-container .meta-top{gap:4px}
   #events-container .badges-wrap .badge-featured,#events-container .badges-wrap .badge-today{font-size:.66rem;padding:2px 6px;letter-spacing:0}
 }
-</style>
+
+/* CSF Premium: livello visivo reversibile, senza dipendenze esterne. */
+:root{--bg:#f1f4fa;--card:#fff;--text:#12213c;--muted:#52647b;--accent:#1746a2;--border:#dce4ef;--gold:#ffc83d;--premium-edge:#fff;--premium-surface:#f5f8fe;--premium-selected:#e7efff;--premium-shadow:0 2px 5px #14213d0a,0 12px 30px #14213d0c;--shadow-soft:var(--premium-shadow)}
+body{background:radial-gradient(ellipse at 50% 0,#dce9ff 0,transparent 450px),var(--bg)}
+.top-nav{background:rgba(248,250,255,.94);border-color:var(--border);box-shadow:0 3px 14px #0e23440a}
+.top-nav-inner,.hero-inner{max-width:760px}
+.nav-actions{display:flex;align-items:center;gap:8px;min-width:0}
+.theme-toggle{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;background:var(--card);color:var(--accent);border:1px solid var(--border);border-radius:14px;font-size:1.1rem;cursor:pointer;box-shadow:0 3px 8px #14213d0c}
+.hero{background:radial-gradient(ellipse at 94% 0%,#397ed5 0,transparent 53%),linear-gradient(130deg,#0b1e40 0%,#123b80 55%,#1746a2 100%);padding:28px 18px 26px;border-radius:0 0 30px 30px;box-shadow:0 12px 28px #123b802b;border-bottom:2px solid #ffc83d}
+.hero::after{right:-62px;top:-146px;width:310px;height:310px;box-shadow:0 0 0 24px #ffffff0b,0 0 0 52px #ffffff08,0 0 0 80px #ffffff05}
+.hero h1{font-size:clamp(1.75rem,5.5vw,2.3rem);line-height:1.15;font-weight:850;letter-spacing:-.055em;text-shadow:0 3px 12px #071a4660}
+.hero p{max-width:590px;color:#e3edff;line-height:1.5}
+.stats-row{margin-top:14px}
+.stats-row .counter{background:linear-gradient(145deg,#ffe08a,#ffc83d);box-shadow:inset 0 1px 0 #fff8,0 3px 9px #081a4b33}
+.stats-row .live-pill{background:#ffffff17;border-color:#ffffff30}
+.install-strip,.venues-side-tab,.smart-filters,.agenda-panel,.saved-plan-share,.author-card,.notifications-panel{background:linear-gradient(155deg,var(--card),var(--premium-surface));border-color:var(--border);box-shadow:inset 0 1px 0 var(--premium-edge),var(--premium-shadow);border-radius:18px}
+.venues-side-tab{border-right:4px solid #d82b73;min-height:57px}
+.ig-badge-icon{box-shadow:inset 0 1px 0 #ffffff55,0 5px 10px #d6297633}
+.search-box{border-radius:18px;background:var(--card);color:var(--text);border-color:var(--border);font-size:16px;box-shadow:inset 0 1px 2px #12213c05,var(--premium-shadow)}
+.search-box::placeholder,.venues-search::placeholder{color:var(--muted);opacity:.85}
+.search-box:focus,.venues-search:focus{outline:2px solid var(--accent);outline-offset:2px}
+.smart-filters-label{color:var(--muted);letter-spacing:.07em}
+.discovery-btn,.smart-filter-btn,.filter-btn,.sort-select,.agenda-date-btn,.favorite-toggle,.btn-soft{background:var(--card);border-color:var(--border);color:var(--text);box-shadow:inset 0 1px 0 var(--premium-edge),0 3px 9px #12213c08}
+.discovery-btn,.smart-filter-btn,.filter-btn{min-height:42px}
+.discovery-btn.active,.filter-btn.active,.agenda-date-btn.active{color:#fff;background:linear-gradient(145deg,#2864c3,#1746a2 70%);border-color:#2456ab;box-shadow:inset 0 1px 0 #ffffff30,0 5px 13px #1746a226}
+.smart-filter-btn.active{color:var(--accent);background:var(--premium-selected);border-color:#8db0e8}
+.smart-filter-btn[data-smart-filter="NIGHT"]:not(.active){color:var(--accent);border-color:#a4bae0;background:var(--premium-surface)}
+.agenda-heading,.saved-plan-share strong,.notifications-copy strong{color:var(--text)}
+.agenda-heading span,.saved-plan-share span,.notifications-copy p,.notifications-copy small,.notifications-note,.notification-reminder-count{color:var(--muted)}
+.agenda-date-btn{border-radius:13px;min-height:66px}
+.agenda-clear,.toggle-hint,.meta-top{color:var(--accent)}
+#events-container{gap:14px}
+#events-container details{border:1px solid var(--border);border-radius:21px;background:linear-gradient(160deg,var(--card) 60%,var(--premium-surface));box-shadow:inset 0 1px 0 var(--premium-edge),0 2px 4px #12213c08,0 8px 23px #12213c0d;padding:17px 16px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+#events-container details[open]{box-shadow:inset 0 1px 0 var(--premium-edge),0 4px 8px #14213d08,0 14px 32px #14213d13;border-color:#9db9e4}
+#events-container details.is-featured{background:linear-gradient(145deg,#fff5d6 0%,var(--card) 55%);border:1px solid #eac15d;border-left:5px solid var(--gold);box-shadow:inset 0 1px 0 #ffffff88,0 6px 20px #be8a161b}
+#events-container details.is-today:not(.is-featured){border-left:5px solid var(--today)}
+#events-container summary{padding-right:45px;overflow-wrap:anywhere}
+#events-container summary h3{font-size:clamp(1.08rem,3.7vw,1.22rem);font-weight:800;line-height:1.32;letter-spacing:-.025em;margin:5px 0 7px}
+.summary-info{font-size:.87rem;color:var(--muted)}
+.toggle-hint{padding:4px 0;font-weight:750}
+.favorite-toggle{width:40px;height:40px;top:14px;right:12px;border-radius:14px;color:var(--muted)}
+.favorite-toggle.saved{background:#fff2d0;color:#8a4f00;border-color:#eecb68}
+.event-poster,.event-poster.event-poster-full{width:auto;max-width:100%;max-height:min(78vh,620px);height:auto;object-fit:contain;margin:0 auto 14px;border-radius:15px;box-shadow:0 8px 24px #0b183022;background:var(--premium-surface)}
+.details-body{border-color:var(--border)}
+.btn{min-height:44px;border-radius:14px}
+.btn-map,.btn-strip-primary,.notification-toggle{background:linear-gradient(145deg,#2864c3,#1746a2 75%);box-shadow:inset 0 1px 0 #ffffff40,0 5px 12px #1746a225}
+.nav-share-btn,.btn-wa{background:#087a46;color:#fff;box-shadow:0 4px 12px #087a4622}
+.btn:active,.discovery-btn:active,.filter-btn:active,.smart-filter-btn:active,.favorite-toggle:active,.theme-toggle:active,.dock-btn:active,.venues-side-tab:active{transform:scale(.97)}
+.btn,.filter-btn,.smart-filter-btn,.favorite-toggle,.theme-toggle,.dock-btn,.venues-side-tab{transition:transform .16s ease,background .16s ease,box-shadow .16s ease}
+.modal-box{border-radius:22px;border:1px solid var(--border)}
+.m-field input,.m-field textarea,.m-field select{background:var(--card);color:var(--text)}
+.modal-close,.drawer-body,.venues-search{color:var(--text)}
+.venue-card{border-radius:15px;box-shadow:0 4px 12px #14213d0a}
+.drawer-header{background:linear-gradient(130deg,#961347,#cc2165)}
+@media(hover:hover) and (pointer:fine){
+ #events-container details:not([open]):hover{transform:translateY(-2px);box-shadow:0 4px 8px #14213d0d,0 14px 30px #14213d17;border-color:#9db9e4}
+ .btn:hover,.discovery-btn:hover,.smart-filter-btn:hover,.filter-btn:hover,.theme-toggle:hover,.favorite-toggle:hover{box-shadow:0 5px 15px #1746a224}
+}
+:where(button,a,input,select,textarea,summary):focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:600px){
+ .hero{padding:25px 16px 23px}
+ .top-nav{padding:7px 12px}
+ .home-btn,.nav-share-btn{min-height:42px;padding:7px 10px;font-size:.78rem}
+ .nav-actions{gap:5px}
+ .theme-toggle{width:38px;height:42px;flex-basis:38px}
+ #events-container details{padding:15px 13px;border-radius:19px}
+ .smart-filters,.agenda-panel{padding:11px 10px}
+ .mobile-dock{border-radius:24px;background:rgba(250,252,255,.96);border:1px solid #ffffff;box-shadow:0 2px 5px #14213d10,0 13px 35px #14213d30}
+ .dock-btn{min-height:46px;border-radius:17px;color:var(--muted)}
+ .dock-btn.active{background:var(--premium-selected);color:var(--accent);box-shadow:inset 0 1px 0 var(--premium-edge)}
+ body{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:360px){.home-btn,.nav-share-btn{padding-inline:7px}.nav-actions{gap:4px}.hero h1{font-size:1.62rem}.agenda-date-buttons{gap:3px}}
+/* Tema notturno esplicito, locale al dispositivo; chiaro resta il default. */
+html[data-csf-theme="dark"]{color-scheme:dark;--bg:#0c1424;--card:#172338;--text:#edf3ff;--muted:#b5c4da;--accent:#a9c9ff;--border:#34445e;--today:#7ee2b4;--today-bg:#153d30;--premium-edge:#ffffff09;--premium-surface:#121d30;--premium-selected:#233b61;--premium-shadow:0 2px 6px #0002,0 10px 28px #0003}
+html[data-csf-theme="dark"] body{background:radial-gradient(ellipse at 50% 0,#192f52 0,transparent 460px),var(--bg)}
+html[data-csf-theme="dark"] .top-nav,html[data-csf-theme="dark"] .mobile-dock{background:rgba(18,29,48,.96);border-color:var(--border)}
+html[data-csf-theme="dark"] #events-container details.is-featured{background:linear-gradient(145deg,#3c3021,var(--card) 65%);border-color:#b88b35;border-left-color:var(--gold)}
+html[data-csf-theme="dark"] .venues-tab-right{background:#47243a;color:#ffc7e3}
+html[data-csf-theme="dark"] .venues-search:focus,html[data-csf-theme="dark"] .venues-side-tab:active{background:var(--premium-surface)}
+html[data-csf-theme="dark"] .author-eyebrow,html[data-csf-theme="dark"] .modal-head h2,html[data-csf-theme="dark"] .footer-links a,html[data-csf-theme="dark"] .author-meta a{color:var(--accent)}
+html[data-csf-theme="dark"] .btn-strip-primary{color:#fff}
+html[data-csf-theme="dark"] .btn-reminder,html[data-csf-theme="dark"] .notification-open-chrome{background:var(--premium-selected);color:var(--accent);border-color:var(--border)}
+html[data-csf-theme="dark"] .btn-reminder.active{background:#173b30;color:#a3efd0;border-color:#396e59}
+html[data-csf-theme="dark"] .notifications-icon{background:var(--premium-selected)}
+html[data-csf-theme="dark"] .discovery-btn .count{background:#ffffff1a}
+html[data-csf-theme="dark"] .btn-strip-soft,html[data-csf-theme="dark"] .home-btn{color:var(--text)}
+html[data-csf-theme="dark"] .badge-featured{color:#162136}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;transform:none!important}}
+
+  </style>
 </head>
 <body>
 
@@ -952,9 +1072,12 @@
         <span>⌂</span>
         <span>Home</span>
       </button>
-      <button type="button" class="nav-share-btn" id="btn-share-nav">
-        <span>Condividi app</span>
-      </button>
+      <div class="nav-actions">
+        <button type="button" class="theme-toggle" id="csf-theme-toggle" aria-label="Modalità notturna" aria-pressed="false" title="Modalità notturna">☾</button>
+        <button type="button" class="nav-share-btn" id="btn-share-nav">
+          <span>Condividi app</span>
+        </button>
+      </div>
     </div>
   </nav>
 
