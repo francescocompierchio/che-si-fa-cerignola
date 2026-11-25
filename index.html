@@ -1110,6 +1110,43 @@ html[data-csf-theme="dark"] .nav-tool.nav-locali{color:#f8a8cf}
 @media(min-width:601px){.nav-shortcuts{grid-column:2;grid-row:1;gap:10px}.top-nav-inner{grid-template-columns:auto minmax(0,1fr) auto}.nav-shortcuts .nav-tool{min-height:48px}}
 @media(max-width:600px){.top-nav{padding:7px 12px}.top-nav .home-btn,.top-nav .nav-share-btn{font-size:.81rem;padding-inline:11px}.top-nav .theme-toggle{width:44px;flex-basis:44px}}
 @media(max-width:350px){.top-nav{padding-inline:8px}.nav-shortcuts{gap:9px}.nav-shortcuts .nav-tool{padding-inline:6px;gap:6px}.nav-tool-copy strong{font-size:.73rem}.nav-tool-copy small{font-size:.66rem}}
+
+/* Premium Depth: riflessi statici, rilievo e animazioni brevi, senza librerie. */
+:root{--depth-ambient:rgba(17,43,85,.11);--depth-contact:rgba(17,43,85,.15);--depth-highlight:rgba(255,255,255,.92);--depth-button-bottom:#d2ddeb;--depth-panel:0 2px 3px rgba(17,43,85,.07),0 10px 22px rgba(17,43,85,.10)}
+html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba(0,0,0,.32);--depth-highlight:rgba(255,255,255,.09);--depth-button-bottom:#0b1423;--depth-panel:0 3px 5px #0003,0 10px 24px #0004}
+.nav-shortcuts .nav-tool{min-height:44px;justify-content:center;padding:7px 8px;gap:7px;background:linear-gradient(150deg,var(--card),var(--premium-surface));box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),0 5px 9px var(--depth-ambient);transition:transform .16s ease,box-shadow .16s ease}
+.nav-tool-copy strong{font-size:.8rem;letter-spacing:-.015em}
+.top-nav-inner{row-gap:7px}
+.top-nav{box-shadow:0 3px 6px #14213d08,0 7px 20px var(--depth-ambient)}
+.hero{background:radial-gradient(ellipse at 86% -5%,#4c91e0 0%,transparent 47%),radial-gradient(ellipse at 10% 110%,#2458a8 0%,transparent 60%),linear-gradient(130deg,#081a38,#123b80 53%,#16469c);box-shadow:inset 0 1px 0 #ffffff40,inset 0 -4px 14px #061c4929,0 5px 0 #143d8420,0 14px 26px #123b8026}
+.hero::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(116deg,transparent 34%,rgba(255,255,255,.10) 34.2%,rgba(255,255,255,.025) 48%,transparent 48.2%),radial-gradient(ellipse at 78% 15%,#ffffff19,transparent 65%);opacity:.85}
+.hero::after{border-color:#ffffff38;box-shadow:0 0 0 23px #ffffff0d,0 0 0 49px #ffffff09,0 0 0 78px #ffffff06}
+.hero h1{text-shadow:0 2px 0 #071a4640,0 6px 18px #06183666}
+.counter{box-shadow:inset 0 1px 0 #fff9,inset 0 -2px 0 #bb79052c,0 3px 0 #071c482c,0 6px 13px #071a4633}
+.smart-filters,.agenda-panel,.saved-plan-share,.author-card{box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),var(--depth-panel)}
+#events-container details{background:linear-gradient(148deg,var(--card) 55%,var(--premium-surface));box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),0 5px 8px var(--depth-ambient),0 14px 24px var(--depth-ambient)}
+#events-container details.is-featured{box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 #bf8e3226,0 6px 12px #b4832420,0 15px 25px #b4832419}
+#events-container details[open]{box-shadow:inset 0 1px 0 var(--depth-highlight),0 3px 0 var(--depth-button-bottom),0 9px 16px var(--depth-ambient),0 18px 30px var(--depth-ambient)}
+.btn-map,.btn-strip-primary,.notification-toggle,.discovery-btn.active,.filter-btn.active,.agenda-date-btn.active{background:linear-gradient(158deg,#3779d8 0%,#235dbb 28%,#1746a2 75%,#143c87 100%);box-shadow:inset 0 1px 0 #ffffff60,inset 0 -2px 0 #0a2d7e45,0 3px 0 #102e7133,0 7px 13px #1746a22b}
+.nav-share-btn,.btn-wa{background:linear-gradient(155deg,#13975c,#087a46 70%,#05603a);box-shadow:inset 0 1px 0 #ffffff40,0 2px 0 #064b3433,0 5px 11px #087a4628}
+.discovery-btn:not(.active),.filter-btn:not(.active),.smart-filter-btn,.agenda-date-btn:not(.active),.theme-toggle,.home-btn,.sort-select,.favorite-toggle{box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),0 5px 9px var(--depth-ambient)}
+.search-box{box-shadow:inset 0 2px 4px var(--depth-ambient),0 3px 0 var(--depth-highlight),0 6px 15px var(--depth-ambient)}
+.event-poster,.event-poster.event-poster-full{box-shadow:0 2px 0 var(--depth-button-bottom),0 7px 14px var(--depth-ambient),0 16px 27px var(--depth-ambient)}
+.venues-drawer,#install-box{box-shadow:-2px 0 0 var(--depth-highlight),-9px 0 24px #0b193c30,-25px 0 65px #0b193c24}
+.venues-drawer .drawer-header{box-shadow:inset 0 1px 0 #ffffff40,0 5px 15px #14213d26}
+.venue-card{box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),0 5px 14px var(--depth-ambient)}
+@media(max-width:600px){.mobile-dock{box-shadow:inset 0 1px 0 var(--depth-highlight),0 3px 0 var(--depth-button-bottom),0 8px 16px var(--depth-contact),0 18px 36px var(--depth-ambient)}.dock-btn.active{box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 5px var(--depth-ambient)}}
+@media(max-width:350px){.nav-tool-copy strong{font-size:.73rem}.nav-shortcuts .nav-tool{gap:5px;padding-inline:5px}.nav-shortcuts .nav-tool svg{width:19px;flex-basis:19px}}
+@media(prefers-reduced-motion:no-preference){
+ .nav-shortcuts .nav-tool:active,.top-nav .home-btn:active,.nav-share-btn:active,.theme-toggle:active,.btn:active,.discovery-btn:active,.smart-filter-btn:active,.filter-btn:active,.agenda-date-btn:active,.dock-btn:active,.favorite-toggle:active{transform:translateY(2px) scale(.985);box-shadow:inset 0 2px 5px var(--depth-contact),0 1px 2px var(--depth-ambient)}
+ #events-container details[open] .details-body{animation:csf-reveal .23s ease-out both}
+ @keyframes csf-reveal{from{opacity:.65;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .nav-shortcuts .nav-tool:hover,.btn-map:hover,.discovery-btn:hover,.theme-toggle:hover{transform:translateY(-2px);box-shadow:0 3px 0 var(--depth-button-bottom),0 8px 16px var(--depth-contact)}
+ #events-container details:not([open]):hover{transform:perspective(1200px) translateY(-3px) rotateX(1deg);box-shadow:0 3px 0 var(--depth-button-bottom),0 13px 24px var(--depth-contact)}
+}
+@media(prefers-reduced-motion:reduce){.nav-tool{transition:none!important;transform:none!important}#events-container details[open] .details-body{animation:none!important}}
   </style>
 </head>
 <body>
@@ -1127,8 +1164,8 @@ html[data-csf-theme="dark"] .nav-tool.nav-locali{color:#f8a8cf}
         </button>
       </div>
       <div class="nav-shortcuts">
-        <span id="home-shortcut" hidden><button type="button" class="nav-tool" id="btn-add-home" aria-label="Aggiungi alla Home senza scaricare l'APK" title="Aggiungi alla Home" aria-controls="install-box" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6m-3-3h6m-4 8h2"/></svg><span class="nav-tool-copy"><strong>Aggiungi alla Home</strong><small>Senza scaricare l'APK</small></span></button></span>
-        <button type="button" class="nav-tool nav-locali" id="btn-open-venues" aria-label="Pagine Instagram dei locali" aria-controls="venues-drawer" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg><span class="nav-tool-copy"><strong>Instagram locali</strong><small>Profili e serate</small></span></button>
+        <span id="home-shortcut" hidden><button type="button" class="nav-tool" id="btn-add-home" aria-label="Aggiungi alla Home senza scaricare l'APK" title="Aggiungi alla Home" aria-controls="install-box" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6m-3-3h6m-4 8h2"/></svg><span class="nav-tool-copy"><strong>Aggiungi a Home</strong></span></button></span>
+        <button type="button" class="nav-tool nav-locali" id="btn-open-venues" aria-label="Pagine Instagram dei locali" aria-controls="venues-drawer" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg><span class="nav-tool-copy"><strong>Instagram Locali</strong></span></button>
       </div>
     </div>
   </nav>
