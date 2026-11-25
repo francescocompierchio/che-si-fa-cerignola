@@ -47,6 +47,32 @@ def fonti_cene_show(registro):
             out.append(fonte(f"Promoter e locali {comune} {i//8+1}",comune+" "+nomi,CENE_SHOW_QUERY,comune=="Cerignola",gruppo))
     return out
 
+GUIDE_MOVI_DA = [
+    {"nome":"Pugliando", "profilo":"https://www.instagram.com/pugliando_cosa_fare_in_puglia/", "alias":'("pugliando_cosa_fare_in_puglia" OR "Pugliando")'},
+    {"nome":"Fuori Social", "profilo":"https://fuori.social/scopri?dove=foggia", "alias":"site:fuori.social"},
+    {"nome":"Papido", "profilo":"https://www.papido.it/foggia/", "alias":"site:papido.it"},
+    {"nome":"ToDoPuglia", "profilo":"https://todopuglia.it/eventi-puglia/", "alias":"site:todopuglia.it"},
+]
+def fonti_guide_movida(registro):
+    """Ricerche di annunci pubblici indicizzati, mai accesso a Stories o account privati."""
+    aree=['(Cerignola OR Foggia OR Stornara OR Stornarella OR Canosa OR "Orta Nova" OR Trinitapoli OR Lavello)', '(Trani OR Barletta OR Bisceglie OR Andria OR Manfredonia OR "Margherita di Savoia")']
+    tema='(serata OR discoteca OR karaoke OR "dj set" OR "cena spettacolo" OR "musica dal vivo" OR apericena OR spaghettata)'
+    out=[]
+    def aggiungi(nome,q,profilo):
+        out.append({"nome":nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":q+" when:21d","hl":"it","gl":"IT","ceid":"IT:it"}),"profilo":profilo,"focus_serate":True,"nightlife":True,"max_schede_rss":4})
+    for g in GUIDE_MOVI_DA:
+        for i,area in enumerate(aree):
+            aggiungi("Guida movida "+g["nome"]+" "+str(i+1),g["alias"]+" "+area+" "+tema,g["profilo"])
+    # Ricerca anche i singoli locali segnalati, senza richiedere il formato cena-show.
+    for comune,locali in registro.items():
+        alias=list(dict.fromkeys(a for r in locali for a in r.get("alias",[]) if isinstance(a,str) and len(a)>=5 and '"' not in a))
+        for i in range(0,len(alias),8):
+            nomi="("+" OR ".join('"'+a+'"' for a in alias[i:i+8])+")"
+            aggiungi("Annunci locali "+comune+" "+str(i//8+1),comune+" "+nomi+" "+tema,"")
+            if comune=="Cerignola":
+                out[-1]["solo_cerignola"]=True
+    return out
+
 def alias_locale(testo,registro):
     """Un alias serve soltanto a trovare il candidato, non a provare la sede."""
     testo=testo or ""

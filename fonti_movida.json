@@ -90,6 +90,38 @@
         "eventi_enjoy",
         "DBA Events"
       ]
+    },
+    {
+      "nome": "Domus Disco",
+      "alias": [
+        "domus disco",
+        "domus area",
+        "love generation 90"
+      ],
+      "organizzatori": [
+        "Andrew Rossetti",
+        "Danilo Rossetti"
+      ]
+    },
+    {
+      "nome": "Carlito's Bistrot",
+      "alias": [
+        "carlito's bistrot",
+        "carlitos bistrot",
+        "serataccia italiana"
+      ],
+      "organizzatori": [
+        "Andrew Rossetti"
+      ]
+    },
+    {
+      "nome": "Lion's Bar Pizzeria",
+      "alias": [
+        "lion's bar pizzeria",
+        "lions bar pizzeria",
+        "lions_bar_pizzeria"
+      ],
+      "calendario": "https://www.instagram.com/lions_bar_pizzeria/"
     }
   ]
 }

@@ -19,6 +19,13 @@ class DiscoveryLocaleTest(unittest.TestCase):
             self.assertTrue(d.CENE_SHOW.search(testo),testo)
         for testo in ("Menu del ristorante", "Orari di apertura", "Convegno", "Cena di beneficenza"):
             self.assertFalse(d.CENE_SHOW.search(testo),testo)
+    def test_guide_movida(self):
+        from urllib.parse import urlparse,parse_qs
+        f=d.fonti_guide_movida({"Foggia":[{"alias":["domus disco","lions_bar_pizzeria"]}]})
+        q=[parse_qs(urlparse(x["url"]).query)["q"][0] for x in f]
+        self.assertTrue(any("pugliando_cosa_fare_in_puglia" in x and "Foggia" in x for x in q))
+        self.assertTrue(any("domus disco" in x and "karaoke" in x for x in q))
+        self.assertTrue(all(x["focus_serate"] and x["max_schede_rss"]<=4 for x in f))
     def test_alias(self):
         r=[{"alias":["Villa Torre Quarto","Il Titolo"]}]
         self.assertTrue(d.alias_locale("Cenone Villa Torre Quarto",r))

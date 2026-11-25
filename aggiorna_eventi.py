@@ -3077,7 +3077,7 @@ def esegui_aggiornamento():
         + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita + rss_annuali]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
-        + [(raccogli_da_feed_social, fonte) for fonte in discovery_locale.fonti() + discovery_locale.settimanali() + discovery_locale.fonti_cene_show(registro_locali_movida()) + fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
+        + [(raccogli_da_feed_social, fonte) for fonte in discovery_locale.fonti() + discovery_locale.settimanali() + discovery_locale.fonti_cene_show(registro_locali_movida()) + discovery_locale.fonti_guide_movida(registro_locali_movida()) + fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
         + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com","cache":"bat"}), (esplora_lineup_atlas, {"nome":"Lineup Atlas API raggio costiero","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&rayon=50&limit=50","dominio":"lineupatlas.com","cache":"raggio-bat"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
