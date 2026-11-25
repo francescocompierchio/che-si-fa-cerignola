@@ -7,6 +7,15 @@ function strumenti(){
  const validDate=v=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&!Number.isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
  function overlaps(ev,start,end){return ev.tipoContenuto!=="esperienza"&&validDate(ev.dataInizio)&&validDate(ev.dataFine||ev.dataInizio)&&ev.dataInizio<=end&&(ev.dataFine||ev.dataInizio)>=start;}
  function weekend(oggi){const d=new Date(oggi+"T12:00:00Z"),day=d.getUTCDay(),shift=day===6?-1:day===0?-2:(5-day+7)%7;d.setUTCDate(d.getUTCDate()+shift);const start=d.toISOString().slice(0,10);d.setUTCDate(d.getUTCDate()+2);return [start,d.toISOString().slice(0,10)];}
+ function fonteNormalizzata(fonte){
+   if(!fonte)return "";
+   try {
+     const url=new URL(fonte);
+     if(!["http:","https:"].includes(url.protocol)||url.pathname==="/")return "";
+     url.hostname=url.hostname.replace(/^www\./,"");
+     return url.href;
+   } catch { return ""; }
+ }
  function duplicate(a,b){
  if(!a||!b||a.tipoContenuto==="esperienza"||b.tipoContenuto==="esperienza"||!norm(a.citta)||norm(a.citta)!==norm(b.citta)||!validDate(a.dataInizio)||a.dataInizio!==b.dataInizio||(a.dataFine||a.dataInizio)!==(b.dataFine||b.dataInizio))return false;
  const ta=norm(a.titolo),tb=norm(b.titolo);
@@ -15,6 +24,12 @@ function strumenti(){
  const sameVenue=la&&lb&&(la===lb||la.split(" ").some(x=>x.length>=5&&!stop.has(x)&&lb.split(" ").includes(x)));
  if(!sameVenue)return false;
  if(ta===tb&&ta.length>=4)return true;
+ // Un articolo può annunciare più spettacoli: confronta anche sede e nome principale.
+ const nomePrincipale=titolo=>norm(String(titolo||"").split(/\s+[–—-]\s+|\s+\|\s+/)[0]);
+ if(la===lb&&nomePrincipale(a.titolo).length>=6&&nomePrincipale(a.titolo)===nomePrincipale(b.titolo)){
+   const fonte=fonteNormalizzata(a.fonteUrl);
+   if(fonte&&fonte===fonteNormalizzata(b.fonteUrl))return true;
+ }
  const shorter=ta.length<=tb.length?ta:tb,longer=ta.length<=tb.length?tb:ta;
  return shorter.length>=9&&(" "+longer+" ").includes(" "+shorter+" ");
  }
