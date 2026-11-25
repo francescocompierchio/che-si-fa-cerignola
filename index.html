@@ -1152,6 +1152,15 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
 .top-nav .nav-actions{gap:8px}
 .top-nav .csf-music-toggle{width:44px;height:44px;flex-basis:44px}
 @media(max-width:350px){.top-nav .nav-actions{gap:6px}.top-nav .nav-share-btn{padding-inline:8px}.top-nav .home-btn{padding-inline:8px}}
+
+.agenda-more{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--border);font-size:.76rem}
+.agenda-more label{flex:1 1 100%;color:var(--muted);font-weight:700}
+.agenda-more input,.agenda-special{min-width:0;min-height:40px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font:inherit;font-weight:700;padding:7px 9px;box-shadow:inset 0 1px 0 var(--depth-highlight),0 2px 0 var(--depth-button-bottom),0 5px 9px var(--depth-ambient)}
+.agenda-more input{flex:1 1 120px;color-scheme:light}
+html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
+.agenda-special{flex:1 1 auto;cursor:pointer;white-space:nowrap}
+.agenda-special[aria-pressed="true"]{background:var(--accent);color:#fff}
+.agenda-selected-info{margin:10px 0 0;font-size:.77rem;color:var(--muted);font-weight:650}
   </style>
 </head>
 <body>
@@ -1213,9 +1222,15 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
         <button type="button" class="smart-filter-btn" data-smart-filter="CULTURE" aria-pressed="false">🎭 Cultura</button>
       </div>
     </div>
-    <section class="agenda-panel" aria-label="Agenda dei prossimi sette giorni">
+    <section class="agenda-panel" aria-label="Agenda degli eventi e date future">
       <div class="agenda-heading"><div><strong>Agenda rapida</strong><span> · prossimi 7 giorni</span></div><button type="button" id="clear-selected-date" class="agenda-clear" hidden>Tutte le date</button></div>
       <div id="agenda-date-buttons" class="agenda-date-buttons"></div>
+      <div class="agenda-more">
+        <label for="agenda-future-date">Scegli un'altra data</label>
+        <input type="date" id="agenda-future-date" aria-label="Scegli una data futura">
+        <button type="button" id="agenda-new-year" class="agenda-special" aria-pressed="false">🎆 Capodanno</button>
+      </div>
+      <p id="agenda-selected-info" class="agenda-selected-info" aria-live="polite" hidden></p>
     </section>
     <div class="filters" id="filters"></div>
     <h2 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap">Elenco degli eventi</h2>
@@ -2232,7 +2247,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
 
     let queryRicerca = "";
     let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", ordinamentoEventi = "smart", filtroSmart = "ALL";
-    let dataSelezionata = "";
+    let dataSelezionata = "", fineDataSelezionata = "";
     let linkEventoDaAprire = "";
     try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
     let pagineEventoPubbliche = new Set();
@@ -2540,26 +2555,67 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     function normalizzaRicerca(v){return String(v||"").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
     function spostaGiorniISO(data,giorni){const [a,m,g]=data.split("-").map(Number),d=new Date(a,m-1,g,12);d.setDate(d.getDate()+giorni);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
     function contaEventiGiorno(data,eventi){return eventi.filter(ev=>ev.tipoContenuto!=="esperienza"&&ev.dataInizio&&ev.dataInizio<=data&&(ev.dataFine||ev.dataInizio)>=data).length;}
+    function dateCapodanno(){
+      let anno=Number(oggi.slice(0,4));
+      if(oggi===anno+"-01-01")anno--;
+      return [anno+"-12-31",(anno+1)+"-01-01"];
+    }
+    function selezionaData(inizio,fine=""){
+      dataSelezionata=inizio;fineDataSelezionata=fine;
+      renderEventi();
+    }
     function renderAgendaRapida(eventi){
       const host=document.getElementById("agenda-date-buttons"),clear=document.getElementById("clear-selected-date");if(!host)return;
       host.innerHTML="";if(clear)clear.hidden=!dataSelezionata;
+      const picker=document.getElementById("agenda-future-date"),ny=document.getElementById("agenda-new-year"),info=document.getElementById("agenda-selected-info");
+      const [nyStart,nyEnd]=dateCapodanno();
+      if(picker){picker.min=oggi;picker.value=dataSelezionata&&!fineDataSelezionata?dataSelezionata:"";}
+      const nyActive=dataSelezionata===nyStart&&fineDataSelezionata===nyEnd;
+      const nyCount=eventi.filter(ev=>CsfEventTools.overlaps(ev,nyStart,nyEnd)).length;
+      if(ny){ny.setAttribute("aria-pressed",String(nyActive));ny.textContent="🎆 Capodanno · "+nyCount;}
+      if(info){
+        info.hidden=!dataSelezionata;
+        if(dataSelezionata){
+          const format=d=>new Date(d+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+          const count=eventi.filter(ev=>CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata)).length;
+          info.textContent=(nyActive?"San Silvestro e Capodanno":format(dataSelezionata))+" · "+count+(count===1?" evento annunciato":" eventi annunciati");
+        }
+      }
       for(let offset=0;offset<7;offset++){
         const data=spostaGiorniISO(oggi,offset),date=new Date(data+"T12:00:00"),day=date.toLocaleDateString("it-IT",{weekday:"short"}).replace(".",""),count=contaEventiGiorno(data,eventi);
         const btn=document.createElement("button");btn.type="button";btn.className="agenda-date-btn"+(count===0?" empty":"")+(dataSelezionata===data?" active":"");btn.setAttribute("aria-pressed",String(dataSelezionata===data));btn.setAttribute("aria-label",day+" "+date.getDate()+" "+(count===1?"1 evento":count+" eventi")+" · "+date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}));
         const wd=document.createElement("span");wd.className="agenda-date-weekday";wd.textContent=day;
         const num=document.createElement("span");num.className="agenda-date-number";num.textContent=String(date.getDate());
         const total=document.createElement("span");total.className="agenda-date-count";total.textContent=count===1?"1 evento":count+" eventi";
-        btn.append(wd,num,total);btn.addEventListener("click",()=>{dataSelezionata=dataSelezionata===data?"":data;renderEventi();});
+        btn.append(wd,num,total);btn.addEventListener("click",()=>selezionaData(dataSelezionata===data&&!fineDataSelezionata?"":data));
         host.appendChild(btn);
       }
     }
-    document.getElementById("clear-selected-date").addEventListener("click",()=>{dataSelezionata="";renderEventi();});
+    document.getElementById("clear-selected-date").addEventListener("click",()=>selezionaData(""));
+    function preparaDataFutura(){
+      // Elimina i filtri temporali incompatibili, ma conserva ricerca e città/categoria.
+      if(modalitaRapida==="WEEKEND")modalitaRapida="ALL";
+      if(["NEXT7","TONIGHT"].includes(filtroSmart))filtroSmart="ALL";
+      if(filtroAttivo==="OGGI"){filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));}
+      aggiornaComandiRapidi();
+    }
+    document.getElementById("agenda-future-date").addEventListener("change",ev=>{
+      const value=ev.target.value;
+      if(value&&value<oggi){ev.target.value="";return;}
+      if(value)preparaDataFutura();
+      selezionaData(value);
+    });
+    document.getElementById("agenda-new-year").addEventListener("click",()=>{
+      const [inizio,fine]=dateCapodanno();
+      if(dataSelezionata===inizio&&fineDataSelezionata===fine){selezionaData("");return;}
+      preparaDataFutura();selezionaData(inizio,fine);
+    });
     function entroSetteGiorni(ev){
       return CsfEventTools.overlaps(ev,oggi,spostaGiorniISO(oggi,6));
     }
-    function impostaFiltroSmart(modo){window.CsfMetrics?.action?.("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaFiltroSmart(modo){window.CsfMetrics?.action?.("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";fineDataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
-    function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";fineDataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
     document.getElementById("quick-weekend").addEventListener("click",()=>impostaModalitaRapida("WEEKEND"));
     document.getElementById("quick-favorites").addEventListener("click",()=>impostaModalitaRapida("FAVORITES"));
@@ -2970,7 +3026,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       modalitaRapida = "ALL";
       filtroSmart = "ALL";
       filtroAttivo = "ALL";
-      dataSelezionata = "";
+      dataSelezionata = "";fineDataSelezionata="";
       queryRicerca = "";
       searchInput.value = "";
       queryLocali = "";
@@ -3074,7 +3130,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
 
       renderAgendaRapida(filtrati);
       if (dataSelezionata) {
-        filtrati = filtrati.filter(ev => CsfEventTools.overlaps(ev,dataSelezionata,dataSelezionata));
+        filtrati = filtrati.filter(ev => CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata));
       }
       filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;const priorita=ordinamentoEventi==="smart"&&CsfEventTools.prioritaScoperta?CsfEventTools.prioritaScoperta(a,oggi,getFasciaCerchioCerignola(a.citta))-CsfEventTools.prioritaScoperta(b,oggi,getFasciaCerchioCerignola(b.citta)):0;return x-y||(ordinamentoEventi==="smart"?Number(!!b.inEvidenza)-Number(!!a.inEvidenza):0)||priorita||(a.dataInizio||"").localeCompare(b.dataInizio||"")||getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||CsfEventTools.quality(b)-CsfEventTools.quality(a);});
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
@@ -3085,8 +3141,8 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       if (filtrati.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
-        empty.textContent = modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : "Nessun evento o attività trovata con i filtri selezionati.";
-        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{queryRicerca="";searchInput.value="";dataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);if(modalitaRapida!=="FAVORITES"){const nearby=document.createElement("button");nearby.type="button";nearby.className="btn btn-soft";nearby.textContent="Scopri le serate dei prossimi giorni";nearby.addEventListener("click",()=>{queryRicerca="";searchInput.value="";impostaModalitaRapida("ALL");impostaFiltroSmart("NIGHT");});empty.appendChild(nearby);}container.appendChild(empty);
+        empty.textContent = modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : dataSelezionata ? "Nessun evento ancora annunciato per questa data con i filtri selezionati. Torna a consultare l’agenda: le proposte vengono aggiornate automaticamente." : "Nessun evento o attività trovata con i filtri selezionati.";
+        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{queryRicerca="";searchInput.value="";dataSelezionata="";fineDataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);if(modalitaRapida!=="FAVORITES"){const nearby=document.createElement("button");nearby.type="button";nearby.className="btn btn-soft";nearby.textContent="Scopri le serate dei prossimi giorni";nearby.addEventListener("click",()=>{queryRicerca="";searchInput.value="";impostaModalitaRapida("ALL");impostaFiltroSmart("NIGHT");});empty.appendChild(nearby);}container.appendChild(empty);
         return;
       }
 
@@ -3242,7 +3298,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       const nuovaData=getDataLocaleOggi();
       if(nuovaData===oggi)return;
       oggi=nuovaData;
-      if(dataSelezionata&&dataSelezionata<oggi)dataSelezionata="";
+      if(dataSelezionata&&(fineDataSelezionata||dataSelezionata)<oggi){dataSelezionata="";fineDataSelezionata="";}
       aggiornaListaCompleta();
       if(!modalSegnala.classList.contains("open"))aggiornaCampiTipoSegnalazione();
     }

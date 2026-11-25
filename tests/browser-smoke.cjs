@@ -67,6 +67,18 @@ const assert = require("node:assert/strict");
     assert.match(await page.locator("#author-signature").textContent(),/Francesco Compierchio/);
     assert.equal(await page.locator("#btn-author-ig").getAttribute("href"),"https://www.instagram.com/francesco_c_92/");
     assert.equal(await page.locator(".footer-links a").count(),5);
+    // Una data oltre la settimana deve essere consultabile e mostrare solo eventi di quel giorno.
+    await page.locator("#agenda-future-date").fill("2026-12-31");
+    assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Evento futuro già presente");
+    assert.equal(await page.locator("#agenda-future-date").inputValue(),"2026-12-31");
+    assert.ok(await page.locator("#agenda-selected-info").isVisible());
+    await page.locator("#clear-selected-date").click();
+    await page.locator("#quick-weekend").click();
+    await page.locator("#agenda-new-year").click();
+    assert.equal(await page.locator("#agenda-new-year").getAttribute("aria-pressed"),"true");
+    assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Capodanno non limitato al weekend corrente");
+    await page.locator("#clear-selected-date").click();
+    assert.equal(await page.locator("#agenda-date-buttons button").count(),7);
     await page.locator("#sort-events").selectOption("date");
     assert.equal(await page.locator("#sort-events").inputValue(),"date");
     await page.locator("#sort-events").selectOption("smart");
