@@ -9,6 +9,12 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_movida_live_locale_non_teatro(self):
+        e={"categoria":"Musica & Concerti","titolo":"Rainbow Bridge live tribute","luogo":"Bohemien Pub","descrizione":"Concerto rock"}
+        self.assertTrue(crawler.evento_movida_documentato(e))
+        self.assertFalse(crawler.evento_movida_documentato({**e,"luogo":"Teatro Comunale"}))
+        self.assertFalse(crawler.evento_movida_documentato({**e,"categoria":"Teatro & Spettacoli"}))
+
     def test_intervallo_editoriale_sostituito(self):
         e={"fonteUrl":"https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html","citta":"Cerignola","dataInizio":"2026-11-21","dataFine":"2026-12-06"}
         self.assertTrue(crawler.intervallo_editoriale_sostituito(e))

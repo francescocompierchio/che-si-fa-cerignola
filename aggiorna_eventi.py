@@ -27,6 +27,7 @@ HEADERS = {
 }
 
 DOMINI_AUTO = (
+    "canosaweb.it", "minervinoviva.it", "volontariperminervino.it", "andiamoinpuglia.it",
     "news.google.com", "iltaccodibacco.it", "viaggiareinpuglia.it",
     "pugliaevents.it", "eventiesagre.it", "eventbrite.it",
     "lanotiziaweb.it", "marchiodoc.it", "cerignolaviva.it",
@@ -42,6 +43,8 @@ DOMINI_AUTO = (
 )
 
 FONTI_VIVA = [
+    {"nome": "MinervinoViva Eventi", "url": "https://www.minervinoviva.it/eventi/", "dominio": "minervinoviva.it", "citta_default": "Minervino Murge", "solo_eventi": True},
+    {"nome": "MinervinoViva Notizie", "url": "https://www.minervinoviva.it/notizie/", "dominio": "minervinoviva.it", "citta_default": "Minervino Murge", "solo_eventi": False},
     {"nome": "CerignolaViva Eventi", "url": "https://www.cerignolaviva.it/eventi/", "dominio": "cerignolaviva.it", "citta_default": "Cerignola", "solo_eventi": True},
     {"nome": "CerignolaViva Notizie", "url": "https://www.cerignolaviva.it/notizie/", "dominio": "cerignolaviva.it", "citta_default": "Cerignola", "solo_eventi": False},
     {"nome": "CanosaViva Eventi", "url": "https://www.canosaviva.it/eventi/", "dominio": "canosaviva.it", "citta_default": "Canosa di Puglia", "solo_eventi": True},
@@ -57,6 +60,11 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome":"CanosaWeb eventi locali","url":"https://canosaweb.it/eventi/","dominio":"canosaweb.it","citta_default":"Canosa di Puglia","curata":False,"notizie_locali":True,"prefisso_schede":"/notizie/","max_schede":12},
+    {"nome":"Comune Cerignola agenda ufficiale","url":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata":True,"prefisso_schede":"/vivere-il-comune/eventi/","max_schede":20},
+    {"nome":"Volontari per Minervino - iniziative","url":"https://volontariperminervino.it/","dominio":"volontariperminervino.it","citta_default":"Minervino Murge","curata":False,"notizie_locali":True,"max_schede":8},
+    {"nome":"Tacco di Bacco concerti Barletta","url":"https://iltaccodibacco.it/barletta/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
+    {"nome":"Tacco di Bacco concerti Bisceglie","url":"https://iltaccodibacco.it/bisceglie/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
     {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "browser_pubblico": True, "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
     {"nome": "Nightz Divine Club", "url": "https://nightz.it/locali/divine-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome": "Nightz Aphelion Club", "url": "https://nightz.it/locali/aphelion-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
@@ -109,6 +117,10 @@ FONTI_PORTALI = [
 ]
 
 FONTI_SOCIAL_RSS = [
+    {"nome":"Andiamo in Puglia Daunia","url":"https://news.google.com/rss/search?q=site%3Aandiamoinpuglia.it%20(Cerignola%20OR%20Stornara%20OR%20Orta%20Nova%20OR%20Trinitapoli%20OR%20San%20Ferdinando%20OR%20Lavello)%20(sagra%20OR%20Natale%20OR%20concerto%20OR%20festa%20OR%20mercatino)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
+    {"nome":"Andiamo in Puglia Nord Barese","url":"https://news.google.com/rss/search?q=site%3Aandiamoinpuglia.it%20(Canosa%20OR%20Barletta%20OR%20Trani%20OR%20Minervino%20OR%20Margherita%20di%20Savoia)%20(sagra%20OR%20concerto%20OR%20festa%20OR%20mercatino%20OR%20serata)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
+    {"nome":"EventiVicino Reali Siti","url":"https://news.google.com/rss/search?q=site%3Aeventivicino.it%20(Cerignola%20OR%20Stornara%20OR%20Stornarella%20OR%20Orta%20Nova%20OR%20Trinitapoli%20OR%20Lavello%20OR%20Canosa)%20(serata%20OR%20festa%20OR%20sagra%20OR%20concerto)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
+    {"nome":"Locali Cerignola e Reali Siti - nomi","url":"https://news.google.com/rss/search?q=(Cerignola%20OR%20Stornara%20OR%20Stornarella%20OR%20Orta%20Nova%20OR%20San%20Ferdinando%20OR%20Trinitapoli)%20(%22DJ%20set%22%20OR%20karaoke%20OR%20%22musica%20dal%20vivo%22%20OR%20discoteca%20OR%20%22cena%20spettacolo%22%20OR%20%22aperitivo%20musicale%22)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
     {"nome":"TicketSms discoteche BAT Capitanata","url":"https://news.google.com/rss/search?q=site%3Aticketsms.it%2Fevent%20(Bisceglie%20OR%20Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(club%20OR%20party%20OR%20discoteca%20OR%20DJ)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"DICE e promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Adice.fm%20(Barletta%20OR%20Trani%20OR%20Foggia%20OR%20Manfredonia%20OR%20Bisceglie)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Ticketoo e rivendita serate","url":"https://news.google.com/rss/search?q=site%3Aticketoo.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Bisceglie)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
@@ -1768,7 +1780,15 @@ def data_scheda_movida(url):
 def evento_movida_documentato(ev):
     if ev.get("categoria") == "Locali & Serate":
         return True
-    return ev.get("categoria") in {"Musica & Concerti", "Attività diurne", "Sagre & Food"} and indizi_movida(" ".join(str(ev.get(k) or "") for k in ("titolo", "descrizione", "luogo")))
+    if ev.get("categoria") not in {"Musica & Concerti", "Attività diurne", "Sagre & Food"}:
+        return False
+    testo = " ".join(str(ev.get(k) or "") for k in ("titolo", "descrizione", "luogo"))
+    if indizi_movida(testo):
+        return True
+    # Live tribute / band in an actual pub or club, not a concert in a theatre.
+    sede = str(ev.get("luogo") or "")
+    return bool(re.search(r"\b(?:pub|discopub|lounge|bistrot|bohemien|bohémien|club|bar)\b", sede, re.I)
+                and re.search(r"\b(?:live|tribut[eo]|band|rock.blues|concerto)\b", testo, re.I))
 
 
 def xceed_eventi_strutturati(soup, url, citta):
