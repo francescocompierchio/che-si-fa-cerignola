@@ -525,6 +525,44 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/san-f
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:manfredonia-2026-12-31-cenone-veglione-di-capodanno-regiohotel-manfredi
+ @chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261231
+DTEND;VALUE=DATE:20270101
+SUMMARY:Cenone / veglione di Capodanno – Regiohotel Manfredi – Manfredo
+ nia
+LOCATION:Regiohotel Manfredi\, Manfredonia
+DESCRIPTION:Gio 31 Dic 2026\nGran Gala di San Silvestro e Pranzo di Capodan
+ no Scopri il menu con il programma di Capodanno Trascorri con noi i moment
+ i più importanti del passaggio al nuovo anno. Dal Cenone con Veglione al 
+ Pranzo di Capodanno\, le nos\nAccesso: Consulta menu e prezzi nella fonte\
+ nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompi
+ erchio.github.io/che-si-fa-cerignola/eventi/manfredonia-2026-12-31-cenone-
+ veglione-di-capodanno-regiohotel-manfredi.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-31-cenone-veglione-di-capodanno-regiohotel-manfredi.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-12-31-gran-gala-di-san-silvestro-regiohotel-manfredi@c
+ hesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261231
+DTEND;VALUE=DATE:20270101
+SUMMARY:Gran Galà di San Silvestro – Regiohotel Manfredi – Manfredonia
+LOCATION:Regiohotel Manfredi\, SP 58 km 12\, Manfredonia
+DESCRIPTION:Gio 31 Dic 2026 · Ore 20:30\nCenone con la Band Suonovia\, bal
+ li e brindisi. Ingresso dalle 20:30\, cena alle 21:00. Info 0884 530122.\n
+ Accesso: 120 € adulti\; 80 € bambini 3–11 anni\nVerifica variazioni\
+ , orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-
+ si-fa-cerignola/eventi/manfredonia-2026-12-31-gran-gala-di-san-silvestro-r
+ egiohotel-manfredi.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-31-gran-gala-di-san-silvestro-regiohotel-manfredi.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:manfredonia-2027-01-15-lisistrata-lella-costa@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270115

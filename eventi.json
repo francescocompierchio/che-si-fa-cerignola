@@ -887,6 +887,20 @@
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Locali & Serate",
+    "titolo": "Cenone / veglione di Capodanno – Regiohotel Manfredi",
+    "dataTesto": "Gio 31 Dic 2026",
+    "dataInizio": "2026-12-31",
+    "dataFine": "2026-12-31",
+    "luogo": "Regiohotel Manfredi",
+    "indirizzoMappa": "Regiohotel Manfredi, Manfredonia",
+    "costo": "Consulta menu e prezzi nella fonte",
+    "descrizione": "Gran Gala di San Silvestro e Pranzo di Capodanno Scopri il menu con il programma di Capodanno Trascorri con noi i momenti più importanti del passaggio al nuovo anno. Dal Cenone con Veglione al Pranzo di Capodanno, le nos",
+    "fonteUrl": "https://regiohotel.it/it/promo/cenone-di-san-silvestro-e-pranzo-di-capodanno"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Locali & Serate",
     "titolo": "Gran Galà di San Silvestro – Regiohotel Manfredi",
     "dataTesto": "Gio 31 Dic 2026 · Ore 20:30",
     "dataInizio": "2026-12-31",
@@ -896,6 +910,34 @@
     "costo": "120 € adulti; 80 € bambini 3–11 anni",
     "descrizione": "Cenone con la Band Suonovia, balli e brindisi. Ingresso dalle 20:30, cena alle 21:00. Info 0884 530122.",
     "fonteUrl": "https://regiohotel.it/it/promo/cenone-di-san-silvestro-e-pranzo-di-capodanno"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Attività diurne",
+    "titolo": "Menù di Capodanno – Posta Bassi",
+    "dataTesto": "Ven 01 Gen 2027",
+    "dataInizio": "2027-01-01",
+    "dataFine": "2027-01-01",
+    "luogo": "Agriturismo Posta Bassi",
+    "indirizzoMappa": "Via Manfredonia km 196+200",
+    "costo": "55 € a persona",
+    "descrizione": "Menù speciale del primo gennaio annunciato dall'agriturismo. Il sito ufficiale contiene il menu e la richiesta di prenotazione. Info 0881 700155.",
+    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Sagre & Food",
+    "titolo": "Pranzo di Capodanno – Posta Bassi",
+    "dataTesto": "Ven 01 Gen 2027",
+    "dataInizio": "2027-01-01",
+    "dataFine": "2027-01-01",
+    "luogo": "Posta Bassi",
+    "indirizzoMappa": "Posta Bassi, Foggia",
+    "costo": "Consulta menu e prezzi nella fonte",
+    "descrizione": "Festivita & Occasioni Speciali Eventi Speciali Scopri i nostri menu dedicati per le festivita e le occasioni speciali. Scarica il PDF, scegli il tuo menu preferito e prenota il tuo posto. Menù pranzo Immacolata 08 Dicemb",
+    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
   },
   {
     "tipoContenuto": "evento",
@@ -910,20 +952,6 @@
     "costo": "60 € adulti; menu bambini: consulta la fonte",
     "descrizione": "Pranzo festivo con menu dedicato. Ingresso dalle 13:00, servizio alle 13:30. Info 0884 530122.",
     "fonteUrl": "https://regiohotel.it/it/promo/cenone-di-san-silvestro-e-pranzo-di-capodanno"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Foggia",
-    "categoria": "Sagre & Food",
-    "titolo": "Menù di Capodanno – Posta Bassi",
-    "dataTesto": "Ven 01 Gen 2027",
-    "dataInizio": "2027-01-01",
-    "dataFine": "2027-01-01",
-    "luogo": "Agriturismo Posta Bassi",
-    "indirizzoMappa": "Via Manfredonia km 196+200, Foggia",
-    "costo": "55 € a persona",
-    "descrizione": "Menù speciale del primo gennaio annunciato dall'agriturismo. Il sito ufficiale contiene il menu e la richiesta di prenotazione. Info 0881 700155.",
-    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
   },
   {
     "locandinaUrl": "https://api-gw.ect.regione.puglia.it/t/turismo.puglia.local/vip-api/1.0.0/immagine/preview/30243",
