@@ -168,5 +168,275 @@
       "Agriturismo Moschella"
     ],
     "evidenza": "https://www.agriturismomoschella.com/"
+  },
+  {
+    "nome": "Caffè Plaza",
+    "gruppo": "movida",
+    "alias": [
+      "Caffè Plaza"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "nota": "Segnalazione storica 2022; attività attuale da verificare tramite annunci recenti."
+  },
+  {
+    "nome": "Bramo",
+    "gruppo": "movida",
+    "alias": [
+      "Bramo"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "nota": "Segnalazione storica 2022; attività attuale da verificare tramite annunci recenti."
+  },
+  {
+    "nome": "Generi Alimentari",
+    "gruppo": "movida",
+    "alias": [
+      "Generi Alimentari"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "nota": "Segnalazione storica 2022; attività attuale da verificare tramite annunci recenti."
+  },
+  {
+    "nome": "Scalo 111",
+    "gruppo": "movida",
+    "alias": [
+      "Scalo 111"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "nota": "Segnalazione storica 2022; attività attuale da verificare tramite annunci recenti."
+  },
+  {
+    "nome": "Bar Gorizia",
+    "gruppo": "movida",
+    "alias": [
+      "Bar Gorizia"
+    ],
+    "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+    "nota": "Segnalazione storica 2022; attività attuale da verificare tramite annunci recenti."
+  },
+  {
+    "nome": "Il Paladino",
+    "gruppo": "movida",
+    "alias": [
+      "Il Paladino"
+    ],
+    "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d5853981-Reviews-Il_Paladino-Cerignola_Province_of_Foggia_Puglia.html"
+  },
+  {
+    "nome": "L'Arcimboldo",
+    "gruppo": "movida",
+    "alias": [
+      "Arcimboldo"
+    ],
+    "evidenza": "https://www.sluurpy.it/cerignola/ristorante/98879/pub-birreria-l-arcimboldo"
+  },
+  {
+    "nome": "Pikò",
+    "gruppo": "movida",
+    "alias": [
+      "Pikò",
+      "Pikò Club"
+    ],
+    "evidenza": "https://angelipierre.it/discoteca/piko-di-cerignola/",
+    "nota": "Fonte storica; attività attuale non confermata."
+  },
+  {
+    "nome": "Baraonda",
+    "gruppo": "movida",
+    "alias": [
+      "Baraonda"
+    ],
+    "evidenza": "https://amelipasticceria.it/baraonda/",
+    "nota": "Anagrafica di terzi, non calendario verificato."
+  },
+  {
+    "nome": "Bar Roma",
+    "gruppo": "movida",
+    "alias": [
+      "Bar Roma"
+    ],
+    "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "nome": "AmbientiAmo Cerignola",
+    "gruppo": "associazioni",
+    "alias": [
+      "AmbientiAmo Cerignola"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Skiud",
+    "gruppo": "associazioni",
+    "alias": [
+      "Skiud"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Bordermind",
+    "gruppo": "associazioni",
+    "alias": [
+      "Bordermind"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Dance University",
+    "gruppo": "associazioni",
+    "alias": [
+      "Dance University"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Resurb",
+    "gruppo": "associazioni",
+    "alias": [
+      "Resurb"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Verderamina",
+    "gruppo": "associazioni",
+    "alias": [
+      "Verderamina"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Le fosse Granaie",
+    "gruppo": "associazioni",
+    "alias": [
+      "Le fosse Granaie"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Radici",
+    "gruppo": "associazioni",
+    "alias": [
+      "Associazione Radici"
+    ],
+    "evidenza": "https://www.progettopolicoro.it/gesti_concreti/associazione-radici/"
+  },
+  {
+    "nome": "Collettivo delle Quattro Vie",
+    "gruppo": "associazioni",
+    "alias": [
+      "Collettivo delle Quattro Vie",
+      "Natale nelle Quattro Vie"
+    ],
+    "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "nome": "Go-Go Eventi",
+    "gruppo": "associazioni",
+    "alias": [
+      "Go-Go Eventi",
+      "Gògò eventi"
+    ],
+    "evidenza": "https://egov.hseweb.it/cerignola/zf/index.php/trasparenza/index/detail/categoria/63/page/10/serial/127512/serial-beneficiario/20468/tipo/3"
+  },
+  {
+    "nome": "Associazione Filantropica Musicale",
+    "gruppo": "associazioni",
+    "alias": [
+      "Associazione Filantropica Musicale"
+    ],
+    "evidenza": "https://egov.hseweb.it/cerignola/zf/index.php/trasparenza/index/detail/categoria/63/page/7/serial/56733/serial-beneficiario/34291/tipo/1"
+  },
+  {
+    "nome": "We Make",
+    "gruppo": "famiglie",
+    "alias": [
+      "We Make"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/we-make/"
+  },
+  {
+    "nome": "La fattoria di nonno Peppino",
+    "gruppo": "famiglie",
+    "alias": [
+      "Fattoria di nonno Peppino"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/associazioni/"
+  },
+  {
+    "nome": "Biblioteca di Comunità",
+    "gruppo": "famiglie",
+    "alias": [
+      "Biblioteca di Comunità"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/biblioteca-comunale/"
+  },
+  {
+    "nome": "Museo La Defizia",
+    "gruppo": "famiglie",
+    "alias": [
+      "Museo della Scuola",
+      "La Defizia"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/tipi_luogo/centro-per-la-cultura/"
+  },
+  {
+    "nome": "L'Albero dei Fichi",
+    "gruppo": "famiglie",
+    "alias": [
+      "Albero dei Fichi"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/"
+  },
+  {
+    "nome": "La Cicogna",
+    "gruppo": "famiglie",
+    "alias": [
+      "La Cicogna",
+      "Consorzio Venditori Ambulanti"
+    ],
+    "evidenza": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665"
+  },
+  {
+    "nome": "Pietra di Scarto",
+    "gruppo": "associazioni",
+    "alias": [
+      "Pietra di Scarto",
+      "Festival dei Banditi"
+    ],
+    "evidenza": "https://www.cerignolaviva.it/notizie/a-cerignola-torna-il-festival-dei-banditi-tre-giornate-di-incontri-cinema-libri-musica-e-approfondimento/"
+  },
+  {
+    "nome": "Cantine Paradiso",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Cantine Paradiso"
+    ],
+    "evidenza": "https://www.cantineparadiso.it/azienda/"
+  },
+  {
+    "nome": "Mandwinery",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Mandwinery"
+    ],
+    "evidenza": "https://www.sommelierpuglia.it/convenzioni-con-ais-puglia/"
+  },
+  {
+    "nome": "U Vulesce",
+    "gruppo": "gastronomia",
+    "alias": [
+      "U Vulesce"
+    ],
+    "evidenza": "https://www.sommelierpuglia.it/convenzioni-con-ais-puglia/"
+  },
+  {
+    "nome": "Vito Losciale and Friends",
+    "gruppo": "gastronomia",
+    "alias": [
+      "Vito Losciale",
+      "Vito Losciale and Friends"
+    ],
+    "evidenza": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html"
   }
 ]

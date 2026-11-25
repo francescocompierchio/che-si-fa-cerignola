@@ -60,6 +60,8 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome":"Comune Cerignola eventi culturali","url":"https://comune.cerignola.fg.it/tipi_evento/evento-culturale/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata":True,"prefisso_schede":"/vivere-il-comune/eventi/","max_schede":16},
+    {"nome":"Cose di Casa Antiquariando","url":"https://www.cosedicasa.live/mercatini/cerignola-antiquariando","dominio":"cosedicasa.live","citta_default":"Cerignola","curata":True,"scheda_diretta":True},
     {"nome":"Comune Cerignola Tempo Libero","url":"https://comune.cerignola.fg.it/argomento/tempo-libero/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
     {"nome":"Comune Cerignola Manifestazioni Artistiche","url":"https://comune.cerignola.fg.it/tipi_evento/manifestazione-artistica/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
     {"nome":"Comune Cerignola Associazioni","url":"https://comune.cerignola.fg.it/argomento/associazioni/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
@@ -866,6 +868,23 @@ def ricorrenza_compatibile(testo, data):
     return (d.day - 1) // 7 + 1 == {"prim":1,"second":2,"terz":3,"quart":4}[ordinale]
 
 
+def giorno_settimana_compatibile(titolo, data):
+    """Se il titolo contiene giorno della settimana e data dell'evento,
+    non accettare un anno inferito che contraddice il giorno dichiarato.
+    """
+    if not _data_iso_valida(data):
+        return True
+    dt = datetime.strptime(data, "%Y-%m-%d")
+    giorni = ["luned", "marted", "mercoled", "gioved", "venerd", "sabato", "domenica"]
+    pattern = r"\b(luned[iì]|marted[iì]|mercoled[iì]|gioved[iì]|venerd[iì]|sabato|domenica)\s+(\d{1,2})\s+(" + "|".join(MESI_IT) + r")\b"
+    for m in re.finditer(pattern, titolo or "", re.I):
+        if int(m.group(2)) == dt.day and MESI_IT[m.group(3).casefold()] == dt.month:
+            atteso = next(i for i,g in enumerate(giorni) if m.group(1).casefold().startswith(g))
+            if dt.weekday() != atteso:
+                return False
+    return True
+
+
 def orario_data_strutturata(valore):
     m = re.match(r"^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)", str(valore or ""))
     if not m or m.group(1,2) == ("00","00"):
@@ -1146,6 +1165,8 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     if not (_data_iso_valida(d1) and _data_iso_valida(d2)):
         return None
     if d2 < oggi or d1 > d2 or d1 > limite_max:
+        return None
+    if d1 == d2 and not giorno_settimana_compatibile(titolo, d1):
         return None
 
     luogo = normalizza_nome_luogo(luogo, citta)
@@ -2072,7 +2093,7 @@ def registro_cerignola():
 
 
 def fonti_registro_cerignola(registro=None):
-    """Quattro ricerche raggruppate, per contenere il budget di rete.
+    """Ricerche raggruppate senza troncare i nomi quando cresce il registro.
     Le pagine anagrafiche non vengono convertite in eventi.
     """
     registro = registro_cerignola() if registro is None else registro
@@ -2090,14 +2111,15 @@ def fonti_registro_cerignola(registro=None):
         ))
         if not alias:
             continue
-        nomi = " OR ".join('"' + a + '"' for a in alias[:20])
-        q = f"Cerignola ({nomi}) {tema} when:30d"
-        url = "https://news.google.com/rss/search?" + urlencode(
-            {"q": q, "hl": "it", "gl": "IT", "ceid": "IT:it"}
-        )
-        fonti.append({"nome": "Registro Cerignola - " + gruppo, "url": url,
-                      "citta_default": "", "solo_cerignola": True,
-                      "max_schede_rss": 4})
+        for indice in range(0, len(alias), 12):
+            nomi = " OR ".join('"' + a + '"' for a in alias[indice:indice+12])
+            q = f"Cerignola ({nomi}) {tema} when:30d"
+            url = "https://news.google.com/rss/search?" + urlencode(
+                {"q": q, "hl": "it", "gl": "IT", "ceid": "IT:it"}
+            )
+            fonti.append({"nome": "Registro Cerignola - " + gruppo + (f" {indice//12+1}" if indice else ""),
+                          "url": url, "citta_default": "", "solo_cerignola": True,
+                          "max_schede_rss": 3})
     return fonti
 
 
