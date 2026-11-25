@@ -4,6 +4,17 @@
  let choice="";try{choice=localStorage.getItem(key)||"";}catch(_){}
  function excluded(){try{const q=new URLSearchParams(location.search);return localStorage.getItem("csf_escludi_visite")==="1"||!!localStorage.getItem("csf_admin_pin")||q.get("admin")==="1"||q.get("escludi")==="1";}catch(_){return true;}}
  function allowed(){return choice==="yes"&&!excluded();}
+ function startAggregate(){
+   // Statistiche aggregate senza cookie; non ignorare un precedente rifiuto.
+   if(choice==="no"||excluded()||window.__csfCfStarted)return;
+   if(location.hostname!=="francescocompierchio.github.io"||!location.pathname.startsWith("/che-si-fa-cerignola/"))return;
+   const beacon=document.createElement("script");
+   beacon.type="module";
+   beacon.src="https://static.cloudflareinsights.com/beacon.min.js";
+   beacon.setAttribute("data-cf-beacon",JSON.stringify({token:"aa1cf00a038d48b19e84d0e26eed967b"}));
+   window.__csfCfStarted=true;
+   document.body.appendChild(beacon);
+ }
  function start(){
    if(!allowed()||window.__csfGaStarted)return;
    window.__csfGaStarted=true;window["ga-disable-"+id]=false;
@@ -29,11 +40,16 @@
  document.addEventListener("DOMContentLoaded",()=>{
    const banner=document.getElementById("csf-consent");
    if(!banner)return;
-   // Nessuna richiesta automatica: le statistiche restano facoltative e disattivate salvo consenso esplicito.
+   // Nessun banner automatico. Le statistiche dettagliate richiedono consenso esplicito.
    banner.hidden=true;
+   const info=banner.querySelector("p");
+   if(info)info.textContent="Usiamo Cloudflare Web Analytics per statistiche aggregate senza cookie. Puoi rifiutare tutte le statistiche oppure consentire anche quelle dettagliate di Google Analytics e Firebase. Il rifiuto non limita le funzionalità.";
+   document.getElementById("csf-consent-yes").textContent="Consenti anche statistiche dettagliate";
+   document.getElementById("csf-consent-no").textContent="Rifiuta tutte le statistiche";
    document.getElementById("csf-consent-yes").addEventListener("click",()=>decide("yes"));
    document.getElementById("csf-consent-no").addEventListener("click",()=>decide("no"));
    document.getElementById("csf-consent-settings").addEventListener("click",()=>{banner.hidden=false;banner.scrollIntoView({block:"center"});});
+   startAggregate();
    start();
  });
 })();
