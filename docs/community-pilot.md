@@ -3,7 +3,7 @@
 ## Decisioni di sicurezza
 - Progetto Firebase Spark separato: NON usare il database eventi o sovrascriverne le regole. Nessuna attivazione del piano Blaze. Il piano Spark limita le connessioni Realtime Database a 100 e ha quote di storage/download. Superare una quota può interrompere il servizio; controllare l'uso.
 - Il modulo compare quando community-config.js è abilitato; il database resta chiuso agli utenti ordinari finché settings/open non è true.
-- Una sola stanza per utenti autenticati con Google e email verificata. Età 18+ autodichiarata, non verificata. Non mostrare email, nome Google o UID nella stanza. Nickname scelto dall'utente; non è prova di identità.
+- Una sola stanza per utenti autenticati con Google e email verificata. Riservata ai maggiorenni come indicato nelle regole; nessun modulo di conferma o verifica documentale. Sessione Firebase LOCAL, terminabile con Esci. Non mostrare email, nome Google o UID nella stanza. Nickname scelto dall'utente; non è prova di identità.
 - Solo testo, 300 caratteri, niente upload, link cliccabili, presenza online, messaggi privati o notifiche. Il filtro client per recapiti è indicativo, NON una barriera di sicurezza.
 - Tutti gli invii sono privati finché un moderatore approva. Una richiesta pendente per account, minimo 30 secondi fra invii risolti; segnalazioni separate. Il moderatore può rifiutare, sospendere e rimuovere. Nessun ban automatico arbitrario. Un solo moderatore nel pilot, per evitare corse di approvazione.
 - Le regole del database, non il browser, devono impedire all'utente di scrivere in published, moderators, bans, authors o settings. Regole candidate in community-database.rules.json. Nessun accesso diretto agli utenti dell'app esistente.
