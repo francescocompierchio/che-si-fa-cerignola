@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v30";
+const CACHE_NAME = "chesifa-shell-v31";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -6,7 +6,9 @@ const SHELL_FILES = [
   new URL("manifest.json", self.registration.scope).href,
   new URL("event-tools.js", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
+  new URL("metrics.js?v=31", self.registration.scope).href,
   new URL("public-views.js", self.registration.scope).href,
+  new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
@@ -125,8 +127,10 @@ self.addEventListener("fetch", event => {
   const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`, `${BASE_PATH}sitemap.xml`].includes(url.pathname);
   const isPage = request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === BASE_PATH;
 
+  // I contatori devono usare codice coerente con la pagina appena pubblicata.
+  const isMetrics = [`${BASE_PATH}metrics.js`, `${BASE_PATH}public-views.js`].includes(url.pathname);
   event.respondWith(
-    isData || isPage
+    isData || isPage || isMetrics
       ? retePrima(request, key)
       : cachePrima(request, key, event)
   );

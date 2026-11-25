@@ -53,7 +53,7 @@
    startAggregate();
    start();
    if(location.hostname==="francescocompierchio.github.io"&&/^\/che-si-fa-cerignola\/(?:index\.html|eventi\/.*)?$/.test(location.pathname)){
-     const views=document.createElement("script");views.src="/che-si-fa-cerignola/public-views.js";views.async=true;document.body.appendChild(views);
+     const views=document.createElement("script");views.src="/che-si-fa-cerignola/public-views.js?v=31";views.async=true;document.body.appendChild(views);
    }
  });
 })();
