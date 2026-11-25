@@ -38,3 +38,10 @@ class StatoFontiTests(unittest.TestCase):
             p=Path(d)/"fonti.json"
             p.write_text("non-json")
             self.assertEqual(s.carica(p),{"fonti":{}})
+
+    def test_priorita_temporale_non_supera_pause(self):
+        import apprendimento as a
+        now=1760000000
+        m={"fonti":{"a":{"prossimoTentativo":now+10,"blocchiConsecutivi":2,"fasce":{a.fascia(now):{"prove":20,"novita":2}}}}}
+        tasks=[(None,{"nome":"a","prioritaria":True}),(None,{"nome":"b","prioritaria":True})]
+        self.assertEqual(s.pianifica(tasks,m,now)[1],["a"])

@@ -1932,6 +1932,16 @@ def raccogli_da_feed_social(session, fonte):
             classificati.append((punteggio, item, titolo, link, descrizione))
         # Ordina tutti i candidati: il budget di rete resta invariato.
         classificati.sort(key=lambda x: -x[0])
+        # Il publisher RSS è solo un indizio di discovery, mai una prova di un evento.
+        domini_candidati=[]
+        if fonte.get("solo_cerignola"):
+            for _,item,_,link,_ in classificati[:30]:
+                pub=item.find("source")
+                u=(pub.get("url") or "") if pub else link
+                host=(urlparse(u).hostname or "").lower().removeprefix("www.")
+                if host and host not in domini_candidati:
+                    domini_candidati.append(host)
+        registra_statistica_fonte(nome,dominiCandidati=domini_candidati[:15])
         if fonte.get("solo_scoperta"):
             registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=0, eventiEstratti=0, candidatiDaVerificare=[{"titolo": x[2][:160], "url": x[3]} for x in classificati[:12]])
             return []
@@ -3121,6 +3131,8 @@ def esegui_aggiornamento():
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
     copertura_visibile=apprendimento.copertura_unita(lista_finale,editoriali_statici,sono_duplicati)
     stato_apprendimento=apprendimento.aggiorna(memoria,copertura_visibile,oggi_stagionale,now)
+    domini_candidati=apprendimento.candidati_fonti(memoria,STATISTICHE_FONTI,set(DOMINI_AUTO),now)
+    fasce_apprese=sum(bool(d.get("fasce")) for d in memoria.get("fonti",{}).values())
     os.makedirs(".csf-state",exist_ok=True)
     _scrivi_json_atomico(percorso_stato,memoria)
 
@@ -3142,6 +3154,7 @@ def esegui_aggiornamento():
         "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"],"coperturaIncludeEditoriali":True,"firebaseIncluso":False},
         "coperturaVisibileStatica": {"totale":sum(e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"cerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"serateCerignola":sum(e.get("citta")=="Cerignola" and e.get("categoria")=="Locali & Serate" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile)},
         "segnaliQualita":apprendimento.segnali(copertura_visibile,concordanze,set(DOMINI_AUTO)),
+        "intelligenceTerritoriale":{"fontiConProfiloTemporale":fasce_apprese,"fascia":apprendimento.fascia(now),"dominiDaVerificare":domini_candidati,"criterio":"novita osservate per fascia di raccolta; candidati da verificare, non fonti approvate"},
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),
