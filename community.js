@@ -17,7 +17,7 @@
   const close=$("button","Chiudi",{type:"button","aria-label":"Chiudi community"});
   const header=$("header");header.append(title,close);
   const status=$("div","",{id:"csfc-status",role:"status"});
-  const info=$("small","Spazio pubblico dedicato agli eventi. I messaggi sono pubblicati solo dopo moderazione. Non condividere dati personali.");
+  const info=$("small","Scrivi in italiano, con educazione. I messaggi sono verificati prima della pubblicazione. Non condividere dati personali.");
   const feed=$("div",null,{id:"csfc-feed",role:"log","aria-label":"Messaggi approvati"});
   const consent=$("input",null,{type:"checkbox",id:"csfc-consent"});
   const consentLabel=$("label","",{for:"csfc-consent"});
@@ -29,7 +29,7 @@
   const logout=$("button","Esci",{type:"button",hidden:""});
   const nick=$("input",null,{required:"",maxlength:"24",minlength:"2",placeholder:"Nickname pubblico","aria-label":"Nickname pubblico",autocomplete:"off"});
   const msg=$("textarea",null,{required:"",maxlength:"300",rows:"3",placeholder:"Scrivi un messaggio sugli eventi…","aria-label":"Messaggio"});
-  const send=$("button","Invia per moderazione",{type:"submit",class:"csfc-primary"});
+  const send=$("button","Invia messaggio",{type:"submit",class:"csfc-primary"});
   const form=$("form",null,{hidden:""});form.append(nick,msg,send);
   const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Coda moderazione"});
   panel.append(header,info,status,feed,consentLabel,login,googleSlot,browserHint,logout,form,mod);
@@ -115,7 +115,7 @@
       moderator=m.val()===true;blocked=b.val()===true;
       if(c.val()!==true){status.textContent="Community non ancora aperta.";return;}
       if(blocked){status.textContent="Account sospeso dalla community.";return;}
-      status.textContent="Messaggi pubblicati dopo verifica.";form.hidden=false;
+      status.textContent="Scrivi in italiano. Il controllo automatico può richiedere alcuni minuti.";form.hidden=false;
       listen(db.ref("published").orderByKey().limitToLast(40),snap=>{
         feed.replaceChildren();
         if(!snap.exists()){feed.append($("small","Non ci sono ancora messaggi approvati."));return;}
@@ -132,7 +132,9 @@
       });
       listen(db.ref("submissions/"+user.uid),s=>{
         const v=s.val();send.disabled=v?.state==="pending";
-        if(v?.state==="pending")status.textContent="Il tuo messaggio è in attesa di moderazione.";
+        if(v?.state==="pending")status.textContent="Messaggio in coda per il controllo automatico. Può richiedere alcuni minuti.";
+        else if(v?.state==="approved")status.textContent="Messaggio approvato e pubblicato.";
+        else if(v?.state==="rejected")status.textContent="Messaggio non pubblicato. Riscrivi in italiano, con educazione e senza dati personali, e riprova.";
       });
       if(moderator){
         mod.hidden=false;
@@ -189,7 +191,7 @@
     e.preventDefault();if(!user||blocked)return;
     const n=nick.value.trim(),t=msg.value.trim();if(!checkText(n,t)){status.textContent="Usa 2–24 caratteri per il nickname e 1–300 per il messaggio, senza link o recapiti.";return;}
     send.disabled=true;
-    try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="In attesa di moderazione.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
+    try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="Messaggio in coda per il controllo automatico.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
   };
   document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app)refresh();});
 })();

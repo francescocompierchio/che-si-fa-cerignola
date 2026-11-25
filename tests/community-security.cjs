@@ -30,8 +30,8 @@ test("config Community separata e disattivazione sicura: nessun accesso DOM o Fi
 test("modulo collegato senza modificare la logica eventi",()=>{
   const h=read("index.html");
   assert.ok(h.includes('src="community-config.js?v=2"'));
-  assert.ok(h.includes('src="community.js?v=2"'));
-  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=2"'));
+  assert.ok(h.includes('src="community.js?v=3"'));
+  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=3"'));
 });
 test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:process.env.CSFC_EMULATOR!=="1"},async()=>{
   assert.match(process.env.FIREBASE_DATABASE_EMULATOR_HOST||"",/^127\.0\.0\.1:\d+$/);
