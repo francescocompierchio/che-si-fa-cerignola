@@ -7,6 +7,29 @@
         "ade luxury space"
       ],
       "calendario": "https://www.instagram.com/ade_rooftopluxuryspace/"
+    },
+    {
+      "nome": "Hermes Club",
+      "alias": [
+        "hermes club"
+      ],
+      "evidenza": "https://hermesclub.it/"
+    },
+    {
+      "nome": "Safarà",
+      "alias": [
+        "safarà",
+        "safara pub"
+      ],
+      "evidenza": "https://localtourism.it/it/rd/safara"
+    },
+    {
+      "nome": "NONZAI",
+      "alias": [
+        "nonzai",
+        "nonzai soft clubbing"
+      ],
+      "evidenza": "https://www.cerignolaviva.it/notizie/sbarca-a-cerignola-il-soft-clubbing-il-format-mattutino-che-cambia-il-modo-di-divertirsi/"
     }
   ],
   "Barletta": [
@@ -17,6 +40,22 @@
         "atrio 22"
       ],
       "calendario": "https://xceed.me/it/barletta/venue/atrio22"
+    },
+    {
+      "nome": "Suara Beach Club",
+      "alias": [
+        "suara beach club",
+        "suara barletta"
+      ],
+      "evidenza": "https://www.kodocollective.it/"
+    },
+    {
+      "nome": "Saint Patrick",
+      "alias": [
+        "saint patrick barletta",
+        "saint patrick ristopub"
+      ],
+      "evidenza": "https://2night.it/barletta/"
     }
   ],
   "Trani": [
@@ -34,6 +73,13 @@
         "baia nhà"
       ],
       "calendario": "https://xceed.me/it/trani/venue/baia-nha"
+    },
+    {
+      "nome": "Cala Mariposa",
+      "alias": [
+        "cala mariposa"
+      ],
+      "evidenza": "https://www.kodocollective.it/"
     }
   ],
   "Bisceglie": [
@@ -51,6 +97,14 @@
         "divine club"
       ],
       "calendario": "https://nightz.it/locali/divine-club/"
+    },
+    {
+      "nome": "Ferus Pub",
+      "alias": [
+        "ferus pub",
+        "ferus bisceglie"
+      ],
+      "evidenza": "https://iltaccodibacco.it/bisceglie/ferus-pub"
     }
   ],
   "Manfredonia": [
@@ -75,6 +129,14 @@
         "al molo 20"
       ],
       "calendario": "https://manfredoniaeventi.com/organizzatore/al-molo-20/"
+    },
+    {
+      "nome": "Movida Bistrot",
+      "alias": [
+        "movida bistrot",
+        "bar movida"
+      ],
+      "evidenza": "https://www.manfredoniaeventi.com/luogo/bar-movida/"
     }
   ],
   "Foggia": [
@@ -122,6 +184,33 @@
         "lions_bar_pizzeria"
       ],
       "calendario": "https://www.instagram.com/lions_bar_pizzeria/"
+    },
+    {
+      "nome": "Rotarott",
+      "alias": [
+        "rotarott"
+      ],
+      "evidenza": "https://www.kodocollective.it/"
+    }
+  ],
+  "Orta Nova": [
+    {
+      "nome": "Bounty Killer Pub",
+      "alias": [
+        "bounty killer",
+        "bounty killer pub"
+      ],
+      "evidenza": "https://bountykillerpub.com/"
+    }
+  ],
+  "Canosa di Puglia": [
+    {
+      "nome": "Collextro Food Art",
+      "alias": [
+        "collextro",
+        "collextro food art"
+      ],
+      "evidenza": "https://www.collextrofoodart.com/eventi"
     }
   ]
 }
