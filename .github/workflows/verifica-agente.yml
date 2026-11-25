@@ -1,0 +1,87 @@
+name: Verifica agente manutenzione
+
+on:
+  push:
+    branches:
+      - "agente/**"
+    paths:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verifica-agente-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Scarica codice candidato senza credenziali persistenti
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Controlla perimetro delle modifiche
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [[ "$BRANCH" == agente/* ]]; then
+            git fetch origin main
+            git diff --name-only origin/main...HEAD > /tmp/agente-files.txt
+            python - <<'PY'
+          from pathlib import Path
+          allowed = {
+              'fonti_cerignola.json', 'fonti_capodanno.json', 'fonti_movida.json',
+              'aggiorna_eventi.py', 'discovery_locale.py', 'stato_raccolta.py',
+              'apprendimento.py', 'capodanno.py', 'festivita.py', 'ricorrenze.py',
+              'test_aggiorna_eventi.py', 'test_discovery_locale.py',
+              'test_stato_raccolta.py', 'test_apprendimento.py',
+              'test_capodanno.py', 'test_festivita.py', 'test_ricorrenze.py',
+              'test_fonti_cerignola.py'
+          }
+          changed = Path('/tmp/agente-files.txt').read_text().splitlines()
+          forbidden = set(changed) - allowed
+          if forbidden:
+              raise SystemExit('Modifiche fuori perimetro: ' + ', '.join(sorted(forbidden)))
+          print('Perimetro valido:', ', '.join(changed))
+          PY
+          fi
+      - name: Configura Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Configura Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Installa dipendenze
+        run: pip install requests beautifulsoup4 lxml pillow pytesseract playwright
+      - name: Controlla sintassi e suite principale
+        run: |
+          python -m compileall -q .
+          python -m unittest discover -s . -p "test_*.py" -v
+      - name: Controlli integrità archivio e SEO
+        run: node tests/seo-integrity.cjs
+      - name: Controlla i registri pubblici
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for file in ('fonti_cerignola.json','fonti_capodanno.json'):
+              records=json.loads(Path(file).read_text(encoding='utf-8'))
+              assert isinstance(records,list) and records
+              names=set()
+              for r in records:
+                  assert isinstance(r,dict)
+                  assert isinstance(r.get('nome'),str) and r['nome'].strip()
+                  k=r['nome'].strip().casefold()
+                  assert k not in names, f'Duplicato in {file}: {k}'
+                  names.add(k)
+                  assert isinstance(r.get('alias'),list) and r['alias']
+                  assert all(isinstance(a,str) and a.strip() for a in r['alias'])
+              print(file, len(records), 'record')
+          PY
