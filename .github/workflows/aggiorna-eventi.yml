@@ -109,6 +109,9 @@ jobs:
           print(f"- Fonti da rivedere: {', '.join(salute.get('fontiDaRivedere', [])) or 'nessuna'}")
           if not report.get("serateCerignola", 0):
               print("**Attenzione:** nessuna serata automatica a Cerignola nell'archivio.")
+          print("### Movida automatica per comune")
+          for comune,count in sorted(report.get("movidaPerComune", {}).items()):
+              print(f"- {comune}: {count}")
           print("### Distribuzione per comune")
           for comune, count in sorted(report.get("eventiPerComune", {}).items(), key=lambda x: (-x[1], x[0])):
               print(f"- {comune}: {count}")

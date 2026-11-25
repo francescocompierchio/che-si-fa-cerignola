@@ -9,6 +9,24 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_xceed_jsonld_data_sede_e_categoria(self):
+        import json
+        dt = crawler.oggi_dt() + crawler.timedelta(days=3)
+        url = "https://xceed.me/it/barletta/event/habibi/1234"
+        ev = {"@type":"MusicEvent","name":"Habibi DJ set","url":url,"startDate":dt.strftime("%Y-%m-%d")+"T23:00:00+01:00","location":{"name":"Atrio22","address":{"streetAddress":"Via Leonardo da Vinci 15","addressLocality":"Barletta","addressCountry":"IT"}},"description":"Serata in discoteca"}
+        def html(e):
+            return "<h1>Habibi DJ set</h1><script type='application/ld+json'>"+json.dumps(e)+"</script>"
+        trovati = crawler.analizza_xceed(html(ev),url,"Barletta")
+        self.assertEqual(len(trovati),1)
+        self.assertEqual(trovati[0]["categoria"],"Locali & Serate")
+        self.assertEqual(crawler.normalizza_e_valida_evento(trovati[0],fonte_curata_eventi=True)["categoria"],"Locali & Serate")
+        self.assertEqual(crawler.analizza_xceed(html(ev),url,"Trani"),[])
+        self.assertEqual(crawler.analizza_xceed(html(dict(ev,eventStatus="https://schema.org/EventCancelled")),url,"Barletta"),[])
+        self.assertEqual(crawler.analizza_xceed(html(dict(ev,url="https://xceed.me/it/barletta/event/altro/5678")),url,"Barletta"),[])
+        self.assertEqual(crawler.analizza_xceed(html(dict(ev,location=dict(ev["location"],name="Secret Location"))),url,"Barletta"),[])
+        mese = next(k for k,v in crawler.MESI_IT.items() if v == dt.month)
+        self.assertEqual(crawler.analizza_xceed(html(dict(ev,description=f"{dt.day} {mese} {dt.year-1}")),url,"Barletta"),[])
+
     def test_nightz_scheda_documentata(self):
         dt = crawler.oggi_dt() + crawler.timedelta(days=3)
         mese = next(k for k,v in crawler.MESI_IT.items() if v == dt.month)

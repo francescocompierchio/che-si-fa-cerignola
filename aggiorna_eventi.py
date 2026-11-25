@@ -1138,6 +1138,8 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     cat = classifica_categoria(f"{titolo} {descrizione}", luogo=luogo, fonte_url=url)
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
+    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it")):
+        cat = "Locali & Serate"
 
     if not d_txt:
         d_txt = formatta_data_italiano(d1, d2)
@@ -1769,11 +1771,93 @@ def evento_movida_documentato(ev):
     return ev.get("categoria") in {"Musica & Concerti", "Attività diurne", "Sagre & Food"} and indizi_movida(" ".join(str(ev.get(k) or "") for k in ("titolo", "descrizione", "luogo")))
 
 
+def xceed_eventi_strutturati(soup, url, citta):
+    """None = dati evento assenti; [] = dati presenti ma non validabili.
+    Non accetta eventi correlati, sedi generiche o date incompatibili."""
+    candidati = []
+    for tag in soup.find_all("script", type="application/ld+json"):
+        try:
+            estrai_eventi_jsonld(json.loads(tag.string or tag.get_text()), candidati)
+        except (TypeError, ValueError):
+            continue
+    if not candidati:
+        return None
+    def norm(s):
+        return " ".join(re.findall(r"[a-z0-9à-ù]+", str(s or "").casefold()))
+    h1 = soup.find("h1")
+    titolo_pagina = h1.get_text(" ",strip=True) if h1 else ""
+    if not titolo_pagina:
+        return []
+    id_evento = urlparse(url).path.rstrip("/").split("/")[-1]
+    risultati = []
+    for ev in candidati:
+        titolo = str(ev.get("name") or "").strip()
+        url_ld = urljoin(url, str(ev.get("url") or ""))
+        if not _host_appartiene(url_ld, "xceed.me") or urlparse(url_ld).path.rstrip("/").split("/")[-1] != id_evento:
+            continue
+        if norm(titolo) != norm(titolo_pagina):
+            continue
+        stato = str(ev.get("eventStatus") or "").casefold()
+        if any(x in stato for x in ("cancelled","postponed","movedonline")):
+            continue
+        inizio = str(ev.get("startDate") or "")
+        if not _data_iso_valida(inizio[:10]):
+            continue
+        # I timestamp UTC espliciti vanno convertiti nel fuso dell'evento.
+        try:
+            dt = datetime.fromisoformat(inizio.replace("Z","+00:00"))
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(ZoneInfo("Europe/Rome"))
+        except ValueError:
+            continue
+        data = dt.strftime("%Y-%m-%d")
+        if not oggi_iso() <= data <= (oggi_dt()+timedelta(days=90)).strftime("%Y-%m-%d"):
+            continue
+        mesi = "|".join(MESI_IT)
+        pat = rf"\b(\d{{1,2}})\s+({mesi})\s*(20\d{{2}})?\b"
+        # Una data nel titolo deve concordare con quella della scheda.
+        if any(int(m.group(1)) != dt.day or MESI_IT[m.group(2).casefold()] != dt.month or (m.group(3) and int(m.group(3)) != dt.year) for m in re.finditer(pat,titolo,re.I)):
+            continue
+        loc = ev.get("location")
+        if not isinstance(loc,dict):
+            continue
+        luogo = str(loc.get("name") or "").strip()
+        addr = loc.get("address")
+        if not isinstance(addr,dict) or not luogo or re.search(r"\b(?:secret|riservat|segreta|tba|tbc|to be announced)\w*\b", luogo, re.I):
+            continue
+        localita = str(addr.get("addressLocality") or "").strip()
+        via = str(addr.get("streetAddress") or "").strip()
+        if _comune_nel_testo(localita) != citta or not via:
+            continue
+        paese = addr.get("addressCountry")
+        if isinstance(paese,dict):
+            paese = paese.get("name")
+        if paese and str(paese).casefold() not in {"it","ita","italia","italy"}:
+            continue
+        desc = BeautifulSoup(str(ev.get("description") or ""), "html.parser").get_text(" ",strip=True)
+        # Se la promozione cita una sola data dello stesso mese incompatibile,
+        # non pubblicare: è un possibile riuso di una vecchia locandina.
+        date_desc = {(int(m.group(1)),MESI_IT[m.group(2).casefold()],int(m.group(3)) if m.group(3) else dt.year) for m in re.finditer(pat,desc,re.I)}
+        if len(date_desc)==1 and any(x[1]==dt.month and x!=(dt.day,dt.month,dt.year) for x in date_desc):
+            continue
+        if not ricorrenza_compatibile(desc,data):
+            continue
+        orario = (" · Ore "+dt.strftime("%H:%M")) if "T" in inizio and dt.strftime("%H:%M")!="00:00" else ""
+        record = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{via}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+orario, "descrizione":("Serata in club. "+desc)[:220], "costo":"Consulta la biglietteria", "fonteUrl":url}, fonte_curata_eventi=True)
+        if record and not evento_non_attivo(record):
+            record["categoria"] = "Locali & Serate"
+            risultati.append(record)
+    return risultati
+
+
 def analizza_xceed(html_text, url, citta):
     """Scheda individuale Xceed: verifica data principale e città dell'indirizzo."""
     if not re.fullmatch(r"/it/[^/]+/event/[^/]+/\d+/?", urlparse(url).path):
         return []
     soup = BeautifulSoup(html_text, "html.parser")
+    strutturati = xceed_eventi_strutturati(soup,url,citta)
+    if strutturati is not None:
+        return strutturati
     h1 = soup.find("h1")
     if not h1:
         return []
@@ -1920,7 +2004,18 @@ def diagnostica_scheda_movida(html_text, url):
     """Metadati pubblici minimali, utili per distinguere markup vuoto da parser errato."""
     soup = BeautifulSoup(html_text, "html.parser")
     h1 = soup.find("h1")
-    return {"url":url, "h1":h1.get_text(" ",strip=True)[:120] if h1 else "", "jsonld":len(soup.find_all("script", type="application/ld+json")), "etichette":[x for x in ("Location","Indirizzo","Data e orario","Info") if x.casefold() in soup.get_text(" ",strip=True).casefold()], "lunghezzaHTML":len(html_text)}
+    strutturati = []
+    for tag in soup.find_all("script", type="application/ld+json"):
+        try:
+            estrai_eventi_jsonld(json.loads(tag.string or tag.get_text()), strutturati)
+        except (TypeError,ValueError):
+            continue
+    dettagli = []
+    for ev in strutturati[:3]:
+        loc = ev.get("location") if isinstance(ev.get("location"),dict) else {}
+        addr = loc.get("address") if isinstance(loc.get("address"),dict) else {}
+        dettagli.append({"tipo":ev.get("@type"), "nome":str(ev.get("name") or "")[:120], "startDate":str(ev.get("startDate") or "")[:40], "url":str(ev.get("url") or "")[:250], "sede":str(loc.get("name") or "")[:100], "comune":str(addr.get("addressLocality") or "")[:100], "via":str(addr.get("streetAddress") or "")[:120], "stato":str(ev.get("eventStatus") or "")[:100]})
+    return {"url":url, "h1":h1.get_text(" ",strip=True)[:120] if h1 else "", "jsonld":len(soup.find_all("script", type="application/ld+json")), "eventiStrutturati":dettagli, "etichette":[x for x in ("Location","Indirizzo","Data e orario","Info") if x.casefold() in soup.get_text(" ",strip=True).casefold()], "lunghezzaHTML":len(html_text)}
 
 
 def esplora_lineup_atlas(session, fonte):
