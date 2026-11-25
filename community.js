@@ -19,10 +19,8 @@
   const status=$("div","",{id:"csfc-status",role:"status"});
   const info=$("small","Spazio pubblico dedicato agli eventi. I messaggi sono pubblicati solo dopo moderazione. Non condividere dati personali.");
   const feed=$("div",null,{id:"csfc-feed",role:"log","aria-label":"Messaggi approvati"});
-  const consent=$("input",null,{type:"checkbox",id:"csfc-consent"});
-  const consentLabel=$("label","",{for:"csfc-consent"});
-  consentLabel.append(consent,document.createTextNode(" Ho almeno 18 anni, accetto le regole e ho letto "));
-  const privacy=$("a","l’informativa Community",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});consentLabel.append(privacy);
+  const rulesNotice=$("small","Community riservata ai maggiorenni. ",{id:"csfc-rules-notice"});
+  const privacy=$("a","Regole e informativa privacy",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});rulesNotice.append(privacy);
   const login=$("button","Accedi con Google",{type:"button",class:"csfc-primary"});
   const googleSlot=$("div",null,{id:"csfc-google-signin",hidden:"","aria-label":"Accesso Google"});
   const alternate=$("button","Accesso Google alternativo",{type:"button",id:"csfc-login-alternate",hidden:""});
@@ -33,10 +31,10 @@
   const send=$("button","Invia per moderazione",{type:"submit",class:"csfc-primary"});
   const form=$("form",null,{hidden:""});form.append(nick,msg,send);
   const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Coda moderazione"});
-  panel.append(header,info,status,feed,consentLabel,login,googleSlot,alternate,browserHint,logout,form,mod);
+  panel.append(header,info,status,feed,rulesNotice,login,googleSlot,alternate,browserHint,logout,form,mod);
   root.append(toggle,panel);document.body.append(root);
   let app,auth,db,user,authUnsub,off=[],generation=0,opening=false,moderator=false,blocked=false;
-  let gisLoad,gisReady=false,googleFlow=false,authBusy=false,alternateOffered=false;
+  let gisLoad,gisReady=false,googleFlow=false,authBusy=false,alternateOffered=false,authInit,persistenceLimited=false;
   const stop=()=>{generation++;for(const f of off.splice(0))f();feed.replaceChildren();mod.replaceChildren();if(db)db.goOffline();};
   const error=()=>{status.textContent="Community temporaneamente non disponibile. Nessun messaggio è stato pubblicato automaticamente.";};
   const listen=(q,cb)=>{q.on("value",cb,error);off.push(()=>q.off("value",cb));};
@@ -60,7 +58,7 @@
     return gisLoad;
   }
   async function receiveGoogle(response){
-    if(panel.hidden||!consent.checked||!auth||authBusy||user||!googleFlow)return;
+    if(panel.hidden||!auth||authBusy||user||!googleFlow)return;
     if(typeof response?.credential!=="string"||!response.credential){status.textContent="Accesso non riuscito. Riprova con il pulsante Google.";return;}
     authBusy=true;
     status.textContent="Verifica dell’account Google…";
@@ -73,7 +71,7 @@
     }finally{authBusy=false;}
   }
   async function alternateGoogle(){
-    if(panel.hidden||!consent.checked||!auth||authBusy||user)return;
+    if(panel.hidden||!auth||authBusy||user)return;
     authBusy=true;googleFlow=false;googleSlot.hidden=true;alternate.disabled=true;
     status.textContent="Completa l’accesso Google nella nuova finestra. Poi torna alla Community.";
     try{
@@ -89,14 +87,14 @@
     }
   }
   async function prepareGoogle(){
-    if(!consent.checked){status.textContent="Conferma età e informativa prima di accedere.";return;}
+    if(panel.hidden||user||authBusy||login.disabled)return;
     if(!auth){status.textContent="Connessione non disponibile. Chiudi e riapri la Community.";browserHint.hidden=false;return;}
     if(!/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/i.test(config.googleClientId||"")){status.textContent="Accesso Google non ancora configurato.";return;}
     login.disabled=true;alternateOffered=true;alternate.hidden=false;browserHint.hidden=false;
     status.textContent="Caricamento accesso Google…";
     try{
       const id=await loadGoogle();
-      if(panel.hidden||user||!consent.checked)return;
+      if(panel.hidden||user)return;
       if(!gisReady){
         id.initialize({client_id:config.googleClientId,callback:receiveGoogle,ux_mode:"popup",auto_select:false,use_fedcm_for_button:true});
         gisReady=true;
@@ -113,17 +111,35 @@
     }finally{login.disabled=false;}
   }
   async function init(){
-    if(app)return;
-    await loadAuth();
-    app=firebase.initializeApp(config.firebase,"csf-community");
-    auth=app.auth();db=app.database();
-    authUnsub=auth.onAuthStateChanged(u=>{user=u;if(!panel.hidden)refresh();},error);
+    if(authInit)return authInit;
+    authInit=(async()=>{
+      await loadAuth();
+      app=firebase.apps?.find(a=>a.name==="csf-community")||firebase.initializeApp(config.firebase,"csf-community");
+      auth=app.auth();db=app.database();
+      // Firebase gestisce e rinnova la sessione: nessun token copiato a mano.
+      try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}
+      catch{persistenceLimited=true;}
+      // Attendi il ripristino della sessione prima di proporre un nuovo accesso.
+      await new Promise((resolve,reject)=>{
+        let first=true;
+        authUnsub=auth.onAuthStateChanged(u=>{
+          user=u;
+          if(first){first=false;resolve();return;}
+          if(!panel.hidden)refresh();
+        },e=>{if(first){first=false;reject(e);}else error();});
+      });
+    })().catch(e=>{authInit=null;throw e;});
+    return authInit;
   }
   async function refresh(){
     stop();const g=generation;moderator=false;blocked=false;
     const signed=!!user;
-    login.hidden=signed||googleFlow;googleSlot.hidden=signed||!googleFlow;alternate.hidden=signed||!alternateOffered||!consent.checked;consentLabel.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;
-    if(!signed){if(!authBusy)status.textContent=googleFlow?"Premi il pulsante ufficiale Google. Se la pagina resta bianca, torna qui e prova l’accesso alternativo.":"Accedi per leggere e partecipare.";return;}
+    login.hidden=signed||googleFlow;googleSlot.hidden=signed||!googleFlow;alternate.hidden=signed||!alternateOffered;rulesNotice.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;
+    if(!signed){
+      if(!authBusy)status.textContent=googleFlow?"Premi il pulsante ufficiale Google. Se la pagina resta bianca, torna qui e prova l’accesso alternativo.":"Accedi per leggere e partecipare.";
+      if(!googleFlow&&!alternateOffered&&!authBusy)prepareGoogle();
+      return;
+    }
     googleFlow=false;alternateOffered=false;googleSlot.hidden=true;alternate.hidden=true;browserHint.hidden=true;
     db.goOnline();status.textContent="Connessione…";
     try{
@@ -132,7 +148,7 @@
       moderator=m.val()===true;blocked=b.val()===true;
       if(c.val()!==true){status.textContent="Community non ancora aperta.";return;}
       if(blocked){status.textContent="Account sospeso dalla community.";return;}
-      status.textContent="Messaggi pubblicati dopo verifica.";form.hidden=false;
+      status.textContent=persistenceLimited?"Accesso riuscito. Il browser potrebbe non conservare la sessione.":"Messaggi pubblicati dopo verifica.";form.hidden=false;
       listen(db.ref("published").orderByKey().limitToLast(40),snap=>{
         feed.replaceChildren();
         if(!snap.exists()){feed.append($("small","Non ci sono ancora messaggi approvati."));return;}
@@ -196,18 +212,12 @@
   panel.addEventListener("keydown",e=>{if(e.key==="Escape")shut();});
   login.onclick=prepareGoogle;
   alternate.onclick=alternateGoogle;
-  consent.addEventListener("change",()=>{
-    if(!consent.checked){
-      googleFlow=false;alternateOffered=false;googleSlot.hidden=true;googleSlot.replaceChildren();alternate.hidden=true;login.hidden=!!user;browserHint.hidden=true;
-      status.textContent="Conferma età e informativa prima di accedere.";
-    }
-  });
-  logout.onclick=async()=>{try{window.google?.accounts?.id?.disableAutoSelect();googleFlow=false;consent.checked=false;await auth.signOut();}catch{error();}};
+  logout.onclick=async()=>{try{window.google?.accounts?.id?.disableAutoSelect();googleFlow=false;alternateOffered=false;await auth.signOut();}catch{error();}};
   form.onsubmit=async e=>{
     e.preventDefault();if(!user||blocked)return;
     const n=nick.value.trim(),t=msg.value.trim();if(!checkText(n,t)){status.textContent="Usa 2–24 caratteri per il nickname e 1–300 per il messaggio, senza link o recapiti.";return;}
     send.disabled=true;
     try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="In attesa di moderazione.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
   };
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app){if(auth?.currentUser)user=auth.currentUser;refresh();}});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else if(!panel.hidden&&app){if(auth)user=auth.currentUser;refresh();}});
 })();
