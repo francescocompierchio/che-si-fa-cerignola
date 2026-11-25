@@ -923,10 +923,10 @@
         <span class="counter" id="event-counter">Caricamento eventi...</span>
         <span class="live-pill" id="live-pill" style="display:none;">
           <span class="live-dot"></span>
-          <span title="Connessioni rilevate tra chi ha consentito le statistiche; non tutti gli utenti presenti"><strong id="online-users-count">0</strong> online rilevati</span>
+          <span title="Connessioni attive rilevate nell’app; non persone uniche"><strong id="online-users-count">0</strong> online ora</span>
         </span>
         <span class="live-pill" id="visits-pill" style="display:none;">
-          <span title="Contatore storico parziale delle visite registrate; non misura tutte le aperture né le persone uniche">👁 <strong id="total-visits-count">0</strong> visite rilevate</span>
+          <span title="Conteggio storico delle aperture rilevate; comprende il precedente totale, non persone uniche">👁 <strong id="total-visits-count">0</strong> visite</span>
         </span>
       </div>
     </div>
@@ -1026,7 +1026,7 @@
 
   <footer>
     <section id="csf-consent" class="install-strip" hidden aria-label="Preferenze statistiche">
-      <p>Usiamo Cloudflare Web Analytics per statistiche aggregate senza cookie. Puoi rifiutare tutte le statistiche oppure consentire anche quelle dettagliate di Google Analytics e Firebase.</p>
+      <p>I contatori pubblici Firebase e Cloudflare Web Analytics misurano aperture e connessioni in forma aggregata, senza cookie statistici aggiuntivi. Puoi rifiutare tutte le statistiche oppure consentire anche quelle dettagliate di Google Analytics.</p>
       <div class="footer-actions">
         <button type="button" class="btn btn-soft" id="csf-consent-yes">Consenti statistiche</button>
         <button type="button" class="btn btn-soft" id="csf-consent-no">Rifiuta</button>
@@ -2251,25 +2251,24 @@
     let dbGlobal = null;
     let contatoriGlobal = null;
 
-    function creaContatori(db, consentito, escluso, storage, mostra, avvisa) {
+    function creaContatori(db, consentito, escluso, visibile, mostra, avvisa) {
       const visite=db.ref("statistiche/visiteTotali"), online=db.ref("statistiche/utentiOnline"), conn=db.ref(".info/connected");
-      const leggi=k=>{try{return storage.getItem(k)==="1";}catch(_){return false;}};
-      const scrivi=(k,v)=>{try{if(v)storage.setItem(k,"1");else storage.removeItem(k);}catch(_){}};
+      // Nessun identificativo o flag statistico in cookie, localStorage o sessionStorage.
       let collegato=false, epoca=0, presenza=null, presenzaInCorso=false, operazione=null;
-      let contata=leggi("csf_visitato"), confermata=leggi("csf_contata_confermata_v2");
+      let contata=false, confermata=false;
       const permesso=()=>{try{return !!consentito()&&!escluso();}catch(_){return false;}};
+      const presente=()=>{try{return permesso()&&visibile();}catch(_){return false;}};
       const errore=(nome,e)=>avvisa("Contatori Firebase: "+nome,e);
       const ultimi={visite:null,online:null};
       const ricevuto=(tipo,valore)=>{ultimi[tipo]=valore;mostra(tipo,collegato?valore:null);};
       const ritira=async r=>{if(r)try{await r.remove();}catch(e){errore("rimozione presenza",e);}};
       async function conta(){
-        if(!collegato||operazione||!permesso()||contata)return;
+        if(!collegato||operazione||!presente()||contata)return;
         operazione="visita";
         try{
           const risultato=await visite.transaction(n=>n===null?1:Number.isSafeInteger(n)&&n>=0?n+1:undefined,undefined,false);
           if(!risultato.committed)throw new Error("Visita non confermata");
           contata=confermata=true;
-          scrivi("csf_visitato",true);scrivi("csf_contata_confermata_v2",true);
         }catch(e){errore("visita non confermata",e);}
         finally{operazione=null;if(confermata&&escluso())void escludiVisita();}
       }
@@ -2280,28 +2279,27 @@
           const risultato=await visite.transaction(n=>Number.isSafeInteger(n)&&n>=0?Math.max(0,n-1):undefined,undefined,false);
           if(!risultato.committed)throw new Error("Storno non confermato");
           contata=confermata=false;
-          scrivi("csf_visitato",false);scrivi("csf_contata_confermata_v2",false);scrivi("csf_contata_ora",false);
         }catch(e){errore("storno visita",e);}
         finally{operazione=null;if(!escluso())void conta();}
       }
       async function registraPresenza(){
-        if(!collegato||!permesso()||presenza||presenzaInCorso)return;
+        if(!collegato||!presente()||presenza||presenzaInCorso)return;
         presenzaInCorso=true;
         const e=epoca;
         let r=null;
         try{
           r=online.push();
           await r.onDisconnect().remove();
-          if(e!==epoca||!collegato||!permesso())return;
+          if(e!==epoca||!collegato||!presente())return;
           await r.set(true);
-          if(e!==epoca||!collegato||!permesso())return;
+          if(e!==epoca||!collegato||!presente())return;
           presenza=r;r=null;
         }catch(err){errore("registrazione presenza",err);}
-        finally{presenzaInCorso=false;await ritira(r);if(e!==epoca&&collegato&&permesso())void registraPresenza();}
+        finally{presenzaInCorso=false;await ritira(r);if(e!==epoca&&collegato&&presente())void registraPresenza();}
       }
       function aggiorna(){
         if(!collegato)return;
-        if(!permesso()){
+        if(!presente()){
           const precedente=presenza;presenza=null;
           if(precedente)void ritira(precedente);
           if(escluso())void escludiVisita();
@@ -2327,14 +2325,15 @@
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
       dbGlobal = db;
-      contatoriGlobal = creaContatori(db, () => window.CsfMetrics?.allowed(), isDispositivoEscluso, sessionStorage, (tipo, valore) => {
+      contatoriGlobal = creaContatori(db, () => window.CsfMetrics?.aggregateAllowed(), isDispositivoEscluso, () => !document.hidden, (tipo, valore) => {
         const visita = tipo === "visite";
         const pill = document.getElementById(visita ? "visits-pill" : "live-pill");
         if (valore === null) { pill.style.display = "none"; return; }
         document.getElementById(visita ? "total-visits-count" : "online-users-count").textContent = valore.toLocaleString("it-IT");
         pill.style.display = "inline-flex";
       }, (msg, err) => console.warn(msg, err));
-      document.addEventListener("visibilitychange", () => { if (!document.hidden) contatoriGlobal?.aggiorna(); });
+      document.addEventListener("visibilitychange", () => contatoriGlobal?.aggiorna());
+      window.setInterval(() => { if (!document.hidden) contatoriGlobal?.aggiorna(); }, 60000);
       window.addEventListener("online", () => contatoriGlobal?.aggiorna());
 
       db.ref("eventiManuali").on("value", snap => {
