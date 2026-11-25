@@ -19,7 +19,8 @@
         "Hermes Club"
       ],
       "evidenza": "https://hermesclub.it/",
-      "sito": "https://hermesclub.it/"
+      "sito": "https://hermesclub.it/",
+      "social": "https://www.instagram.com/hermesclub2024/"
     },
     {
       "nome": "Safarà",
@@ -221,6 +222,26 @@
         "Figli di Puglia"
       ],
       "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/ristorante-figli-di-puglia/"
+    },
+    {
+      "nome": "Cantine Paradiso",
+      "alias": [
+        "Cantine Paradiso"
+      ],
+      "evidenza": "https://www.cantineparadiso.it/azienda/",
+      "sito": "https://www.cantineparadiso.it/azienda/",
+      "social": "https://www.instagram.com/cantineparadiso/",
+      "facebook": "https://www.facebook.com/cantineparadiso/"
+    },
+    {
+      "nome": "Antica Enotria",
+      "alias": [
+        "Antica Enotria"
+      ],
+      "evidenza": "https://anticaenotria.it/",
+      "sito": "https://anticaenotria.it/",
+      "social": "https://www.instagram.com/anticaenotria/",
+      "facebook": "https://www.facebook.com/anticaenotria/"
     }
   ],
   "Barletta": [
@@ -421,7 +442,8 @@
         "bounty killer",
         "bounty killer pub"
       ],
-      "evidenza": "https://bountykillerpub.com/"
+      "evidenza": "https://bountykillerpub.com/",
+      "social": "https://www.facebook.com/Bounty-Killer-Pub-182694925088931/"
     }
   ],
   "Canosa di Puglia": [
@@ -431,7 +453,8 @@
         "collextro",
         "collextro food art"
       ],
-      "evidenza": "https://www.collextrofoodart.com/eventi"
+      "evidenza": "https://www.collextrofoodart.com/eventi",
+      "social": "https://www.instagram.com/collexstro/"
     }
   ]
 }

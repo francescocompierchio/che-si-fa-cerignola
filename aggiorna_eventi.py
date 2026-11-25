@@ -3287,6 +3287,11 @@ def esegui_aggiornamento():
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
+    if os.path.isfile("apify-eventi.json"):
+        with open("apify-eventi.json", encoding="utf-8") as file_apify:
+            eventi_apify = json.load(file_apify)
+        nuovi_raccolti.extend(eventi_apify)
+        risultati_per_fonte["Apify social pubblici"] = eventi_apify
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
     precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]

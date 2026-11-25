@@ -2,7 +2,7 @@ name: Aggiorna Eventi Cerignola
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       forza_fonti:
@@ -16,6 +16,7 @@ on:
       - "radar_natura.py"
       - "radar_food.py"
       - "radar_movida.py"
+      - "radar_apify.py"
       - "test_radar_movida.py"
       - "test_radar_food.py"
       - "test_radar_natura.py"
@@ -93,6 +94,13 @@ jobs:
 
       - name: Verifica parser, categorie e indirizzi
         run: python -m unittest discover -s . -p "test_*.py" -v
+
+      - name: Radar Apify con budget gratuito
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: python radar_apify.py
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
