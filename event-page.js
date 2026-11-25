@@ -298,7 +298,7 @@ window.CsfShare = (() => {
       const b=document.createElement("button");b.type="button";b.textContent=label;if(full)b.style.gridColumn="1 / -1";b.addEventListener("click",fn);grid.append(b);return b;
     };
     const link=(label,href)=>{
-      const a=document.createElement("a");a.textContent=label;a.href=href;a.rel="noopener noreferrer";if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||""))a.target="_blank";grid.append(a);
+      const a=document.createElement("a");a.textContent=label;a.href=href;a.rel="noopener noreferrer";a.target="_blank";grid.append(a);
     };
     if(typeof navigator.share==="function"){
       button("Condividi con le app del telefono",async()=>{
@@ -309,8 +309,8 @@ window.CsfShare = (() => {
     link("WhatsApp","https://wa.me/?text="+enc(testo+"\n"+tracked("whatsapp")));
     link("Telegram","https://t.me/share/url?url="+enc(tracked("telegram"))+"&text="+enc(testo));
     link("Facebook","https://www.facebook.com/sharer/sharer.php?u="+enc(tracked("facebook")));
-    async function copia(source,instagram=false){
-      const value=tracked(source);
+    async function copia(source,instagram=false,messaggio=false){
+      const value=messaggio?testo+"\n"+tracked(source):tracked(source);
       let copied=false;
       try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);copied=true;}}catch(_){}
       if(!copied){
@@ -318,8 +318,9 @@ window.CsfShare = (() => {
         try{copied=document.execCommand("copy");}catch(_){}
         if(copied)input.remove();
       }
-      status.textContent=copied?(instagram?"Link copiato. Apri Instagram e incollalo in un messaggio o nello sticker Link di una storia.":"Link copiato."):"Seleziona e copia manualmente il link.";
+      status.textContent=copied?(instagram?"Link copiato. Apri Instagram e incollalo in un messaggio o nello sticker Link di una storia.":messaggio?"Messaggio copiato. Apri WhatsApp dal telefono e incollalo nella chat.":"Link copiato."):"Seleziona e copia manualmente il testo.";
     }
+    button("WhatsApp · copia messaggio",()=>copia("whatsapp",false,true));
     button("Instagram · copia link",()=>copia("instagram",true));
     button("Copia link",()=>copia("link_copiato"));
     link("Apri Instagram","https://www.instagram.com/");

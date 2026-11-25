@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js"></script>
-  <script src="event-page.js?v=57" defer></script>
+  <script src="event-page.js?v=58" defer></script>
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
@@ -1569,8 +1569,8 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         "- Link locandina: "+campo("seg-locandina")
       ].join("\n"));
       const url="https://wa.me/393474181072?text="+testoSegnalazione;
-      if(isAndroid||isIOS)window.location.href=url;
-      else window.open(url,"_blank","noopener,noreferrer");
+      // Richiedi una finestra esterna anche in Android; il contenitore decide come gestirla.
+      const link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";document.body.appendChild(link);link.click();link.remove();
     }
 
     const installBox = document.getElementById("install-box");
