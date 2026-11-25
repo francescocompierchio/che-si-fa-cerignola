@@ -56,6 +56,141 @@
   motion.addEventListener?.("change",()=>{if(motion.matches){clear();pointers.clear();}});
 })();
 
+
+// Sottofondo originale CSF: lounge sintetizzato localmente, volume contenuto.
+// Nessuna musica scaricata, servizio esterno, cookie o richiesta di rete.
+(function(){
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  const key="csf_music_v1";
+  let enabled=true,ctx=null,source=null,master=null,buffer=null,button=null;
+  try{enabled=localStorage.getItem(key)!=="off";}catch(_){}
+  function loop(context){
+    const rate=22050,beat=60/98,frames=Math.round(32*beat*rate);
+    const out=context.createBuffer(1,frames,rate),data=out.getChannelData(0);
+    const freq=m=>440*Math.pow(2,(m-69)/12),tau=2*Math.PI;
+    function tone(at,duration,note,amp,kind){
+      const offset=Math.round(at*rate),n=Math.round(duration*rate),f=freq(note);
+      for(let i=0;i<n;i++){
+        const x=i/rate;
+        let env,val;
+        if(kind==="pad"){
+          env=Math.min(1,x/.22)*Math.min(1,(duration-x)/.30);
+          val=.80*Math.sin(tau*f*x)+.14*Math.sin(tau*(f*2.002)*x)+.06*Math.sin(tau*f*.997*x);
+        }else if(kind==="bass"){
+          env=Math.min(1,x/.018)*Math.exp(-x*3.2)*Math.min(1,(duration-x)/.05);
+          val=.85*Math.sin(tau*f*x)+.15*Math.sin(tau*f*2*x);
+        }else{
+          env=Math.min(1,x/.012)*Math.exp(-x*6)*Math.min(1,(duration-x)/.06);
+          val=.70*Math.sin(tau*f*x)+.23*Math.sin(tau*f*2*x)+.07*Math.sin(tau*f*3*x);
+        }
+        data[(offset+i)%frames]+=amp*env*val;
+      }
+    }
+    const chords=[[53,57,60,64],[50,53,57,60],[48,52,55,59],[48,55,62,64]];
+    const bass=[38,34,41,36];
+    for(let bar=0;bar<8;bar++){
+      const n=bar%4,at=bar*4*beat;
+      chords[n].forEach(note=>tone(at,4*beat+.14,note,.038,"pad"));
+      for(const step of [0,1.5,2.5,3.5])tone(at+step*beat,.46*beat,bass[n]+(step===2.5?12:0),.15,"bass");
+      [0.5,1.75,2.5,3.25].forEach((step,j)=>tone(at+step*beat,.88*beat,chords[n][(j+bar)%4]+12,.040,"pluck"));
+    }
+    let seed=12571;
+    function noise(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296*2-1;}
+    for(let step=0;step<64;step++){
+      const at=Math.round(step*.5*beat*rate);
+      if(step%4===0||step%4===2){
+        for(let i=0;i<rate*.24;i++){
+          const x=i/rate,phase=tau*(50*x+38*(1-Math.exp(-30*x))/30);
+          data[(at+i)%frames]+=.17*Math.min(1,x/.006)*Math.exp(-x*17)*Math.sin(phase);
+        }
+      }
+      const off=step%2===1;
+      if(off||step%8===4){
+        for(let i=0;i<rate*.065;i++){
+          const x=i/rate;
+          data[(at+i)%frames]+=(off?.019:.013)*Math.exp(-x*64)*noise();
+        }
+      }
+    }
+    // Headroom per evitare clipping anche quando si sommano gli strumenti.
+    for(let i=0;i<frames;i++)data[i]=Math.max(-.92,Math.min(.92,data[i]));
+    return out;
+  }
+  function running(){return Boolean(enabled&&ctx?.state==="running"&&source&&!document.hidden);}
+  function render(){
+    if(!button)return;
+    const playing=running();
+    button.setAttribute("aria-pressed",String(playing));
+    button.setAttribute("aria-label",playing?"Disattiva musica di sottofondo":"Attiva musica di sottofondo");
+    button.title=playing?"Disattiva musica":"Attiva musica";
+    button.dataset.musicState=playing?"playing":enabled?"ready":"off";
+    button.classList.toggle("music-playing",playing);
+    const mark=button.querySelector(".csf-music-mark");
+    if(mark)mark.textContent=playing?"♫":"♪";
+  }
+  function ready(){
+    if(!enabled||document.hidden||!ctx||ctx.state!=="running"){render();return;}
+    if(!source){
+      buffer=buffer||loop(ctx);
+      master=ctx.createGain();master.gain.setValueAtTime(0,ctx.currentTime);
+      master.connect(ctx.destination);
+      source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;source.connect(master);
+      source.start();master.gain.linearRampToValueAtTime(.16,ctx.currentTime+.7);
+    }
+    render();
+  }
+  function play(allowCreate=true){
+    if(!enabled||document.hidden||!Audio)return;
+    try{
+      if(!ctx){
+        if(!allowCreate)return;
+        ctx=new Audio();ctx.onstatechange=render;
+      }
+      if(ctx.state==="running"){ready();return;}
+      // resume può restare in attesa dell'interazione: riprova al primo gesto.
+      ctx.resume().then(ready).catch(()=>render());
+    }catch(_){render();}
+  }
+  function pause(){
+    if(ctx?.state==="running")ctx.suspend().catch(()=>{});
+    render();
+  }
+  function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
+  function toggle(){
+    if(running()){enabled=false;save();pause();}
+    else{enabled=true;save();play();}
+    render();
+  }
+  function init(){
+    button=document.getElementById("csf-music-toggle");
+    if(!button&&document.querySelector("header")){
+      button=document.createElement("button");button.id="csf-music-toggle";button.type="button";button.className="csf-music-toggle";
+      const mark=document.createElement("span");mark.className="csf-music-mark";mark.setAttribute("aria-hidden","true");mark.textContent="♪";button.append(mark);
+      document.querySelector("header").append(button);
+    }
+    if(!button)return;
+    if(!Audio){button.hidden=true;return;}
+    const style=document.createElement("style");
+    style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}";
+    document.head.append(style);
+    button.addEventListener("click",toggle);
+    const gesture=ev=>{
+      if(!ev.isTrusted||!enabled||ev.target?.closest?.("#csf-music-toggle"))return;
+      if(!running())play();
+    };
+    document.addEventListener("pointerup",gesture,{capture:true,passive:true});
+    document.addEventListener("click",gesture,{capture:true,passive:true});
+    document.addEventListener("keydown",gesture,{capture:true,passive:true});
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&ctx)play(false);});
+    window.addEventListener("pagehide",pause);
+    window.addEventListener("pageshow",()=>{if(enabled&&ctx)play(false);});
+    render();
+    // Prova l'avvio immediato; i browser che vietano autoplay attendono il gesto.
+    if(enabled)play();
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+})();
+
 function csfLinkPaginaTracciato(raw,source){
   try{
     const u=new URL(raw,"https://francescocompierchio.github.io/che-si-fa-cerignola/");

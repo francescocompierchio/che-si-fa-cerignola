@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js"></script>
-  <script src="event-page.js?v=45" defer></script>
+  <script src="event-page.js?v=46" defer></script>
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
@@ -1147,6 +1147,11 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
  #events-container details:not([open]):hover{transform:perspective(1200px) translateY(-3px) rotateX(1deg);box-shadow:0 3px 0 var(--depth-button-bottom),0 13px 24px var(--depth-contact)}
 }
 @media(prefers-reduced-motion:reduce){.nav-tool{transition:none!important;transform:none!important}#events-container details[open] .details-body{animation:none!important}}
+
+/* Un controllo audio compatto accanto al tema, senza una nuova riga. */
+.top-nav .nav-actions{gap:8px}
+.top-nav .csf-music-toggle{width:44px;height:44px;flex-basis:44px}
+@media(max-width:350px){.top-nav .nav-actions{gap:6px}.top-nav .nav-share-btn{padding-inline:8px}.top-nav .home-btn{padding-inline:8px}}
   </style>
 </head>
 <body>
@@ -1158,6 +1163,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
         <span>Home</span>
       </button>
       <div class="nav-actions">
+        <button type="button" class="theme-toggle csf-music-toggle" id="csf-music-toggle" aria-label="Attiva musica di sottofondo" aria-pressed="false" title="Attiva musica"><span class="csf-music-mark" aria-hidden="true">♪</span></button>
         <button type="button" class="theme-toggle" id="csf-theme-toggle" aria-label="Modalità notturna" aria-pressed="false" title="Modalità notturna">☾</button>
         <button type="button" class="nav-share-btn" id="btn-share-nav">
           <span>Condividi app</span>
