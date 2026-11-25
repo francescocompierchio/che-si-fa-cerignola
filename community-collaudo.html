@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Accesso di collaudo · Che Si Fa Community</title>
+<main>
+  <h1>Accesso di collaudo alla Community</h1>
+  <p>Pagina riservata al primo accesso del moderatore. Se prosegui, Google condivide i dati del tuo profilo con Firebase Authentication del progetto Che Si Fa Community. Il gestore verifica l’account prima di assegnare il ruolo.</p>
+  <button id="login" disabled>Accedi con Google</button>
+  <p id="status" role="status"></p>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+const app = firebase.initializeApp({
+  apiKey: "AIzaSyDH4ZsFwaIctB-Gwa0-kShX_3-spoz8SwU",
+  authDomain: "che-si-fa-community.firebaseapp.com",
+  projectId: "che-si-fa-community",
+  appId: "1:1064417630484:web:a79933b1f5832f5e860a01"
+}, "community-pilot");
+const auth = app.auth();
+const login = document.getElementById("login");
+const status = document.getElementById("status");
+auth.onAuthStateChanged(user => {
+  login.disabled = Boolean(user);
+  status.textContent = user ? "Accesso completato con " + user.email + "." : "";
+});
+login.onclick = async () => {
+  login.disabled = true;
+  try {
+    await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  } catch (error) {
+    status.textContent = "Accesso non completato (" + error.code + "). Puoi riprovare.";
+    login.disabled = false;
+  }
+};
+</script>
+</html>

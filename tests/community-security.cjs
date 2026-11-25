@@ -24,9 +24,9 @@ test("config disattivata e modulo valido: nessun accesso DOM o Firebase a freddo
 });
 test("modulo collegato senza modificare la logica eventi",()=>{
   const h=read("index.html");
-  assert.ok(h.includes('src="community-config.js"'));
-  assert.ok(h.includes('src="community.js"'));
-  assert.ok(h.indexOf('src="community-config.js"')<h.indexOf('src="community.js"'));
+  assert.ok(h.includes('src="community-config.js?v=1"'));
+  assert.ok(h.includes('src="community.js?v=1"'));
+  assert.ok(h.indexOf('src="community-config.js?v=1"')<h.indexOf('src="community.js?v=1"'));
 });
 test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:process.env.CSFC_EMULATOR!=="1"},async()=>{
   assert.match(process.env.FIREBASE_DATABASE_EMULATOR_HOST||"",/^127\.0\.0\.1:\d+$/);
