@@ -35,7 +35,7 @@ window.CsfShare = (() => {
       const b=document.createElement("button");b.type="button";b.textContent=label;if(full)b.style.gridColumn="1 / -1";b.addEventListener("click",fn);grid.append(b);return b;
     };
     const link=(label,href)=>{
-      const a=document.createElement("a");a.textContent=label;a.href=href;a.target="_blank";a.rel="noopener noreferrer";grid.append(a);
+      const a=document.createElement("a");a.textContent=label;a.href=href;a.rel="noopener noreferrer";if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||""))a.target="_blank";grid.append(a);
     };
     if(typeof navigator.share==="function"){
       button("Condividi con le app del telefono",async()=>{
@@ -64,8 +64,8 @@ window.CsfShare = (() => {
     const close=document.createElement("button");close.type="button";close.textContent="Chiudi";close.style.width="100%";close.addEventListener("click",()=>{if(dialog.open&&typeof dialog.close==="function")dialog.close();else dialog.remove();});dialog.append(close);
     dialog.addEventListener("close",()=>{dialog.remove();if(invocante?.isConnected)invocante.focus();});
     document.body.append(dialog);
-    if(typeof dialog.showModal==="function")dialog.showModal();
-    else{dialog.setAttribute("open","");Object.assign(dialog.style,{position:"fixed",top:"15%",left:"50%",transform:"translateX(-50%)",zIndex:"1000"});}
+    try{if(typeof dialog.showModal!=="function")throw Error("dialog");dialog.showModal();}
+    catch(_){dialog.setAttribute("open","");Object.assign(dialog.style,{position:"fixed",top:"15%",left:"50%",transform:"translateX(-50%)",zIndex:"1000"});}
   }
   return {apri};
 })();
