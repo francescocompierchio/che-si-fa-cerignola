@@ -211,6 +211,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Sagre & Food",
+    "titolo": "Tra biodiversità e tradizione: a Minervino torna la Sagra della Cima di Rapa",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "borgo antico di Minervino Murge",
+    "indirizzoMappa": "borgo antico di Minervino Murge",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "La nuova edizione della sagra si terrà il weekend del 28 e 29 novembre",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/tra-biodiversita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Andria",
     "categoria": "Attività diurne",
     "titolo": "Andria | Sentiti a casa da Leonetti Store",
@@ -306,6 +320,20 @@
     "costo": "40€",
     "descrizione": "Sabato 28 novembre 2026, alle ore 20:30, 𝗩𝗶𝗹𝗹𝗮 𝗔𝗿𝘁𝗲𝗺𝗶𝗱𝗲 𝗮 𝗠𝗮𝗻𝗳𝗿𝗲𝗱𝗼𝗻𝗶𝗮 ospita 𝗣𝗶𝗮𝘁𝘁𝗼 𝗱𝗶𝗩𝗶𝗻𝗼, una serata enogastronomica dedicata ai sapori autunnali e alla scoperta degli abbinamenti tra cucina e vino, organizzata in coll",
     "fonteUrl": "https://www.manfredoniaeventi.com/evento/piatto-divino-cena-dautunno-degustazione-vini-e-musica-dal-vivo-villa-artemide-manfredonia-28-novembre-2026/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Sagre & Food",
+    "titolo": "Tra biodiversità e tradizione: a Minervino torna la Sagra della Cima di Rapa",
+    "dataTesto": "Dom 29 Nov 2026",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "borgo antico di Minervino Murge",
+    "indirizzoMappa": "borgo antico di Minervino Murge",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "La nuova edizione della sagra si terrà il weekend del 28 e 29 novembre",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/tra-biodiversita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa/"
   },
   {
     "tipoContenuto": "evento",
@@ -506,6 +534,20 @@
   {
     "tipoContenuto": "evento",
     "citta": "Barletta",
+    "categoria": "Attività diurne",
+    "titolo": "\"Christmas Wonderland\", si aprono le porte del villaggio al Castello di Barletta",
+    "dataTesto": "Dom 06 Dic 2026",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Castello di Barletta Domani 6 dicembre alle ore 17",
+    "indirizzoMappa": "Castello di Barletta Domani 6 dicembre alle ore 17, Barletta",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Domani 6 dicembre alle ore 17.30 l'inaugurazione ufficiale aperta a grandi e piccini",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/christmas-wonderland-si-aprono-le-porte-del-villaggio-al-castello-di-barletta/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
     "categoria": "Natura & Escursioni",
     "titolo": "AgroArcheoTrekking 4.0 a Canne della Battaglia: un cammino inclusivo tra natura, cult",
     "dataTesto": "Dom 06 Dic 2026",
@@ -530,6 +572,20 @@
     "costo": "Ingresso gratuito",
     "descrizione": "la passeggiata si svolgerà il 6 dicembre con questo programma comprendente agri aperitivo e l'assaggio delle cartellate e del panettone realizzate dallo chef al momento nonché al mercatino sarà possibile acquistare prodo",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337624.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Attività diurne",
+    "titolo": "In viaggio verso \"Christmas Wonderland\" al Castello di Barletta",
+    "dataTesto": "Dal 06 Dic al 07 Gen 2027",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2027-01-07",
+    "luogo": "viaggio verso",
+    "indirizzoMappa": "viaggio verso, Barletta",
+    "costo": "Gratuito",
+    "descrizione": "Ecco tutti i dettagli su ingresso e biglietti",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/in-viaggio-verso-christmas-wonderland-al-castello-di-barletta/"
   },
   {
     "tipoContenuto": "evento",

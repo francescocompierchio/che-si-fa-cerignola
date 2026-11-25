@@ -26,27 +26,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2026-11-21-a-cerignola-si-accende-il-natale-nelle-quattro-vie
- -dal-21-novembre-al-6-dicembre@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261121
-DTEND;VALUE=DATE:20261207
-SUMMARY:A Cerignola si accende il “Natale nelle Quattro Vie”: dal 21 no
- vembre al 6 dicembre – Cerignola
-LOCATION:Viale Roosevelt\, Via Bologna\, Via Don Minzoni e Via XXV Aprile\,
-  Cerignola
-DESCRIPTION:Dal 21 Nov al 06 Dic 2026\nMusica\, luminarie e tombolate con g
- li studenti del “Don Puglisi – Pavoncelli”\nAccesso: Non specificato
-  nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://f
- rancescocompierchio.github.io/che-si-fa-cerignola/eventi/cerignola-2026-11
- -21-a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-
- 6-dicembre.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-11-21-a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-
- novembre-al-6-dicembre.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita@chesi
  facerignola
 DTSTAMP:20261125T000000Z
@@ -804,6 +783,24 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:canosa-di-puglia-2026-11-28-luci-di-casa-canosa-accende-il-natale@chesi
+ facerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Luci di Casa – Canosa accende il Natale – Canosa di Puglia
+LOCATION:Piazza Vittorio Veneto\, Canosa di Puglia
+DESCRIPTION:Sab 28 Nov 2026 · Ore 18:00\nAccensione dell’albero e delle 
+ luminarie\, animazione e concerto gospel previsto intorno alle 18:30 press
+ o la Cassa Armonica.\nAccesso: Non specificato nella fonte\nVerifica varia
+ zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
+ o/che-si-fa-cerignola/eventi/canosa-di-puglia-2026-11-28-luci-di-casa-cano
+ sa-accende-il-natale.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/canos
+ a-di-puglia-2026-11-28-luci-di-casa-canosa-accende-il-natale.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:minervino-murge-2026-11-28-minervino-murge-sagra-della-cima-di-rapa-di-
  minervino-murge@chesifacerignola
 DTSTAMP:20261125T000000Z
@@ -822,6 +819,25 @@ DESCRIPTION:Dal 28 Nov al 29 Nov 2026\nMINERVINO MURGE CELEBRA L’ECCELLEN
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
  vino-murge-2026-11-28-minervino-murge-sagra-della-cima-di-rapa-di-minervin
  o-murge.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:minervino-murge-2026-11-28-tra-biodiversita-e-tradizione-a-minervino-to
+ rna-la-sagra-della-cima-di-rapa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Tra biodiversità e tradizione: a Minervino torna la Sagra della Ci
+ ma di Rapa – Minervino Murge
+LOCATION:borgo antico di Minervino Murge
+DESCRIPTION:Sab 28 Nov 2026\nLa nuova edizione della sagra si terrà il wee
+ kend del 28 e 29 novembre\nAccesso: Non specificato nella fonte\nVerifica 
+ variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
+ hub.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-28-tra-biodivers
+ ita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
+ vino-murge-2026-11-28-tra-biodiversita-e-tradizione-a-minervino-torna-la-s
+ agra-della-cima-di-rapa.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -942,6 +958,25 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:minervino-murge-2026-11-29-tra-biodiversita-e-tradizione-a-minervino-to
+ rna-la-sagra-della-cima-di-rapa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:Tra biodiversità e tradizione: a Minervino torna la Sagra della Ci
+ ma di Rapa – Minervino Murge
+LOCATION:borgo antico di Minervino Murge
+DESCRIPTION:Dom 29 Nov 2026\nLa nuova edizione della sagra si terrà il wee
+ kend del 28 e 29 novembre\nAccesso: Non specificato nella fonte\nVerifica 
+ variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
+ hub.io/che-si-fa-cerignola/eventi/minervino-murge-2026-11-29-tra-biodivers
+ ita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/miner
+ vino-murge-2026-11-29-tra-biodiversita-e-tradizione-a-minervino-torna-la-s
+ agra-della-cima-di-rapa.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-11-29-barletta-spettacolo-teatrale-spedizioni-don-chiscio
  tte@chesifacerignola
 DTSTAMP:20261125T000000Z
@@ -1019,6 +1054,24 @@ DESCRIPTION:Mar 01 Dic 2026\n“Forever Amadeus” porterà a Foggia il res
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
  a-2026-12-01-foggia-forever-amadeus-orchestra-sinfonica-131-della-basilica
  ta.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-12-03-panettone-lab-laboratorio-e-aperitivo@chesifacer
+ ignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261203
+DTEND;VALUE=DATE:20261204
+SUMMARY:Panettone Lab – laboratorio e aperitivo – Manfredonia
+LOCATION:Piazza Daino 1\, Siponto\, Manfredonia
+DESCRIPTION:Gio 3 Dic 2026 · Ore 19:00\nLaboratorio creativo dedicato alla
+  decorazione del panettone artigianale\, accompagnato da un aperitivo. Ver
+ ifica accesso e disponibilità presso il locale.\nAccesso: Consulta la fon
+ te\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francescoco
+ mpierchio.github.io/che-si-fa-cerignola/eventi/manfredonia-2026-12-03-pane
+ ttone-lab-laboratorio-e-aperitivo.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-03-panettone-lab-laboratorio-e-aperitivo.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -1131,6 +1184,26 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/canos
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-12-06-christmas-wonderland-si-aprono-le-porte-del-villagg
+ io-al-castello-di-barletta@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:"Christmas Wonderland"\, si aprono le porte del villaggio al Castel
+ lo di Barletta – Barletta
+LOCATION:Castello di Barletta Domani 6 dicembre alle ore 17\, Barletta
+DESCRIPTION:Dom 06 Dic 2026\nDomani 6 dicembre alle ore 17.30 l'inaugurazio
+ ne ufficiale aperta a grandi e piccini\nAccesso: Non specificato nella fon
+ te\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francescoco
+ mpierchio.github.io/che-si-fa-cerignola/eventi/barletta-2026-12-06-christm
+ as-wonderland-si-aprono-le-porte-del-villaggio-al-castello-di-barletta.htm
+ l
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-06-christmas-wonderland-si-aprono-le-porte-del-villaggio-al-ca
+ stello-di-barletta.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-12-06-agroarcheotrekking-4-0-a-canne-della-battaglia-un-c
  ammino-inclusivo-tra-natura-cult@chesifacerignola
 DTSTAMP:20261125T000000Z
@@ -1166,6 +1239,25 @@ DESCRIPTION:Dom 06 Dic 2026\nla passeggiata si svolgerà il 6 dicembre con
  tml
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
  a-2026-12-06-andria-mercatino-di-natale.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-12-06-in-viaggio-verso-christmas-wonderland-al-castello-d
+ i-barletta@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20270108
+SUMMARY:In viaggio verso "Christmas Wonderland" al Castello di Barletta –
+  Barletta
+LOCATION:viaggio verso\, Barletta
+DESCRIPTION:Dal 06 Dic al 07 Gen 2027\nEcco tutti i dettagli su ingresso e 
+ biglietti\nAccesso: Gratuito\nVerifica variazioni\, orari e fonte nella sc
+ heda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/b
+ arletta-2026-12-06-in-viaggio-verso-christmas-wonderland-al-castello-di-ba
+ rletta.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-06-in-viaggio-verso-christmas-wonderland-al-castello-di-barlet
+ ta.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
