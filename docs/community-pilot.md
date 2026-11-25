@@ -19,3 +19,6 @@
 6. Monitorare costi/quote, abuso, tempi di moderazione. Per sospendere il servizio, impostare settings/open = false (le regole negano lettura pubblica e invio) e, se necessario, disattivare config. Non alterare il progetto eventi.
 
 Riferimenti: https://firebase.google.com/docs/database/security/rules-conditions ; https://firebase.google.com/docs/auth/web/google-signin ; https://firebase.google.com/pricing ; https://firebase.google.com/docs/database/usage/limits .
+
+## Test locali
+`node --test tests/community-security.cjs` verifica la disattivazione di default e il collegamento HTML. Per i test effettivi delle regole installare in un ambiente locale Firebase Emulator Suite, `firebase` e `@firebase/rules-unit-testing`, avviare l'emulatore RTDB su 127.0.0.1:9000 e usare `CSFC_EMULATOR=1 FIREBASE_DATABASE_EMULATOR_HOST=127.0.0.1:9000 node --test tests/community-security.cjs`. Non eseguire mai i test di scrittura sul database reale. I test non sono automaticamente una verifica end-to-end del pilot.
