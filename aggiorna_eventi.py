@@ -2209,6 +2209,10 @@ def data_scheda_movida(url):
 
 
 def evento_movida_documentato(ev):
+    # Una sede teatrale o religiosa non diventa movida perché il titolo contiene "live".
+    sede = str(ev.get("luogo") or "")
+    if re.search(r"\b(?:teatro|auditorium|chiesa|cattedrale)\b", sede, re.I):
+        return False
     if ev.get("categoria") == "Locali & Serate":
         return True
     if ev.get("categoria") not in {"Musica & Concerti", "Attività diurne", "Sagre & Food"}:
@@ -2216,9 +2220,7 @@ def evento_movida_documentato(ev):
     testo = " ".join(str(ev.get(k) or "") for k in ("titolo", "descrizione", "luogo"))
     if indizi_movida(testo):
         return True
-    # Live tribute / band in an actual pub or club, not a concert in a theatre.
-    sede = str(ev.get("luogo") or "")
-    return radar_movida.live_in_locale(str(ev.get("titolo") or ""),str(ev.get("descrizione") or ""),sede)
+    return radar_movida.live_in_locale(str(ev.get("titolo") or ""), str(ev.get("descrizione") or ""), sede)
 
 
 def xceed_eventi_strutturati(soup, url, citta):
