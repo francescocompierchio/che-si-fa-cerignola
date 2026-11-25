@@ -95,8 +95,8 @@
   const key="csf_music_v1",lastKey="csf_music_last_v1";
   let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,credits=null,started=false,blocked=false,attempt=0;
   const Audio=window.AudioContext||window.webkitAudioContext;
-  let available=[],manifestReady=false,mode=null,ctx=null,sourceNode=null,buffer=null,gain=null;
-  let manifestPromise=null;
+  let available=tracks.filter(t=>["USUAN1200054","USUAN1300033","USUAN1100757","USUAN2400001","USUAN1800019"].includes(t.id)),manifestReady=true,mode=null,ctx=null,sourceNode=null,buffer=null,gain=null;
+  // I file MP3 sono presenti nel commit verificato: nessuna attesa del manifesto prima dell’avvio.
   try{enabled=localStorage.getItem(key)!=="off";last=localStorage.getItem(lastKey)||"";}catch(_){}
   const source=t=>"https://incompetech.com/music/royalty-free/index.html?isrc="+t.id;
   function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
@@ -250,6 +250,7 @@
     }
     track=bag.shift();last=track.id;
     blocked=false;
+    audio.preload="auto";audio.autoplay=enabled&&!document.hidden;
     audio.src=new URL("audio/"+track.id+".mp3",base).href;audio.loop=false;
     audio.volume=.20;
     render();
@@ -273,6 +274,8 @@
     if(mode==="local"||!available.length){playFallback();return;}
     mode="recorded";
     if(!track)choose();
+    audio.autoplay=true;
+    if(!audio.paused&&!audio.ended&&!blocked)return;
     const current=++attempt;
     try{
       // Chiamata sincrona nel gestore del gesto: nessun await prima di play().
@@ -303,7 +306,7 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload="none";audio.autoplay=false;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
+    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload=enabled?"auto":"none";audio.autoplay=enabled;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
     const style=document.createElement("style");
     style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}.csf-music-credits{font-size:.75rem;color:var(--muted,#53627a);text-align:center;margin:8px auto;max-width:740px}.csf-music-credits a{color:var(--accent,#1746a2)}.csf-music-credits ul{list-style:none;padding:0;line-height:1.65}";
     document.head.append(style);
@@ -316,6 +319,7 @@
     details.append(list);(document.querySelector("footer")||document.body).append(details);
     audio.addEventListener("playing",()=>{if(mode!=="recorded"||!enabled||document.hidden){audio.pause();return;}started=true;blocked=false;failed=0;try{localStorage.setItem(lastKey,track.id);}catch(_){}render();});
     for(const ev of ["pause","canplay","waiting"])audio.addEventListener(ev,render);
+    audio.addEventListener("canplay",()=>{if(enabled&&mode==="recorded"&&!blocked&&audio.paused&&!document.hidden)play();});
     audio.addEventListener("ended",()=>{if(enabled&&mode==="recorded"){choose();play();}else render();});
     audio.addEventListener("error",()=>{
       if(!enabled||mode!=="recorded"||!track)return;
@@ -337,13 +341,8 @@
     window.addEventListener("pagehide",pause);
     window.addEventListener("pageshow",()=>{if(enabled&&(manifestReady||mode))play();});
     render();
-    // Only select recordings whose import has actually produced a verified file.
-    manifestPromise=fetch(new URL("audio/playlist.json",base),{cache:"no-store"})
-      .then(r=>{if(!r.ok)throw Error("playlist");return r.json();})
-      .then(data=>{if(Array.isArray(data.ids))available=tracks.filter(t=>data.ids.includes(t.id));})
-      .catch(()=>{}).finally(()=>{manifestReady=true;if(enabled&&!mode)play();});
-    // A missing/slow manifest cannot prevent the original fallback from starting.
-    setTimeout(()=>{if(enabled&&!mode)play();},900);
+    // Avvio immediato della sorgente locale già verificata, senza fetch preliminare.
+    if(enabled)play();
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

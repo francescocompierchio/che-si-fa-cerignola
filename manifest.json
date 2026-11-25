@@ -10,10 +10,16 @@
   "theme_color": "#004aad",
   "icons": [
     {
-      "src": "1795175413227~4.jpg",
+      "src": "csf-icon-v2.svg",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "csf-icon-maskable-v2.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [

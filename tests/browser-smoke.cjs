@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({args:["--autoplay-policy=document-user-activation-required"]});
   try {
     const page = await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",timezoneId:"Europe/Rome",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
     const errors = []; page.on("pageerror", e => errors.push(e.message));
@@ -224,6 +224,17 @@ const assert = require("node:assert/strict");
     await fallback.locator("#csf-music-toggle").click();
     assert.equal(await fallback.locator("#csf-music-toggle").getAttribute("data-music-state"),"off");
     await fallback.close();
+    // Browser che consente autoplay: usa gli MP3 reali del repository, senza gesti e senza mock.
+    const autoBrowser=await chromium.launch({args:["--autoplay-policy=no-user-gesture-required"]});
+    try{
+      const auto=await autoBrowser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block"});
+      auto.on("pageerror",e=>errors.push(e.message));
+      await auto.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
+      await auto.goto("http://127.0.0.1:8765/index.html");
+      await auto.waitForFunction(()=>{const a=document.querySelector("#csf-lounge-audio");return a&&a.currentTime>.1&&a.duration>60&&!a.paused;},{},{timeout:30000});
+      assert.equal(await auto.locator("#csf-music-toggle").getAttribute("data-music-mode"),"recorded","Autoplay dei veri MP3");
+      await auto.close();
+    }finally{await autoBrowser.close();}
     const social=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36 Instagram"});
     social.on("pageerror",e=>errors.push(e.message));
     await social.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
