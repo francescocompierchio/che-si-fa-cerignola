@@ -87,6 +87,7 @@ FONTI_PORTALI = [
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Cafe des Artistes","url":"https://manfredoniaeventi.com/luogo/cafe-des-artistes/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
+    {"nome":"ManfredoniaEventi Movida Bistrot","url":"https://www.manfredoniaeventi.com/luogo/bar-movida/","dominio":"manfredoniaeventi.com","citta_default":"","curata":True,"nightlife":True,"prefisso_schede":"/evento/","data_nel_link":True,"max_schede":12},
     {"nome":"ManfredoniaEventi Al Molo 20","url":"https://manfredoniaeventi.com/organizzatore/al-molo-20/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"Xceed Barletta","url":"https://xceed.me/it/barletta/events","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
     {"nome":"Xceed Trani","url":"https://xceed.me/it/trani/events","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
@@ -656,6 +657,8 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     url = (fonte_url or "").casefold()
 
     if re.search(r"\b(?:capodanno|san silvestro)\b", t) and re.search(r"\b(?:cenon[ei]|veglion[ei]|party|dj set|cena)\b", t):
+        return "Locali & Serate"
+    if _host_appartiene(fonte_url, "kodocollective.it") and re.search(r"\b(?:serata|dj[\s-]*set)\b", t):
         return "Locali & Serate"
     if discovery_locale.CENE_SHOW.search(t) and not re.search(r"\b(?:spettacolo teatrale|compagnia teatrale|monologo|drammaturgia|convegno)\b", t):
         return "Locali & Serate"
@@ -1332,6 +1335,26 @@ def ricontrolla_eventi_imminenti(eventi, massimo=10):
     return {"schedeSelezionate": len(scelti), "schedeLette": letti}
 
 
+def immagine_evento_strutturata(evento, url):
+    """Usa solo image del nodo Event validato, non l'og:image di una pagina elenco."""
+    immagini = evento.get("image")
+    if not isinstance(immagini, list):
+        immagini = [immagini]
+    for img in immagini:
+        if isinstance(img, dict):
+            img = img.get("contentUrl") or img.get("url")
+        if not isinstance(img, str) or not img.strip():
+            continue
+        src = urljoin(url, img.strip())
+        parsed = urlparse(src)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+            continue
+        if re.search(r"(?:^|[/_.-])(?:logo|placeholder|default|favicon|avatar|noimage)(?:[/_.-]|$)", parsed.path, re.I):
+            continue
+        return src
+    return ""
+
+
 def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_eventi=False):
     ref = oggi_dt()
     soup = BeautifulSoup(html_text, "html.parser")
@@ -1397,6 +1420,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             "indirizzoMappa": indirizzo_completo,
             "costo": estrai_costo_jsonld(ev_ld, soup),
             "descrizione": desc,
+            "locandinaUrl": immagine_evento_strutturata(ev_ld, page_url),
             "fonteUrl": url_evento
         }, ref, fonte_curata_eventi=fonte_curata_eventi)
         if ev_ok and not evento_non_attivo(ev_ok):
@@ -2218,7 +2242,7 @@ def xceed_eventi_strutturati(soup, url, citta):
         if not ricorrenza_compatibile(desc,data):
             continue
         orario = (" · Ore "+dt.strftime("%H:%M")) if "T" in inizio and dt.strftime("%H:%M")!="00:00" else ""
-        record = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{via}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+orario, "descrizione":("Serata in club. "+desc)[:220], "costo":"Consulta la biglietteria", "fonteUrl":url}, fonte_curata_eventi=True)
+        record = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{via}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+orario, "descrizione":("Serata in club. "+desc)[:220], "costo":"Consulta la biglietteria", "locandinaUrl":immagine_evento_strutturata(ev,url), "fonteUrl":url}, fonte_curata_eventi=True)
         if record and not evento_non_attivo(record):
             record["categoria"] = "Locali & Serate"
             risultati.append(record)
