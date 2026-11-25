@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Verifica accesso Community</title>
 <style>body{font:16px/1.5 system-ui,sans-serif;background:#f2f5f8;color:#173047;margin:0;padding:24px}main{max-width:500px;margin:auto;background:white;border-radius:16px;padding:24px}button{font:inherit;padding:12px;border:1px solid #aab8c5;border-radius:8px;background:#20374a;color:white;margin:6px 0}button:disabled{opacity:.6}#status{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#4f6170}</style>
-</head><body><main><h1>Verifica accesso Community</h1><p>Test di accesso Google e lettura dei tuoi permessi. Non apre la chat, non invia messaggi e non modifica il database.</p><button id="login" disabled>Accedi con Google</button> <button id="logout" disabled>Esci</button><p id="status" role="status">Caricamento…</p><small>Non condividere password o token. La registrazione tramite Google può creare un account Firebase, se non esistente.</small></main>
+</head><body><main><h1>Verifica accesso Community</h1><p>Test di accesso Google e lettura dei tuoi permessi. Non apre la chat, non invia messaggi e non modifica il database.</p><button id="login" disabled>Accedi con Google</button> <button id="logout" disabled>Esci</button><p id="status" role="status">Caricamento…</p><button id="check-message" hidden>Verifica messaggistica (chat chiusa)</button><p id="check-result" role="status"></p><small>Non condividere password o token. La registrazione tramite Google può creare un account Firebase, se non esistente.</small></main>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -16,14 +16,45 @@ const app=firebase.initializeApp({
     projectId: "che-si-fa-community",
     appId: "1:1064417630484:web:a79933b1f5832f5e860a01"
   },"csf-community-check"),auth=app.auth(),db=app.database();
+const check=document.getElementById("check-message"),out=document.getElementById("check-result");
+let verifiedModerator=false;
+check.onclick=async()=>{
+  const u=auth.currentUser;
+  if(!u||!verifiedModerator)return;
+  check.disabled=true;out.textContent="Verifica in corso…";
+  const stamp=firebase.database.ServerValue.TIMESTAMP;
+  const own=db.ref("submissions/"+u.uid);
+  let id=null,created=false,submission=false;
+  try{
+    if((await db.ref("settings/open").once("value")).val()!==false)throw Error("Chat non chiusa: test annullato");
+    if((await db.ref("moderators/"+u.uid).once("value")).val()!==true)throw Error("Non moderatore");
+    if((await own.once("value")).exists())throw Error("Coda personale già occupata: test annullato");
+    await own.set({nick:"Test tecnico",text:"Verifica temporanea della Community",createdAt:stamp,state:"pending"});submission=true;
+    const pending=(await own.once("value")).val();
+    if(pending?.state!=="pending")throw Error("Coda non verificata");
+    id=db.ref("published").push().key;
+    const patch={};patch["published/"+id]={nick:pending.nick,text:pending.text,createdAt:stamp};patch["authors/"+id]=u.uid;patch["submissions/"+u.uid+"/state"]="approved";
+    await db.ref().update(patch);created=true;
+    const [m,author,q]=await Promise.all([db.ref("published/"+id).once("value"),db.ref("authors/"+id).once("value"),own.once("value")]);
+    if(m.val()?.text!==pending.text||author.val()!==u.uid||q.val()?.state!=="approved")throw Error("Approvazione non verificata");
+    const clean={};clean["published/"+id]=null;clean["authors/"+id]=null;clean["submissions/"+u.uid]=null;
+    await db.ref().update(clean);created=false;submission=false;
+    if((await db.ref("published/"+id).once("value")).exists()||(await own.once("value")).exists())throw Error("Pulizia non verificata");
+    out.textContent="Invio: riuscito. Approvazione: riuscita. Rimozione: riuscita. Nessun messaggio di prova rimasto.";
+  }catch(e){
+    try{const clean={};if(created){clean["published/"+id]=null;clean["authors/"+id]=null;}if(submission)clean["submissions/"+u.uid]=null;if(Object.keys(clean).length)await db.ref().update(clean);}catch{out.textContent="Test interrotto: pulizia manuale necessaria.";return;}
+    out.textContent="Test non riuscito: "+(e.code||e.message||"errore");
+  }finally{check.disabled=false;}
+};
 const err=e=>{status.textContent="Verifica non riuscita: "+(e.code||"errore di connessione")};
 auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(()=>{
 login.disabled=false;
 auth.onAuthStateChanged(async u=>{
-logout.disabled=!u;
+logout.disabled=!u;verifiedModerator=false;check.hidden=true;
 if(!u){status.textContent="Accedi con lo stesso account Google del moderatore.";return;}
 try{
 const [m,o,b]=await Promise.all([db.ref("moderators/"+u.uid).once("value"),db.ref("settings/open").once("value"),db.ref("bans/"+u.uid).once("value")]);
+verifiedModerator=m.val()===true&&o.val()===false&&b.val()!==true;check.hidden=!verifiedModerator;
 status.textContent="Accesso Google: riuscito\nEmail verificata: "+(u.emailVerified?"Sì":"No")+"\nModeratore: "+(m.val()===true?"Sì":"No")+"\nChat aperta: "+(o.val()===true?"Sì":o.val()===false?"No":"Impostazione mancante")+"\nAccount sospeso: "+(b.val()===true?"Sì":"No")+(m.val()!==true?"\nUID del tuo account: "+u.uid:"");
 }catch(e){err(e);}
 },err);
