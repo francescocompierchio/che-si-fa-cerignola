@@ -110,15 +110,12 @@ const assert = require("node:assert/strict");
     const chrome=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
     chrome.on("pageerror",e=>errors.push(e.message));
     await chrome.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
-    await chrome.addInitScript(()=>{
-      const proto=window.AudioBufferSourceNode?.prototype;
-      if(!proto)return;
-      const start=proto.start;
-      proto.start=function(...args){
-        if(this.buffer)window.__csfAudio={duration:this.buffer.duration,channels:this.buffer.numberOfChannels,loop:this.loop};
-        return start.apply(this,args);
-      };
-    });
+    // Test del player con un campione WAV silenzioso locale: nessun download esterno in CI.
+    const rate=8000,seconds=30,size=rate*seconds*2,wav=Buffer.alloc(44+size);
+    wav.write("RIFF",0);wav.writeUInt32LE(36+size,4);wav.write("WAVEfmt ",8);wav.writeUInt32LE(16,16);
+    wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);
+    wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(size,40);
+    await chrome.route(/https:\/\/(?:upload\.wikimedia\.org|incompetech\.com)\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
     await chrome.goto("http://127.0.0.1:8765/index.html");
     await chrome.locator("#events-container details").first().waitFor();
     assert.ok(await chrome.locator("#install-box").isHidden());
@@ -132,7 +129,13 @@ const assert = require("node:assert/strict");
     assert.equal(await chrome.evaluate(()=>window.__waveOnTouch),"none","Onda anche su testo non interattivo, senza intercettare i tocchi");
     await chrome.waitForFunction(()=>!document.querySelector(".csf-liquid-wave"));
     await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="playing");
-    assert.deepEqual(await chrome.evaluate(()=>window.__csfAudio),{duration:180,channels:2,loop:false},"Composizione stereo completa di tre minuti, senza loop");
+    const firstTrack=await chrome.locator("#csf-music-toggle").getAttribute("data-music-track");
+    assert.ok(firstTrack);
+    assert.equal(await chrome.locator("#csf-lounge-audio").evaluate(a=>a.loop),false);
+    assert.equal(await chrome.locator(".csf-music-credits li").count(),5);
+    await chrome.locator("#csf-lounge-audio").evaluate(a=>a.dispatchEvent(new Event("ended")));
+    await chrome.waitForFunction(first=>document.getElementById("csf-music-toggle").dataset.musicTrack!==first,firstTrack);
+    await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle").dataset.musicState==="playing");
     await chrome.locator("#csf-music-toggle").click();
     assert.equal(await chrome.locator("#csf-music-toggle").getAttribute("aria-pressed"),"false");
     assert.equal(await chrome.evaluate(()=>localStorage.getItem("csf_music_v1")),"off");
