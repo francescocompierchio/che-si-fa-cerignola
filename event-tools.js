@@ -46,6 +46,18 @@ function strumenti(){
    const t=norm([ev.titolo,ev.luogo,ev.descrizione].join(" ")),cat=norm(ev.categoria);
    return /locali|serat/.test(cat)||(/musica|concert|sagre|food|attivita/.test(cat)&&/\b(?:dj|karaoke|aperitivo musicale|cena spettacolo|live music|musica dal vivo|disco|discoteca|club night)\b/.test(t));
  }
+ // IN CORSO solo entro una fascia oraria esplicita, non da un semplice orario di inizio.
+ function statoTemporale(ev,now=new Date()){
+   const parti=Object.fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Rome",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(now).map(p=>[p.type,p.value]));
+   const oggi=parti.year+"-"+parti.month+"-"+parti.day;
+   if(!overlaps(ev,oggi,oggi))return "";
+   if(ev.dataInizio!==(ev.dataFine||ev.dataInizio))return "OGGI";
+   const t=String(ev.dataTesto||"");
+   const m=t.match(/\b(?:ore\s+|dalle\s+)([01]?\d|2[0-3])[:.]([0-5]\d)\s*(?:[–—-]|\balle\b)\s*(?:ore\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\b/i);
+   if(!m)return "OGGI";
+   const inizio=Number(m[1])*60+Number(m[2]),fine=Number(m[3])*60+Number(m[4]),minuto=Number(parti.hour)*60+Number(parti.minute);
+   return inizio<fine&&minuto>=inizio&&minuto<fine?"IN CORSO":"OGGI";
+ }
  function prioritaScoperta(ev,oggi,fascia){
    if(ev.tipoContenuto==="esperienza")return 99;
    const d=new Date(oggi+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+6);
@@ -58,7 +70,7 @@ function strumenti(){
    if(fascia<=1)return 4;
    return 5;
  }
- return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest,discoteca,vitaNotturna,prioritaScoperta};
+ return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest,discoteca,vitaNotturna,statoTemporale,prioritaScoperta};
 }
 const CsfEventTools = strumenti();
 if (typeof module !== "undefined" && module.exports) module.exports=CsfEventTools;

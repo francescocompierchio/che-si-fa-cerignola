@@ -20,6 +20,16 @@ const assert = require("node:assert/strict");
       assert.ok(await el.locator("img.event-poster").count(),titolo+" locandina presente");
     }
     assert.ok(await acq.evaluate(el=>Array.from(el.parentElement.querySelectorAll("details")).slice(0,Array.from(el.parentElement.querySelectorAll("details")).indexOf(el)).every(x=>x.classList.contains("is-featured"))),"Acquolina nel gruppo in evidenza");
+    await page.clock.setFixedTime(new Date("2026-11-25T12:27:00+01:00"));
+    await page.reload();
+    const serata=page.locator("#events-container details").filter({hasText:"Serataccia Italiana – Carlito's"});
+    await serata.waitFor({state:"visible"});
+    assert.equal(await serata.locator(".badge-today").textContent(),"OGGI");
+    assert.ok(await serata.evaluate(el=>el.classList.contains("is-featured")&&el.classList.contains("is-today")));
+    assert.equal(await serata.evaluate(el=>getComputedStyle(el).borderLeftColor),await page.locator("#events-container details").filter({hasText:"Acquolina in Cena Spettacolo"}).evaluate(el=>getComputedStyle(el).borderLeftColor),"Bordo dorato uniforme");
+    await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
+    await page.reload();
+    await page.locator("#events-container details").first().waitFor();
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
     const conteggioOriginale = await page.locator("#event-counter").textContent();
