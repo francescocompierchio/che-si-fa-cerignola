@@ -14,3 +14,11 @@ class RadarMovidaTest(unittest.TestCase):
         self.assertTrue(any(x["alias_movida"] and x["solo_cerignola"] for x in rss))
         self.assertTrue(r.alias_corrispondente("NONZAI DJ set",["NONZAI"]))
         self.assertFalse(r.alias_corrispondente("altro locale",["NONZAI"]))
+
+    def test_ricerca_fonti_ufficiali(self):
+        from urllib.parse import parse_qs, urlparse
+        _,rss=r.fonti({"Cerignola":[{"nome":"Alchimia","alias":["Alchimia Cucina"],"sito":"https://alchimiacucinaevino.eatbu.com/","social":"https://www.instagram.com/alchimia.cucinaevino/"}]},[])
+        q=[parse_qs(urlparse(x["url"]).query)["q"][0] for x in rss if x["solo_cerignola"]]
+        self.assertTrue(any("site:alchimiacucinaevino.eatbu.com" in x for x in q))
+        self.assertTrue(any('site:instagram.com "alchimia.cucinaevino"' in x for x in q))
+        self.assertTrue(any("disc jockey" in x for x in q))

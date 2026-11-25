@@ -48,6 +48,33 @@ def fonti(registro,anagrafiche):
         gruppo=alias[i:i+6]
         nomi="("+" OR ".join('"'+x+'"' for x in gruppo)+")"
         rss.append(feed("Cerignola profili "+str(i//6+1),nomi+" "+temi+" (Cerignola OR site:instagram.com OR site:facebook.com)","Cerignola",gruppo))
+    # Query corte per intercettare annunci che non usano le formule tipiche.
+    # Le fonti originali devono ancora documentare data, sede e città.
+    for nome,tema in [
+        ("Annunci brevi", '("serata" OR "evento" OR "party") (pub OR locale OR cocktail OR club)'),
+        ("DJ grafie alternative", '(dj OR "dj-set" OR deejay OR "disc jockey")'),
+        ("Musica e intrattenimento", '(karaoke OR "live" OR "cover band" OR "quiz" OR "musica live")'),
+        ("Stampa locale", '(site:cerignolaviva.it OR site:lanotiziaweb.it OR site:marchiodoc.it) (dj OR karaoke OR "serata musicale" OR "cena spettacolo")'),
+    ]:
+        rss.append(feed("Cerignola "+nome,"Cerignola "+tema,"Cerignola"))
+    # Il dominio ufficiale o l'handle sono segnali di discovery, non prove.
+    # Non leggere profili privati, storie o pagine dietro autenticazione.
+    visti=set()
+    for r in locali:
+        for campo in ("sito","social"):
+            url=r.get(campo,"")
+            host=(urlparse(url).hostname or "").removeprefix("www.")
+            if not host or urlparse(url).scheme!="https" or url in visti:
+                continue
+            visti.add(url)
+            if host in {"instagram.com","facebook.com"}:
+                handle=urlparse(url).path.strip("/").split("/")[0]
+                if not re.fullmatch(r"[a-zA-Z0-9_.-]{3,80}",handle):
+                    continue
+                q=f'site:{host} "{handle}" (dj OR live OR serata OR party OR karaoke)'
+            else:
+                q=f'site:{host} (evento OR serata OR musica OR dj OR karaoke)'
+            rss.append(feed("Cerignola fonte "+r["nome"]+" "+campo,q,"Cerignola",r.get("alias",[])))
     for comune in ("Stornara","Stornarella","Orta Nova","Trinitapoli","San Ferdinando di Puglia","Canosa di Puglia","Lavello","Margherita di Savoia","Foggia","Barletta","Trani","Manfredonia","Bisceglie","Andria","Melfi","Venosa"):
         rss.append(feed(comune,'"'+comune+'" '+temi,comune))
     return dirette,rss

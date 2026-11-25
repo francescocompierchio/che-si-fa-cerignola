@@ -6,7 +6,8 @@
       "ADE rooftop",
       "ADE luxury space"
     ],
-    "evidenza": "https://www.instagram.com/ade_rooftopluxuryspace/"
+    "evidenza": "https://www.instagram.com/ade_rooftopluxuryspace/",
+    "social": "https://www.instagram.com/ade_rooftopluxuryspace/"
   },
   {
     "nome": "Safarà",
@@ -51,7 +52,8 @@
       "Hermes Club"
     ],
     "evidenza": "https://hermesclub.it/",
-    "nota": "Tesseramento obbligatorio; pubblicare solo appuntamenti datati con condizioni di accesso verificabili."
+    "nota": "Tesseramento obbligatorio; pubblicare solo appuntamenti datati con condizioni di accesso verificabili.",
+    "sito": "https://hermesclub.it/"
   },
   {
     "nome": "Pro Loco Cerignola",
@@ -501,5 +503,56 @@
     ],
     "evidenza": "https://www.oraridiapertura24.it/filiale/Cerignola-Hollywood%2520Pub-729640Z.html",
     "nota": "Anagrafica pubblica; attività ed eventi da verificare."
+  },
+  {
+    "nome": "Pilsner Legend Pub",
+    "gruppo": "movida",
+    "alias": [
+      "Pilsner Legend"
+    ],
+    "evidenza": "https://www.sluurpy.it/cerignola/ristorante/97718/pilsner-legend-pub",
+    "nota": "Anagrafica per discovery: pubblicare soltanto eventi futuri documentati."
+  },
+  {
+    "nome": "Maximilian Pub",
+    "gruppo": "movida",
+    "alias": [
+      "Maximilian Pub"
+    ],
+    "evidenza": "https://www.sluurpy.it/cerignola/brew-pub",
+    "nota": "Anagrafica per discovery: pubblicare soltanto eventi futuri documentati."
+  },
+  {
+    "nome": "Alchimia Cucina & Vino",
+    "gruppo": "movida",
+    "alias": [
+      "Alchimia Cucina & Vino",
+      "Alchimia Cucina e Vino",
+      "alchimia.cucinaevino"
+    ],
+    "evidenza": "https://alchimiacucinaevino.eatbu.com/?lang=it",
+    "sito": "https://alchimiacucinaevino.eatbu.com/",
+    "social": "https://www.instagram.com/alchimia.cucinaevino/",
+    "nota": "Anagrafica per discovery: pubblicare soltanto eventi futuri documentati."
+  },
+  {
+    "nome": "Ossobuco Steakhouse & Restaurant",
+    "gruppo": "movida",
+    "alias": [
+      "Ossobuco Steakhouse",
+      "Ossobuco Restaurant"
+    ],
+    "evidenza": "https://www.ossobucorestaurant.it/",
+    "sito": "https://www.ossobucorestaurant.it/",
+    "nota": "Anagrafica per discovery: pubblicare soltanto eventi futuri documentati."
+  },
+  {
+    "nome": "Figli di Puglia",
+    "gruppo": "movida",
+    "alias": [
+      "Figli di Puglia"
+    ],
+    "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/ristorante-figli-di-puglia/",
+    "nota": "Anagrafica per discovery: pubblicare soltanto eventi futuri documentati."
   }
 ]

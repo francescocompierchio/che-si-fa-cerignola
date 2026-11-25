@@ -4,30 +4,41 @@
       "nome": "ADE",
       "alias": [
         "ade rooftop",
-        "ade luxury space"
+        "ade luxury space",
+        "ADE rooftop",
+        "ADE luxury space"
       ],
-      "calendario": "https://www.instagram.com/ade_rooftopluxuryspace/"
+      "calendario": "https://www.instagram.com/ade_rooftopluxuryspace/",
+      "social": "https://www.instagram.com/ade_rooftopluxuryspace/",
+      "evidenza": "https://www.instagram.com/ade_rooftopluxuryspace/"
     },
     {
       "nome": "Hermes Club",
       "alias": [
-        "hermes club"
+        "hermes club",
+        "Hermes Club"
       ],
-      "evidenza": "https://hermesclub.it/"
+      "evidenza": "https://hermesclub.it/",
+      "sito": "https://hermesclub.it/"
     },
     {
       "nome": "Safarà",
       "alias": [
         "safarà",
-        "safara pub"
+        "safara pub",
+        "Safarà",
+        "Safara"
       ],
-      "evidenza": "https://localtourism.it/it/rd/safara"
+      "evidenza": "https://localtourism.it/it/rd/safara",
+      "social": "https://www.facebook.com/ilsafara",
+      "calendario": "https://iltaccodibacco.it/cerignola/safara"
     },
     {
       "nome": "NONZAI",
       "alias": [
         "nonzai",
-        "nonzai soft clubbing"
+        "nonzai soft clubbing",
+        "NONZAI"
       ],
       "evidenza": "https://www.cerignolaviva.it/notizie/sbarca-a-cerignola-il-soft-clubbing-il-format-mattutino-che-cambia-il-modo-di-divertirsi/"
     },
@@ -35,17 +46,181 @@
       "nome": "Gold Fashion Pub",
       "alias": [
         "gold fashion pub",
-        "goldfashion_pub"
+        "goldfashion_pub",
+        "Gold Fashion"
       ],
-      "evidenza": "https://www.waze.com/live-map/directions/it/puglia/cerignola/gold-fashion-pub?to=place.ChIJK1rD55QxOBMRuZrI3Y26EKE"
+      "evidenza": "https://www.waze.com/live-map/directions/it/puglia/cerignola/gold-fashion-pub?to=place.ChIJK1rD55QxOBMRuZrI3Y26EKE",
+      "social": "https://www.instagram.com/goldfashion_pub/"
     },
     {
       "nome": "Blubar",
       "alias": [
         "blubar",
-        "blubar cerignola"
+        "blubar cerignola",
+        "Blubar"
       ],
       "evidenza": "https://lapugliashopping.it/attivita/blubar-bar-cerignola-fg/"
+    },
+    {
+      "nome": "Caffè Plaza",
+      "alias": [
+        "Caffè Plaza"
+      ],
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+    },
+    {
+      "nome": "Bramo",
+      "alias": [
+        "Bramo"
+      ],
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+    },
+    {
+      "nome": "Generi Alimentari",
+      "alias": [
+        "Generi Alimentari"
+      ],
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+    },
+    {
+      "nome": "Scalo 111",
+      "alias": [
+        "Scalo 111"
+      ],
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+    },
+    {
+      "nome": "Bar Gorizia",
+      "alias": [
+        "Bar Gorizia"
+      ],
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+    },
+    {
+      "nome": "Il Paladino",
+      "alias": [
+        "Il Paladino"
+      ],
+      "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d5853981-Reviews-Il_Paladino-Cerignola_Province_of_Foggia_Puglia.html"
+    },
+    {
+      "nome": "L'Arcimboldo",
+      "alias": [
+        "Arcimboldo"
+      ],
+      "evidenza": "https://www.sluurpy.it/cerignola/ristorante/98879/pub-birreria-l-arcimboldo"
+    },
+    {
+      "nome": "Pikò",
+      "alias": [
+        "Pikò",
+        "Pikò Club"
+      ],
+      "evidenza": "https://angelipierre.it/discoteca/piko-di-cerignola/"
+    },
+    {
+      "nome": "Baraonda",
+      "alias": [
+        "Baraonda"
+      ],
+      "evidenza": "https://amelipasticceria.it/baraonda/"
+    },
+    {
+      "nome": "Bar Roma",
+      "alias": [
+        "Bar Roma"
+      ],
+      "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+    },
+    {
+      "nome": "Botanical 22",
+      "alias": [
+        "Botanical 22"
+      ],
+      "evidenza": "https://www.aperitribe.com/aperitivo/cerignola"
+    },
+    {
+      "nome": "Cafè Noir",
+      "alias": [
+        "Cafè Noir"
+      ],
+      "evidenza": "https://www.aperitribe.com/aperitivo/cerignola"
+    },
+    {
+      "nome": "Birreria con vizio di cucina",
+      "alias": [
+        "Birreria con vizio di cucina"
+      ],
+      "evidenza": "https://www.aperitribe.com/aperitivo/cerignola"
+    },
+    {
+      "nome": "Caffetteria Blanco",
+      "alias": [
+        "Caffetteria Blanco"
+      ],
+      "evidenza": "https://www.aperitribe.com/aperitivo/cerignola"
+    },
+    {
+      "nome": "Bar Melluso al Palazzo Ducale",
+      "alias": [
+        "Bar Melluso al Palazzo Ducale"
+      ],
+      "evidenza": "https://www.aperitribe.com/aperitivo/cerignola"
+    },
+    {
+      "nome": "Civico 10 Wine & Coffee Bar",
+      "alias": [
+        "Civico 10"
+      ],
+      "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d23068086-Reviews-CIVICO_10_Wine_Coffee_Bar-Cerignola_Province_of_Foggia_Puglia.html"
+    },
+    {
+      "nome": "Hollywood Pub",
+      "alias": [
+        "Hollywood Pub"
+      ],
+      "evidenza": "https://www.oraridiapertura24.it/filiale/Cerignola-Hollywood%2520Pub-729640Z.html"
+    },
+    {
+      "nome": "Pilsner Legend Pub",
+      "alias": [
+        "Pilsner Legend"
+      ],
+      "evidenza": "https://www.sluurpy.it/cerignola/ristorante/97718/pilsner-legend-pub"
+    },
+    {
+      "nome": "Maximilian Pub",
+      "alias": [
+        "Maximilian Pub"
+      ],
+      "evidenza": "https://www.sluurpy.it/cerignola/brew-pub"
+    },
+    {
+      "nome": "Alchimia Cucina & Vino",
+      "alias": [
+        "Alchimia Cucina & Vino",
+        "Alchimia Cucina e Vino",
+        "alchimia.cucinaevino"
+      ],
+      "evidenza": "https://alchimiacucinaevino.eatbu.com/?lang=it",
+      "social": "https://www.instagram.com/alchimia.cucinaevino/",
+      "sito": "https://alchimiacucinaevino.eatbu.com/"
+    },
+    {
+      "nome": "Ossobuco Steakhouse & Restaurant",
+      "alias": [
+        "Ossobuco Steakhouse",
+        "Ossobuco Restaurant"
+      ],
+      "evidenza": "https://www.ossobucorestaurant.it/",
+      "sito": "https://www.ossobucorestaurant.it/"
+    },
+    {
+      "nome": "Figli di Puglia",
+      "alias": [
+        "Figli di Puglia"
+      ],
+      "evidenza": "https://comune.cerignola.fg.it/vivere-il-comune/luoghi/ristorante-figli-di-puglia/"
     }
   ],
   "Barletta": [

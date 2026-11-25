@@ -1241,7 +1241,8 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     # Ricalcola la categoria sul contenuto. Mantiene però la classe specifica
     # assegnata dalla scheda quando la fonte documenta esplicitamente il teatro.
     cat = classifica_categoria(f"{titolo} {descrizione}", luogo=luogo, fonte_url=url)
-    if cat in {"Musica & Concerti","Attività diurne","Sagre & Food"} and radar_movida.live_in_locale(titolo,descrizione,luogo):
+    alias_sede = [a for r in registro_locali_movida().get("Cerignola",[]) for a in r.get("alias",[]) if a.casefold() not in {"bramo","generi alimentari","bar roma","bar gorizia"}] if citta=="Cerignola" and cat in {"Musica & Concerti","Attività diurne","Sagre & Food"} else []
+    if cat in {"Musica & Concerti","Attività diurne","Sagre & Food"} and radar_movida.live_in_locale(titolo,descrizione,luogo,alias_sede):
         cat="Locali & Serate"
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
