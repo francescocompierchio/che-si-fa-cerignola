@@ -77,7 +77,19 @@ const assert = require("node:assert/strict");
     await page.locator("#quick-weekend").click();
     await page.locator("#agenda-new-year").click();
     assert.equal(await page.locator("#agenda-new-year").getAttribute("aria-pressed"),"true");
-    assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Capodanno non limitato al weekend corrente");
+    assert.ok(await page.locator("#events-container details").filter({hasText:"Regiohotel Manfredi"}).count(),"Cenoni e pranzi di Capodanno");
+    assert.equal(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),0,"Esclude veglioni senza pasto");
+    assert.equal(await page.locator("#events-container details").filter({hasText:"Capodanno al Curci"}).count(),0,"Esclude spettacoli");
+    assert.equal(await page.locator("#events-container details").filter({hasText:"Cenerentola 301"}).count(),0,"Esclude eventi su più giorni");
+    assert.ok(await page.evaluate(()=>{
+      const [start,end]=dateCapodanno(),map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));
+      const shown=[...document.querySelectorAll("#events-container details")].map(el=>map.get(el.dataset.eventKey));
+      return shown.length>0&&shown.every(ev=>capodannoPasto(ev,start,end))&&Number(document.getElementById("agenda-new-year").textContent.split("·").pop().trim())===shown.length;
+    }),"Conteggio coerente con soli pasti");
+    assert.ok(await page.evaluate(()=>{
+      const [start,end]=dateCapodanno();
+      return capodannoPasto({titolo:"Veglione di San Silvestro",descrizione:"Cena con DJ set",dataInizio:start},start,end)&&!capodannoPasto({titolo:"Veglione di Capodanno",descrizione:"Concerto e brindisi",dataInizio:start},start,end)&&capodannoPasto({titolo:"Pranzo di Capodanno",dataInizio:end},start,end);
+    }),"Classificazione pasto e data");
     await page.locator("#clear-selected-date").click();
     assert.equal(await page.locator("#agenda-date-buttons button").count(),7);
     assert.equal(await page.locator("#sort-events").count(),0,"Ordinamento manuale eliminato");
