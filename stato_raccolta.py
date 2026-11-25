@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from datetime import datetime, timezone
+import apprendimento
 
 def carica(path):
     try:
@@ -22,7 +23,12 @@ def pianifica(compiti, memoria, now, forza=False):
         else:
             attivi.append(task)
     # Priorità alle fonti produttive e stagionali; ordine stabile a parità.
-    attivi.sort(key=lambda t: (not bool(t[1].get("prioritaria") or t[1].get("solo_cerignola") or t[1].get("citta_default")=="Cerignola"), -memoria.get("fonti",{}).get(t[1]["nome"],{}).get("valoreAppreso",memoria.get("fonti",{}).get(t[1]["nome"],{}).get("produttivita",0))))
+    def priorita(task):
+        f=task[1]
+        d=memoria.get("fonti",{}).get(f["nome"],{})
+        return (not bool(f.get("prioritaria") or f.get("solo_cerignola") or f.get("citta_default")=="Cerignola"),
+                -(d.get("valoreAppreso",d.get("produttivita",0))+apprendimento.bonus_temporale(d,now)))
+    attivi.sort(key=priorita)
     return attivi, pause
 
 def aggiorna(memoria, diagnostica, now):
@@ -45,7 +51,7 @@ def aggiorna(memoria, diagnostica, now):
         # Il punteggio premia novità effettivamente pubblicate e copertura locale.
         valore = min(20, 0.15*dati.get("eventiUtili",0)+dati.get("novitaUtili",0)+2*dati.get("novitaCerignola",0)+3*dati.get("nuoveSerateCerignola",0))
         appreso=round(0.8*prima.get("valoreAppreso",valore)+0.2*valore,3)
-        fonti[nome] = {"valoreAppreso":appreso,"novitaUtili":dati.get("novitaUtili",0),"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
+        fonti[nome] = {"fasce":apprendimento.profilo_temporale(prima,dati,now),"valoreAppreso":appreso,"novitaUtili":dati.get("novitaUtili",0),"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
                        "blocchiConsecutivi": serie, "cicliVuoti": vuoti,
                        "produttivita": media, "prossimoTentativo": now + pausa if pausa else 0,
                        "tentativi": prima.get("tentativi", 0) + 1}

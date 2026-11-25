@@ -40,3 +40,25 @@ class ApprendimentoTests(unittest.TestCase):
         self.assertEqual(s["conLocandina"],1)
         self.assertEqual(s["fontiDaValutare"][0]["dominio"],"example.test")
         self.assertEqual(s["senzaPrezzoDocumentato"],1)
+
+    def test_fasce_temporali(self):
+        from datetime import datetime,timezone
+        now=int(datetime(2026,11,27,19,tzinfo=timezone.utc).timestamp())
+        self.assertEqual(a.fascia(now),"weekend-18")
+        d={}
+        for _ in range(7):
+            d["fasce"]=a.profilo_temporale(d,{"stato":"ok","novitaCerignola":2},now)
+        self.assertEqual(a.bonus_temporale(d,now),0)
+        d["fasce"]=a.profilo_temporale(d,{"stato":"ok","novitaCerignola":2},now)
+        self.assertGreater(a.bonus_temporale(d,now),0)
+        self.assertEqual(a.profilo_temporale(d,{"stato":"HTTP 429"},now),d["fasce"])
+    def test_domini_candidati_non_autoapprovati(self):
+        m={}
+        d={"rss":{"stato":"ok","dominiCandidati":["example.org","news.google.com","https://bad.test","sub.example.net"]}}
+        a.candidati_fonti(m,d,{"google.com","example.net"},100)
+        out=a.candidati_fonti(m,d,{"google.com","example.net"},100)
+        self.assertEqual(out,[{"dominio":"example.org","cicliOsservati":1,"ricerche":1}])
+        self.assertEqual(a.candidati_fonti(m,{},{"example.org"},101),[])
+    def test_riserva_movida(self):
+        e={"citta":"Cerignola","categoria":"Locali & Serate","dataInizio":"2026-11-28","dataFine":"2026-11-28"}
+        self.assertTrue(any("Locali & Serate" in f["nome"] for f in a.fonti({},[e]*20,date(2026,11,25))))
