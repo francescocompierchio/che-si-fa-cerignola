@@ -44,7 +44,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it"
 )
 
 FONTI_VIVA = [
@@ -1121,6 +1121,18 @@ def estrai_costo_jsonld(evento, testo_pagina=None):
 
 
 def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
+    # Un articolo del febbraio 2026 non può documentare il Carnevale 2027.
+    if (raw.get("fonteUrl") or "").rstrip("/") == "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova":
+        return None
+    # Riconciliazione delle schede del medesimo programma documentato su due giorni.
+    if (raw.get("citta") == "Minervino Murge"
+            and raw.get("dataInizio") in ("2026-11-28", "2026-11-29")
+            and "sagra della cima di rapa" in str(raw.get("titolo") or "").casefold()):
+        raw = dict(raw, titolo="Sagra della Cima di Rapa di Minervino Murge",
+                   dataInizio="2026-11-28", dataFine="2026-11-29", dataTesto="Dal 28 Nov al 29 Nov 2026",
+                   luogo="Borgo antico di Minervino Murge", indirizzoMappa="Centro storico, Minervino Murge",
+                   fonteUrl="https://volontariperminervino.it/sagra-della-cima-di-rapa/",
+                   descrizione="Due giornate nel borgo antico dedicate alla cima di rapa e ai prodotti locali.")
     # Correzione circoscritta: la scheda aggregata include date e sedi di altre tappe.
     # Data e sede pubblicate dall'organizzatore: /stagione/lisistrata/.
     if (raw.get("fonteUrl") == "https://iltaccodibacco.it/puglia/eventi/335518.html"
@@ -1128,6 +1140,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         raw = dict(raw, dataInizio="2027-01-15", dataFine="2027-01-15",
                    dataTesto="Ven 15 Gen 2027 · Ore 21:00", luogo="Teatro Comunale Lucio Dalla",
                    indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+                   fonteUrl="https://www.bottegadegliapocrifi.it/stagione/lisistrata/",
                    descrizione="Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.")
     ref = ref_dt or oggi_dt()
     oggi = ref.strftime("%Y-%m-%d")
