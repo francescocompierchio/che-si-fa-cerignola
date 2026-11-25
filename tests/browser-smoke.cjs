@@ -110,6 +110,15 @@ const assert = require("node:assert/strict");
     const chrome=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
     chrome.on("pageerror",e=>errors.push(e.message));
     await chrome.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
+    await chrome.addInitScript(()=>{
+      const proto=window.AudioBufferSourceNode?.prototype;
+      if(!proto)return;
+      const start=proto.start;
+      proto.start=function(...args){
+        if(this.buffer)window.__csfAudio={duration:this.buffer.duration,channels:this.buffer.numberOfChannels,loop:this.loop};
+        return start.apply(this,args);
+      };
+    });
     await chrome.goto("http://127.0.0.1:8765/index.html");
     await chrome.locator("#events-container details").first().waitFor();
     assert.ok(await chrome.locator("#install-box").isHidden());
@@ -123,6 +132,7 @@ const assert = require("node:assert/strict");
     assert.equal(await chrome.evaluate(()=>window.__waveOnTouch),"none","Onda anche su testo non interattivo, senza intercettare i tocchi");
     await chrome.waitForFunction(()=>!document.querySelector(".csf-liquid-wave"));
     await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="playing");
+    assert.deepEqual(await chrome.evaluate(()=>window.__csfAudio),{duration:180,channels:2,loop:false},"Composizione stereo completa di tre minuti, senza loop");
     await chrome.locator("#csf-music-toggle").click();
     assert.equal(await chrome.locator("#csf-music-toggle").getAttribute("aria-pressed"),"false");
     assert.equal(await chrome.evaluate(()=>localStorage.getItem("csf_music_v1")),"off");
