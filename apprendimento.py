@@ -10,7 +10,7 @@ from pathlib import Path
 from math import log, sqrt
 
 AREE = {
-    "Locali & Serate": ('("dj set" OR karaoke OR apericena)', '("serata latina" OR party OR "dinner show")', '("musica dal vivo" OR "live music" OR brunch)'),
+    "Locali & Serate": ('("dj set" OR karaoke OR apericena)', '("serata latina" OR party OR "dinner show" OR "cena spettacolo" OR showman)', '("musica dal vivo" OR "live music" OR brunch)'),
     "Musica & Concerti": ('(concerto OR "musica live" OR "cover band")', '(concerto OR "live music" OR festival)'),
     "Sagre & Food": ('(sagra OR degustazione OR "cena a tema")', '(cenone OR menu OR "cena evento")'),
     "Famiglie & Bambini": ('(bambini OR "laboratorio creativo" OR animazione)', '(mercatini OR "fattoria didattica" OR spettacolo)'),

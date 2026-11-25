@@ -119,6 +119,12 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(crawler.data_scheda_movida("https://manfredoniaeventi.com/evento/dj-set-26-novembre-2026/"), "2026-11-26")
         self.assertEqual(crawler.data_scheda_movida("https://linea.live/events/city/trani"), "")
 
+    def test_cena_spettacolo_e_promoter(self):
+        for titolo in ("Acquolina in Cena Spettacolo", "Cena con spettacolo", "Cena con DJ set", "Dinner-show"):
+            self.assertEqual(crawler.classifica_categoria(titolo),"Locali & Serate")
+            self.assertTrue(crawler.indizi_movida(titolo))
+        self.assertFalse(crawler.indizi_movida("Ristorante aperto tutti i giorni"))
+        self.assertTrue(any(x["nome"]=="Acquolina Food Boutique" for x in crawler.registro_locali_movida()["Foggia"]))
     def test_movida_non_convegni(self):
         self.assertTrue(crawler.evento_movida_documentato({"categoria":"Musica & Concerti","titolo":"Live music al pub"}))
         self.assertFalse(crawler.evento_movida_documentato({"categoria":"Attività diurne","titolo":"Convegno"}))

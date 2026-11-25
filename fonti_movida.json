@@ -76,5 +76,20 @@
       ],
       "calendario": "https://manfredoniaeventi.com/organizzatore/al-molo-20/"
     }
+  ],
+  "Foggia": [
+    {
+      "nome": "Acquolina Food Boutique",
+      "alias": [
+        "acquolina food boutique",
+        "acquolina",
+        "mirage village"
+      ],
+      "calendario": "https://www.instagram.com/reel/DgCxHY8NPdN/",
+      "organizzatori": [
+        "eventi_enjoy",
+        "DBA Events"
+      ]
+    }
   ]
 }

@@ -22,6 +22,31 @@ def settimanali():
     ]
     return [{"nome":"Cerignola settimanali - "+nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":f'Cerignola {tema} when:21d',"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"ricorrente_verificata":True,"max_schede_rss":3} for nome,tema in temi]
 
+CENE_SHOW = re.compile(r"\b(?:cen[ae]\s+(?:con\s+)?(?:spettacol[oi]|musica\s+dal\s+vivo|dj[\s-]*set)|dinner[\s-]+show|apericena\s+(?:con\s+)?(?:dj|live)|pranz[oi]\s+spettacol[oi]|perc[u]?ssioni\s+live|showman)\b", re.I)
+CENE_SHOW_QUERY = '("cena spettacolo" OR "cena con spettacolo" OR "dinner show" OR "cena con musica" OR "cena con dj" OR "pranzo spettacolo" OR showman OR "apericena dj")'
+
+def fonti_cene_show(registro):
+    """Discovery mirata: i nomi dei locali e dei promoter sono indizi, non eventi."""
+    def fonte(nome,comuni,tema,prioritaria=False,alias=()):
+        q=f'{comuni} {tema} when:30d'
+        return {"nome":nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"nightlife":True,"cene_show":True,"prioritaria":prioritaria,"max_schede_rss":4,"alias_ricerca":list(alias)}
+    out=[
+        fonte("Cena spettacolo Cerignola","Cerignola",CENE_SHOW_QUERY,True),
+        fonte("Cena spettacolo Reali Siti","(Stornara OR Stornarella OR Orta Nova OR Carapelle OR San Ferdinando OR Trinitapoli OR Canosa OR Lavello)",CENE_SHOW_QUERY),
+        fonte("Cena spettacolo Foggia","Foggia",CENE_SHOW_QUERY),
+        fonte("Cena spettacolo costa BAT","(Barletta OR Trani OR Bisceglie OR Andria OR Margherita di Savoia)",CENE_SHOW_QUERY),
+        fonte("Cena spettacolo Gargano","(Manfredonia OR Zapponeta OR Siponto)",CENE_SHOW_QUERY),
+        fonte("Cena spettacolo Vulture","(Melfi OR Venosa OR Rionero OR Candela OR Ascoli Satriano)",CENE_SHOW_QUERY),
+    ]
+    out[0]["solo_cerignola"]=True
+    for comune,locali in registro.items():
+        alias=list(dict.fromkeys(a for r in locali if isinstance(r,dict) for a in r.get("alias",[])+r.get("organizzatori",[]) if isinstance(a,str) and len(a)>=5 and '"' not in a))
+        for i in range(0,len(alias),8):
+            gruppo=alias[i:i+8]
+            nomi="("+" OR ".join('"'+a+'"' for a in gruppo)+")"
+            out.append(fonte(f"Promoter e locali {comune} {i//8+1}",comune+" "+nomi,CENE_SHOW_QUERY,comune=="Cerignola",gruppo))
+    return out
+
 def alias_locale(testo,registro):
     """Un alias serve soltanto a trovare il candidato, non a provare la sede."""
     testo=testo or ""

@@ -7,6 +7,18 @@ class DiscoveryLocaleTest(unittest.TestCase):
         self.assertEqual(len(d.fonti()),3)
         self.assertEqual(len(d.settimanali()),3)
         self.assertTrue(all(x["solo_cerignola"] and x["prioritaria"] for x in d.fonti()+d.settimanali()))
+    def test_cene_show(self):
+        from urllib.parse import urlparse,parse_qs
+        fonti=d.fonti_cene_show({"Foggia":[{"alias":["acquolina","mirage village"],"organizzatori":["eventi_enjoy","DBA Events"]}]})
+        self.assertTrue(any(f.get("solo_cerignola") and f["prioritaria"] for f in fonti))
+        self.assertTrue(all(f["nightlife"] and f["cene_show"] and f["max_schede_rss"]<=4 for f in fonti))
+        q=[parse_qs(urlparse(f["url"]).query)["q"][0] for f in fonti]
+        self.assertTrue(any("eventi_enjoy" in x and "mirage village" in x for x in q))
+        self.assertTrue(all('"cena spettacolo"' in x for x in q))
+        for testo in ("Acquolina in cena spettacolo", "Cena con spettacolo", "Dinner-show", "Cena con DJ set", "Showman Antonio", "Percussioni live"):
+            self.assertTrue(d.CENE_SHOW.search(testo),testo)
+        for testo in ("Menu del ristorante", "Orari di apertura", "Convegno", "Cena di beneficenza"):
+            self.assertFalse(d.CENE_SHOW.search(testo),testo)
     def test_alias(self):
         r=[{"alias":["Villa Torre Quarto","Il Titolo"]}]
         self.assertTrue(d.alias_locale("Cenone Villa Torre Quarto",r))

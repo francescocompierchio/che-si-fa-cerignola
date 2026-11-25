@@ -657,6 +657,8 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
 
     if re.search(r"\b(?:capodanno|san silvestro)\b", t) and re.search(r"\b(?:cenon[ei]|veglion[ei]|party|dj set|cena)\b", t):
         return "Locali & Serate"
+    if discovery_locale.CENE_SHOW.search(t) and not re.search(r"\b(?:spettacolo teatrale|compagnia teatrale|monologo|drammaturgia|convegno)\b", t):
+        return "Locali & Serate"
     if "capodanno" in t and "pranzo" in t:
         return "Sagre & Food"
 
@@ -1911,6 +1913,16 @@ def raccogli_da_feed_social(session, fonte):
                     continue
                 if discovery_locale.TEMI.search(testo_candidato) and not REGEX_SCARTO.search(titolo):
                     punteggio=max(punteggio,10 if locale_esplicito else 3)
+            if fonte.get("cene_show"):
+                if not discovery_locale.CENE_SHOW.search(testo_candidato) or REGEX_SCARTO.search(titolo):
+                    continue
+                alias=fonte.get("alias_ricerca",[])
+                if alias and not discovery_locale.alias_locale(testo_candidato,[{"alias":alias}]):
+                    continue
+                # Gli alias aiutano la ricerca anche se il comune non è nello snippet;
+                # città, luogo e data devono comunque risultare dalla scheda originale.
+                if alias or _comune_nel_testo(testo_candidato):
+                    punteggio=max(punteggio,8)+5
             if fonte.get("ricorrente_verificata") and not discovery_locale.SETTIMANA.search(testo_candidato):
                 continue
             if fonte.get("feed_editore") and not _host_appartiene(link,fonte["dominio"]):
@@ -1985,6 +1997,8 @@ def raccogli_da_feed_social(session, fonte):
                     estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
             if fonte.get("nightlife"):
                 estratti = [e for e in estratti if evento_movida_documentato(e)]
+            if fonte.get("cene_show"):
+                estratti = [e for e in estratti if discovery_locale.CENE_SHOW.search(e["titolo"]+" "+e.get("descrizione","")) and discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
             if fonte.get("feed_editore") or fonte.get("ricorrente_verificata"):
                 estratti=[e for e in estratti if discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
             if fonte.get("ricorrente_verificata"):
@@ -2081,7 +2095,7 @@ def estrai_eventi_puglia_da_elenco(soup, base_url, citta_default="Cerignola"):
 
 
 def indizi_movida(testo):
-    return bool(re.search(r"\b(?:nightlife|dj[\s-]*set|deejay|discotec\w*|club night|clubbing|opening(?:\s+winter|\s+summer)?\s+season|opening party|dinner (?:show|party)|cena spettacolo|karaoke|serat[ae] latin[ae]|reggaeton|techno|house music|vinyl (?:set|diwine)|aperitiv[oi] musical\w*|musica dal vivo|live music|cover band|tribute band|after show|music selection)\b", testo or "", re.I))
+    return bool(discovery_locale.CENE_SHOW.search(testo or "") or re.search(r"\b(?:nightlife|dj[\s-]*set|deejay|discotec\w*|club night|clubbing|opening(?:\s+winter|\s+summer)?\s+season|opening party|dinner (?:show|party)|cena spettacolo|karaoke|serat[ae] latin[ae]|reggaeton|techno|house music|vinyl (?:set|diwine)|aperitiv[oi] musical\w*|musica dal vivo|live music|cover band|tribute band|after show|music selection)\b", testo or "", re.I))
 
 
 def data_scheda_movida(url):
@@ -3063,7 +3077,7 @@ def esegui_aggiornamento():
         + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita + rss_annuali]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
-        + [(raccogli_da_feed_social, fonte) for fonte in discovery_locale.fonti() + discovery_locale.settimanali() + fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
+        + [(raccogli_da_feed_social, fonte) for fonte in discovery_locale.fonti() + discovery_locale.settimanali() + discovery_locale.fonti_cene_show(registro_locali_movida()) + fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
         + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com","cache":"bat"}), (esplora_lineup_atlas, {"nome":"Lineup Atlas API raggio costiero","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&rayon=50&limit=50","dominio":"lineupatlas.com","cache":"raggio-bat"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
