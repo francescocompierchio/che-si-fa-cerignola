@@ -30,6 +30,22 @@
         "nonzai soft clubbing"
       ],
       "evidenza": "https://www.cerignolaviva.it/notizie/sbarca-a-cerignola-il-soft-clubbing-il-format-mattutino-che-cambia-il-modo-di-divertirsi/"
+    },
+    {
+      "nome": "Gold Fashion Pub",
+      "alias": [
+        "gold fashion pub",
+        "goldfashion_pub"
+      ],
+      "evidenza": "https://www.waze.com/live-map/directions/it/puglia/cerignola/gold-fashion-pub?to=place.ChIJK1rD55QxOBMRuZrI3Y26EKE"
+    },
+    {
+      "nome": "Blubar",
+      "alias": [
+        "blubar",
+        "blubar cerignola"
+      ],
+      "evidenza": "https://lapugliashopping.it/attivita/blubar-bar-cerignola-fg/"
     }
   ],
   "Barletta": [
@@ -56,6 +72,22 @@
         "saint patrick ristopub"
       ],
       "evidenza": "https://2night.it/barletta/"
+    },
+    {
+      "nome": "Bohémien Rock House Cafè",
+      "alias": [
+        "bohemien",
+        "bohémien rock house"
+      ],
+      "evidenza": "https://iltaccodibacco.it/puglia/eventi/337667.html"
+    },
+    {
+      "nome": "Cialuna",
+      "alias": [
+        "cialuna jazz club",
+        "cialuna"
+      ],
+      "calendario": "https://iltaccodibacco.it/barletta/cialuna/"
     }
   ],
   "Trani": [
@@ -80,6 +112,13 @@
         "cala mariposa"
       ],
       "evidenza": "https://www.kodocollective.it/"
+    },
+    {
+      "nome": "Santo Graal",
+      "alias": [
+        "santo graal"
+      ],
+      "calendario": "https://iltaccodibacco.it/trani/santo-graal/"
     }
   ],
   "Bisceglie": [
@@ -105,6 +144,13 @@
         "ferus bisceglie"
       ],
       "evidenza": "https://iltaccodibacco.it/bisceglie/ferus-pub"
+    },
+    {
+      "nome": "Da Sergio e Davide",
+      "alias": [
+        "da sergio e davide"
+      ],
+      "evidenza": "https://iltaccodibacco.it/puglia/eventi/337373.html"
     }
   ],
   "Manfredonia": [

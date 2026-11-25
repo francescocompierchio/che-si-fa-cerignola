@@ -24,6 +24,7 @@ import discovery_locale
 import apprendimento
 import radar_natura
 import radar_food
+import radar_movida
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -1240,6 +1241,8 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     # Ricalcola la categoria sul contenuto. Mantiene però la classe specifica
     # assegnata dalla scheda quando la fonte documenta esplicitamente il teatro.
     cat = classifica_categoria(f"{titolo} {descrizione}", luogo=luogo, fonte_url=url)
+    if cat in {"Musica & Concerti","Attività diurne","Sagre & Food"} and radar_movida.live_in_locale(titolo,descrizione,luogo):
+        cat="Locali & Serate"
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
     elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","lineupatlas.com")):
@@ -1982,6 +1985,8 @@ def raccogli_da_feed_social(session, fonte):
             locale_esplicito=_comune_nel_testo(testo_candidato)=="Cerignola"
             if fonte.get("solo_cerignola"):
                 alias_noto=discovery_locale.alias_locale(testo_candidato,registro_cerignola()+capodanno.registro_esteso())
+                if fonte.get("radar_movida") and radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[])):
+                    alias_noto=True
                 if not locale_esplicito and not alias_noto:
                     continue
                 if discovery_locale.TEMI.search(testo_candidato) and not REGEX_SCARTO.search(titolo):
@@ -2005,6 +2010,9 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
+            if fonte.get("radar_movida") and radar_movida.pertinente(testo_candidato) and not REGEX_SCARTO.search(titolo):
+                if _comune_nel_testo(testo_candidato)==fonte.get("comune_radar") or radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[])):
+                    punteggio=max(punteggio,13 if locale_esplicito else 8)
             if fonte.get("food"):
                 if not radar_food.pertinente(testo_candidato):
                     continue
@@ -2083,7 +2091,9 @@ def raccogli_da_feed_social(session, fonte):
             if fonte.get("natura"):
                 estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
             if fonte.get("nightlife"):
-                estratti = [e for e in estratti if evento_movida_documentato(e)]
+                estratti = [dict(e,categoria="Locali & Serate") if radar_movida.live_in_locale(e["titolo"],e.get("descrizione",""),e.get("luogo","")) else e for e in estratti if evento_movida_documentato(e)]
+            if fonte.get("radar_movida") and fonte.get("comune_radar"):
+                estratti=[e for e in estratti if e.get("citta")==fonte["comune_radar"]]
             if fonte.get("cene_show"):
                 estratti = [e for e in estratti if discovery_locale.CENE_SHOW.search(e["titolo"]+" "+e.get("descrizione","")) and discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
             if fonte.get("feed_editore") or fonte.get("ricorrente_verificata"):
@@ -2182,7 +2192,7 @@ def estrai_eventi_puglia_da_elenco(soup, base_url, citta_default="Cerignola"):
 
 
 def indizi_movida(testo):
-    return bool(discovery_locale.CENE_SHOW.search(testo or "") or re.search(r"\b(?:nightlife|dj[\s-]*set|deejay|discotec\w*|club night|clubbing|opening(?:\s+winter|\s+summer)?\s+season|opening party|dinner (?:show|party)|cena spettacolo|karaoke|serat[ae] latin[ae]|reggaeton|techno|house music|vinyl (?:set|diwine)|aperitiv[oi] musical\w*|musica dal vivo|live music|cover band|tribute band|after show|music selection)\b", testo or "", re.I))
+    return bool(radar_movida.pertinente(testo) or discovery_locale.CENE_SHOW.search(testo or "") or re.search(r"\b(?:nightlife|dj[\s-]*set|deejay|discotec\w*|club night|clubbing|opening(?:\s+winter|\s+summer)?\s+season|opening party|dinner (?:show|party)|cena spettacolo|karaoke|serat[ae] latin[ae]|reggaeton|techno|house music|vinyl (?:set|diwine)|aperitiv[oi] musical\w*|musica dal vivo|live music|cover band|tribute band|after show|music selection)\b", testo or "", re.I))
 
 
 def data_scheda_movida(url):
@@ -2208,8 +2218,7 @@ def evento_movida_documentato(ev):
         return True
     # Live tribute / band in an actual pub or club, not a concert in a theatre.
     sede = str(ev.get("luogo") or "")
-    return bool(re.search(r"\b(?:pub|discopub|lounge|bistrot|bohemien|bohémien|club|bar)\b", sede, re.I)
-                and re.search(r"\b(?:live|tribut[eo]|band|rock.blues|concerto)\b", testo, re.I))
+    return radar_movida.live_in_locale(str(ev.get("titolo") or ""),str(ev.get("descrizione") or ""),sede)
 
 
 def xceed_eventi_strutturati(soup, url, citta):
@@ -2847,7 +2856,9 @@ def raccogli_da_portale_generico(session, fonte):
                 if fonte.get("natura"):
                     estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
                 if fonte.get("nightlife"):
-                    estratti = [e for e in estratti if evento_movida_documentato(e)]
+                    estratti = [dict(e,categoria="Locali & Serate") if radar_movida.live_in_locale(e["titolo"],e.get("descrizione",""),e.get("luogo","")) else e for e in estratti if evento_movida_documentato(e)]
+                if fonte.get("radar_movida") and fonte.get("comune_radar"):
+                    estratti=[e for e in estratti if e.get("citta")==fonte["comune_radar"]]
                 if fonte.get("solo_cerignola"):
                     estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
                 eventi.extend(estratti)
@@ -3232,8 +3243,13 @@ def esegui_aggiornamento():
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
     dirette_natura, rss_natura = radar_natura.fonti()
     dirette_food, rss_food = radar_food.fonti()
+    dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola())
+    esistenti={f["url"] for f in FONTI_PORTALI+calendari_registro_cerignola()}
+    dirette_movida=[f for f in dirette_movida if f["url"] not in esistenti]
     compiti = (
-        [(raccogli_da_portale_generico, fonte) for fonte in dirette_food]
+        [(raccogli_da_portale_generico, fonte) for fonte in dirette_movida]
+        + [(raccogli_da_feed_social, fonte) for fonte in rss_movida]
+        + [(raccogli_da_portale_generico, fonte) for fonte in dirette_food]
         + [(raccogli_da_feed_social, fonte) for fonte in rss_food]
         + [(raccogli_da_portale_generico, fonte) for fonte in dirette_natura]
         + [(raccogli_da_feed_social, fonte) for fonte in rss_natura]
