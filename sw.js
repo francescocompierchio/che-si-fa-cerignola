@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v55";
+const CACHE_NAME = "chesifa-shell-v57";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -11,11 +11,9 @@ const SHELL_FILES = [
   new URL("public-views.js", self.registration.scope).href,
   new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,
-  new URL("event-page.js?v=55", self.registration.scope).href,
+  new URL("event-page.js?v=57", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
-  new URL("1795175413227~4.jpg", self.registration.scope).href,
-  new URL("csf-icon-v2.svg", self.registration.scope).href,
-  new URL("csf-icon-maskable-v2.svg", self.registration.scope).href
+  new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 
 function cacheKeyFor(request) {
@@ -44,6 +42,16 @@ async function salvaInCache(cache, key, response) {
   return response;
 }
 
+function isHomeRequest(request) {
+  const path=new URL(request.url).pathname;
+  return path===BASE_PATH||path===BASE_PATH+"index.html";
+}
+async function paginaSalvata(cache,key,request){
+  const exact=await cache.match(key);
+  if(exact||!isHomeRequest(request))return exact;
+  return (await cache.match(new URL("index.html",self.registration.scope).href)) ||
+    (await cache.match(new URL("",self.registration.scope).href));
+}
 async function retePrima(request, key) {
   const cache = await caches.open(CACHE_NAME);
   try {
@@ -53,11 +61,11 @@ async function retePrima(request, key) {
       return response;
     }
     // Un evento rimosso dal sito non deve riapparire dalla cache.
-    if (response && (response.status === 404 || response.status === 410)) { await cache.delete(key); return response; }
-    const precedente = await cache.match(key);
+    if (response && (response.status === 404 || response.status === 410) && !isHomeRequest(request)) { await cache.delete(key); return response; }
+    const precedente = await paginaSalvata(cache,key,request);
     return precedente || response;
   } catch (error) {
-    const precedente = await cache.match(key);
+    const precedente = await paginaSalvata(cache,key,request);
     if (precedente) return precedente;
     throw error;
   }
@@ -65,7 +73,7 @@ async function retePrima(request, key) {
 
 async function cachePrima(request, key, event) {
   const cache = await caches.open(CACHE_NAME);
-  const precedente = await cache.match(key);
+  const precedente = await paginaSalvata(cache,key,request);
   const aggiornamento = fetch(request)
     .then(response => salvaInCache(cache, key, response))
     .catch(() => null);
@@ -82,7 +90,10 @@ async function cachePrima(request, key, event) {
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_FILES))
+    caches.open(CACHE_NAME).then(async cache => {
+      await cache.addAll(SHELL_FILES.slice(0,2));
+      await Promise.allSettled(SHELL_FILES.slice(2).map(url=>cache.add(url)));
+    })
   );
   self.skipWaiting();
 });
@@ -132,7 +143,7 @@ self.addEventListener("fetch", event => {
   const isPage = request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === BASE_PATH;
 
   // I contatori devono usare codice coerente con la pagina appena pubblicata.
-  const isMetrics = [`${BASE_PATH}metrics.js`, `${BASE_PATH}public-views.js`, `${BASE_PATH}manifest.json`].includes(url.pathname);
+  const isMetrics = [`${BASE_PATH}metrics.js`, `${BASE_PATH}public-views.js`].includes(url.pathname);
   event.respondWith(
     isData || isPage || isMetrics
       ? retePrima(request, key)

@@ -1,8 +1,5 @@
 name: Genera icone Android PNG
 on:
-  push:
-    branches: [main]
-    paths: ['genera_icone.py', '.github/workflows/icone-png.yml']
   workflow_dispatch:
 permissions:
   contents: write

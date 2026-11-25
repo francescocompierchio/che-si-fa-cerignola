@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 (async () => {
-  const browser = await chromium.launch({args:["--autoplay-policy=document-user-activation-required"]});
+  const browser = await chromium.launch();
   try {
     const page = await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",timezoneId:"Europe/Rome",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
     const errors = []; page.on("pageerror", e => errors.push(e.message));
@@ -110,29 +110,19 @@ const assert = require("node:assert/strict");
     const chrome=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36"});
     chrome.on("pageerror",e=>errors.push(e.message));
     await chrome.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
-    // Test del player con un campione WAV silenzioso locale: nessun download esterno in CI.
-    const rate=8000,seconds=30,size=rate*seconds*2,wav=Buffer.alloc(44+size);
-    wav.write("RIFF",0);wav.writeUInt32LE(36+size,4);wav.write("WAVEfmt ",8);wav.writeUInt32LE(16,16);
-    wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);
-    wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(size,40);
-    await chrome.route(/\/audio\/playlist\.json$/,r=>r.fulfill({json:{ids:["USUAN1200054","USUAN1300033","USUAN1100757","USUAN2400001","USUAN1800019"]}}));
-    await chrome.route(/\/audio\/USUAN\d+\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
-    await chrome.route(/https:\/\/incompetech\.com\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
     await chrome.addInitScript(()=>{
-      // Simula la policy restrittiva: i primi play senza gesto vengono rifiutati.
-      const original=HTMLMediaElement.prototype.play;
-      let gesture=false;
-      document.addEventListener("pointerup",()=>{gesture=true;},{capture:true});
-      HTMLMediaElement.prototype.play=function(...args){
-        if(!gesture)return Promise.reject(new DOMException("Autoplay bloccato","NotAllowedError"));
-        return original.apply(this,args);
+      const proto=window.AudioBufferSourceNode?.prototype;
+      if(!proto)return;
+      const start=proto.start;
+      proto.start=function(...args){
+        if(this.buffer)window.__csfAudio={duration:this.buffer.duration,channels:this.buffer.numberOfChannels,loop:this.loop};
+        return start.apply(this,args);
       };
     });
     await chrome.goto("http://127.0.0.1:8765/index.html");
     await chrome.locator("#events-container details").first().waitFor();
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#btn-add-home").isVisible());
-    await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="blocked");
     await chrome.emulateMedia({reducedMotion:"no-preference"});
     await chrome.evaluate(()=>document.addEventListener("pointerup",()=>{
       const wave=document.querySelector(".csf-liquid-wave");
@@ -142,14 +132,7 @@ const assert = require("node:assert/strict");
     assert.equal(await chrome.evaluate(()=>window.__waveOnTouch),"none","Onda anche su testo non interattivo, senza intercettare i tocchi");
     await chrome.waitForFunction(()=>!document.querySelector(".csf-liquid-wave"));
     await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="playing");
-    const firstTrack=await chrome.locator("#csf-music-toggle").getAttribute("data-music-track");
-    assert.ok(firstTrack);
-    assert.match(await chrome.locator("#csf-lounge-audio").getAttribute("src"),/\/audio\/USUAN\d+\.mp3$/,"File sullo stesso sito");
-    assert.equal(await chrome.locator("#csf-lounge-audio").evaluate(a=>a.loop),false);
-    assert.equal(await chrome.locator(".csf-music-credits li").count(),5);
-    await chrome.locator("#csf-lounge-audio").evaluate(a=>a.dispatchEvent(new Event("ended")));
-    await chrome.waitForFunction(first=>document.getElementById("csf-music-toggle").dataset.musicTrack!==first,firstTrack);
-    await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle").dataset.musicState==="playing");
+    assert.deepEqual(await chrome.evaluate(()=>window.__csfAudio),{duration:180,channels:2,loop:false},"Composizione stereo completa di tre minuti, senza loop");
     await chrome.locator("#csf-music-toggle").click();
     assert.equal(await chrome.locator("#csf-music-toggle").getAttribute("aria-pressed"),"false");
     assert.equal(await chrome.evaluate(()=>localStorage.getItem("csf_music_v1")),"off");
@@ -204,37 +187,6 @@ const assert = require("node:assert/strict");
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#home-shortcut").isHidden());
     await chrome.close();
-    // No files or manifest: the actual WebAudio fallback must produce non-silent samples.
-    const fallback=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block"});
-    fallback.on("pageerror",e=>errors.push(e.message));
-    await fallback.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
-    await fallback.route(/\/audio\/(?:playlist\.json|.*\.mp3)$/,r=>r.fulfill({status:404,body:"Not found"}));
-    await fallback.addInitScript(()=>{
-      const start=AudioBufferSourceNode.prototype.start;
-      AudioBufferSourceNode.prototype.start=function(...args){
-        if(this.buffer)window.__csfFallback={duration:this.buffer.duration,nonSilent:this.buffer.getChannelData(0).some(v=>Math.abs(v)>.001)};
-        return start.apply(this,args);
-      };
-    });
-    await fallback.goto("http://127.0.0.1:8765/index.html");
-    await fallback.locator(".hero h1").tap();
-    await fallback.waitForFunction(()=>document.querySelector("#csf-music-toggle")?.dataset.musicState==="playing");
-    assert.equal(await fallback.locator("#csf-music-toggle").getAttribute("data-music-mode"),"local");
-    assert.deepEqual(await fallback.evaluate(()=>window.__csfFallback),{duration:180,nonSilent:true});
-    await fallback.locator("#csf-music-toggle").click();
-    assert.equal(await fallback.locator("#csf-music-toggle").getAttribute("data-music-state"),"off");
-    await fallback.close();
-    // Browser che consente autoplay: usa gli MP3 reali del repository, senza gesti e senza mock.
-    const autoBrowser=await chromium.launch({args:["--autoplay-policy=no-user-gesture-required"]});
-    try{
-      const auto=await autoBrowser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block"});
-      auto.on("pageerror",e=>errors.push(e.message));
-      await auto.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());
-      await auto.goto("http://127.0.0.1:8765/index.html");
-      await auto.waitForFunction(()=>{const a=document.querySelector("#csf-lounge-audio");return a&&a.currentTime>.1&&a.duration>60&&!a.paused;},{},{timeout:30000});
-      assert.equal(await auto.locator("#csf-music-toggle").getAttribute("data-music-mode"),"recorded","Autoplay dei veri MP3");
-      await auto.close();
-    }finally{await autoBrowser.close();}
     const social=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",userAgent:"Mozilla/5.0 (Linux; Android 16; Pixel 9; wv) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36 Instagram"});
     social.on("pageerror",e=>errors.push(e.message));
     await social.route("**/*",r=>r.request().url().startsWith("http://127.0.0.1:8765/")?r.continue():r.abort());

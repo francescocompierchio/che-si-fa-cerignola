@@ -1,0 +1,29 @@
+name: Verifica accesso pubblico
+on:
+  push:
+    branches: [main]
+    paths: ['index.html','sw.js','.github/workflows/verifica-accesso.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verifica homepage pubblica e risorse essenziali
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://francescocompierchio.github.io/che-si-fa-cerignola/'
+          for n in $(seq 1 16); do
+            if curl -fsSL --max-time 12 "${base}?verifica=${GITHUB_SHA}" -o /tmp/csf-home.html && grep -q 'event-page.js?v=57' /tmp/csf-home.html && grep -q 'Che Si Fa Cerignola' /tmp/csf-home.html; then
+              break
+            fi
+            if [ "$n" -eq 16 ]; then echo "::error::Homepage aggiornata non raggiungibile"; exit 1; fi
+            sleep 10
+          done
+          for path in index.html manifest.json sw.js 'event-page.js?v=57' eventi.json; do
+            curl -fsSL --max-time 20 -o /dev/null -w "%{http_code} %{size_download} %{url_effective}\n" "${base}${path}"
+          done
+          echo "Homepage e risorse raggiungibili" >> "$GITHUB_STEP_SUMMARY"

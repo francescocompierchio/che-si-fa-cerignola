@@ -57,51 +57,13 @@
 })();
 
 
-// Luxury Spa Lounge: registrazioni complete, CC BY 4.0, Kevin MacLeod.
+// Sottofondo originale CSF: Oro al tramonto, aperitivo lounge completo.
+// Nessuna musica scaricata, servizio esterno, cookie o richiesta di rete.
 (function(){
-  const base=new URL(".",document.currentScript?.src||location.href);
-  const tracks=[
-  {
-    "title": "Groove Grove",
-    "id": "USUAN1200054",
-    "duration": 206,
-    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Groove%20Grove.mp3"
-  },
-  {
-    "title": "Clean Soul",
-    "id": "USUAN1300033",
-    "duration": 307,
-    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Clean%20Soul.mp3"
-  },
-  {
-    "title": "Windswept",
-    "id": "USUAN1100757",
-    "duration": 208,
-    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Windswept.mp3"
-  },
-  {
-    "title": "That Zen Moment",
-    "id": "USUAN2400001",
-    "duration": 602,
-    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/That%20Zen%20Moment.mp3"
-  },
-  {
-    "title": "Dream Catcher",
-    "id": "USUAN1800019",
-    "duration": 377,
-    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dream%20Catcher.mp3"
-  }
-];
-  const key="csf_music_v1",lastKey="csf_music_last_v1",resumeKey="csf_music_resume_v1";
-  let resumePoint=null;
-  try{resumePoint=JSON.parse(sessionStorage.getItem(resumeKey)||"null");}catch(_){}
-  let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,credits=null,started=false,blocked=false,attempt=0;
   const Audio=window.AudioContext||window.webkitAudioContext;
-  let available=tracks.filter(t=>["USUAN1200054","USUAN1300033","USUAN1100757","USUAN2400001","USUAN1800019"].includes(t.id)),manifestReady=true,mode=null,ctx=null,sourceNode=null,buffer=null,gain=null;
-  // I file MP3 sono presenti nel commit verificato: nessuna attesa del manifesto prima dell’avvio.
-  try{enabled=localStorage.getItem(key)!=="off";last=localStorage.getItem(lastKey)||"";}catch(_){}
-  const source=t=>"https://incompetech.com/music/royalty-free/index.html?isrc="+t.id;
-  function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
+  const key="csf_music_v1";
+  let enabled=true,ctx=null,source=null,master=null,buffer=null,button=null,finished=false;
+  try{enabled=localStorage.getItem(key)!=="off";}catch(_){}
   function composition(context){
     // "Oro al tramonto": 72 battute, 96 BPM, durata 3:00.
     // Forma completa: intro, tema, sviluppo, bridge, solo, ripresa e coda.
@@ -224,82 +186,50 @@
     }
     return out;
   }
-  function fallbackPlaying(){return mode==="local"&&enabled&&!document.hidden&&ctx?.state==="running"&&!!sourceNode;}
-  function playFallback(){
-    mode="local";
-    audio.autoplay=false;audio.pause();
-    if(!Audio||!enabled||document.hidden){render();return;}
-    try{
-      if(!ctx){ctx=new Audio();ctx.onstatechange=render;}
-      const start=()=>{
-        if(!enabled||document.hidden||mode!=="local"||ctx.state!=="running"){render();return;}
-        if(!sourceNode){
-          buffer=buffer||composition(ctx);
-          gain=ctx.createGain();gain.gain.setValueAtTime(0,ctx.currentTime);gain.connect(ctx.destination);
-          sourceNode=ctx.createBufferSource();sourceNode.buffer=buffer;sourceNode.loop=true;sourceNode.connect(gain);
-          sourceNode.start();gain.gain.linearRampToValueAtTime(.16,ctx.currentTime+.5);
-        }
-        started=true;blocked=false;render();
-      };
-      if(ctx.state==="running")start();else ctx.resume().then(start).catch(()=>render());
-    }catch(_){render();}
-  }
-  function choose(){
-    if(!bag.length){
-      bag=available.slice();
-      for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
-      if(bag[0].id===last&&bag.length>1)[bag[0],bag[1]]=[bag[1],bag[0]];
-    }
-    if(resumePoint){const index=bag.findIndex(t=>t.id===resumePoint.id);if(index>=0){const chosen=bag.splice(index,1)[0];bag.unshift(chosen);}else resumePoint=null;}
-    track=bag.shift();last=track.id;
-    blocked=false;
-    audio.preload="auto";audio.autoplay=enabled&&!document.hidden;
-    audio.src=new URL("audio/"+track.id+".mp3",base).href;audio.loop=false;
-    audio.volume=.20;
-    if(resumePoint?.id===track.id){const position=Number(resumePoint.time)||0;resumePoint=null;audio.addEventListener("loadedmetadata",()=>{if(Number.isFinite(audio.duration)&&position>0&&position<audio.duration-1)try{audio.currentTime=position;}catch(_){}},{once:true});}
-    render();
-  }
+  function running(){return Boolean(enabled&&ctx?.state==="running"&&source&&!document.hidden);}
   function render(){
-    if(!button||!audio)return;
-    const playing=fallbackPlaying()||(mode==="recorded"&&enabled&&!audio.paused&&!audio.ended&&!document.hidden&&audio.readyState>=2);
+    if(!button)return;
+    const playing=running();
     button.setAttribute("aria-pressed",String(playing));
     button.setAttribute("aria-label",playing?"Disattiva musica di sottofondo":"Attiva musica di sottofondo");
-    button.title=playing?"Disattiva musica — "+(mode==="local"?"Oro al tramonto":track?.title||"Lounge"):!enabled?"Attiva musica lounge":blocked?"Tocca per avviare la musica":"Attiva musica lounge";
-    button.dataset.musicState=playing?"playing":!enabled?"off":blocked?"blocked":"ready";
-    button.dataset.musicMode=mode||"pending";
-    button.dataset.musicTrack=mode==="local"?"Oro al tramonto":track?.title||"";
+    button.title=playing?"Disattiva musica":finished?"Riascolta Oro al tramonto":"Attiva musica";
+    button.dataset.musicState=playing?"playing":!enabled?"off":finished?"finished":"ready";
     button.classList.toggle("music-playing",playing);
     const mark=button.querySelector(".csf-music-mark");
     if(mark)mark.textContent=playing?"♫":"♪";
-    if(credits)credits.textContent=mode==="local"?"Musica: Oro al tramonto — composizione originale CSF":track?"Musica: "+track.title+" — Kevin MacLeod":"Musica lounge — crediti";
   }
-  function play(){
-    if(!enabled||document.hidden||!audio)return;
-    if(mode==="local"||!available.length){playFallback();return;}
-    mode="recorded";
-    if(!track)choose();
-    audio.autoplay=true;
-    if(!audio.paused&&!audio.ended&&!blocked)return;
-    const current=++attempt;
+  function ready(){
+    if(!enabled||finished||document.hidden||!ctx||ctx.state!=="running"){render();return;}
+    if(!source){
+      buffer=buffer||composition(ctx);
+      master=ctx.createGain();master.gain.setValueAtTime(0,ctx.currentTime);
+      master.connect(ctx.destination);
+      source=ctx.createBufferSource();source.buffer=buffer;source.loop=false;source.connect(master);
+      source.onended=()=>{source=null;master?.disconnect();master=null;finished=true;pause();};
+      source.start();master.gain.linearRampToValueAtTime(.16,ctx.currentTime+.7);
+    }
+    render();
+  }
+  function play(allowCreate=true){
+    if(!enabled||finished||document.hidden||!Audio)return;
     try{
-      // Chiamata sincrona nel gestore del gesto: nessun await prima di play().
-      Promise.resolve(audio.play()).then(()=>{
-        if(current!==attempt)return;
-        blocked=false;
-        if(!enabled||document.hidden)audio.pause();
-        render();
-      }).catch(err=>{
-        if(current!==attempt)return;
-        blocked=err?.name==="NotAllowedError";
-        if(err?.name==="NotSupportedError"){playFallback();return;}
-        render();
-      });
+      if(!ctx){
+        if(!allowCreate)return;
+        ctx=new Audio();ctx.onstatechange=render;
+      }
+      if(ctx.state==="running"){ready();return;}
+      // resume può restare in attesa dell'interazione: riprova al primo gesto.
+      ctx.resume().then(ready).catch(()=>render());
     }catch(_){render();}
   }
-  function pause(){attempt++;if(audio){audio.autoplay=false;audio.pause();}if(ctx?.state==="running")ctx.suspend().catch(()=>{});render();}
+  function pause(){
+    if(ctx?.state==="running")ctx.suspend().catch(()=>{});
+    render();
+  }
+  function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
   function toggle(){
-    if(enabled&&(fallbackPlaying()||(mode==="recorded"&&!audio.paused&&!audio.ended))){enabled=false;save();pause();}
-    else{enabled=true;blocked=false;save();play();}
+    if(running()){enabled=false;save();pause();}
+    else{finished=false;enabled=true;save();play();}
     render();
   }
   function init(){
@@ -310,45 +240,24 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload=enabled?"auto":"none";audio.autoplay=enabled;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
+    if(!Audio){button.hidden=true;return;}
     const style=document.createElement("style");
-    style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}.csf-music-credits{font-size:.75rem;color:var(--muted,#53627a);text-align:center;margin:8px auto;max-width:740px}.csf-music-credits a{color:var(--accent,#1746a2)}.csf-music-credits ul{list-style:none;padding:0;line-height:1.65}";
+    style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}";
     document.head.append(style);
-    const details=document.createElement("details");details.className="csf-music-credits";
-    credits=document.createElement("summary");details.append(credits);
-    const p=document.createElement("p");p.append("Kevin MacLeod (Incompetech). Registrazioni complete; eventuale ricodifica MP3 per lo streaming. Licenza ");
-    const license=document.createElement("a");license.href="https://creativecommons.org/licenses/by/4.0/";license.textContent="Creative Commons CC BY 4.0";license.target="_blank";license.rel="noopener noreferrer";p.append(license);details.append(p);
-    const list=document.createElement("ul");
-    for(const tr of tracks){const li=document.createElement("li"),a=document.createElement("a");a.href=source(tr);a.textContent=tr.title+" — Kevin MacLeod";a.target="_blank";a.rel="noopener noreferrer";li.append(a);list.append(li);}
-    details.append(list);(document.querySelector("footer")||document.body).append(details);
-    audio.addEventListener("playing",()=>{if(mode!=="recorded"||!enabled||document.hidden){audio.pause();return;}started=true;blocked=false;failed=0;try{localStorage.setItem(lastKey,track.id);}catch(_){}render();});
-    for(const ev of ["pause","canplay","waiting"])audio.addEventListener(ev,render);
-    audio.addEventListener("canplay",()=>{if(enabled&&mode==="recorded"&&!blocked&&audio.paused&&!document.hidden)play();});
-    const rememberPosition=()=>{if(mode==="recorded"&&track&&Number.isFinite(audio.currentTime)&&!audio.ended){try{sessionStorage.setItem(resumeKey,JSON.stringify({id:track.id,time:audio.currentTime}));}catch(_){}}};
-    audio.addEventListener("timeupdate",rememberPosition);
-    audio.addEventListener("ended",()=>{try{sessionStorage.removeItem(resumeKey);}catch(_){}if(enabled&&mode==="recorded"){choose();play();}else render();});
-    audio.addEventListener("error",()=>{
-      if(!enabled||mode!=="recorded"||!track)return;
-      attempt++;
-      // Never leave a broken media request as the only audio option.
-      playFallback();
-    });
     button.addEventListener("click",toggle);
     const gesture=ev=>{
-      if(!ev.isTrusted||!enabled||ev.target?.closest?.("#csf-music-toggle"))return;
-      if(!fallbackPlaying()&&(audio.paused||blocked))play();
+      if(!ev.isTrusted||!enabled||finished||ev.target?.closest?.("#csf-music-toggle"))return;
+      if(!running())play();
     };
     document.addEventListener("pointerup",gesture,{capture:true,passive:true});
-    document.addEventListener("touchend",gesture,{capture:true,passive:true});
-    document.addEventListener("pointerdown",ev=>{if(ev.pointerType==="mouse")gesture(ev);},{capture:true,passive:true});
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
-    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&(manifestReady||mode))play();});
-    window.addEventListener("pagehide",()=>{rememberPosition();pause();});
-    window.addEventListener("pageshow",()=>{if(enabled&&(manifestReady||mode))play();});
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&ctx)play(false);});
+    window.addEventListener("pagehide",pause);
+    window.addEventListener("pageshow",()=>{if(enabled&&ctx)play(false);});
     render();
-    // Avvio immediato della sorgente locale già verificata, senza fetch preliminare.
-    if(enabled)play();
+    // Prova l'avvio immediato; i browser che vietano autoplay attendono il gesto.
+    if(enabled){if(document.readyState==="complete")setTimeout(()=>play(),0);else window.addEventListener("load",()=>setTimeout(()=>play(),0),{once:true});}
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
