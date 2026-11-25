@@ -1568,7 +1568,7 @@ def raccogli_da_portale_viva(session, fonte):
 
 
 
-def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url=""):
+def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url="", singole=False):
     """Estrae testo da locandine pubbliche usando OCR locale, se Tesseract è installato."""
     immagini = []
     if item_feed is not None:
@@ -1599,12 +1599,12 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
                     immagini.append(url_immagine)
     immagini = list(dict.fromkeys(immagini))[:max_immagini]
     if not immagini:
-        return ""
+        return [] if singole else ""
     try:
         from PIL import Image, ImageOps
         import pytesseract
     except ImportError:
-        return ""
+        return [] if singole else ""
     testi = []
     for url_immagine in immagini:
         # Il budget è assegnato per fonte dal coordinatore. L'uso diretto resta compatibile.
@@ -1631,12 +1631,26 @@ def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini
                 testo = pytesseract.image_to_string(immagine, lang="ita+eng", config="--psm 6", timeout=OCR_TIMEOUT_SECONDI)
             testo = re.sub(r"\s+", " ", testo).strip()
             if len(testo) >= 20:
-                testi.append(testo)
+                testi.append((url_immagine,testo))
         except Exception:
             # Un'immagine corrotta, un formato non supportato o Tesseract assente
             # non devono interrompere la raccolta delle altre fonti.
             continue
-    return " ".join(testi)[:5000]
+    return testi if singole else " ".join(t for _,t in testi)[:5000]
+
+
+def eventi_da_locandina(testo,poster,titolo,url):
+    """Non attribuire una locandina a una pagina solo perché contiene una data."""
+    if not discovery_locale.TEMI.search(testo) or not _comune_nel_testo(testo):
+        return []
+    if not discovery_locale.titolo_locandina_compatibile(titolo,testo):
+        return []
+    html="<html><body><h1>"+escape(titolo)+"</h1><main><p>"+escape(testo)+"</p></main></body></html>"
+    out=[]
+    for ev in analizza_pagina_evento(html,url,citta_default="",fonte_curata_eventi=False):
+        if ev["dataInizio"]==ev["dataFine"] and discovery_locale.data_evento_documentata(testo,ev["dataInizio"]) and _comune_nel_testo(testo)==ev["citta"]:
+            out.append(dict(ev,locandinaUrl=poster))
+    return out
 
 
 def priorita_candidato_rss(titolo, descrizione):
@@ -1956,12 +1970,9 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
             if not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
-                testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, max_immagini=1, base_url=url_finale)
-                testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
-                # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
-                # La sede non viene mai inventata: deve comparire nel testo o nella locandina.
-                html_snippet = "<html><body><h1>" + escape(titolo) + "</h1><main><p>" + escape(testo_social) + "</p></main></body></html>"
-                estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default="", fonte_curata_eventi=False)
+                # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
+                for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
+                    estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
             if fonte.get("nightlife"):
                 estratti = [e for e in estratti if evento_movida_documentato(e)]
             if fonte.get("feed_editore") or fonte.get("ricorrente_verificata"):
@@ -2714,14 +2725,10 @@ def raccogli_da_portale_generico(session, fonte):
                 if not estratti and fonte.get("nightlife") and len(diagnostica) < 3:
                     diagnostica.append(diagnostica_scheda_movida(rp.text, link))
                 if not estratti and not fonte.get("nightz") and not fonte.get("ticketsms") and not fonte.get("xceed") and not fonte.get("solo_jsonld") and not registra_stati_negativi(rp.text, link):
-                    testo_locandina = estrai_testo_locandine(session, rp.text, base_url=link)
-                    if testo_locandina:
-                        h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
-                        titolo_immagine = h1.get_text(" ", strip=True) if h1 else ""
-                        if len(titolo_immagine) < 5 or titolo_immagine.casefold() in {"evento", "eventi", "news", "notizie"}:
-                            titolo_immagine = re.split(r"\b(?:quando|data|dove|luogo|orario|ore|prezzo|costo)\b", testo_locandina, maxsplit=1, flags=re.I)[0].strip()[:85]
-                        html_ocr = "<html><body><h1>" + escape(titolo_immagine) + "</h1><main><p>" + escape(testo_locandina) + "</p></main></body></html>"
-                        estratti = analizza_pagina_evento(html_ocr, link, citta_default=c_def, fonte_curata_eventi=curata)
+                    h1 = BeautifulSoup(rp.text, "html.parser").find("h1")
+                    titolo_immagine = h1.get_text(" ", strip=True) if h1 else ""
+                    for poster,testo in estrai_testo_locandine(session,rp.text,base_url=link,singole=True):
+                        estratti.extend(eventi_da_locandina(testo,poster,titolo_immagine,link))
                 if fonte.get("data_nel_link"):
                     estratti = [e for e in estratti if e.get("dataInizio") == data_scheda_movida(link)]
                 if fonte.get("nightlife"):
@@ -3021,6 +3028,7 @@ def esegui_aggiornamento():
 
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
+    editoriali_statici=apprendimento.editoriali()
     oggi_stagionale=oggi_dt().date()
     dirette_capodanno, rss_capodanno = capodanno.fonti(oggi_stagionale)
     anno_festivita=festivita.stagione(oggi_stagionale)
@@ -3051,7 +3059,7 @@ def esegui_aggiornamento():
     percorso_stato = os.path.join(".csf-state", "fonti.json")
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
-    compiti += [(raccogli_da_feed_social, fonte) for fonte in apprendimento.fonti(memoria,manuali_admin+precedenti_auto,oggi_stagionale)]
+    compiti += [(raccogli_da_feed_social, fonte) for fonte in apprendimento.fonti(memoria,apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati),oggi_stagionale)]
     compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
@@ -3111,7 +3119,8 @@ def esegui_aggiornamento():
     for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto,lista_finale,sono_duplicati).items():
         registra_statistica_fonte(nome,**dati)
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
-    stato_apprendimento=apprendimento.aggiorna(memoria,lista_finale,oggi_stagionale,now)
+    copertura_visibile=apprendimento.copertura_unita(lista_finale,editoriali_statici,sono_duplicati)
+    stato_apprendimento=apprendimento.aggiorna(memoria,copertura_visibile,oggi_stagionale,now)
     os.makedirs(".csf-state",exist_ok=True)
     _scrivi_json_atomico(percorso_stato,memoria)
 
@@ -3130,7 +3139,9 @@ def esegui_aggiornamento():
         "totaleContenuti": len(lista_finale),
         "controlloStato": controllo_stato,
         "saluteFonti": stato_raccolta.riepilogo(memoria, pause),
-        "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"]},
+        "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"],"coperturaIncludeEditoriali":True,"firebaseIncluso":False},
+        "coperturaVisibileStatica": {"totale":sum(e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"cerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"serateCerignola":sum(e.get("citta")=="Cerignola" and e.get("categoria")=="Locali & Serate" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile)},
+        "segnaliQualita":apprendimento.segnali(copertura_visibile,concordanze,set(DOMINI_AUTO)),
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
         "movidaPerComune": dict(Counter(e.get("citta") for e in lista_finale if evento_movida_documentato(e))),
