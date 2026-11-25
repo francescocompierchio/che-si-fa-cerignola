@@ -3,20 +3,6 @@
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Teatro & Spettacoli",
-    "titolo": "Lisistrata – Lella Costa",
-    "dataTesto": "Dal 05 Nov al 28 Nov 2026",
-    "dataInizio": "2026-11-05",
-    "dataFine": "2026-11-28",
-    "luogo": "Teatro Greco di Siracusa e al Teatro Grande di Pompei",
-    "indirizzoMappa": "Teatro Greco di Siracusa e al Teatro Grande di Pompei, Via della Crocie, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 21:00 ingresso a pagamento Info. 0884 532829 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335518.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Teatro & Spettacoli",
     "titolo": "Cenerentola 301",
     "dataTesto": "Dal 22 Nov al 06 Gen 2027",
     "dataInizio": "2026-11-22",
@@ -57,20 +43,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Attività diurne",
-    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Piazza della Repubblica",
-    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
-    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Attività diurne",
     "titolo": "Foggia | La Fondazione per il 25 novembre con Lorenzo Sepalone e Alfredo Traiano",
@@ -96,6 +68,20 @@
     "costo": "Ingresso libero",
     "descrizione": "La Contemporanea Galleria d’Arte di Foggia presenta l’appuntamento espositivo “Mario Schifano e gli altri”, in programma da 25 novembre 2026 a 7 gennaio 2027. La mostra sarà ospitata negli spazi della galleria in Viale M",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336684.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Attività diurne",
+    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
+    "dataTesto": "Mer 25 Nov 2026",
+    "dataInizio": "2026-11-25",
+    "dataFine": "2026-11-25",
+    "luogo": "Piazza della Repubblica",
+    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
+    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
   },
   {
     "tipoContenuto": "evento",
@@ -141,20 +127,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Trinitapoli",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Viale Vittorio Veneto",
-    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
-    "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Barletta",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Barletta | People, Places and Things – Anna Ferzetti",
@@ -197,6 +169,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Trinitapoli",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
+    "dataTesto": "Ven 27 Nov 2026",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Viale Vittorio Veneto",
+    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
+    "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Trani",
     "categoria": "Musica & Concerti",
     "titolo": "Trani | Impromptu Jazz Quartet live Feel the Music Festival",
@@ -208,34 +194,6 @@
     "costo": "Ingresso libero",
     "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d'autore, fino a quei brani italiani che, pur nascendo altrove, sembra",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336732.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Minervino Murge",
-    "categoria": "Sagre & Food",
-    "titolo": "Minervino Murge | Sagra della Cima di Rapa di Minervino Murge",
-    "dataTesto": "Dal 28 Nov al 29 Nov 2026",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-29",
-    "luogo": "Centro Storico Minervino Murge",
-    "indirizzoMappa": "Centro Storico Minervino Murge",
-    "costo": "Ingresso libero",
-    "descrizione": "MINERVINO MURGE CELEBRA L’ECCELLENZA DELLA TERRA: IL 28 E 29 NOVEMBRE 2026 TORNA LA SAGRA DELLA CIMA DI RAPA. Due giornate dedicate al \"Balcone delle Puglie\" per riscoprire la cima di rapa minervinese e gli ortaggi unici",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/334751.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Minervino Murge",
-    "categoria": "Sagre & Food",
-    "titolo": "Tra biodiversità e tradizione: a Minervino torna la Sagra della Cima di Rapa",
-    "dataTesto": "Sab 28 Nov 2026",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-28",
-    "luogo": "borgo antico di Minervino Murge",
-    "indirizzoMappa": "borgo antico di Minervino Murge",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "La nuova edizione della sagra si terrà il weekend del 28 e 29 novembre",
-    "fonteUrl": "https://www.minervinoviva.it/notizie/tra-biodiversita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa/"
   },
   {
     "tipoContenuto": "evento",
@@ -337,6 +295,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra della Cima di Rapa di Minervino Murge",
+    "dataTesto": "Dal 28 Nov al 29 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-29",
+    "luogo": "Borgo antico di Minervino Murge",
+    "indirizzoMappa": "Centro storico, Minervino Murge",
+    "costo": "Ingresso libero",
+    "descrizione": "Due giornate nel borgo antico dedicate alla cima di rapa e ai prodotti locali.",
+    "fonteUrl": "https://volontariperminervino.it/sagra-della-cima-di-rapa/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Famiglie & Bambini",
     "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
@@ -348,20 +320,6 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Tombolata di quartiere, musica e canti della tradizione natalizia.",
     "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Minervino Murge",
-    "categoria": "Sagre & Food",
-    "titolo": "Tra biodiversità e tradizione: a Minervino torna la Sagra della Cima di Rapa",
-    "dataTesto": "Dom 29 Nov 2026",
-    "dataInizio": "2026-11-29",
-    "dataFine": "2026-11-29",
-    "luogo": "borgo antico di Minervino Murge",
-    "indirizzoMappa": "borgo antico di Minervino Murge",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "La nuova edizione della sagra si terrà il weekend del 28 e 29 novembre",
-    "fonteUrl": "https://www.minervinoviva.it/notizie/tra-biodiversita-e-tradizione-a-minervino-torna-la-sagra-della-cima-di-rapa/"
   },
   {
     "tipoContenuto": "evento",
@@ -477,20 +435,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Mercatini di Natale – La Città del Natale",
-    "dataTesto": "Dal 05 Dic al 08 Dic 2026",
-    "dataInizio": "2026-12-05",
-    "dataFine": "2026-12-08",
-    "luogo": "Villa Comunale, Corso San Sabino e Piazza della Repubblica",
-    "indirizzoMappa": "Villa Comunale, Corso San Sabino e Piazza della Repubblica, 76012, Canosa di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Nel primo weekend dell'Immacolata, Canosa di Puglia si trasforma nella \"Città del Natale\": mercatini artigianali in Villa Comunale, casette...",
-    "fonteUrl": "https://buzzeventmap.com/event/374d6b0f-e310-4653-a1e2-251060eba4b5"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Famiglie & Bambini",
     "titolo": "Arriva Babbo Natale| Gelsomino Home",
@@ -516,6 +460,20 @@
     "costo": "A pagamento",
     "descrizione": "La gatta con gli stivali è il secondo appuntamento di Merende da Favola. Lo spettacolo è scritto da Michele Ciuffreda e diretto da M. Ciuffreda e Maggie Salice. La produzione del Teatro dei Limoni propone al pubblico del",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332948.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Mercatini di Natale – La Città del Natale",
+    "dataTesto": "Dal 05 Dic al 08 Dic 2026",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-08",
+    "luogo": "Villa Comunale, Corso San Sabino e Piazza della Repubblica",
+    "indirizzoMappa": "Villa Comunale, Corso San Sabino e Piazza della Repubblica, 76012, Canosa di Puglia, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Nel primo weekend dell'Immacolata, Canosa di Puglia si trasforma nella \"Città del Natale\": mercatini artigianali in Villa Comunale, casette...",
+    "fonteUrl": "https://buzzeventmap.com/event/374d6b0f-e310-4653-a1e2-251060eba4b5"
   },
   {
     "tipoContenuto": "evento",
@@ -558,20 +516,6 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Appuntamento conclusivo della rassegna natalizia di quartiere.",
     "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra della Sfogliatella",
-    "dataTesto": "Dom 06 Dic 2026",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Piazza Vittorio Veneto",
-    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
-    "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
   },
   {
     "tipoContenuto": "evento",
@@ -628,6 +572,34 @@
     "costo": "Gratuito",
     "descrizione": "Ecco tutti i dettagli su ingresso e biglietti",
     "fonteUrl": "https://www.minervinoviva.it/notizie/in-viaggio-verso-christmas-wonderland-al-castello-di-barletta/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Sagre & Food",
+    "titolo": "Sagra della Sfogliatella",
+    "dataTesto": "Dom 06 Dic 2026",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Piazza Vittorio Veneto",
+    "indirizzoMappa": "Piazza Vittorio Veneto, 76012, Canosa di Puglia, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "A Canosa di Puglia, nel cuore della provincia di Barletta-Andria-Trani, la Sagra della Sfogliatella celebra il dolce simbolo del Natale cano...",
+    "fonteUrl": "https://buzzeventmap.com/event/75f30320-7555-4ea0-8dc8-8b37c73c0ecd"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Que Pasa Noche Sinfonica",
+    "dataTesto": "Lun 07 Dic 2026",
+    "dataInizio": "2026-12-07",
+    "dataFine": "2026-12-07",
+    "luogo": "Divine Club",
+    "indirizzoMappa": "Divine Club, Bisceglie",
+    "costo": "Consulta la fonte",
+    "descrizione": "Serata nel calendario ufficiale KODO con Deeza. Orari e condizioni di ingresso da verificare con il locale.",
+    "fonteUrl": "https://www.kodocollective.it/"
   },
   {
     "tipoContenuto": "evento",
@@ -813,6 +785,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Deeza DJ Set",
+    "dataTesto": "Ven 25 Dic 2026",
+    "dataInizio": "2026-12-25",
+    "dataFine": "2026-12-25",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Atrio22, Barletta",
+    "costo": "Consulta la fonte",
+    "descrizione": "Serata nel calendario ufficiale KODO con Deeza. Orari e condizioni di ingresso da verificare con il locale.",
+    "fonteUrl": "https://www.kodocollective.it/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
     "titolo": "Foggia | I fantasmi di Dickens",
@@ -827,20 +813,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "San Ferdinando di Puglia",
-    "categoria": "Locali & Serate",
-    "titolo": "Capodanno in Piazza",
-    "dataTesto": "Gio 31 Dic 2026",
-    "dataInizio": "2026-12-31",
-    "dataFine": "2026-12-31",
-    "luogo": "Piazza della Costituzione",
-    "indirizzoMappa": "Piazza della Costituzione, 76017, San Ferdinando di Puglia, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Il Capodanno in Piazza è il tradizionale veglione di fine anno del Comune di San Ferdinando di Puglia, nella provincia di Barletta-Andria-Tr...",
-    "fonteUrl": "https://buzzeventmap.com/event/c0a05424-3cb8-40fe-b729-bec0dfb0208d"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Barletta",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Barletta | Capodanno al Curci – Dado, Angelo Mellone e Andrea Perroni",
@@ -852,6 +824,20 @@
     "costo": "Ingresso libero",
     "descrizione": "Capodanno al Curci riunisce musica, comicità e spettacolo in una serata speciale. Il programma prevede lo spettacolo comico Il ripetente di Dado, seguito da Mezzanotte d’autore con Angelo Mellone e Andrea Perroni, per la",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331492.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "San Ferdinando di Puglia",
+    "categoria": "Locali & Serate",
+    "titolo": "Capodanno in Piazza",
+    "dataTesto": "Gio 31 Dic 2026",
+    "dataInizio": "2026-12-31",
+    "dataFine": "2026-12-31",
+    "luogo": "Piazza della Costituzione",
+    "indirizzoMappa": "Piazza della Costituzione, 76017, San Ferdinando di Puglia, BT",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Il Capodanno in Piazza è il tradizionale veglione di fine anno del Comune di San Ferdinando di Puglia, nella provincia di Barletta-Andria-Tr...",
+    "fonteUrl": "https://buzzeventmap.com/event/c0a05424-3cb8-40fe-b729-bec0dfb0208d"
   },
   {
     "tipoContenuto": "evento",
@@ -911,6 +897,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Teatro & Spettacoli",
+    "titolo": "Lisistrata – Lella Costa",
+    "dataTesto": "Ven 15 Gen 2027 · Ore 21:00",
+    "dataInizio": "2027-01-15",
+    "dataFine": "2027-01-15",
+    "luogo": "Teatro Comunale Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.",
+    "fonteUrl": "https://www.bottegadegliapocrifi.it/stagione/lisistrata/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Cerignola | Basta un filo di rossetto – Barbara Foria",
@@ -964,34 +964,6 @@
     "costo": "A pagamento",
     "descrizione": "Bottega degli Apocrifi presenta C’era una volta l’Africa, secondo appuntamento della sezione Teatro Ragazzi della stagione del Teatro Comunale Mercadante. Lo spettacolo è rivolto alle nuove generazioni e contribuisce a u",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331617.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Orta Nova",
-    "categoria": "Attività diurne",
-    "titolo": "Il Carnevale Ortese 2026 è pronto a colorare le strade di Orta Nova",
-    "dataTesto": "Ven 12 Feb 2027",
-    "dataInizio": "2027-02-12",
-    "dataFine": "2027-02-12",
-    "luogo": "Villa Comunale Partenza della grande sfilata",
-    "indirizzoMappa": "Villa Comunale Partenza della grande sfilata, Orta Nova",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Risate, musica, maschere e tanta allegria nei giorni 12 e 15 Febbraio",
-    "fonteUrl": "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova/"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Orta Nova",
-    "categoria": "Attività diurne",
-    "titolo": "Il Carnevale Ortese 2026 è pronto a colorare le strade di Orta Nova",
-    "dataTesto": "Lun 15 Feb 2027",
-    "dataInizio": "2027-02-15",
-    "dataFine": "2027-02-15",
-    "luogo": "Villa Comunale Partenza della grande sfilata",
-    "indirizzoMappa": "Villa Comunale Partenza della grande sfilata, Orta Nova",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Risate, musica, maschere e tanta allegria nei giorni 12 e 15 Febbraio",
-    "fonteUrl": "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova/"
   },
   {
     "tipoContenuto": "evento",
