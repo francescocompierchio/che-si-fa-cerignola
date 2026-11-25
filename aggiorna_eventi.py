@@ -3102,7 +3102,9 @@ def prossimo_weekend_movida(ev):
 def raccogli_calendario_kodo(session, fonte):
     """Calendario pubblico del promoter: data completa, giorno e sede nella stessa scheda."""
     risposta = session.get(fonte["url"], timeout=20)
-    risposta.raise_for_status()
+    if risposta.status_code != 200:
+        registra_statistica_fonte(fonte["nome"], stato=f"HTTP {risposta.status_code}", pagineScaricate=0, eventiEstratti=0)
+        return []
     soup = BeautifulSoup(risposta.text, "html.parser")
     righe = [" ".join(s.split()) for s in soup.stripped_strings if s.strip()]
     mesi = dict(zip("gen feb mar apr mag giu lug ago set ott nov dic".split(), range(1, 13)))
@@ -3284,6 +3286,7 @@ def esegui_aggiornamento():
         "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"],"coperturaIncludeEditoriali":True,"firebaseIncluso":False},
         "coperturaVisibileStatica": {"totale":sum(e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"cerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"serateCerignola":sum(e.get("citta")=="Cerignola" and e.get("categoria")=="Locali & Serate" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile)},
         "segnaliQualita":apprendimento.segnali(copertura_visibile,concordanze,set(DOMINI_AUTO)),
+        "autodiagnosi":apprendimento.autodiagnosi(copertura_visibile,STATISTICHE_FONTI,concordanze,oggi_stagionale),
         "intelligenceTerritoriale":{"fontiConProfiloTemporale":fasce_apprese,"fascia":apprendimento.fascia(now),"dominiDaVerificare":domini_candidati,"criterio":"novita osservate per fascia di raccolta; candidati da verificare, non fonti approvate"},
         "recordEsclusiPerStato": esclusi_stato,
         "eventiCerignolaProssimi7Giorni": sum(1 for e in lista_finale if e.get("citta") == "Cerignola" and oggi_iso() <= e.get("dataInizio", "") <= (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")),
