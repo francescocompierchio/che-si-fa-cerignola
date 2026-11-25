@@ -1,6 +1,7 @@
 /* Configurazione web pubblica del progetto Spark dedicato alla Community. */
 window.CSF_COMMUNITY_CONFIG = {
   enabled: true,
+  googleClientId: "1064417630484-2qib0eimq5fcktg43eijg0f861imttv3.apps.googleusercontent.com",
   firebase: {
     apiKey: "AIzaSyDH4ZsFwaIctB-Gwa0-kShX_3-spoz8SwU",
     authDomain: "che-si-fa-community.firebaseapp.com",
