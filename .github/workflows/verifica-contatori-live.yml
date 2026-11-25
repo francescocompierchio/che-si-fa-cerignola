@@ -60,8 +60,11 @@ jobs:
               assert.equal(await page.evaluate(()=>window.CsfMetrics?.aggregateAllowed()),true);
               for(const id of ["visits-pill","views-pill","live-pill"])await page.locator("#"+id).waitFor({state:"visible",timeout:25000});
               const home=await until(s=>s.visite>before.visite&&s.visualizzazioni>before.visualizzazioni&&s.online>=1);
-              await page.waitForFunction(n=>Number(document.getElementById("total-views-count").textContent.replace(/\D/g,""))>=n,home.visualizzazioni,{timeout:20000});
+              await page.waitForFunction(n=>Number(document.getElementById("total-views-count").textContent.replace(/\D/g,""))>=n,home.visualizzazioni+1367,{timeout:20000});
               console.log("HOME "+JSON.stringify(home));
+              const visualizzazioniMostrate=Number((await page.locator("#total-views-count").textContent()).replace(/\D/g,""));
+              const raw=await snapshot();
+              assert.ok(visualizzazioniMostrate>=home.visualizzazioni+1367&&visualizzazioniMostrate<=raw.visualizzazioni+1367,"Totale storico + Firebase non coerente");
               console.log("VISIBILI "+JSON.stringify({visite:await page.locator("#total-visits-count").textContent(),visualizzazioni:await page.locator("#total-views-count").textContent(),online:await page.locator("#online-users-count").textContent()}));
               await page.goto(site+"eventi/weekend.html",{waitUntil:"domcontentloaded",timeout:30000});
               const evento=await until(s=>s.visualizzazioni>home.visualizzazioni);

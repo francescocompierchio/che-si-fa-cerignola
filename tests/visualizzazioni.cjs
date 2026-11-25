@@ -1,6 +1,12 @@
 "use strict";
 const assert=require("node:assert/strict");
 const crea=require("../public-views.js");
+assert.equal(crea.totaleVisualizzazioni(0),1367);
+assert.equal(crea.totaleVisualizzazioni(2),1369);
+assert.equal(crea.totaleVisualizzazioni(100),1467);
+assert.equal(crea.totaleVisualizzazioni(null),null);
+assert.equal(crea.totaleVisualizzazioni(-1),null);
+assert.equal(crea.totaleVisualizzazioni(Number.MAX_SAFE_INTEGER),null);
 async function verificaVisualizzazioni(crea,assert){
   const tick=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
   function setup({admin=false,ok=true,visibile=true,fallisci=false,n=20}={}){

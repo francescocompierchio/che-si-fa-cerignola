@@ -1,5 +1,10 @@
 "use strict";
 (function(root){
+  // GA4: screenPageViews, 20–24 novembre 2026 (Europe/Rome), hostname e percorso del progetto.
+  // 21/11: 351; 22/11: 277; 23/11: 616; 24/11: 123. Storico fisso, non depurabile dagli accessi admin.
+  // Firebase parte il 25/11: non importare lo storico nel database e non sommarlo più volte.
+  const STORICO_GA4 = 1367;
+  function totaleVisualizzazioni(n){return Number.isSafeInteger(n)&&n>=0&&Number.isSafeInteger(n+STORICO_GA4)?n+STORICO_GA4:null;}
   function creaVisualizzazioni(db,permesso,escluso,visibile,mostra,avvisa){
   const ref=db.ref("statistiche/visualizzazioniTotali"),conn=db.ref(".info/connected");
   let connesso=false,contata=false,inCorso=false,ultimo=null;
@@ -27,7 +32,7 @@
   conn.on("value",s=>{connesso=s.val()===true;render();if(connesso)void aggiorna();},e=>{connesso=false;render();avvisa(e);});
   return {aggiorna};
 }
-  if(typeof module==="object"&&module.exports){module.exports=creaVisualizzazioni;return;}
+  if(typeof module==="object"&&module.exports){module.exports=creaVisualizzazioni;module.exports.totaleVisualizzazioni=totaleVisualizzazioni;return;}
   if(root.CsfPublicViews)return;
   const prefix="/che-si-fa-cerignola/";
   if(location.hostname!=="francescocompierchio.github.io"||!location.pathname.startsWith(prefix))return;
@@ -35,7 +40,7 @@
   const permesso=()=>!!root.CsfMetrics?.aggregateAllowed();
   const escluso=()=>{try{const q=new URLSearchParams(location.search);return localStorage.getItem("csf_escludi_visite")==="1"||!!localStorage.getItem("csf_admin_pin")||q.get("admin")==="1"||q.get("escludi")==="1";}catch(_){return true;}};
   const visibile=()=>!document.hidden;
-  const mostra=n=>{if(!pill)return;if(n===null){pill.style.display="none";return;}document.getElementById("total-views-count").textContent=n.toLocaleString("it-IT");pill.style.display="inline-flex";};
+  const mostra=n=>{if(!pill)return;const totale=totaleVisualizzazioni(n);if(totale===null){pill.style.display="none";return;}document.getElementById("total-views-count").textContent=totale.toLocaleString("it-IT");pill.style.display="inline-flex";};
   const avvisa=e=>console.warn("Visualizzazioni Firebase:",e?.message||e);
   let api=null,avvio=null;
   function carica(src){return new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=src;s.onload=resolve;s.onerror=()=>reject(Error("SDK Firebase non disponibile"));document.head.appendChild(s);});}
