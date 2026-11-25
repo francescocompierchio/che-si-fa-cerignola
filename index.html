@@ -16,6 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js"></script>
+  <script src="event-page.js?v=43" defer></script>
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
@@ -1062,6 +1063,10 @@ html[data-csf-theme="dark"] .btn-strip-soft,html[data-csf-theme="dark"] .home-bt
 html[data-csf-theme="dark"] .badge-featured{color:#162136}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}#events-container details,.btn,.discovery-btn,.smart-filter-btn,.filter-btn,.favorite-toggle,.theme-toggle,.dock-btn,.venues-side-tab,.agenda-date-btn{transform:none!important}}
 
+
+.home-shortcut{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin:0 0 11px;border:1px solid var(--border);border-radius:17px;background:linear-gradient(145deg,var(--card),var(--premium-surface));box-shadow:var(--shadow-soft)}
+.home-shortcut div{min-width:0}.home-shortcut strong,.home-shortcut small{display:block}.home-shortcut strong{font-size:.86rem}.home-shortcut small{font-size:.74rem;color:var(--muted);margin-top:2px}.home-shortcut .btn{flex:0 0 auto;white-space:nowrap;font-size:.78rem}
+@media(max-width:360px){.home-shortcut{flex-wrap:wrap}.home-shortcut .btn{width:100%}}
   </style>
 </head>
 <body>
@@ -1099,6 +1104,10 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
   </header>
 
   <main>
+    <section class="home-shortcut" id="home-shortcut" aria-label="Aggiungi alla schermata Home" hidden>
+      <div><strong>Porta Che Si Fa sempre con te</strong><small>Un'icona sul telefono, senza scaricare l'APK.</small></div>
+      <button type="button" class="btn btn-map" id="btn-add-home">＋ Aggiungi alla Home</button>
+    </section>
     <section class="install-strip" id="install-box" style="display:none" aria-label="Installa l'app">
       <div class="install-strip-row">
         <p class="install-strip-text" id="install-title">📲 Installa l'app sul telefono</p>
@@ -1118,7 +1127,7 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
         <p id="guide-social" hidden><strong>Se sei dentro Instagram o Facebook:</strong> apri il menu e scegli Apri nel browser esterno (Chrome o Safari).</p>
         <p id="guide-android"><strong>Android (Chrome):</strong> menu ⋮ → Installa app oppure Aggiungi alla schermata Home. Non serve scaricare un file.</p>
         <p id="guide-ios"><strong>iPhone (Safari):</strong> Condividi → Aggiungi alla schermata Home → se disponibile, Apri come app web → Aggiungi.</p>
-        <p id="guide-desktop" hidden><strong>Computer:</strong> cerca l'opzione Installa app nel menu del browser, se disponibile.</p>
+        <p id="guide-desktop" hidden><strong>Computer:</strong> cerca l'opzione Installa app o Crea scorciatoia nel menu del browser, se disponibile.</p>
         <p id="guide-apk"><a href="app-release.apk" download="CheSiFaCerignola.apk" id="btn-apk-alternativo">APK Android (opzione alternativa)</a></p>
       </div>
     </section>
@@ -1418,20 +1427,18 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
       }catch(_){return raw;}
     }
     async function condividiContenuto(titolo, testo, url) {
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: titolo, text: testo, url: linkCondivisioneTracciato(url,"condivisione_app") });
-          return;
-        } catch (err) {
-          if (err && err.name === "AbortError") return;
-        }
+      if(window.CsfShare){
+        window.CsfShare.apri(titolo,testo,url,linkCondivisioneTracciato);
+        return;
       }
-      const msg = encodeURIComponent(`${testo}\n${linkCondivisioneTracciato(url,"whatsapp")}`);
-      if (isAndroid || isIOS) {
-        window.location.href = `whatsapp://send?text=${msg}`;
-      } else {
-        window.open(`https://wa.me/?text=${msg}`, "_blank", "noopener,noreferrer");
+      if(typeof navigator.share==="function"){
+        try{await navigator.share({title:titolo,text:testo,url:linkCondivisioneTracciato(url,"condivisione_app")});return;}
+        catch(err){if(err?.name==="AbortError")return;}
       }
+      // Fallback anche quando una vecchia cache non ha ancora il menu social.
+      const link=linkCondivisioneTracciato(url,"link_copiato");
+      try{await navigator.clipboard.writeText(link);mostraToast("Link copiato");}
+      catch(_){window.prompt("Copia il link da condividere",link);}
     }
 
     function apriSegnalazioneWhatsApp() {
@@ -1460,6 +1467,9 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
     const btnCloseInstall = document.getElementById("btn-close-install");
     const installGuide = document.getElementById("install-guide");
     const installTitle = document.getElementById("install-title");
+    const homeShortcut=document.getElementById("home-shortcut");
+    const btnAddHome=document.getElementById("btn-add-home");
+    if(homeShortcut)homeShortcut.hidden=isStandalone||isAndroidApp;
     const richiestaInstallazione = urlParams.get("installa")==="1";
     let installataOra=false;
     const guidaVisibile=(id,visibile)=>{const el=document.getElementById(id);if(el)el.hidden=!visibile;};
@@ -1485,24 +1495,28 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
       // Nessun popup: mostra il banner solo dopo un’interazione volontaria con un evento.
       if(installBox)installBox.style.display="";
     }
-    function mostraGuidaInstallazione(){
-      if(isStandalone||isAndroidApp||installataOra||isDispositivoEscluso())return;
+    function mostraGuidaInstallazione(esplicita=false){
+      if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
       if(installBox)installBox.style.display="";
       installGuide?.classList.add("open");
       window.CsfMetrics?.action?.("csf_install_guide");
     }
-    async function richiestaInstallaApp(){
-      if(isStandalone||isAndroidApp||installataOra||isDispositivoEscluso())return;
+    async function richiestaInstallaApp(esplicita=false){
+      if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
       const prompt=window.csfInstallPrompt;
-      if(!prompt||isSocialBrowser){mostraGuidaInstallazione();return;}
+      if(!prompt||isSocialBrowser){mostraGuidaInstallazione(esplicita);return;}
       window.csfInstallPrompt=null;
       window.CsfMetrics?.action?.("csf_install_prompt");
       try{
         await prompt.prompt();
         const esito=await prompt.userChoice;
         if(esito?.outcome==="accepted")window.CsfMetrics?.action?.("csf_install_accepted");
-      }catch(_){mostraGuidaInstallazione();}
+      }catch(_){mostraGuidaInstallazione(esplicita);}
     }
+    btnAddHome?.addEventListener("click",()=>{
+      if(!window.csfInstallPrompt||isSocialBrowser){mostraGuidaInstallazione(true);installBox?.scrollIntoView({block:"center"});}
+      else richiestaInstallaApp(true);
+    });
     btnApkTop?.addEventListener("click",richiestaInstallaApp);
     btnApkFooter?.addEventListener("click",e=>{
       e.preventDefault();
@@ -1520,6 +1534,7 @@ html[data-csf-theme="dark"] .badge-featured{color:#162136}
     document.getElementById("btn-apk-alternativo")?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
     window.addEventListener("appinstalled",()=>{
       installataOra=true;window.csfInstallPrompt=null;
+      if(homeShortcut)homeShortcut.hidden=true;
       if(installBox)installBox.style.display="none";
       if(btnApkFooter)btnApkFooter.style.display="none";
       window.CsfMetrics?.action?.("csf_pwa_installed");
