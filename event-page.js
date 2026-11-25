@@ -67,7 +67,7 @@
     {title:"Smooth Lovin",id:"USUAN1700077",file:"https://incompetech.com/music/royalty-free/mp3-royaltyfree/Smooth%20Lovin.mp3",duration:259}
   ];
   const key="csf_music_v1",lastKey="csf_music_last_v1";
-  let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,busy=false,credits=null,started=false;
+  let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,credits=null,started=false,blocked=false,attempt=0,sourceRetry=false;
   try{enabled=localStorage.getItem(key)!=="off";last=localStorage.getItem(lastKey)||"";}catch(_){}
   const source=t=>"https://incompetech.com/music/royalty-free/index.html?isrc="+t.id;
   function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
@@ -78,6 +78,7 @@
       if(bag[0].id===last&&bag.length>1)[bag[0],bag[1]]=[bag[1],bag[0]];
     }
     track=bag.shift();last=track.id;
+    sourceRetry=false;blocked=false;
     audio.src=track.file;audio.loop=false;
     audio.volume=.16;
     render();
@@ -87,8 +88,8 @@
     const playing=enabled&&!audio.paused&&!audio.ended&&!document.hidden&&audio.readyState>=2;
     button.setAttribute("aria-pressed",String(playing));
     button.setAttribute("aria-label",playing?"Disattiva musica di sottofondo":"Attiva musica di sottofondo");
-    button.title=playing?"Disattiva musica — "+track.title:"Attiva musica lounge";
-    button.dataset.musicState=playing?"playing":!enabled?"off":failed>=tracks.length?"unavailable":"ready";
+    button.title=playing?"Disattiva musica — "+track.title:!enabled?"Attiva musica lounge":failed>=tracks.length?"Musica non disponibile — tocca per riprovare":blocked?"Tocca per avviare la musica":"Attiva musica lounge";
+    button.dataset.musicState=playing?"playing":!enabled?"off":failed>=tracks.length?"unavailable":blocked?"blocked":"ready";
     button.dataset.musicTrack=track?.title||"";
     button.classList.toggle("music-playing",playing);
     const mark=button.querySelector(".csf-music-mark");
@@ -96,15 +97,27 @@
     if(credits)credits.textContent=track?"Musica: "+track.title+" — Kevin MacLeod":"Musica lounge — Kevin MacLeod";
   }
   function play(){
-    if(!enabled||document.hidden||!audio||busy||failed>=tracks.length)return;
+    if(!enabled||document.hidden||!audio||failed>=tracks.length)return;
     if(!track)choose();
-    busy=true;
-    Promise.resolve(audio.play()).catch(()=>{}).finally(()=>{busy=false;render();});
+    const current=++attempt;
+    try{
+      // Chiamata sincrona nel gestore del gesto: nessun await prima di play().
+      Promise.resolve(audio.play()).then(()=>{
+        if(current!==attempt)return;
+        blocked=false;
+        if(!enabled||document.hidden)audio.pause();
+        render();
+      }).catch(err=>{
+        if(current!==attempt)return;
+        blocked=err?.name==="NotAllowedError";
+        render();
+      });
+    }catch(_){render();}
   }
-  function pause(){audio?.pause();render();}
+  function pause(){attempt++;audio?.pause();render();}
   function toggle(){
-    if(enabled&&started){enabled=false;save();pause();}
-    else{enabled=true;failed=0;started=true;save();play();}
+    if(enabled&&!audio.paused&&!audio.ended){enabled=false;audio.autoplay=false;save();pause();}
+    else{enabled=true;audio.autoplay=true;blocked=false;if(failed>=tracks.length){failed=0;bag=[];choose();}save();play();}
     render();
   }
   function init(){
@@ -115,7 +128,7 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload="none";audio.hidden=true;document.body.append(audio);
+    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload=enabled?"metadata":"none";audio.autoplay=enabled;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
     const style=document.createElement("style");
     style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}.csf-music-credits{font-size:.75rem;color:var(--muted,#53627a);text-align:center;margin:8px auto;max-width:740px}.csf-music-credits a{color:var(--accent,#1746a2)}.csf-music-credits ul{list-style:none;padding:0;line-height:1.65}";
     document.head.append(style);
@@ -126,21 +139,31 @@
     const list=document.createElement("ul");
     for(const tr of tracks){const li=document.createElement("li"),a=document.createElement("a");a.href=source(tr);a.textContent=tr.title+" — Kevin MacLeod";a.target="_blank";a.rel="noopener noreferrer";li.append(a);list.append(li);}
     details.append(list);(document.querySelector("footer")||document.body).append(details);
-    audio.addEventListener("playing",()=>{started=true;failed=0;try{localStorage.setItem(lastKey,track.id);}catch(_){}render();});
+    audio.addEventListener("playing",()=>{started=true;blocked=false;failed=0;try{localStorage.setItem(lastKey,track.id);}catch(_){}render();});
     for(const ev of ["pause","canplay","waiting"])audio.addEventListener(ev,render);
-    audio.addEventListener("ended",()=>{if(enabled){busy=false;choose();play();}else render();});
-    audio.addEventListener("error",()=>{busy=false;if(++failed<tracks.length&&enabled&&!document.hidden){choose();play();}else render();});
+    audio.addEventListener("ended",()=>{if(enabled){choose();play();}else render();});
+    audio.addEventListener("error",()=>{
+      if(!enabled||!track)return;
+      attempt++;
+      if(!sourceRetry){
+        sourceRetry=true;
+        const original="https://incompetech.com/music/royalty-free/mp3-royaltyfree/"+encodeURIComponent(track.title)+".mp3";
+        const alternate=track.id==="USUAN1700077"?"https://upload.wikimedia.org/wikipedia/commons/9/99/Smooth_Lovin_%28ISRC_USUAN1700077%29.mp3":original;
+        audio.src=alternate;play();return;
+      }
+      if(++failed<tracks.length&&!document.hidden){choose();play();}else render();
+    });
     button.addEventListener("click",toggle);
     const gesture=ev=>{
       if(!ev.isTrusted||!enabled||ev.target?.closest?.("#csf-music-toggle"))return;
-      if(audio.paused)play();
+      if(audio.paused||blocked)play();
     };
     document.addEventListener("pointerup",gesture,{capture:true,passive:true});
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
-    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&started)play();});
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled)play();});
     window.addEventListener("pagehide",pause);
-    window.addEventListener("pageshow",()=>{if(enabled&&started)play();});
+    window.addEventListener("pageshow",()=>{if(enabled)play();});
     render();
     if(enabled)play();
   }

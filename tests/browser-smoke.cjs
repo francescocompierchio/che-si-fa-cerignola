@@ -116,10 +116,21 @@ const assert = require("node:assert/strict");
     wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);
     wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(size,40);
     await chrome.route(/https:\/\/(?:upload\.wikimedia\.org|incompetech\.com)\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
+    await chrome.addInitScript(()=>{
+      // Simula la policy restrittiva: i primi play senza gesto vengono rifiutati.
+      const original=HTMLMediaElement.prototype.play;
+      let gesture=false;
+      document.addEventListener("pointerup",()=>{gesture=true;},{capture:true});
+      HTMLMediaElement.prototype.play=function(...args){
+        if(!gesture)return Promise.reject(new DOMException("Autoplay bloccato","NotAllowedError"));
+        return original.apply(this,args);
+      };
+    });
     await chrome.goto("http://127.0.0.1:8765/index.html");
     await chrome.locator("#events-container details").first().waitFor();
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#btn-add-home").isVisible());
+    await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="blocked");
     await chrome.emulateMedia({reducedMotion:"no-preference"});
     await chrome.evaluate(()=>document.addEventListener("pointerup",()=>{
       const wave=document.querySelector(".csf-liquid-wave");
