@@ -64,6 +64,7 @@ jobs:
         run: |
           python -m compileall -q .
           python -m unittest discover -s . -p "test_*.py" -v
+          python -m unittest discover -s tests -v
       - name: Controlli integrità archivio e SEO
         run: node tests/seo-integrity.cjs
       - name: Controlla i registri pubblici
