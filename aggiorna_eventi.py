@@ -1735,7 +1735,8 @@ def evento_capodanno_documentato(testo, url, fonte, poster=""):
     comune = fonte.get("comune_capodanno","Cerignola")
     if comune not in COMUNI_50KM.values():
         return []
-    rilevato = _comune_nel_testo(testo)
+    # Il sito ufficiale documenta Foggia; Via Manfredonia non è il comune.
+    rilevato = _comune_nel_testo(re.sub(r"\bvia\s+manfredonia\b", "", testo, flags=re.I) if _host_appartiene(url,"postabassi.it") else testo)
     if not sede:
         if rilevato != comune:
             return []
