@@ -130,6 +130,10 @@ const assert = require("node:assert/strict");
     for(const width of [320,360,393,430]){
       await chrome.setViewportSize({width,height:852});
       assert.ok(await chrome.locator(".top-nav-inner").evaluate(el=>el.scrollWidth<=el.clientWidth+1),"Barra strumenti fuori schermo a "+width);
+      const shortcuts=await chrome.locator(".nav-shortcuts .nav-tool").evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return {x:r.x,right:r.right,top:r.top,height:r.height,width:r.width};}));
+      assert.equal(shortcuts.length,2);
+      assert.ok(shortcuts.every(r=>r.x>=0&&r.right<=width&&r.height>=44&&r.width>=44),"Area tocco o larghezza insufficiente a "+width);
+      assert.ok(shortcuts[1].x-shortcuts[0].right>=8,"Comandi troppo ravvicinati a "+width);
     }
     await chrome.setViewportSize({width:393,height:852});
     const searchTop=await chrome.locator("#search-input").evaluate(el=>el.getBoundingClientRect().top);
