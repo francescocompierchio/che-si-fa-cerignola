@@ -1170,7 +1170,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
         </button>
       </div>
       <div class="nav-shortcuts">
-        <span id="home-shortcut" hidden><button type="button" class="nav-tool" id="btn-add-home" aria-label="Aggiungi alla Home senza scaricare l'APK" title="Aggiungi alla Home" aria-controls="install-box" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6m-3-3h6m-4 8h2"/></svg><span class="nav-tool-copy"><strong>Aggiungi a Home</strong></span></button></span>
+        <span id="home-shortcut"><button type="button" class="nav-tool" id="btn-add-home" aria-label="Aggiungi alla Home senza scaricare l'APK" title="Aggiungi alla Home" aria-controls="install-box" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6m-3-3h6m-4 8h2"/></svg><span class="nav-tool-copy"><strong>Aggiungi a Home</strong></span></button></span>
         <button type="button" class="nav-tool nav-locali" id="btn-open-venues" aria-label="Pagine Instagram dei locali" aria-controls="venues-drawer" aria-expanded="false"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg><span class="nav-tool-copy"><strong>Instagram Locali</strong></span></button>
       </div>
     </div>
@@ -1241,6 +1241,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
         </div>
       </div>
       <div class="install-guide" id="install-guide">
+        <p id="guide-installed" hidden>Stai usando la modalità app. Per installare o reinstallare la web app, apri il sito in Chrome o Safari; puoi anche scaricare l’APK qui sotto.</p>
         <p id="guide-native" hidden>Il browser è pronto: tocca il pulsante qui sotto per confermare.</p>
         <button type="button" class="btn btn-map" id="btn-native-install" hidden>＋ Aggiungi alla Home</button>
         <p id="guide-social" hidden><strong>Se sei dentro Instagram o Facebook:</strong> apri il menu e scegli Apri nel browser esterno (Chrome o Safari).</p>
@@ -1542,7 +1543,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     const installTitle = document.getElementById("install-title");
     const homeShortcut=document.getElementById("home-shortcut");
     const btnAddHome=document.getElementById("btn-add-home");
-    if(homeShortcut)homeShortcut.hidden=isStandalone||isAndroidApp;
+    if(homeShortcut)homeShortcut.hidden=false;
     if(btnAddHome)btnAddHome.setAttribute("aria-expanded","false");
     const richiestaInstallazione = urlParams.get("installa")==="1";
     let installataOra=false;
@@ -1559,19 +1560,17 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     if(chromeLink&&isAndroid){const target="https://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1";chromeLink.href="intent://francescocompierchio.github.io/che-si-fa-cerignola/?installa=1#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(target)+";end";}
     if(btnToggleGuide)btnToggleGuide.textContent="Come fare";
     if(installTitle)installTitle.textContent="📲 Installa gratis sul telefono";
-    if (isAndroidApp || isStandalone) {
-      if(btnApkTop)btnApkTop.style.display="none";
-      if(btnApkFooter)btnApkFooter.style.display="none";
-    }
+    // I controlli espliciti restano accessibili anche nelle WebView e nelle app installate.
     const installBackdrop=document.getElementById("install-drawer-backdrop");
     const nativeInstall=document.getElementById("btn-native-install");
     const closeInstall=document.getElementById("close-install-drawer");
     let installInvoker=null;
     function aggiornaDisponibilitaHome(){
-      const available=!!window.csfInstallPrompt&&!isSocialBrowser;
+      const available=!!window.csfInstallPrompt&&!isSocialBrowser&&!isStandalone&&!installataOra;
+      guidaVisibile("guide-installed",isStandalone||installataOra);
       if(nativeInstall)nativeInstall.hidden=!available;
       guidaVisibile("guide-native",available);
-      guidaVisibile("guide-android",isAndroid&&!available);
+      guidaVisibile("guide-android",isAndroid&&!available&&!isStandalone&&!installataOra);
       guidaVisibile("guide-open-chrome",isAndroid&&!available);
       guidaVisibile("guide-ios",isIOS&&!available);
       guidaVisibile("guide-desktop",!isAndroid&&!isIOS&&!available);
@@ -1586,7 +1585,7 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     }
     function suggerisciInstallazioneDopoUtilizzo(){}
     function mostraGuidaInstallazione(esplicita=false){
-      if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
+      if(esplicita!==true&&(isStandalone||installataOra||isDispositivoEscluso()))return;
       if(document.getElementById("venues-drawer")?.classList.contains("open"))chiudiDrawerLocali();
       installInvoker=document.activeElement;
       aggiornaDisponibilitaHome();
@@ -1599,9 +1598,9 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
       window.CsfMetrics?.action?.("csf_install_guide");
     }
     async function richiestaInstallaApp(esplicita=false){
-      if(isStandalone||isAndroidApp||installataOra||(esplicita!==true&&isDispositivoEscluso()))return;
+      if(esplicita!==true&&(isStandalone||installataOra||isDispositivoEscluso()))return;
       const prompt=window.csfInstallPrompt;
-      if(!prompt||isSocialBrowser){mostraGuidaInstallazione(esplicita);return;}
+      if(!prompt||isSocialBrowser||isStandalone||installataOra){mostraGuidaInstallazione(esplicita);return;}
       chiudiInstallazione(false);
       window.csfInstallPrompt=null;
       window.CsfMetrics?.action?.("csf_install_prompt");
@@ -1622,17 +1621,17 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     window.addEventListener("beforeinstallprompt",aggiornaDisponibilitaHome);
     aggiornaDisponibilitaHome();
     if(richiestaInstallazione){
-      if(!isStandalone&&!isAndroidApp)mostraGuidaInstallazione(true);
+      mostraGuidaInstallazione(true);
       // Il link apre il pannello una volta sola; un reload di consenso non lo riapre.
       try{const clean=new URL(location.href);clean.searchParams.delete("installa");history.replaceState(history.state,"",clean.href);}catch(_){}
     }
     for(const id of ["btn-apk-alternativo","btn-apk-drawer"])document.getElementById(id)?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
     window.addEventListener("appinstalled",()=>{
       installataOra=true;window.csfInstallPrompt=null;
-      if(homeShortcut)homeShortcut.hidden=true;
+      if(homeShortcut)homeShortcut.hidden=false;
       // Il download APK è indipendente dall’installazione PWA.
       chiudiInstallazione(false);
-      if(btnApkFooter)btnApkFooter.style.display="none";
+      // Mantieni accessibili i comandi anche dopo un evento appinstalled.
       window.CsfMetrics?.action?.("csf_pwa_installed");
     });
     document.addEventListener("DOMContentLoaded",()=>{
