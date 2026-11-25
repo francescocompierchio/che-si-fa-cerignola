@@ -118,22 +118,21 @@ def candidati_fonti(memoria,diagnostica,noti,now):
     return [{"dominio":h,"cicliOsservati":v["osservazioni"],"ricerche":len(v["fonti"])} for h,v in recenti[:15]]
 
 def fonti(memoria,eventi,oggi):
-    """Al massimo tre esplorazioni a ciclo: due aree carenti e una a rotazione.
+    """Tre esplorazioni a ciclo: due movida e una per le altre aree a rotazione.
     Query nuove non equivalgono a eventi: valgono sempre le verifiche esistenti."""
     cont=memoria.get("apprendimento",{}).get("cicli",0)
     carenze=lacune(eventi,oggi)
-    aree=sorted(AREE,key=lambda a:(carenze[a],0 if a=="Locali & Serate" else 1,a))
-    # Riserva una ricerca alla movida, anche quando qualche evento editoriale è già presente.
-    scelte=list(dict.fromkeys(["Locali & Serate",aree[0],list(AREE)[cont%len(AREE)]]))
-    if len(scelte)<3:
-        scelte.extend(x for x in aree if x not in scelte)
-    scelte=scelte[:3]
+    movida="Locali & Serate"
+    altre=sorted((a for a in AREE if a!=movida),key=lambda a:(carenze[a],a))
+    primo=variante(memoria,movida,cont)
+    # Due famiglie di query distinte per la movida, a budget invariato.
+    secondo=(primo+1+(cont%2))%len(AREE[movida])
+    area=altre[cont%len(altre)]
+    scelte=[(movida,primo),(movida,secondo),(area,variante(memoria,area,cont))]
     out=[]
-    for area in scelte:
-        varianti=AREE[area]
-        indice=variante(memoria,area,cont)
-        q=f'Cerignola {varianti[indice]} when:30d'
-        out.append({"nome":f"Apprendimento Cerignola - {area} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"max_schede_rss":3})
+    for area,indice in scelte:
+        q=f'Cerignola {AREE[area][indice]} when:30d'
+        out.append({"nome":f"Apprendimento Cerignola - {area} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"focus_serate":area==movida,"max_schede_rss":3})
     return out
 
 def misura(risultati,precedenti,pubblicati,duplicati):
@@ -146,6 +145,7 @@ def misura(risultati,precedenti,pubblicati,duplicati):
         nuovi=set()
         locali=set()
         serate=set()
+        serate_territorio=set()
         for e in eventi:
             for i,f in enumerate(pubblicati):
                 if not duplicati(e,f) or e.get("dataInizio")!=f.get("dataInizio") or e.get("dataFine")!=f.get("dataFine"):
@@ -153,12 +153,14 @@ def misura(risultati,precedenti,pubblicati,duplicati):
                 validi.add(i)
                 if not any(duplicati(f,p) for p in precedenti):
                     nuovi.add(i)
+                    if f.get("categoria")=="Locali & Serate":
+                        serate_territorio.add(i)
                     if f.get("citta")=="Cerignola":
                         locali.add(i)
                         if f.get("categoria")=="Locali & Serate":
                             serate.add(i)
                 break
-        out[nome]={"eventiUtili":len(validi),"novitaUtili":len(nuovi),"novitaCerignola":len(locali),"nuoveSerateCerignola":len(serate)}
+        out[nome]={"eventiUtili":len(validi),"novitaUtili":len(nuovi),"novitaCerignola":len(locali),"nuoveSerateCerignola":len(serate),"nuoveSerate":len(serate_territorio)}
     return out
 
 def aggiorna(memoria,eventi,oggi,now):

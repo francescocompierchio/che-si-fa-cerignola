@@ -86,6 +86,7 @@ jobs:
           assert.ok(html.includes('data-smart-filter="COUPLE"'), "Filtro coppie assente");
           assert.ok(html.includes('data-smart-filter="FRIENDS"'), "Filtro amici assente");
           assert.ok(html.includes('data-smart-filter="NIGHT"'), "Filtro serate assente");
+          assert.equal([...html.matchAll(/data-smart-filter="([^"]+)"/g)][0][1],"NIGHT","Serate deve essere il primo filtro");
           assert.ok(html.includes('data-smart-filter="CULTURE"'), "Filtro cultura assente");
           const moveSource = html.match(/function spostaGiorniISO\(data,giorni\)\{[^}]*\}/);
           assert.ok(moveSource, "Funzione di calendario non trovata");
@@ -126,7 +127,7 @@ jobs:
           const makeNotificationSummary = new Function(summarySource[0] + "; return riepilogoNuoviEventi;")();
           assert.equal(makeNotificationSummary([{titolo:"Concerto"},{titolo:"Teatro"},{titolo:"Festival"}]), "3 nuovi eventi: Concerto · Teatro e altri 1");
           const sw = fs.readFileSync("sw.js", "utf8");
-          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v37"'), "Versione cache service worker non aggiornata");
+          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v38"'), "Versione cache service worker non aggiornata");
           assert.ok(sw.includes('addEventListener("notificationclick"'), "Apertura app dal tocco notifica assente");
           assert.ok(html.includes("const LOCALI_CERIGNOLA_DEFAULT"), "Rubrica locali Instagram assente");
           const editorialSource = html.match(/const eventiEditoriali = (\[[\s\S]*?\]);/);

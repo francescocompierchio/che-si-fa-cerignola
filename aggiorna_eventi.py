@@ -2418,7 +2418,7 @@ def fonti_registro_cerignola(registro=None):
             )
             fonti.append({"nome": "Registro Cerignola - " + gruppo + (f" {indice//12+1}" if indice else ""),
                           "url": url, "citta_default": "", "solo_cerignola": True,
-                          "max_schede_rss": 3})
+                          "max_schede_rss": 3, "focus_serate": gruppo=="movida"})
     return fonti
 
 
@@ -3084,11 +3084,17 @@ def esegui_aggiornamento():
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
     compiti += [(raccogli_da_feed_social, fonte) for fonte in apprendimento.fonti(memoria,apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati),oggi_stagionale)]
+    for _, fonte in compiti:
+        # Mantiene i filtri di estrazione originali: focus_serate è solo priorità operativa.
+        if fonte["nome"].startswith(("Tacco di Bacco Nightlife Cerignola","Cerignola pubblicazioni social locali","Serate e musica Cerignola","Lineup Atlas API")):
+            fonte["focus_serate"]=True
+        if fonte["nome"]=="Tacco di Bacco Nightlife Cerignola":
+            fonte["prioritaria"]=True
     compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
     for _, fonte in compiti:
-        registra_statistica_fonte(fonte["nome"], prioritaria=bool(fonte.get("prioritaria") or fonte.get("citta_default")=="Cerignola" or fonte.get("solo_cerignola")))
+        registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte), focus_serate=stato_raccolta.fonte_serale(fonte))
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)

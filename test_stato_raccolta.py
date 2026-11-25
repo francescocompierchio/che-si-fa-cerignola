@@ -33,6 +33,16 @@ class StatoFontiTests(unittest.TestCase):
         self.assertEqual(s.pianifica(task,m,12)[0],[task[1]])
         self.assertEqual(len(s.pianifica(task,m,12,True)[0]),2)
 
+    def test_movida_prima_senza_ignorare_blocchi(self):
+        t=[(None,{"nome":"cultura","solo_cerignola":True}),(None,{"nome":"foggia","nightlife":True}),(None,{"nome":"cerignola","focus_serate":True,"solo_cerignola":True}),(None,{"nome":"altro"})]
+        m={"fonti":{"cultura":{"valoreAppreso":20}}}
+        self.assertEqual([x[1]["nome"] for x in s.pianifica(t,m,100)[0]],["cerignola","foggia","cultura","altro"])
+        m["fonti"]["cerignola"]={"prossimoTentativo":200,"blocchiConsecutivi":2}
+        self.assertEqual(s.pianifica(t,m,100)[1],["cerignola"])
+        for i in range(12):
+            s.aggiorna(m,{"foggia":{"stato":"ok","eventiEstratti":0,"focus_serate":True}},i)
+        self.assertLessEqual(m["fonti"]["foggia"]["prossimoTentativo"],3611)
+
     def test_cache_invalida(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"fonti.json"

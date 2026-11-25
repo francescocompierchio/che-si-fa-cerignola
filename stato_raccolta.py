@@ -11,12 +11,18 @@ def carica(path):
     except (OSError, ValueError, TypeError):
         return {"fonti": {}}
 
+def fonte_locale(f):
+    return bool(f.get("prioritaria") or f.get("solo_cerignola") or f.get("citta_default")=="Cerignola")
+
+def fonte_serale(f):
+    return bool(f.get("focus_serate") or f.get("nightlife") or f.get("cene_show"))
+
 def pianifica(compiti, memoria, now, forza=False):
     attivi, pause = [], []
     for task in compiti:
         nome = task[1]["nome"]
         dati = memoria.get("fonti", {}).get(nome, {})
-        prioritaria = task[1].get("prioritaria") or task[1].get("solo_cerignola") or task[1].get("citta_default")=="Cerignola"
+        prioritaria = fonte_locale(task[1])
         blocco_attivo = dati.get("blocchiConsecutivi",0)>=2
         if not forza and dati.get("prossimoTentativo", 0) > now and (blocco_attivo or not prioritaria):
             pause.append(nome)
@@ -26,8 +32,10 @@ def pianifica(compiti, memoria, now, forza=False):
     def priorita(task):
         f=task[1]
         d=memoria.get("fonti",{}).get(f["nome"],{})
-        return (not bool(f.get("prioritaria") or f.get("solo_cerignola") or f.get("citta_default")=="Cerignola"),
-                -(d.get("valoreAppreso",d.get("produttivita",0))+apprendimento.bonus_temporale(d,now)))
+        # Prima movida locale, poi movida del territorio, poi altre fonti locali.
+        # Le pause HTTP restano valide: la priorità non aggira i blocchi.
+        gruppo = (0 if fonte_locale(f) else 1) if fonte_serale(f) else (2 if fonte_locale(f) else 3)
+        return (gruppo, -(d.get("valoreAppreso",d.get("produttivita",0))+apprendimento.bonus_temporale(d,now)))
     attivi.sort(key=priorita)
     return attivi, pause
 
@@ -45,11 +53,11 @@ def aggiorna(memoria, diagnostica, now):
         pausa = min(21600, 3600 * 2 ** min(serie - 2, 3)) if serie >= 2 else 0
         # Dopo 8 cicli senza eventi: 1h, poi 2h, massimo 4h; mai per Cerignola prioritaria.
         if not pausa and not dati.get("prioritaria") and vuoti >= 8:
-            pausa = min(14400, 3600 * 2 ** min((vuoti-8)//4,2))
+            pausa = min(3600 if dati.get("focus_serate") else 14400, 3600 * 2 ** min((vuoti-8)//4,2))
         utili = int(dati.get("eventiEstratti", 0))
         media = round(0.7 * prima.get("produttivita", utili) + 0.3 * utili, 2)
         # Il punteggio premia novità effettivamente pubblicate e copertura locale.
-        valore = min(20, 0.15*dati.get("eventiUtili",0)+dati.get("novitaUtili",0)+2*dati.get("novitaCerignola",0)+3*dati.get("nuoveSerateCerignola",0))
+        valore = min(20, 0.15*dati.get("eventiUtili",0)+dati.get("novitaUtili",0)+2*dati.get("novitaCerignola",0)+2*dati.get("nuoveSerate",0)+4*dati.get("nuoveSerateCerignola",0))
         appreso=round(0.8*prima.get("valoreAppreso",valore)+0.2*valore,3)
         fonti[nome] = {"fasce":apprendimento.profilo_temporale(prima,dati,now),"valoreAppreso":appreso,"novitaUtili":dati.get("novitaUtili",0),"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
                        "blocchiConsecutivi": serie, "cicliVuoti": vuoti,

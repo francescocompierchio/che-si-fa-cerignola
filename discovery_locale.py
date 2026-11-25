@@ -20,7 +20,7 @@ def settimanali():
         ("Aperitivi e brunch",'(apericena OR "aperitivo musicale" OR "aperitivo domenicale" OR brunch OR "soft clubbing")'),
         ("DJ e musica live",'("dj set" OR "dinner show" OR "music selection" OR "musica dal vivo" OR "live music")'),
     ]
-    return [{"nome":"Cerignola settimanali - "+nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":f'Cerignola {tema} when:21d',"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"ricorrente_verificata":True,"max_schede_rss":3} for nome,tema in temi]
+    return [{"nome":"Cerignola settimanali - "+nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":f'Cerignola {tema} when:21d',"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"ricorrente_verificata":True,"focus_serate":True,"max_schede_rss":3} for nome,tema in temi]
 
 CENE_SHOW = re.compile(r"\b(?:cen[ae]\s+(?:con\s+)?(?:spettacol[oi]|musica\s+dal\s+vivo|dj[\s-]*set)|dinner[\s-]+show|apericena\s+(?:con\s+)?(?:dj|live)|pranz[oi]\s+spettacol[oi]|perc[u]?ssioni\s+live|showman)\b", re.I)
 CENE_SHOW_QUERY = '("cena spettacolo" OR "cena con spettacolo" OR "dinner show" OR "cena con musica" OR "cena con dj" OR "pranzo spettacolo" OR showman OR "apericena dj")'
