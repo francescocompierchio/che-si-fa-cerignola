@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v24";
+const CACHE_NAME = "chesifa-shell-v25";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,

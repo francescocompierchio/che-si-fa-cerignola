@@ -933,7 +933,7 @@
   </header>
 
   <main>
-    <section class="install-strip" id="install-box" aria-label="Installa l'app">
+    <section class="install-strip" id="install-box" style="display:none" aria-label="Installa l'app">
       <div class="install-strip-row">
         <p class="install-strip-text" id="install-title">📲 Installa l'app sul telefono</p>
         <div class="install-strip-actions">
@@ -980,9 +980,9 @@
       </button>
     </div>
 
-    <input type="search" id="search-input" class="search-box" placeholder="Cerca evento, serata, attività o comune (entro 50 km)..." aria-label="Cerca evento o attività" />
+    <input type="search" id="search-input" class="search-box" placeholder="Es. discoteche a Trani sabato sera..." aria-label="Cerca evento o attività" />
 
-    <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></section>
+    <section class="discovery-toolbar" aria-label="Strumenti per esplorare"><div class="discovery-actions"><button type="button" class="discovery-btn active" id="quick-all" aria-pressed="true">✨ Tutti</button><button type="button" class="discovery-btn" id="quick-weekend" aria-pressed="false">🌿 Weekend</button><button type="button" class="discovery-btn" id="quick-favorites" aria-pressed="false">☆ Salvati <span class="count" id="favorites-count">0</span></button></div><select class="sort-select" id="sort-events" aria-label="Ordina risultati"><option value="smart">Ordina: consigliati</option><option value="date">Ordina: prossimi</option><option value="near">Ordina: più vicini</option><option value="name">Ordina: A–Z</option></select><button type="button" class="discovery-btn" id="surprise-me">🎲 Sorprendimi</button></section>
     <section id="saved-plan-share" class="saved-plan-share" hidden><div><strong>Il tuo piano è pronto?</strong><span>Condividi in un messaggio tutti gli eventi e le idee che hai salvato</span></div><button type="button" id="btn-share-saved-plan" class="discovery-btn active">↗ Condividi il mio piano</button></section>
     <section id="weekend-share" class="saved-plan-share" hidden><div><strong>Organizza il weekend con gli amici</strong><span>Condividi una selezione aggiornata delle proposte del fine settimana.</span></div><button type="button" id="btn-share-weekend" class="discovery-btn active">↗ Condividi weekend</button></section>
     <div class="smart-filters" aria-label="Filtri intelligenti">
@@ -1302,7 +1302,13 @@
     if(isStandalone||isAndroidApp||isDispositivoEscluso()||(!richiestaInstallazione&&localStorage.getItem(HIDE_INSTALL_KEY)==="1")){
       if(installBox)installBox.style.display="none";
     }else if(richiestaInstallazione){
+      if(installBox)installBox.style.display="";
       installGuide?.classList.add("open");
+    }
+    function suggerisciInstallazioneDopoUtilizzo(){
+      if(isStandalone||isAndroidApp||installataOra||isDispositivoEscluso()||localStorage.getItem(HIDE_INSTALL_KEY)==="1")return;
+      // Nessun popup: mostra il banner solo dopo un’interazione volontaria con un evento.
+      if(installBox)installBox.style.display="";
     }
     function mostraGuidaInstallazione(){
       if(isStandalone||isAndroidApp||installataOra||isDispositivoEscluso())return;
@@ -1535,268 +1541,282 @@
     // Eventi editoriali approvati, indipendenti dalla raccolta automatica.
     // Un eventuale evento manuale corrispondente su Firebase ha la precedenza.
     const eventiEditoriali = [
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Locali & Serate",
-        "titolo": "Il Sabato di ADE",
-        "dataTesto": "Sab 28 Nov 2026 · Ore 21:00",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "ADE - Rooftop & Luxury Space",
-        "indirizzoMappa": "ADE - Rooftop & Luxury Space, Via Tiro a Segno km 3, Cerignola",
-        "costo": "Non indicato · Contattare il locale",
-        "descrizione": "Il Sabato di ADE: show cooking e music selection by Loris Ferrara, in collaborazione con Ènosi Events. Inizio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 786 1865. Evento segnalato direttamente dal locale.",
-        "fonteUrl": "https://www.instagram.com/ade_rooftopluxuryspace/",
-        "locandinaUrl": "https://francescocompierchio.github.io/che-si-fa-cerignola/locandine/ade-2026-11-28.avif",
-        "inEvidenza": true
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Famiglie & Bambini",
-        "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
-        "dataTesto": "Dom 29 Nov 2026 · 19:00–21:30",
-        "dataInizio": "2026-11-29",
-        "dataFine": "2026-11-29",
-        "luogo": "Via Don Minzoni – Quattro Vie",
-        "indirizzoMappa": "Via Don Minzoni 120, Cerignola",
-        "costo": "Non indicato nella fonte",
-        "descrizione": "Appuntamento natalizio di quartiere con tombolata comunitaria e canti tradizionali, organizzato dal Collettivo delle Quattro Vie con la scuola Don Puglisi – Pavoncelli.",
-        "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Famiglie & Bambini",
-        "titolo": "Natale nelle Quattro Vie – Il Rintocco delle Campane",
-        "dataTesto": "Dom 6 Dic 2026 · 19:00–21:30",
-        "dataInizio": "2026-12-06",
-        "dataFine": "2026-12-06",
-        "luogo": "Via Don Minzoni – Quattro Vie",
-        "indirizzoMappa": "Via Don Minzoni 120, Cerignola",
-        "costo": "Non indicato nella fonte",
-        "descrizione": "Gran finale del programma natalizio di quartiere con tombolata e musica corale e strumentale. Iniziativa del Collettivo delle Quattro Vie e della scuola Don Puglisi – Pavoncelli.",
-        "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Attività diurne",
-        "titolo": "Mercatini straordinari La Cicogna",
-        "dataTesto": "Dom 13 Dic 2026 · Ore 07:00–14:30",
-        "dataInizio": "2026-12-13",
-        "dataFine": "2026-12-13",
-        "luogo": "Villa Comunale Umberto I",
-        "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
-        "costo": "Non specificato nella fonte",
-        "descrizione": "Appuntamento del Consorzio La Cicogna lungo il perimetro della villa comunale, dalle 7:00 alle 14:30. Data riportata dal calendario Piazza in Festa; verifica eventuali variazioni.",
-        "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Attività diurne",
-        "titolo": "Mercatini straordinari La Cicogna",
-        "dataTesto": "Dom 20 Dic 2026 · Ore 07:00–14:30",
-        "dataInizio": "2026-12-20",
-        "dataFine": "2026-12-20",
-        "luogo": "Villa Comunale Umberto I",
-        "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
-        "costo": "Non specificato nella fonte",
-        "descrizione": "Appuntamento del Consorzio La Cicogna lungo il perimetro della villa comunale, dalle 7:00 alle 14:30. Data riportata dal calendario Piazza in Festa; verifica eventuali variazioni.",
-        "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Cerignola",
-        "categoria": "Attività diurne",
-        "titolo": "Antiquariando – mercatino dell'antiquariato e dell'usato",
-        "dataTesto": "Dom 13 Dic 2026 · Ore 08:00–18:00",
-        "dataInizio": "2026-12-13",
-        "dataFine": "2026-12-13",
-        "luogo": "Piazza Libertà",
-        "indirizzoMappa": "Piazza Libertà, Cerignola",
-        "costo": "Non specificato nella fonte",
-        "descrizione": "Mercatino mensile di antiquariato, collezionismo e artigianato. La data del 13 dicembre è riportata dal calendario Vintagery e coincide con la seconda domenica del mese indicata da Cose di Casa. Verifica eventuali variazioni con gli organizzatori.",
-        "fonteUrl": "https://vintagery.it/mercatini/provincia/foggia",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Barletta",
-        "categoria": "Locali & Serate",
-        "titolo": "Shake IT with HAIVAI B",
-        "dataTesto": "Ven 27 Nov 2026 · Club dalle 22:00",
-        "dataInizio": "2026-11-27",
-        "dataFine": "2026-11-27",
-        "luogo": "Atrio22",
-        "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
-        "costo": "Consulta biglietteria e condizioni di ingresso",
-        "descrizione": "La prevendita e il calendario Atrio22 indicano il 27 novembre; una descrizione promozionale riporta invece il 6 novembre. Controlla la data con il locale prima di partire.",
-        "fonteUrl": "https://xceed.me/it/barletta/event/shake-it-with-haivai-b-venerdi-27-novembre-2026/253620",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Barletta",
-        "categoria": "Locali & Serate",
-        "titolo": "Classic Saturday & Habibi with OLIVE F",
-        "dataTesto": "Sab 28 Nov 2026",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Atrio22",
-        "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
-        "costo": "Consulta biglietteria e condizioni di ingresso",
-        "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
-        "fonteUrl": "https://xceed.me/it/barletta/event/classic-saturday-habibi-with-olive-f-sabato-28-novembre-2026/253326",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Barletta",
-        "categoria": "Locali & Serate",
-        "titolo": "KAYMA at ATRIO22",
-        "dataTesto": "Dom 29 Nov 2026",
-        "dataInizio": "2026-11-29",
-        "dataFine": "2026-11-29",
-        "luogo": "Atrio22",
-        "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
-        "costo": "Consulta biglietteria e condizioni di ingresso",
-        "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
-        "fonteUrl": "https://xceed.me/it/barletta/event/domenica-29-novembre-kayma-at-atrio22/253630",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Barletta",
-        "categoria": "Locali & Serate",
-        "titolo": "Habibi with OCTAVE ONE live",
-        "dataTesto": "Ven 11 Dic 2026",
-        "dataInizio": "2026-12-11",
-        "dataFine": "2026-12-11",
-        "luogo": "Atrio22",
-        "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
-        "costo": "Consulta biglietteria e condizioni di ingresso",
-        "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
-        "fonteUrl": "https://xceed.me/de/barletta/event/habibi-with-octave-one-live-venerdi-11-dicembre-2026/249788",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Barletta",
-        "categoria": "Locali & Serate",
-        "titolo": "Habibi with BENJA",
-        "dataTesto": "Ven 18 Dic 2026",
-        "dataInizio": "2026-12-18",
-        "dataFine": "2026-12-18",
-        "luogo": "Atrio22",
-        "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
-        "costo": "Consulta biglietteria e condizioni di ingresso",
-        "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
-        "fonteUrl": "https://xceed.me/it/barletta/event/habibi-with-benja-venerdi-18-dicembre-2026/249791",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Bisceglie",
-        "categoria": "Locali & Serate",
-        "titolo": "Golden – Opening Party at Vyon Club",
-        "dataTesto": "Sab 28 Nov 2026 · Ore 22:00",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Idol Club",
-        "indirizzoMappa": "Idol Club, Bisceglie",
-        "costo": "Verifica con organizzatore",
-        "descrizione": "Apertura del format Golden: consulta la biglietteria per disponibilità, prezzo e condizioni.",
-        "fonteUrl": "https://www.ticketsms.it/it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Bisceglie",
-        "categoria": "Locali & Serate",
-        "titolo": "Mirito presents: Solto",
-        "dataTesto": "Sab 05 Dic 2026 · Ore 21:30",
-        "dataInizio": "2026-12-05",
-        "dataFine": "2026-12-05",
-        "luogo": "Divine Club – Invernale",
-        "indirizzoMappa": "Divine Club Invernale, Bisceglie",
-        "costo": "Verifica con organizzatore",
-        "descrizione": "Serata di clubbing proposta da Mirito. Verifica disponibilità e condizioni sulla biglietteria.",
-        "fonteUrl": "https://www.ticketsms.it/it/event/Mirito-Presents-Solto-Bisceglie-Divine-Club-Invernale-05-12-2026",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Trani",
-        "categoria": "Locali & Serate",
-        "titolo": "HABIBI · 28.11 · APHELION CLUB",
-        "dataTesto": "Sab 28 Nov 2026",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Aphelion Club",
-        "indirizzoMappa": "Contrada Fontanelle, Trani",
-        "costo": "Verifica con organizzatore",
-        "descrizione": "Serata del format HABIBI presente nel calendario ufficiale del promoter su Xceed. Orario, prezzo e disponibilità da verificare.",
-        "fonteUrl": "https://xceed.me/it/organizer/aphelion-club-1",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Manfredonia",
-        "categoria": "Locali & Serate",
-        "titolo": "Vinyl di Wine al Café des Artistes",
-        "dataTesto": "Sab 28 Nov 2026 · Ore 21:00 (calendario)",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Café des Artistes",
-        "indirizzoMappa": "Corso Manfredi 204, Manfredonia",
-        "costo": "Verifica con organizzatore",
-        "descrizione": "Ultimo appuntamento della rassegna di novembre: cena e selezione musicale. L'orario è indicato nel calendario, non nella descrizione: verifica con il locale.",
-        "fonteUrl": "https://manfredoniaeventi.com/evento/vinyl-di-wine-al-cafe-des-artistes-manfredonia-28-novembre-2026/",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Manfredonia",
-        "categoria": "Locali & Serate",
-        "titolo": "Piatto diVino – Cena d’autunno e musica dal vivo",
-        "dataTesto": "Sab 28 Nov 2026 · Ore 20:30",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Villa Artemide",
-        "indirizzoMappa": "Villa Artemide, Manfredonia",
-        "costo": "40 €",
-        "descrizione": "Cena con degustazione e musica dal vivo. Costo riportato dalla fonte: 40 euro. Verifica prenotazioni e disponibilità.",
-        "fonteUrl": "https://manfredoniaeventi.com/evento/piatto-divino-cena-dautunno-degustazione-vini-e-musica-dal-vivo-villa-artemide-manfredonia-28-novembre-2026/",
-        "inEvidenza": false
-      },
-      {
-        "tipoContenuto": "evento",
-        "citta": "Bisceglie",
-        "categoria": "Locali & Serate",
-        "titolo": "Around Us – Salomé Le Chat",
-        "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
-        "dataInizio": "2026-11-28",
-        "dataFine": "2026-11-28",
-        "luogo": "Divine Club",
-        "indirizzoMappa": "Divine Club, Bisceglie",
-        "costo": "Consulta la biglietteria",
-        "descrizione": "Serata con Salomé Le Chat, Skizzo, Innocent Soul e White Soxx, pubblicata su Nightz. Verifica disponibilità e condizioni di ingresso.",
-        "fonteUrl": "https://nightz.it/eventi/around-us/",
-        "inEvidenza": false
-      }
-    ];
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Locali & Serate",
+    "titolo": "Il Sabato di ADE",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 21:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "ADE - Rooftop & Luxury Space",
+    "indirizzoMappa": "ADE - Rooftop & Luxury Space, Via Tiro a Segno km 3, Cerignola",
+    "costo": "Non indicato · Contattare il locale",
+    "descrizione": "Il Sabato di ADE: show cooking e music selection by Loris Ferrara, in collaborazione con Ènosi Events. Inizio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 786 1865. Evento segnalato direttamente dal locale.",
+    "fonteUrl": "https://www.instagram.com/ade_rooftopluxuryspace/",
+    "locandinaUrl": "https://francescocompierchio.github.io/che-si-fa-cerignola/locandine/ade-2026-11-28.avif",
+    "inEvidenza": true
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
+    "dataTesto": "Dom 29 Nov 2026 · 19:00–21:30",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Via Don Minzoni – Quattro Vie",
+    "indirizzoMappa": "Via Don Minzoni 120, Cerignola",
+    "costo": "Non indicato nella fonte",
+    "descrizione": "Appuntamento natalizio di quartiere con tombolata comunitaria e canti tradizionali, organizzato dal Collettivo delle Quattro Vie con la scuola Don Puglisi – Pavoncelli.",
+    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Natale nelle Quattro Vie – Il Rintocco delle Campane",
+    "dataTesto": "Dom 6 Dic 2026 · 19:00–21:30",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Via Don Minzoni – Quattro Vie",
+    "indirizzoMappa": "Via Don Minzoni 120, Cerignola",
+    "costo": "Non indicato nella fonte",
+    "descrizione": "Gran finale del programma natalizio di quartiere con tombolata e musica corale e strumentale. Iniziativa del Collettivo delle Quattro Vie e della scuola Don Puglisi – Pavoncelli.",
+    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Mercatini straordinari La Cicogna",
+    "dataTesto": "Dom 13 Dic 2026 · Ore 07:00–14:30",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Villa Comunale Umberto I",
+    "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento del Consorzio La Cicogna lungo il perimetro della villa comunale, dalle 7:00 alle 14:30. Data riportata dal calendario Piazza in Festa; verifica eventuali variazioni.",
+    "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Mercatini straordinari La Cicogna",
+    "dataTesto": "Dom 20 Dic 2026 · Ore 07:00–14:30",
+    "dataInizio": "2026-12-20",
+    "dataFine": "2026-12-20",
+    "luogo": "Villa Comunale Umberto I",
+    "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento del Consorzio La Cicogna lungo il perimetro della villa comunale, dalle 7:00 alle 14:30. Data riportata dal calendario Piazza in Festa; verifica eventuali variazioni.",
+    "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Antiquariando – mercatino dell'antiquariato e dell'usato",
+    "dataTesto": "Dom 13 Dic 2026 · Ore 08:00–18:00",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Piazza Libertà",
+    "indirizzoMappa": "Piazza Libertà, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Mercatino mensile di antiquariato, collezionismo e artigianato. La data del 13 dicembre è riportata dal calendario Vintagery e coincide con la seconda domenica del mese indicata da Cose di Casa. Verifica eventuali variazioni con gli organizzatori.",
+    "fonteUrl": "https://vintagery.it/mercatini/provincia/foggia",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Shake IT with HAIVAI B",
+    "dataTesto": "Ven 27 Nov 2026 · Club dalle 22:00",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
+    "costo": "Consulta biglietteria e condizioni di ingresso",
+    "descrizione": "La prevendita e il calendario Atrio22 indicano il 27 novembre; una descrizione promozionale riporta invece il 6 novembre. Controlla la data con il locale prima di partire.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/shake-it-with-haivai-b-venerdi-27-novembre-2026/253620",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Classic Saturday & Habibi with OLIVE F",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
+    "costo": "Consulta biglietteria e condizioni di ingresso",
+    "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/classic-saturday-habibi-with-olive-f-sabato-28-novembre-2026/253326",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "KAYMA at ATRIO22",
+    "dataTesto": "Dom 29 Nov 2026",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
+    "costo": "Consulta biglietteria e condizioni di ingresso",
+    "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/domenica-29-novembre-kayma-at-atrio22/253630",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Habibi with OCTAVE ONE live",
+    "dataTesto": "Ven 11 Dic 2026",
+    "dataInizio": "2026-12-11",
+    "dataFine": "2026-12-11",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
+    "costo": "Consulta biglietteria e condizioni di ingresso",
+    "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
+    "fonteUrl": "https://xceed.me/de/barletta/event/habibi-with-octave-one-live-venerdi-11-dicembre-2026/249788",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Habibi with BENJA",
+    "dataTesto": "Ven 18 Dic 2026",
+    "dataInizio": "2026-12-18",
+    "dataFine": "2026-12-18",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "Via Leonardo da Vinci 15, Barletta",
+    "costo": "Consulta biglietteria e condizioni di ingresso",
+    "descrizione": "Serata in club pubblicata sul calendario Xceed di Atrio22. Verifica orario, disponibilità, dress code e condizioni di ingresso sulla scheda dell'organizzatore.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/habibi-with-benja-venerdi-18-dicembre-2026/249791",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Golden – Opening Party at Vyon Club",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 22:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Idol Club",
+    "indirizzoMappa": "Idol Club, Bisceglie",
+    "costo": "Verifica con organizzatore",
+    "descrizione": "Apertura del format Golden: consulta la biglietteria per disponibilità, prezzo e condizioni.",
+    "fonteUrl": "https://www.ticketsms.it/it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Mirito presents: Solto",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 21:30",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Divine Club – Invernale",
+    "indirizzoMappa": "Divine Club Invernale, Bisceglie",
+    "costo": "Verifica con organizzatore",
+    "descrizione": "Serata di clubbing proposta da Mirito. Verifica disponibilità e condizioni sulla biglietteria.",
+    "fonteUrl": "https://www.ticketsms.it/it/event/Mirito-Presents-Solto-Bisceglie-Divine-Club-Invernale-05-12-2026",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Trani",
+    "categoria": "Locali & Serate",
+    "titolo": "HABIBI · 28.11 · APHELION CLUB",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Aphelion Club",
+    "indirizzoMappa": "Contrada Fontanelle, Trani",
+    "costo": "Verifica con organizzatore",
+    "descrizione": "Serata del format HABIBI presente nel calendario ufficiale del promoter su Xceed. Orario, prezzo e disponibilità da verificare.",
+    "fonteUrl": "https://xceed.me/it/organizer/aphelion-club-1",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Locali & Serate",
+    "titolo": "Vinyl di Wine al Café des Artistes",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 21:00 (calendario)",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Café des Artistes",
+    "indirizzoMappa": "Corso Manfredi 204, Manfredonia",
+    "costo": "Verifica con organizzatore",
+    "descrizione": "Ultimo appuntamento della rassegna di novembre: cena e selezione musicale. L'orario è indicato nel calendario, non nella descrizione: verifica con il locale.",
+    "fonteUrl": "https://manfredoniaeventi.com/evento/vinyl-di-wine-al-cafe-des-artistes-manfredonia-28-novembre-2026/",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Locali & Serate",
+    "titolo": "Piatto diVino – Cena d’autunno e musica dal vivo",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 20:30",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Villa Artemide",
+    "indirizzoMappa": "Villa Artemide, Manfredonia",
+    "costo": "40 €",
+    "descrizione": "Cena con degustazione e musica dal vivo. Costo riportato dalla fonte: 40 euro. Verifica prenotazioni e disponibilità.",
+    "fonteUrl": "https://manfredoniaeventi.com/evento/piatto-divino-cena-dautunno-degustazione-vini-e-musica-dal-vivo-villa-artemide-manfredonia-28-novembre-2026/",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Around Us – Salomé Le Chat",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Divine Club",
+    "indirizzoMappa": "Divine Club, Bisceglie",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata con Salomé Le Chat, Skizzo, Innocent Soul e White Soxx, pubblicata su Nightz. Verifica disponibilità e condizioni di ingresso.",
+    "fonteUrl": "https://nightz.it/eventi/around-us/",
+    "inEvidenza": false
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Babbo Natale va in pensione – Teatro Eidos",
+    "dataTesto": "Dom 29 Nov 2026 · Ore 18:00",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Roma Teatro",
+    "indirizzoMappa": "Roma Teatro, Cerignola",
+    "descrizione": "Spettacolo della rassegna per bambini e famiglie, in programma alle 18:00. Verifica disponibilità e biglietti presso il teatro.",
+    "costo": "Consulta il botteghino",
+    "fonteUrl": "https://localtourism.it/it/evd/roma-teatro-cerignola-stagione-2026-2027"
+  }
+];
     let tuttiEventiAttivi = [];
     let filtroAttivo = "ALL";
 
     let queryRicerca = "";
-    let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", ordinamentoEventi = "date", filtroSmart = "ALL";
+    let modalitaRapida = urlParams.get("vista")==="weekend"?"WEEKEND":"ALL", ordinamentoEventi = "smart", filtroSmart = "ALL";
     let dataSelezionata = "";
     let linkEventoDaAprire = "";
     try { if (location.hash.startsWith("#evento=")) linkEventoDaAprire=decodeURIComponent(location.hash.slice(8)); } catch (_) {}
@@ -2547,7 +2567,7 @@
         const fascia = getFasciaCerchioCerignola(cittaEv);
 
         if (modalitaRapida === "FAVORITES" && !preferiti.has(chiaveEvento(ev))) return false;
-        if (modalitaRapida === "WEEKEND" && ev.tipoContenuto !== "esperienza" && !eWeekend(ev)) return false;
+        if (modalitaRapida === "WEEKEND" && (ev.tipoContenuto === "esperienza" || !eWeekend(ev))) return false;
         const categoriaSmart=(ev.categoria||"").toLowerCase(),targetSmart=(ev.adattoA||"").toLowerCase(),tipoSmart=(ev.tipoEsperienza||"").toLowerCase(),testoSmart=(ev.titolo+" "+ev.descrizione).toLowerCase();
         if(filtroSmart==="FREE"&&!/gratis|gratuit|ingresso libero|free/i.test(ev.costo||""))return false;
         if(filtroSmart==="FAMILY"&&!(/famigl|bambin|ragazz|famiglie|children/i.test(categoriaSmart+" "+targetSmart+" "+testoSmart)))return false;
@@ -2557,7 +2577,7 @@
         const contestoOccasione=normalizzaRicerca([ev.categoria,ev.adattoA,ev.tipoEsperienza,ev.titolo,ev.descrizione,ev.luogo].join(" "));
         if(filtroSmart==="COUPLE"&&!(/copp|romant|degustaz|cantin|agritur|panoram|passeggiat|ristor|teatro|cen|aperitiv|natura|borgo|benessere/.test(contestoOccasione)))return false;
         if(filtroSmart==="FRIENDS"&&!(/amic|grupp|bowling|dj|live|karaoke|quiz|concert|sport|sagra|festival|aperitiv|serat|locale|birr|street food/.test(contestoOccasione)))return false;
-        if(filtroSmart==="NIGHT"&&!(/locali|serat|musica|concert|dj set|karaoke|aperitiv|cena|spettacol|teatro|cinema|notturn/.test(contestoOccasione)))return false;
+        if(filtroSmart==="NIGHT"&&!(CsfEventTools.vitaNotturna?.(ev)??/locali|serat/.test(categoriaSmart)))return false;
         if(filtroSmart==="CULTURE"&&!(/teatro|spettacol|mostra|museo|storia|arte|archeolog|cultura|letter|libro|cinema|monument|castello|torre/.test(contestoOccasione)))return false;
         if(dataSelezionata&&(ev.tipoContenuto==="esperienza"||!ev.dataInizio||ev.dataInizio>dataSelezionata||(ev.dataFine||ev.dataInizio)<dataSelezionata))return false;
         if (filtroAttivo === "OGGI" && !isToday) return false;
@@ -2572,18 +2592,17 @@
           if (ev.categoria !== catRichiesta) return false;
         }
         if (queryRicerca.trim() !== "") {
-          const testoCompleto = normalizzaRicerca(`${ev.titolo} ${ev.citta} ${ev.luogo} ${ev.descrizione} ${ev.categoria} ${ev.adattoA || ""} ${ev.tipoEsperienza || ""}`);
-          if(intento.modo==="TONIGHT"&&(!isToday||!CsfEventTools.evening(ev)))return false;
-          if(intento.modo==="TODAY"&&!isToday)return false;
-          if(intento.modo==="TOMORROW"){const domani=spostaGiorniISO(oggi,1);if(ev.tipoContenuto==="esperienza"||!ev.dataInizio||ev.dataInizio>domani||(ev.dataFine||ev.dataInizio)<domani)return false;}
-          if(intento.modo==="WEEKEND"&&(ev.tipoContenuto==="esperienza"||!eWeekend(ev)))return false;
-          const paroleRicerca = intento.parole;
-          if (!paroleRicerca.every(parola => testoCompleto.includes(parola))) return false;
+          if(CsfExtras.corrispondeRicerca&&CsfEventTools.discoteca){
+            if(!CsfExtras.corrispondeRicerca(ev,intento,oggi,CsfEventTools))return false;
+          }else{
+            const testoCompleto=normalizzaRicerca([ev.titolo,ev.citta,ev.luogo,ev.descrizione,ev.categoria].join(" "));
+            if(!intento.parole.every(parola=>testoCompleto.includes(parola)))return false;
+          }
         }
         return true;
       });
 
-      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;return x-y||Number(!!b.inEvidenza)-Number(!!a.inEvidenza)||(a.dataInizio||"").localeCompare(b.dataInizio||"")||getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||CsfEventTools.quality(b)-CsfEventTools.quality(a);});
+      filtrati.sort((a,b)=>{if(ordinamentoEventi==="name")return(a.titolo||"").localeCompare(b.titolo||"","it");if(ordinamentoEventi==="near")return getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||(a.dataInizio||"").localeCompare(b.dataInizio||"");const x=a.tipoContenuto==="esperienza"?1:0,y=b.tipoContenuto==="esperienza"?1:0;const priorita=ordinamentoEventi==="smart"&&CsfEventTools.prioritaScoperta?CsfEventTools.prioritaScoperta(a,oggi,getFasciaCerchioCerignola(a.citta))-CsfEventTools.prioritaScoperta(b,oggi,getFasciaCerchioCerignola(b.citta)):0;return x-y||priorita||(ordinamentoEventi==="smart"?Number(!!b.inEvidenza)-Number(!!a.inEvidenza):0)||(a.dataInizio||"").localeCompare(b.dataInizio||"")||getFasciaCerchioCerignola(a.citta)-getFasciaCerchioCerignola(b.citta)||CsfEventTools.quality(b)-CsfEventTools.quality(a);});
       const numeroEsperienze = filtrati.filter(ev => ev.tipoContenuto === "esperienza").length;
       const numeroEventi = filtrati.length - numeroEsperienze;
       counterBadge.textContent = `${numeroEventi} ${numeroEventi === 1 ? "evento in programma" : "eventi in programma"}`;
@@ -2592,7 +2611,7 @@
         const empty = document.createElement("div");
         empty.className = "empty-state";
         empty.textContent = modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : "Nessun evento o attività trovata con i filtri selezionati.";
-        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{dataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);container.appendChild(empty);
+        const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{queryRicerca="";searchInput.value="";dataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);if(modalitaRapida!=="FAVORITES"){const nearby=document.createElement("button");nearby.type="button";nearby.className="btn btn-soft";nearby.textContent="Scopri le serate dei prossimi giorni";nearby.addEventListener("click",()=>{queryRicerca="";searchInput.value="";impostaModalitaRapida("ALL");impostaFiltroSmart("NIGHT");});empty.appendChild(nearby);}container.appendChild(empty);
         return;
       }
 
@@ -2605,6 +2624,7 @@
         if (ev.inEvidenza) details.classList.add("is-featured");
 
         const summary = document.createElement("summary");
+        summary.addEventListener("click",e=>{if(!details.open&&!e.target.closest("button,a"))suggerisciInstallazioneDopoUtilizzo();});
         const favoriteBtn=document.createElement("button");favoriteBtn.type="button";favoriteBtn.className="favorite-toggle";favoriteBtn.dataset.favoriteKey=chiaveEvento(ev);favoriteBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const k=chiaveEvento(ev);if(preferiti.has(k)){preferiti.delete(k);mostraToast("Rimosso dai salvati");}else{preferiti.add(k);window.CsfMetrics?.record("csf_event_save",ev);mostraToast("Aggiunto ai salvati");}salvaPreferiti();aggiornaComandiRapidi();if(modalitaRapida==="FAVORITES")renderEventi();});
         const metaTop = document.createElement("div");
         metaTop.className = "meta-top";

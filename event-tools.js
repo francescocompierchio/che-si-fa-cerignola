@@ -36,7 +36,29 @@ function strumenti(){
    const lines=chosen.map(ev=>"• "+String(ev.titolo).replace(/\s+/g," ").slice(0,95)+" — "+fmt(ev.dataInizio)+ (ev.dataFine&&ev.dataFine!==ev.dataInizio?"–"+fmt(ev.dataFine):"")+" · "+ev.citta+" · "+String(ev.luogo).replace(/\s+/g," ").slice(0,70));
    return "CHE SI FA CERIGNOLA | Weekend "+fmt(start)+" – "+fmt(end)+"\n\n"+lines.join("\n")+(rows.length>chosen.length?"\n… e altri "+(rows.length-chosen.length)+" appuntamenti":"")+"\n\nConsulta il programma aggiornato, orari e fonti. Aggiungi l’app gratis al telefono.";
  }
- return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest};
+ function discoteca(ev){
+   if(ev.tipoContenuto==="esperienza")return false;
+   const t=norm([ev.titolo,ev.luogo,ev.descrizione].join(" "));
+   return /locali|serat/.test(norm(ev.categoria))&&/\b(?:discoteca|discoteche|club|dj|deejay|techno|house music|clubbing|dancefloor|dance floor|opening party|atrio22|aphelion|vyon)\b/.test(t);
+ }
+ function vitaNotturna(ev){
+   if(ev.tipoContenuto==="esperienza")return false;
+   const t=norm([ev.titolo,ev.luogo,ev.descrizione].join(" ")),cat=norm(ev.categoria);
+   return /locali|serat/.test(cat)||(/musica|concert|sagre|food|attivita/.test(cat)&&/\b(?:dj|karaoke|aperitivo musicale|cena spettacolo|live music|musica dal vivo|disco|discoteca|club night)\b/.test(t));
+ }
+ function prioritaScoperta(ev,oggi,fascia){
+   if(ev.tipoContenuto==="esperienza")return 99;
+   const d=new Date(oggi+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+6);
+   const imminente=overlaps(ev,oggi,d.toISOString().slice(0,10));
+   if(!imminente)return 6;
+   if(fascia===0&&vitaNotturna(ev))return 0;
+   if(fascia===0)return 1;
+   if(fascia<=1&&vitaNotturna(ev))return 2;
+   if(vitaNotturna(ev))return 3;
+   if(fascia<=1)return 4;
+   return 5;
+ }
+ return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest,discoteca,vitaNotturna,prioritaScoperta};
 }
 const CsfEventTools = strumenti();
 if (typeof module !== "undefined" && module.exports) module.exports=CsfEventTools;
