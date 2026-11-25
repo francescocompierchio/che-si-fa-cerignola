@@ -333,6 +333,21 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-11-28-the-peak-w-danny-roma@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:The peak w/DANNY ROMA – Barletta
+LOCATION:Viale Regina Elena 100\, Barletta
+DESCRIPTION:Sab 28 Nov 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
+ a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
+ s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
+ 6-11-28-the-peak-w-danny-roma.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-28-the-peak-w-danny-roma.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-11-29-kayma-at-atrio22@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261129
@@ -381,6 +396,22 @@ DESCRIPTION:Sab 05 Dic 2026 · Ore 21:30\nSerata di clubbing proposta da Mi
  eglie-2026-12-05-mirito-presents-solto.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
  glie-2026-12-05-mirito-presents-solto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-12-07-que-pasa-noche-sinfonica@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261207
+DTEND;VALUE=DATE:20261208
+SUMMARY:Que Pasa Noche Sinfonica – Bisceglie
+LOCATION:Divine Club\, Bisceglie
+DESCRIPTION:Lun 07 Dic 2026\nSerata nel calendario ufficiale KODO con Deeza
+ . Orari e condizioni di ingresso da verificare con il locale.\nAccesso: Co
+ nsulta la fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps:
+ //francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisceglie-2026
+ -12-07-que-pasa-noche-sinfonica.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-12-07-que-pasa-noche-sinfonica.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT

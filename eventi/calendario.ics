@@ -1048,6 +1048,21 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/lucer
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-11-28-the-peak-w-danny-roma@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:The peak w/DANNY ROMA – Barletta
+LOCATION:Viale Regina Elena 100\, Barletta
+DESCRIPTION:Sab 28 Nov 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
+ a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
+ s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
+ 6-11-28-the-peak-w-danny-roma.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-28-the-peak-w-danny-roma.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-11-29-kayma-at-atrio22@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261129
