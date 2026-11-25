@@ -12,6 +12,8 @@ const assert = require("node:assert/strict");
     // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
     for(const [width,height] of [[320,568],[393,852],[430,740]]){
       await page.setViewportSize({width,height});
+      const tab=await page.locator("#csfc-toggle").boundingBox();
+      assert.ok(tab&&tab.y>=0&&tab.y+tab.height<=height*.42,"Linguetta Community più in alto, fuori dai filtri rapidi");
       await page.locator("#csfc-toggle").click();
       const panel=page.locator("#csfc-panel");
       await panel.waitFor({state:"visible"});

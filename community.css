@@ -23,6 +23,7 @@
 #csfc-panel>header,#csfc-panel>small,#csfc-panel>label,#csfc-panel>button,#csfc-panel>form,#csfc-status{flex-shrink:0}
 #csfc-panel button{min-height:44px}
 @media(max-width:600px){
+  #csfc{top:21%}
   #csfc-panel{left:12px;right:12px;width:auto;bottom:calc(100px + env(safe-area-inset-bottom,0px));max-height:calc(100vh - 124px - env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 124px - env(safe-area-inset-bottom,0px));}
   #csfc-panel input:not([type=checkbox]),#csfc-panel textarea{font-size:16px}
 }
