@@ -204,7 +204,7 @@ def fonti(memoria,eventi,oggi):
     for area,indice in scelte:
         q=f'Cerignola {AREE[area][indice]} when:30d'
         out.append({"nome":f"Apprendimento Cerignola - {area} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"focus_serate":area==movida,"max_schede_rss":3})
-    return out + fonti_adattive_weekend(memoria,eventi,oggi) + esplora_candidati(memoria,oggi)
+    return out
 
 def misura(risultati,precedenti,pubblicati,duplicati):
     """Premia novità finite realmente in archivio, non il numero grezzo di estrazioni.

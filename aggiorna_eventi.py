@@ -3195,7 +3195,12 @@ def esegui_aggiornamento():
     percorso_stato = os.path.join(".csf-state", "fonti.json")
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
-    compiti += [(raccogli_da_feed_social, fonte) for fonte in apprendimento.fonti(memoria,apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati),oggi_stagionale)]
+    copertura_iniziale = apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati)
+    # Budget separati: 3 ricerche locali ordinarie, al massimo 3 radar e 1 esplorazione.
+    fonti_adattive = (apprendimento.fonti(memoria,copertura_iniziale,oggi_stagionale)
+                      + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
+                      + apprendimento.esplora_candidati(memoria,oggi_stagionale))
+    compiti += [(raccogli_da_feed_social, fonte) for fonte in fonti_adattive]
     for _, fonte in compiti:
         # Mantiene i filtri di estrazione originali: focus_serate è solo priorità operativa.
         if fonte["nome"].startswith(("Tacco di Bacco Nightlife Cerignola","Cerignola pubblicazioni social locali","Serate e musica Cerignola","Lineup Atlas API")):

@@ -29,6 +29,14 @@ class RadarAdattivoTest(unittest.TestCase):
             eventi.extend(dict(citta=citta,categoria="Locali & Serate",dataInizio="2026-11-28") for _ in range(obiettivo))
         self.assertEqual(a.fonti_adattive_weekend({},eventi,date(2026,11,27)),[])
 
+    def test_budget_ordinario_preservato(self):
+        oggi=date(2026,11,27)
+        base=a.fonti({},[],oggi)
+        radar=a.fonti_adattive_weekend({},[],oggi)
+        self.assertEqual(len(base),3)
+        self.assertEqual(len(radar),3)
+        self.assertTrue(all(f["solo_cerignola"] for f in base))
+
     def test_esplorazione_solo_scoperta(self):
         m={"apprendimento":{"dominiCandidati":{"example.com":{"osservazioni":2},"unconfirmed.com":{"osservazioni":1},"host.local":{"osservazioni":9}}}}
         fonti=a.esplora_candidati(m,date(2026,11,27))
