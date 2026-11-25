@@ -3,7 +3,7 @@
   "use strict";
   const config=window.CSF_COMMUNITY_CONFIG;
   if(!config || config.enabled!==true || !config.firebase || !config.firebase.projectId ||
-     !config.firebase.databaseURL || config.firebase.projectId==="chesifa-cerignola") return;
+     !config.firebase.databaseURL || config.firebase.projectId==="chesifa-cerignola" || /chesifa-cerignola-default-rtdb/i.test(config.firebase.databaseURL)) return;
   const $=(tag,text,attrs={})=>{
     const n=document.createElement(tag);
     if(text!==null)n.textContent=text;
@@ -103,7 +103,16 @@
           }
           for(const [uid,v] of reports){
             const a=$("article");a.append($("p","Messaggio segnalato: "+safeText(v.messageId)));
-            a.append(button("Rimuovi messaggio",async()=>{const ch={};ch["published/"+v.messageId]=null;ch["authors/"+v.messageId]=null;ch["reports/"+uid+"/state"]="resolved";await db.ref().update(ch);}),button("Archivia",()=>db.ref("reports/"+uid+"/state").set("resolved")));mod.append(a);
+            const details=$("p","Caricamento del contenuto segnalato…");a.append(details);
+            db.ref("published/"+v.messageId).once("value").then(s=>{
+              const m=s.val();details.textContent=m?safeText(m.nick)+": "+safeText(m.text):"Messaggio già rimosso.";
+            }).catch(()=>{details.textContent="Contenuto non disponibile.";});
+            a.append(button("Rimuovi messaggio",async()=>{if(!confirm("Rimuovere questo messaggio?"))return;const ch={};ch["published/"+v.messageId]=null;ch["authors/"+v.messageId]=null;ch["reports/"+uid+"/state"]="resolved";await db.ref().update(ch);}),button("Sospendi autore e rimuovi",async()=>{
+              if(!confirm("Sospendere l'autore e rimuovere il messaggio?"))return;
+              const author=(await db.ref("authors/"+v.messageId).once("value")).val();
+              if(typeof author!=="string"||!author)throw Error("missing author");
+              const ch={};ch["bans/"+author]=true;ch["published/"+v.messageId]=null;ch["authors/"+v.messageId]=null;ch["reports/"+uid+"/state"]="resolved";await db.ref().update(ch);
+            }),button("Archivia",()=>db.ref("reports/"+uid+"/state").set("resolved")));mod.append(a);
           }
         };
         listen(db.ref("submissions").orderByChild("state").equalTo("pending").limitToFirst(40),s=>{submissions=Object.entries(s.val()||{});render();});
