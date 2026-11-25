@@ -62,3 +62,11 @@ def data_coerente_pubblicazione(evento,pub):
     except (KeyError,TypeError,ValueError):
         return False
     return fine>=pub and inizio<=pub+timedelta(days=180)
+
+
+def titolo_locandina_compatibile(titolo,testo):
+    """Almeno due termini distintivi in comune; date e termini generici non bastano."""
+    stop={"evento","eventi","cerignola","serata","serate","festa","sabato","venerdì","domenica","novembre","dicembre","gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","locandina","programma","ingresso","musica","dalle","presso","della","delle","dello","dalla","dalle","dove","quando","news","notizie","party","concerti","concerto"}
+    def parole(s):
+        return set(re.findall(r"[a-zà-ù]{4,}",str(s or "").casefold()))-stop
+    return len(parole(titolo)&parole(testo))>=2
