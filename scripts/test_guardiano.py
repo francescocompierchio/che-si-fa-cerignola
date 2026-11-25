@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime,timezone,timedelta
-from guardiano import decisione
+from guardiano import decisione, allarmi_raccolta
 
 class GuardianoTest(unittest.TestCase):
     def setUp(self):
@@ -16,6 +16,16 @@ class GuardianoTest(unittest.TestCase):
         self.assertEqual(decisione([self.run_data(100),self.run_data(120,status="in_progress")],self.now),"raccolta_attiva")
     def test_errore_non_riprova(self):
         self.assertEqual(decisione([self.run_data(100,"failure")],self.now),"errore_da_diagnosticare")
+    def test_timeout_programmato(self):
+        self.assertEqual(decisione([{**self.run_data(100,"timed_out"),"event":"schedule"}],self.now),"recupera")
+        self.assertEqual(decisione([{**self.run_data(100,"timed_out"),"event":"workflow_dispatch"}],self.now),"errore_da_diagnosticare")
+    def test_errore_recente(self):
+        self.assertEqual(decisione([self.run_data(1,"failure")],self.now),"errore_da_diagnosticare")
+    def test_allarmi(self):
+        self.assertTrue(allarmi_raccolta([self.run_data(5,"failure"),self.run_data(20,"failure")],self.now))
+        self.assertTrue(allarmi_raccolta([self.run_data(190)],self.now))
+        self.assertFalse(allarmi_raccolta([self.run_data(5),self.run_data(20,"failure")],self.now))
+        self.assertFalse(allarmi_raccolta([self.run_data(5,"failure"),self.run_data(20)],self.now))
     def test_storico_assente(self):
         self.assertEqual(decisione([],self.now),"storico_insufficiente")
     def test_stato_incerto(self):
