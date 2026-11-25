@@ -13,6 +13,12 @@ const assert = require("node:assert/strict");
     assert.equal(await acq.count(),1,"Acquolina deve essere presente");
     assert.ok(await acq.evaluate(el=>el.classList.contains("is-featured")),"Acquolina in evidenza");
     assert.ok(await acq.locator("img.event-poster").count(),"Locandina Acquolina presente");
+    for(const [titolo,filename] of [["Serataccia Italiana – Carlito's","carlitos-serataccia-2026-11-25.avif"],["La Grande Spaghettata – Lion's","lions-spaghettata-2026-11-26.avif"],["Karaoke di venerdì – Lion's","lions-karaoke-2026-11-27.avif"],["Love Generation 90 – Domus Disco","domus-love-generation-2026-11-28.avif"]]){
+      const el=page.locator("#events-container details").filter({hasText:titolo});
+      assert.equal(await el.count(),1,titolo+" presente una sola volta");
+      assert.ok(await el.evaluate(d=>d.classList.contains("is-featured")),titolo+" in evidenza");
+      assert.ok(await el.locator("img.event-poster").count(),titolo+" locandina presente");
+    }
     assert.ok(await acq.evaluate(el=>Array.from(el.parentElement.querySelectorAll("details")).slice(0,Array.from(el.parentElement.querySelectorAll("details")).indexOf(el)).every(x=>x.classList.contains("is-featured"))),"Acquolina nel gruppo in evidenza");
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
