@@ -12,6 +12,7 @@ const assert = require("node:assert/strict");
     const acq=page.locator("#events-container details").filter({hasText:"Acquolina in Cena Spettacolo"});
     assert.equal(await acq.count(),1,"Acquolina deve essere presente");
     assert.ok(await acq.evaluate(el=>el.classList.contains("is-featured")),"Acquolina in evidenza");
+    assert.ok(await acq.locator("img.event-poster").count(),"Locandina Acquolina presente");
     assert.ok(await acq.evaluate(el=>Array.from(el.parentElement.querySelectorAll("details")).indexOf(el)<3),"Acquolina tra i primi eventi");
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
