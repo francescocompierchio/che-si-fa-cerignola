@@ -1,0 +1,358 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Che Si Fa Cerignola//Agenda pubblica//IT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Che Si Fa Cerignola – Serate e locali
+X-WR-TIMEZONE:Europe/Rome
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VEVENT
+UID:cerignola-2026-11-28-il-sabato-di-ade@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Il Sabato di ADE – Cerignola
+LOCATION:ADE - Rooftop & Luxury Space\, Via Tiro a Segno km 3\, Cerignola
+DESCRIPTION:Sab 28 Nov 2026 · Ore 21:00\nIl Sabato di ADE: show cooking e 
+ music selection by Loris Ferrara\, in collaborazione con Ènosi Events. In
+ izio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 
+ 786 1865. Evento segnalato direttamente dal locale.\nAccesso: Non indicato
+  · Contattare il locale\nVerifica variazioni\, orari e fonte nella scheda
+ .\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-28-il-sabato-di-ade.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-28-il-sabato-di-ade.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-11-05-lisistrata-lella-costa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261105
+DTEND;VALUE=DATE:20261129
+SUMMARY:Lisistrata – Lella Costa – Manfredonia
+LOCATION:Teatro Greco di Siracusa e al Teatro Grande di Pompei\, Via della 
+ Crocie\, Manfredonia
+DESCRIPTION:Dal 05 Nov al 28 Nov 2026\nManfredonia (Foggia) Teatro Comunale
+  Lucio Dalla Via della Crocie ore 21:00 ingresso a pagamento Info. 0884 53
+ 2829 (clicca per ingrandire )\nAccesso: A pagamento\nVerifica variazioni\,
+  orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-s
+ i-fa-cerignola/eventi/manfredonia-2026-11-05-lisistrata-lella-costa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-05-lisistrata-lella-costa.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-11-22-cenerentola-301@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261122
+DTEND;VALUE=DATE:20270107
+SUMMARY:Cenerentola 301 – Manfredonia
+LOCATION:Teatro Comunale Lucio Dalla prosegue\, Via della Crocie\, Manfredo
+ nia
+DESCRIPTION:Dal 22 Nov al 06 Gen 2027\nManfredonia (Foggia) Teatro Comunale
+  Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigli
+ ata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandi
+ re )\nAccesso: A pagamento\nVerifica variazioni\, orari e fonte nella sche
+ da.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/man
+ fredonia-2026-11-22-cenerentola-301.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-22-cenerentola-301.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-11-27-shake-it-with-haivai-b@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+SUMMARY:Shake IT with HAIVAI B – Barletta
+LOCATION:Via Leonardo da Vinci 15\, Barletta
+DESCRIPTION:Ven 27 Nov 2026 · Club dalle 22:00\nLa prevendita e il calenda
+ rio Atrio22 indicano il 27 novembre\; una descrizione promozionale riporta
+  invece il 6 novembre. Controlla la data con il locale prima di partire.\n
+ Accesso: Consulta biglietteria e condizioni di ingresso\nVerifica variazio
+ ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
+ he-si-fa-cerignola/eventi/barletta-2026-11-27-shake-it-with-haivai-b.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-27-shake-it-with-haivai-b.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-11-27-bisceglie-franco-califano-live-tribute-con-la-cali
+ ffo-band@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+SUMMARY:Bisceglie | FRANCO CALIFANO live tribute con la "CALIFFO BAND" – 
+ Bisceglie
+LOCATION:da Sergio e Davide\, Panoramica umberto paternostro\, 273\, Bisceg
+ lie
+DESCRIPTION:Ven 27 Nov 2026\nVENERDI’ 27 NOVEMBRE\, dalle 21:00\, serata 
+ dedicata ad uno dei più amati cantautori italiani\, il grande “Califfo
+ ”\, Franco Califano. Amanti della canzone italiana d’autore\, Amanti e
+  basta\, Amanti del Califfo italiano\, prep\nAccesso: Ingresso libero\nVer
+ ifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierch
+ io.github.io/che-si-fa-cerignola/eventi/bisceglie-2026-11-27-bisceglie-fra
+ nco-califano-live-tribute-con-la-califfo-band.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-11-27-bisceglie-franco-califano-live-tribute-con-la-califfo-band
+ .html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-11-28-classic-saturday-habibi-with-olive-f@chesifacerigno
+ la
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Classic Saturday & Habibi with OLIVE F – Barletta
+LOCATION:Via Leonardo da Vinci 15\, Barletta
+DESCRIPTION:Sab 28 Nov 2026\nSerata in club pubblicata sul calendario Xceed
+  di Atrio22. Verifica orario\, disponibilità\, dress code e condizioni di
+  ingresso sulla scheda dell'organizzatore.\nAccesso: Consulta biglietteria
+  e condizioni di ingresso\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barl
+ etta-2026-11-28-classic-saturday-habibi-with-olive-f.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-28-classic-saturday-habibi-with-olive-f.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-11-28-golden-opening-party-at-vyon-club@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Golden – Opening Party at Vyon Club – Bisceglie
+LOCATION:Idol Club\, Bisceglie
+DESCRIPTION:Sab 28 Nov 2026 · Ore 22:00\nApertura del format Golden: consu
+ lta la biglietteria per disponibilità\, prezzo e condizioni.\nAccesso: Ve
+ rifica con organizzatore\nVerifica variazioni\, orari e fonte nella scheda
+ .\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-11-28-golden-opening-party-at-vyon-club.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-11-28-golden-opening-party-at-vyon-club.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:trani-2026-11-28-habibi-28-11-aphelion-club@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:HABIBI · 28.11 · APHELION CLUB – Trani
+LOCATION:Contrada Fontanelle\, Trani
+DESCRIPTION:Sab 28 Nov 2026\nSerata del format HABIBI presente nel calendar
+ io ufficiale del promoter su Xceed. Orario\, prezzo e disponibilità da ve
+ rificare.\nAccesso: Verifica con organizzatore\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/trani-2026-11-28-habibi-28-11-aphelion-club.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/trani
+ -2026-11-28-habibi-28-11-aphelion-club.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-11-28-vinyl-di-wine-al-cafe-des-artistes@chesifacerign
+ ola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Vinyl di Wine al Café des Artistes – Manfredonia
+LOCATION:Corso Manfredi 204\, Manfredonia
+DESCRIPTION:Sab 28 Nov 2026 · Ore 21:00 (calendario)\nUltimo appuntamento 
+ della rassegna di novembre: cena e selezione musicale. L'orario è indicat
+ o nel calendario\, non nella descrizione: verifica con il locale.\nAccesso
+ : Verifica con organizzatore\nVerifica variazioni\, orari e fonte nella sc
+ heda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/m
+ anfredonia-2026-11-28-vinyl-di-wine-al-cafe-des-artistes.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-28-vinyl-di-wine-al-cafe-des-artistes.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-11-28-piatto-divino-cena-d-autunno-e-musica-dal-vivo@c
+ hesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Piatto diVino – Cena d’autunno e musica dal vivo – Manfredoni
+ a
+LOCATION:Villa Artemide\, Manfredonia
+DESCRIPTION:Sab 28 Nov 2026 · Ore 20:30\nCena con degustazione e musica da
+ l vivo. Costo riportato dalla fonte: 40 euro. Verifica prenotazioni e disp
+ onibilità.\nAccesso: 40 €\nVerifica variazioni\, orari e fonte nella sc
+ heda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/m
+ anfredonia-2026-11-28-piatto-divino-cena-d-autunno-e-musica-dal-vivo.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-28-piatto-divino-cena-d-autunno-e-musica-dal-vivo.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-11-28-around-us-salome-le-chat@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Around Us – Salomé Le Chat – Bisceglie
+LOCATION:Divine Club\, Bisceglie
+DESCRIPTION:Sab 28 Nov 2026 · Ore 23:00\nSerata con Salomé Le Chat\, Skiz
+ zo\, Innocent Soul e White Soxx\, pubblicata su Nightz. Verifica disponibi
+ lità e condizioni di ingresso.\nAccesso: Consulta la biglietteria\nVerifi
+ ca variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.
+ github.io/che-si-fa-cerignola/eventi/bisceglie-2026-11-28-around-us-salome
+ -le-chat.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-11-28-around-us-salome-le-chat.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-11-28-bisceglie-alamar-symphonic-concert-ana-carla-maza-
+ l-orchestra-ico-della-magna-gre@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Bisceglie | ALAMAR SYMPHONIC CONCERT Ana Carla Maza & l'Orchestra I
+ CO della Magna Gre – Bisceglie
+LOCATION:Teatro Garibaldi\, Piazza Regina Margherita\, Bisceglie
+DESCRIPTION:Sab 28 Nov 2026\nALAMAR SYMPHONIC CONCERT Un viaggio musicale a
+ ttraverso l'America Latina Bisceglie in Musica 2026/2027 28 novembre ore 2
+ 1.00 Teatro Garibaldi\, Bisceglie Ana Carla Maza violoncello Jose Miguel R
+ odilla direttore Orchestra\nAccesso: A pagamento\nVerifica variazioni\, or
+ ari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-f
+ a-cerignola/eventi/bisceglie-2026-11-28-bisceglie-alamar-symphonic-concert
+ -ana-carla-maza-l-orchestra-ico-della-magna-gre.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-11-28-bisceglie-alamar-symphonic-concert-ana-carla-maza-l-orches
+ tra-ico-della-magna-gre.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-11-28-piatto-divino-cena-d-autunno-degustazione-vini-e
+ -musica-dal-vivo-villa-artemide@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Piatto diVino – Cena d’autunno\, degustazione vini e musica dal
+  vivo | Villa Artemide – Manfredonia
+LOCATION:Villa Artemide\, Vicolo dei Noci 2\, 71043 Manfredonia (FG)\, FG
+DESCRIPTION:Sab 28 Nov 2026 · Ore 20:30\nSabato 28 novembre 2026\, alle or
+ e 20:30\, 𝗩𝗶𝗹𝗹𝗮 𝗔𝗿𝘁𝗲𝗺𝗶𝗱𝗲 𝗮 𝗠
+ 𝗮𝗻𝗳𝗿𝗲𝗱𝗼𝗻𝗶𝗮 ospita 𝗣𝗶𝗮𝘁𝘁𝗼 
+ 𝗱𝗶𝗩𝗶𝗻𝗼\, una serata enogastronomica dedicata ai sapori a
+ utunnali e alla scoperta degli abbinamenti tra cucina e vino\, organizzata
+  in coll\nAccesso: 40€\nVerifica variazioni\, orari e fonte nella scheda
+ .\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-28-piatto-divino-cena-d-autunno-degustazione-vini-e-musica-
+ dal-vivo-villa-artemide.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-28-piatto-divino-cena-d-autunno-degustazione-vini-e-musica-
+ dal-vivo-villa-artemide.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-11-29-kayma-at-atrio22@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:KAYMA at ATRIO22 – Barletta
+LOCATION:Via Leonardo da Vinci 15\, Barletta
+DESCRIPTION:Dom 29 Nov 2026\nSerata in club pubblicata sul calendario Xceed
+  di Atrio22. Verifica orario\, disponibilità\, dress code e condizioni di
+  ingresso sulla scheda dell'organizzatore.\nAccesso: Consulta biglietteria
+  e condizioni di ingresso\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barl
+ etta-2026-11-29-kayma-at-atrio22.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-29-kayma-at-atrio22.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:bisceglie-2026-12-05-mirito-presents-solto@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:Mirito presents: Solto – Bisceglie
+LOCATION:Divine Club Invernale\, Bisceglie
+DESCRIPTION:Sab 05 Dic 2026 · Ore 21:30\nSerata di clubbing proposta da Mi
+ rito. Verifica disponibilità e condizioni sulla biglietteria.\nAccesso: V
+ erifica con organizzatore\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisc
+ eglie-2026-12-05-mirito-presents-solto.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-12-05-mirito-presents-solto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:foggia-2026-12-09-macy-gray-live-al-teatro-giordano-l-icona-mondiale-de
+ l-soul-e-dell-r-b-in-concerto-a@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261209
+DTEND;VALUE=DATE:20261210
+SUMMARY:Macy Gray live al Teatro Giordano: l'icona mondiale del soul e dell
+ ’R&B in concerto a – Foggia
+LOCATION:Teatro Giordano\, Piazza Cesare Battisti\, Foggia (FG)\, Puglia
+DESCRIPTION:Mer 09 Dic 2026 · Ore 21:00\nMacy Gray live al Teatro Giordano
+ : l'icona mondiale del soul e dell’R&B in concerto a Foggia (FG)\, Pugli
+ a: concerto in programma mercoledì 9 dicembre 2026. Una voce inconfondibi
+ le\, un’icona mondiale del soul e dell’R&B d\nAccesso: i biglietti son
+ o già disponibili su Vivaticket.\nVerifica variazioni\, orari e fonte nel
+ la scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eve
+ nti/foggia-2026-12-09-macy-gray-live-al-teatro-giordano-l-icona-mondiale-d
+ el-soul-e-dell-r-b-in-concerto-a.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-12-09-macy-gray-live-al-teatro-giordano-l-icona-mondiale-del-soul-e
+ -dell-r-b-in-concerto-a.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-12-11-habibi-with-octave-one-live@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261211
+DTEND;VALUE=DATE:20261212
+SUMMARY:Habibi with OCTAVE ONE live – Barletta
+LOCATION:Via Leonardo da Vinci 15\, Barletta
+DESCRIPTION:Ven 11 Dic 2026\nSerata in club pubblicata sul calendario Xceed
+  di Atrio22. Verifica orario\, disponibilità\, dress code e condizioni di
+  ingresso sulla scheda dell'organizzatore.\nAccesso: Consulta biglietteria
+  e condizioni di ingresso\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barl
+ etta-2026-12-11-habibi-with-octave-one-live.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-11-habibi-with-octave-one-live.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-12-18-habibi-with-benja@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261218
+DTEND;VALUE=DATE:20261219
+SUMMARY:Habibi with BENJA – Barletta
+LOCATION:Via Leonardo da Vinci 15\, Barletta
+DESCRIPTION:Ven 18 Dic 2026\nSerata in club pubblicata sul calendario Xceed
+  di Atrio22. Verifica orario\, disponibilità\, dress code e condizioni di
+  ingresso sulla scheda dell'organizzatore.\nAccesso: Consulta biglietteria
+  e condizioni di ingresso\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barl
+ etta-2026-12-18-habibi-with-benja.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-18-habibi-with-benja.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:foggia-2026-12-19-riccardo-cocciante-live-al-teatro-umberto-giordano@ch
+ esifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:Riccardo Cocciante live al Teatro Umberto Giordano – Foggia
+LOCATION:Teatro Umberto Giordano\, Piazza Cesare Battisti\, Foggia (FG)\, P
+ uglia
+DESCRIPTION:Sab 19 Dic 2026 · Ore 20:30\nRiccardo Cocciante live al Teatro
+  Umberto Giordano a Foggia (FG)\, Puglia: concerto in programma sabato 19 
+ dicembre 2026. Margherita\, Se stiamo insieme\, Bella senz'anima\, Cervo a
+  primavera\, Celeste nostalgia\, Questione di\nAccesso: evento in benefice
+ nza.\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francesco
+ compierchio.github.io/che-si-fa-cerignola/eventi/foggia-2026-12-19-riccard
+ o-cocciante-live-al-teatro-umberto-giordano.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-12-19-riccardo-cocciante-live-al-teatro-umberto-giordano.html
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

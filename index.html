@@ -1058,7 +1058,7 @@
       <div class="author-meta">
         <button type="button" class="btn-strip btn-strip-soft" id="csf-consent-settings">Preferenze statistiche</button>
         <button type="button" class="btn-strip btn-strip-soft" id="csf-weekend-reminder">Promemoria weekend</button>
-        <a href="eventi/">Agenda eventi</a> · <a href="eventi/cerignola.html">Eventi a Cerignola</a> · <a href="eventi/weekend.html">Eventi nel weekend</a> · Aggiornamento automatico · <a href="privacy.html">Privacy &amp; Cookie Policy</a>
+        <a href="eventi/">Agenda eventi</a> · <a href="eventi/cerignola.html">Eventi a Cerignola</a> · <a href="eventi/weekend.html">Eventi nel weekend</a> · <a href="eventi/calendari.html">Calendari sincronizzabili</a> · Aggiornamento automatico · <a href="privacy.html">Privacy &amp; Cookie Policy</a>
       </div>
     </div>
   </footer>
@@ -1344,6 +1344,7 @@
       window.CsfMetrics?.action?.("csf_pwa_installed");
     });
     document.addEventListener("DOMContentLoaded",()=>{
+      if(richiestaInstallazione&&window.CsfMetrics?.allowed?.())window.CsfMetrics?.action?.("csf_install_entry");
       if((isStandalone||isAndroidApp)&&window.CsfMetrics?.allowed?.()){
         try{if(sessionStorage.getItem("csf_standalone_session")!=="1"){
           window.CsfMetrics?.action?.("csf_standalone_open");

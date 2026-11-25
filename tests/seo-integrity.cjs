@@ -32,6 +32,18 @@ const special=genera([{...ev,titolo:"DJ & amici <Live>",descrizione:"Test & altr
 assert.ok(special["eventi/feed.xml"].includes("DJ &amp; amici &lt;Live&gt;"));
 assert.ok(special["eventi/feed.xml"].includes("Gita diurna"));
 assert.ok(!special["eventi/serate.xml"].includes("Gita diurna"));
+const ics=files["eventi/calendario.ics"];
+assert.ok(ics.startsWith("BEGIN:VCALENDAR\r\n"));
+assert.equal((ics.match(/BEGIN:VEVENT/g)||[]).length,3);
+assert.ok(ics.includes("DTSTART;VALUE=DATE:20261128\r\n"));
+assert.ok(ics.includes("DTEND;VALUE=DATE:20261129\r\n"));
+assert.ok(!ics.includes("Data impossibile")&&!ics.includes("BEGIN:VALARM"));
+assert.equal((files["eventi/calendario-cerignola.ics"].match(/BEGIN:VEVENT/g)||[]).length,2);
+assert.ok(ics.split("\r\n").every(line=>Buffer.byteLength(line,"utf8")<=75));
+assert.ok(files["eventi/calendari.html"].includes("webcal://"));
+assert.ok(files["sitemap.xml"].includes("eventi/calendari.html"));
+assert.ok(!files["sitemap.xml"].includes(".ics"));
+assert.ok(!files["eventi/weekend.html"].includes("utm_medium=referral"));
 const empty=genera([],[],"2026-11-24",["hub-serate.html"]);
 assert.ok(empty["eventi/hub-serate.html"].includes('content="noindex,follow"'));
 assert.ok(!empty["sitemap.xml"].includes("hub-serate.html"));

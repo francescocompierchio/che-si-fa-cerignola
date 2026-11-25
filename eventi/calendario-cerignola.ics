@@ -1,0 +1,392 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Che Si Fa Cerignola//Agenda pubblica//IT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Che Si Fa Cerignola – Solo Cerignola
+X-WR-TIMEZONE:Europe/Rome
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VEVENT
+UID:cerignola-2026-11-28-il-sabato-di-ade@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Il Sabato di ADE – Cerignola
+LOCATION:ADE - Rooftop & Luxury Space\, Via Tiro a Segno km 3\, Cerignola
+DESCRIPTION:Sab 28 Nov 2026 · Ore 21:00\nIl Sabato di ADE: show cooking e 
+ music selection by Loris Ferrara\, in collaborazione con Ènosi Events. In
+ izio alle 21:00. Info e prenotazioni: 329 255 6872 · 340 818 2949 · 349 
+ 786 1865. Evento segnalato direttamente dal locale.\nAccesso: Non indicato
+  · Contattare il locale\nVerifica variazioni\, orari e fonte nella scheda
+ .\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-28-il-sabato-di-ade.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-28-il-sabato-di-ade.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita@chesi
+ facerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261126
+DTEND;VALUE=DATE:20261127
+SUMMARY:Le storie del Giovedì – Biblioteca di Comunità – Cerignola
+LOCATION:Biblioteca di Comunità\, Via Cesare Battisti n. 13 - 71042 Cerign
+ ola FG
+DESCRIPTION:Gio 26 Nov 2026\ndal 26 Novembre 2026 alle 17:00 al 26 Novembre
+  2026 alle 18:00\nAccesso: Gratuito\nVerifica variazioni\, orari e fonte n
+ ella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/e
+ venti/cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita.ht
+ ml
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri@chesif
+ acerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:Natale nelle Quattro Vie – Un Mondo di Auguri – Cerignola
+LOCATION:Via Don Minzoni 120\, Cerignola
+DESCRIPTION:Dom 29 Nov 2026 · 19:00–21:30\nAppuntamento natalizio di qua
+ rtiere con tombolata comunitaria e canti tradizionali\, organizzato dal Co
+ llettivo delle Quattro Vie con la scuola Don Puglisi – Pavoncelli.\nAcce
+ sso: Non indicato nella fonte\nVerifica variazioni\, orari e fonte nella s
+ cheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/
+ cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-01-natale-in-piazza@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261201
+DTEND;VALUE=DATE:20261202
+SUMMARY:Natale in Piazza – Cerignola
+LOCATION:Piazza Matteotti\, Piazza Matteo\, 71042\, Cerignola\, FG
+DESCRIPTION:Mar 01 Dic 2026\nNatale in Piazza è l'appuntamento natalizio d
+ i Cerignola\, nel cuore della Capitanata\, in provincia di Foggia. Nella c
+ ornice di Piazza Matteo...\nAccesso: Non specificato nella fonte\nVerifica
+  variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.gi
+ thub.io/che-si-fa-cerignola/eventi/cerignola-2026-12-01-natale-in-piazza.h
+ tml
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-01-natale-in-piazza.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-04-iva-zanicchi-e-samuel-peron-viva-la-mamma@chesifac
+ erignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261204
+DTEND;VALUE=DATE:20261205
+SUMMARY:Iva Zanicchi E Samuel Peron "viva La Mamma" – Cerignola
+LOCATION:Roma Teatro Cinema E…\, Corso Roma\, 49\, Cerignola
+DESCRIPTION:Ven 04 Dic 2026\nAutore: Diego Ruiz Regia: Diego Ruiz Protagoni
+ sta: Iva Zanicchi\, Milena Miconi\, Samuel Peron\, Diego Ruiz Produzione: 
+ RB Spettacoli Durata: 90 minuti Numero atti: 2\nAccesso: Non specificato n
+ ella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://fra
+ ncescocompierchio.github.io/che-si-fa-cerignola/eventi/cerignola-2026-12-0
+ 4-iva-zanicchi-e-samuel-peron-viva-la-mamma.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-04-iva-zanicchi-e-samuel-peron-viva-la-mamma.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane
+ @chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:Natale nelle Quattro Vie – Il Rintocco delle Campane – Cerignol
+ a
+LOCATION:Via Don Minzoni 120\, Cerignola
+DESCRIPTION:Dom 6 Dic 2026 · 19:00–21:30\nGran finale del programma nata
+ lizio di quartiere con tombolata e musica corale e strumentale. Iniziativa
+  del Collettivo delle Quattro Vie e della scuola Don Puglisi – Pavoncell
+ i.\nAccesso: Non indicato nella fonte\nVerifica variazioni\, orari e fonte
+  nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola
+ /eventi/cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-ca
+ mpane.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-06-breaking-brecht@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:BREAKING BRECHT – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Dom 06 Dic 2026\nBREAKING BRECHT presso Teatro Comunale S. Merc
+ adante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte 
+ nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/
+ eventi/cerignola-2026-12-06-breaking-brecht.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-06-breaking-brecht.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-06-corricerignola@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:CorriCerignola – Cerignola
+LOCATION:Palazzetto dello Sport\, Viale dei Mandorli\, 71042\, Cerignola\, 
+ FG
+DESCRIPTION:Dom 06 Dic 2026\nCorriCerignola è la classica gara podistica d
+ i 10 chilometri su strada che ogni anno anima le vie del centro di Cerigno
+ la\, nella provincia d...\nAccesso: Non specificato nella fonte\nVerifica 
+ variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
+ hub.io/che-si-fa-cerignola/eventi/cerignola-2026-12-06-corricerignola.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-06-corricerignola.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-13-mercatini-straordinari-la-cicogna@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261213
+DTEND;VALUE=DATE:20261214
+SUMMARY:Mercatini straordinari La Cicogna – Cerignola
+LOCATION:Villa Comunale Umberto I\, Cerignola
+DESCRIPTION:Dom 13 Dic 2026 · Ore 07:00–14:30\nAppuntamento del Consorzi
+ o La Cicogna lungo il perimetro della villa comunale\, dalle 7:00 alle 14:
+ 30. Data riportata dal calendario Piazza in Festa\; verifica eventuali var
+ iazioni.\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2026-12-13-mercatini-straordinari-la-cicogna.ht
+ ml
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-13-mercatini-straordinari-la-cicogna.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-13-antiquariando-mercatino-dell-antiquariato-e-dell-u
+ sato@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261213
+DTEND;VALUE=DATE:20261214
+SUMMARY:Antiquariando – mercatino dell'antiquariato e dell'usato – Ceri
+ gnola
+LOCATION:Piazza Libertà\, Cerignola
+DESCRIPTION:Dom 13 Dic 2026 · Ore 08:00–18:00\nMercatino mensile di anti
+ quariato\, collezionismo e artigianato. La data del 13 dicembre è riporta
+ ta dal calendario Vintagery e coincide con la seconda domenica del mese in
+ dicata da Cose di Casa. Verifica eventuali variazioni con gli organizzator
+ i.\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orari e fo
+ nte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerign
+ ola/eventi/cerignola-2026-12-13-antiquariando-mercatino-dell-antiquariato-
+ e-dell-usato.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-13-antiquariando-mercatino-dell-antiquariato-e-dell-usato.htm
+ l
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-17-biagio-izzo-finche-giudice-non-ci-separi@chesiface
+ rignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261217
+DTEND;VALUE=DATE:20261218
+SUMMARY:Biagio Izzo "finche Giudice Non Ci Separi" – Cerignola
+LOCATION:Roma Teatro Cinema E…\, Corso Roma\, 49\, Cerignola
+DESCRIPTION:Gio 17 Dic 2026\nProtagonista: Biagio Izzo Regia: Augusto Forna
+ ri Autore: Augusto Fornari\, Toni Fornari\, Andrea Maia\, Vincenzo Sinopol
+ i Produzione: AG Spettacoli\, Tradizione e Turismo Durata: 90 minuti Numer
+ o atti: 2\nAccesso: Non specificato nella fonte\nVerifica variazioni\, ora
+ ri e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa
+ -cerignola/eventi/cerignola-2026-12-17-biagio-izzo-finche-giudice-non-ci-s
+ epari.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-17-biagio-izzo-finche-giudice-non-ci-separi.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-20-mercatini-straordinari-la-cicogna@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261220
+DTEND;VALUE=DATE:20261221
+SUMMARY:Mercatini straordinari La Cicogna – Cerignola
+LOCATION:Villa Comunale Umberto I\, Cerignola
+DESCRIPTION:Dom 20 Dic 2026 · Ore 07:00–14:30\nAppuntamento del Consorzi
+ o La Cicogna lungo il perimetro della villa comunale\, dalle 7:00 alle 14:
+ 30. Data riportata dal calendario Piazza in Festa\; verifica eventuali var
+ iazioni.\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2026-12-20-mercatini-straordinari-la-cicogna.ht
+ ml
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-20-mercatini-straordinari-la-cicogna.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-01-20-basta-un-filo-di-rossetto@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270120
+DTEND;VALUE=DATE:20270121
+SUMMARY:BASTA UN FILO DI ROSSETTO – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Mer 20 Gen 2027\nBASTA UN FILO DI ROSSETTO presso Teatro Comuna
+ le S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2027-01-20-basta-un-filo-di-rossetto.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-01-20-basta-un-filo-di-rossetto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-01-29-mio-sempre-mio-andrea@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270129
+DTEND;VALUE=DATE:20270130
+SUMMARY:MIO\, SEMPRE\, MIO ANDREA – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Ven 29 Gen 2027\nMIO\, SEMPRE\, MIO ANDREA presso Teatro Comuna
+ le S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2027-01-29-mio-sempre-mio-andrea.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-01-29-mio-sempre-mio-andrea.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-02-02-c-era-una-volta-l-africa@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270202
+DTEND;VALUE=DATE:20270203
+SUMMARY:C’ERA UNA VOLTA L’AFRICA – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Mar 02 Feb 2027\nC’ERA UNA VOLTA L’AFRICA presso Teatro Com
+ unale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazioni\, or
+ ari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-f
+ a-cerignola/eventi/cerignola-2027-02-02-c-era-una-volta-l-africa.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-02-02-c-era-una-volta-l-africa.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-02-23-la-mandragola@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270223
+DTEND;VALUE=DATE:20270224
+SUMMARY:LA MANDRAGOLA – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Mar 23 Feb 2027\nLA MANDRAGOLA presso Teatro Comunale S. Mercad
+ ante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte ne
+ lla scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/ev
+ enti/cerignola-2027-02-23-la-mandragola.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-02-23-la-mandragola.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-03-05-l-arrago-storia-di-una-baby-gang@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270305
+DTEND;VALUE=DATE:20270306
+SUMMARY:L’ARRAGO. STORIA DI UNA BABY GANG – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Ven 05 Mar 2027\nL’ARRAGO. STORIA DI UNA BABY GANG presso Tea
+ tro Comunale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazio
+ ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
+ he-si-fa-cerignola/eventi/cerignola-2027-03-05-l-arrago-storia-di-una-baby
+ -gang.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-03-05-l-arrago-storia-di-una-baby-gang.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-03-16-malinconico@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270316
+DTEND;VALUE=DATE:20270317
+SUMMARY:MALINCONICO – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Mar 16 Mar 2027\nMALINCONICO presso Teatro Comunale S. Mercadan
+ te (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte nell
+ a scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/even
+ ti/cerignola-2027-03-16-malinconico.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-03-16-malinconico.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-04-02-ripetizioni-d-amore-ditemi-se-ho-capito-bene@chesi
+ facerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270402
+DTEND;VALUE=DATE:20270403
+SUMMARY:RIPETIZIONI D’AMORE: ditemi se ho capito bene! – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Ven 02 Apr 2027\nRIPETIZIONI D’AMORE: ditemi se ho capito ben
+ e! presso Teatro Comunale S. Mercadante (Cerignola).\nAccesso: € 12\nVer
+ ifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierch
+ io.github.io/che-si-fa-cerignola/eventi/cerignola-2027-04-02-ripetizioni-d
+ -amore-ditemi-se-ho-capito-bene.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-04-02-ripetizioni-d-amore-ditemi-se-ho-capito-bene.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-04-14-come-il-brutto-anatroccolo@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270414
+DTEND;VALUE=DATE:20270415
+SUMMARY:COME IL BRUTTO ANATROCCOLO – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Mer 14 Apr 2027\nCOME IL BRUTTO ANATROCCOLO presso Teatro Comun
+ ale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2027-04-14-come-il-brutto-anatroccolo.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-04-14-come-il-brutto-anatroccolo.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-04-17-la-vita-e-quantica@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270417
+DTEND;VALUE=DATE:20270418
+SUMMARY:LA VITA È QUANTICA – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Sab 17 Apr 2027\nLA VITA È QUANTICA presso Teatro Comunale S. 
+ Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fo
+ nte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerign
+ ola/eventi/cerignola-2027-04-17-la-vita-e-quantica.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-04-17-la-vita-e-quantica.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-05-06-l-uomo-dal-fiore-in-bocca@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270506
+DTEND;VALUE=DATE:20270507
+SUMMARY:L’UOMO DAL FIORE IN BOCCA – Cerignola
+LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
+ ignola
+DESCRIPTION:Gio 06 Mag 2027\nL’UOMO DAL FIORE IN BOCCA presso Teatro Comu
+ nale S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, or
+ ari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-f
+ a-cerignola/eventi/cerignola-2027-05-06-l-uomo-dal-fiore-in-bocca.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-05-06-l-uomo-dal-fiore-in-bocca.html
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

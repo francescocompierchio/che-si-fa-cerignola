@@ -10,6 +10,7 @@ function linkCondivisioneTracciato(raw,source){
   }catch(_){return raw;}
 }
 document.addEventListener("DOMContentLoaded",()=>{
+ document.querySelectorAll("[data-csf-calendar]").forEach(a=>a.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_calendar_subscribe")));
  document.querySelectorAll("[data-csf-install]").forEach(a=>a.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_install_link")));
  const weekend=document.getElementById("csf-share-weekend");
  if(weekend){
