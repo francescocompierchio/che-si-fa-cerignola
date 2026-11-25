@@ -117,6 +117,77 @@ def candidati_fonti(memoria,diagnostica,noti,now):
     memoria["apprendimento"]["dominiCandidati"]=dict(recenti[:100])
     return [{"dominio":h,"cicliOsservati":v["osservazioni"],"ricerche":len(v["fonti"])} for h,v in recenti[:15]]
 
+# Obiettivi operativi, non quote di eventi da pubblicare.
+ZONE_WEEKEND = {
+    "Cerignola": ("Cerignola", 3),
+    "Reali Siti": ('(Stornara OR Stornarella OR "Orta Nova" OR Carapelle OR "San Ferdinando di Puglia" OR Trinitapoli OR "Canosa di Puglia")', 2),
+    "Costa BAT": ("(Barletta OR Trani OR Bisceglie OR Andria)", 4),
+    "Gargano": ("(Manfredonia OR Zapponeta)", 2),
+    "Foggia": ("Foggia", 2),
+}
+COMUNI_ZONE = {
+    "Cerignola": {"Cerignola"},
+    "Reali Siti": {"Stornara","Stornarella","Orta Nova","Carapelle","San Ferdinando di Puglia","Trinitapoli","Canosa di Puglia"},
+    "Costa BAT": {"Barletta","Trani","Bisceglie","Andria"},
+    "Gargano": {"Manfredonia","Zapponeta"},
+    "Foggia": {"Foggia"},
+}
+TEMI_WEEKEND = (
+    '("dj set" OR discoteca OR "club night" OR party)',
+    '(karaoke OR "dinner show" OR "cena spettacolo" OR apericena)',
+    '("musica dal vivo" OR "serata latina" OR "soft clubbing" OR "quiz game")',
+)
+
+def finestra_weekend(oggi):
+    venerdi = oggi + timedelta(days=(4-oggi.weekday())%7)
+    if oggi.weekday() >= 5:
+        venerdi = oggi - timedelta(days=oggi.weekday()-4)
+    return max(oggi,venerdi), venerdi+timedelta(days=2)
+
+def lacune_weekend(eventi, oggi):
+    inizio,fine=finestra_weekend(oggi)
+    out={}
+    for zona, (_, obiettivo) in ZONE_WEEKEND.items():
+        eventi_zona=[e for e in eventi if e.get("citta") in COMUNI_ZONE[zona]
+                     and e.get("categoria")=="Locali & Serate"
+                     and inizio.isoformat() <= e.get("dataInizio","") <= fine.isoformat()]
+        # Un target mancante avvia ricerche, non genera eventi.
+        out[zona]={"eventi":len(eventi_zona),"obiettivo":obiettivo,"mancanti":max(0,obiettivo-len(eventi_zona))}
+    return out
+
+def fonti_adattive_weekend(memoria,eventi,oggi):
+    lacune=lacune_weekend(eventi,oggi)
+    cont=int(memoria.get("apprendimento",{}).get("cicli",0))
+    budget=3 if oggi.weekday()>=2 else 1
+    mancanti=[z for z,d in lacune.items() if d["mancanti"]]
+    # Cerignola prima, poi lacune relative; a parita' ruota le aree.
+    zone=list(ZONE_WEEKEND)
+    mancanti.sort(key=lambda z:(z!="Cerignola",-lacune[z]["mancanti"]/lacune[z]["obiettivo"],(zone.index(z)-cont)%len(zone)))
+    out=[]
+    fonti_nel_passato=memoria.get("fonti",{})
+    for zona in mancanti[:budget]:
+        def valore(i):
+            dati=fonti_nel_passato.get(f"Radar adattivo {zona} {i+1}",{})
+            return float(dati.get("valoreAppreso",0))+sqrt(2*log(cont+2)/(int(dati.get("tentativi",0))+1))
+        indice=cont%len(TEMI_WEEKEND) if cont%4==0 else max(range(len(TEMI_WEEKEND)),key=valore)
+        q=f'{ZONE_WEEKEND[zona][0]} {TEMI_WEEKEND[indice]} (venerdì OR sabato OR domenica) when:21d'
+        out.append({"nome":f"Radar adattivo {zona} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":zona=="Cerignola","prioritaria":zona=="Cerignola","focus_serate":True,"nightlife":True,"max_schede_rss":3})
+    return out
+
+def esplora_candidati(memoria, oggi):
+    """Prova al massimo un dominio gia osservato via ricerca indicizzata.
+    Non visita homepage arbitrarie, non promuove domini alla lista di fiducia."""
+    registro=memoria.get("apprendimento",{}).get("dominiCandidati",{})
+    cont=int(memoria.get("apprendimento",{}).get("cicli",0))
+    candidati=sorted(h for h,d in registro.items() if isinstance(d,dict) and int(d.get("osservazioni",0))>=2
+                     and re.fullmatch(r"[a-z0-9][a-z0-9.-]{2,180}\.[a-z]{2,24}",h)
+                     and not h.endswith((".local",".internal",".localhost")))
+    if not candidati:
+        return []
+    host=candidati[cont%len(candidati)]
+    q=f'site:{host} (Cerignola OR Foggia OR Barletta OR Trani OR Manfredonia OR Bisceglie) ("dj set" OR karaoke OR "dinner show" OR discoteca) when:21d'
+    return [{"nome":"Esplorazione candidata "+host,"url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"focus_serate":True,"nightlife":True,"solo_scoperta":True,"max_schede_rss":2}]
+
 def fonti(memoria,eventi,oggi):
     """Tre esplorazioni a ciclo: due movida e una per le altre aree a rotazione.
     Query nuove non equivalgono a eventi: valgono sempre le verifiche esistenti."""
@@ -133,7 +204,7 @@ def fonti(memoria,eventi,oggi):
     for area,indice in scelte:
         q=f'Cerignola {AREE[area][indice]} when:30d'
         out.append({"nome":f"Apprendimento Cerignola - {area} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"focus_serate":area==movida,"max_schede_rss":3})
-    return out
+    return out + fonti_adattive_weekend(memoria,eventi,oggi) + esplora_candidati(memoria,oggi)
 
 def misura(risultati,precedenti,pubblicati,duplicati):
     """Premia novità finite realmente in archivio, non il numero grezzo di estrazioni.
@@ -167,6 +238,7 @@ def aggiorna(memoria,eventi,oggi,now):
     a=memoria.setdefault("apprendimento",{})
     a["cicli"]=int(a.get("cicli",0))+1
     a["lacune14Giorni"]=lacune(eventi,oggi)
+    a["lacuneWeekend"]=lacune_weekend(eventi,oggi)
     storico=a.get("storico",[])
     if not isinstance(storico,list):
         storico=[]
