@@ -39,7 +39,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com"
 )
 
 FONTI_VIVA = [
@@ -60,6 +60,12 @@ FONTI_VIVA = [
 ]
 
 FONTI_PORTALI = [
+    {"nome":"Comune Cerignola Tempo Libero","url":"https://comune.cerignola.fg.it/argomento/tempo-libero/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
+    {"nome":"Comune Cerignola Manifestazioni Artistiche","url":"https://comune.cerignola.fg.it/tipi_evento/manifestazione-artistica/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
+    {"nome":"Comune Cerignola Associazioni","url":"https://comune.cerignola.fg.it/argomento/associazioni/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata": True,"max_schede":16,"prefisso_schede":"/vivere-il-comune/eventi/"},
+    {"nome":"CerignolaViva Cultura e appuntamenti","url":"https://www.cerignolaviva.it/notizie/?cat=cultura","dominio":"cerignolaviva.it","citta_default":"Cerignola","curata": False,"max_schede":20,"prefisso_schede":"/notizie/"},
+    {"nome":"Marchiodoc Cerignola eventi","url":"https://www.marchiodoc.it/","dominio":"marchiodoc.it","citta_default":"","curata": False,"max_schede":12,"notizie_locali": True},
+    {"nome":"Lucera.it eventi Cerignola","url":"https://www.lucera.it/eventi/","dominio":"lucera.it","citta_default":"","curata": False,"max_schede":10,"notizie_locali": True,"prefisso_schede":"/eventi/"},
     {"nome":"CanosaWeb eventi locali","url":"https://canosaweb.it/eventi/","dominio":"canosaweb.it","citta_default":"Canosa di Puglia","curata":False,"notizie_locali":True,"prefisso_schede":"/notizie/","max_schede":12},
     {"nome":"Comune Cerignola agenda ufficiale","url":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata":True,"prefisso_schede":"/vivere-il-comune/eventi/","max_schede":20},
     {"nome":"Volontari per Minervino - iniziative","url":"https://volontariperminervino.it/","dominio":"volontariperminervino.it","citta_default":"Minervino Murge","curata":False,"notizie_locali":True,"max_schede":8},
@@ -110,13 +116,18 @@ FONTI_PORTALI = [
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
     {"nome": "Virgilio Eventi Foggia", "url": "https://www.virgilio.it/italia/foggia/eventi/", "dominio": "virgilio.it", "citta_default": "", "curata": True},
     {"nome": "Experience App Foggia", "url": "https://experience-app.com/eventi/puglia/foggia/", "dominio": "experience-app.com", "citta_default": "", "curata": True},
-    {"nome": "Piazza in Festa Cerignola", "url": "https://puglia.piazzainfesta.it/cerignola", "dominio": "piazzainfesta.it", "citta_default": "Cerignola", "curata": True, "max_schede": 35},
+    {"nome": "Piazza in Festa Cerignola", "url": "https://puglia.piazzainfesta.it/cerignola", "dominio": "piazzainfesta.it", "citta_default": "Cerignola", "curata": True, "prefisso_schede": "/cerignola/", "max_schede": 35},
     {"nome": "Masseria Pavoni Cerignola", "url": "https://www.masseriapavoni.com/", "dominio": "masseriapavoni.com", "citta_default": "Cerignola", "curata": True, "max_schede": 12},
     {"nome": "Agriturismo Moschella Cerignola", "url": "https://www.agriturismomoschella.com/", "dominio": "agriturismomoschella.com", "citta_default": "Cerignola", "curata": True, "max_schede": 12},
 
 ]
 
 FONTI_SOCIAL_RSS = [
+    {"nome":"Cerignola organizzatori e locali","url":"https://news.google.com/rss/search?q=Cerignola%20(%22ADE%22%20OR%20%22NONZAI%22%20OR%20%22Safar%C3%A0%22%20OR%20%22Blubar%22%20OR%20%22Villa%20Torre%20Quarto%22%20OR%20%22Moving%20Music%22)%20(serata%20OR%20evento%20OR%20dj%20OR%20live%20OR%20cena%20OR%20aperitivo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
+    {"nome":"Cerignola associazioni e feste","url":"https://news.google.com/rss/search?q=Cerignola%20(%22Pro%20Loco%22%20OR%20%22Sud%20Music%22%20OR%20%22Art%26fatti%22%20OR%20%22Palazzo%20Fornari%22%20OR%20%22Oltrebabele%22)%20(festa%20OR%20musica%20OR%20laboratorio%20OR%20mercatini%20OR%20spettacolo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
+    {"nome":"Cerignola gastronomia e cene","url":"https://news.google.com/rss/search?q=Cerignola%20(%22cena%20evento%22%20OR%20%22cena%20di%20beneficenza%22%20OR%20%22serata%20gastronomica%22%20OR%20%22menu%20a%22%20OR%20degustazione%20OR%20%22show%20cooking%22%20OR%20%22cena%20a%20tema%22)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
+    {"nome":"Cerignola stampa locale eventi","url":"https://news.google.com/rss/search?q=Cerignola%20(site%3Alanotiziaweb.it%20OR%20site%3Amarchiodoc.it%20OR%20site%3Acerignolaviva.it%20OR%20site%3Afoggiareporter.it%20OR%20site%3Alucera.it)%20(serata%20OR%20festa%20OR%20musica%20OR%20mercatino%20OR%20concerto%20OR%20laboratorio%20OR%20cena)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
+    {"nome":"Cerignola pubblicazioni social locali","url":"https://news.google.com/rss/search?q=Cerignola%20(site%3Ainstagram.com%20OR%20site%3Afacebook.com)%20(%22NONZAI%22%20OR%20%22ADE%20rooftop%22%20OR%20%22Safar%C3%A0%22%20OR%20%22Blubar%22%20OR%20%22Villa%20Torre%20Quarto%22%20OR%20%22Sud%20Music%22)%20(evento%20OR%20serata%20OR%20dj%20OR%20live%20OR%20aperitivo)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"Cerignola","solo_cerignola": True},
     {"nome":"Andiamo in Puglia Daunia","url":"https://news.google.com/rss/search?q=site%3Aandiamoinpuglia.it%20(Cerignola%20OR%20Stornara%20OR%20Orta%20Nova%20OR%20Trinitapoli%20OR%20San%20Ferdinando%20OR%20Lavello)%20(sagra%20OR%20Natale%20OR%20concerto%20OR%20festa%20OR%20mercatino)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
     {"nome":"Andiamo in Puglia Nord Barese","url":"https://news.google.com/rss/search?q=site%3Aandiamoinpuglia.it%20(Canosa%20OR%20Barletta%20OR%20Trani%20OR%20Minervino%20OR%20Margherita%20di%20Savoia)%20(sagra%20OR%20concerto%20OR%20festa%20OR%20mercatino%20OR%20serata)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
     {"nome":"EventiVicino Reali Siti","url":"https://news.google.com/rss/search?q=site%3Aeventivicino.it%20(Cerignola%20OR%20Stornara%20OR%20Stornarella%20OR%20Orta%20Nova%20OR%20Trinitapoli%20OR%20Lavello%20OR%20Canosa)%20(serata%20OR%20festa%20OR%20sagra%20OR%20concerto)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","solo_scoperta":True},
@@ -236,6 +247,7 @@ REGEX_TEMA_COERENTE = re.compile(
     r"serat[ae]\s+(?:live|musical\w*|in\s+piazza|al\s+pub|nel\s+locale|danza|latina|disco|con)|"
     r"cabaret|festa\s+(?:in\s+piazza|di\s+piazza|patronale|di\s+paese|della\s+birra)|"
     r"sagr[ae]|street\s+food|degustazion[ei]|festa\s+gastronomic[ah]|percorso\s+enogastronomic[o]|caldarroste|prodotti\s+tipici|"
+    r"cena\s+(?:evento|di\s+beneficenza|a\s+tema)|serata\s+(?:gastronomica|di\s+cucina)|show\s+cooking|soft\s+clubbing|"
     r"laboratori[o]?\s+(?:per\s+bambini|creativ[oi])|animazione\s+per\s+bambini|"
     r"spettacol[oi]\s+(?:per\s+famiglie|di\s+intrattenimento)|festa\s+per\s+bambini|notte\s+bianca\s+dei\s+bambini|"
     r"fattori[ae]\s+didattic[ah]|parco\s+tematico|"
@@ -645,7 +657,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
         return "Famiglie & Bambini"
     if any(k in t for k in ("escursion", "trekking", "passeggiat", "camminat", "visita guidata", "visita alle saline", "riserva naturale", "saline", "monticchio", "murgia", "incoronata", "avventur")):
         return "Natura & Escursioni"
-    if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici")):
+    if any(k in t for k in ("sagra", "sagre", "sfogliatella", "street food", "degustazion", "enogastronom", "festa gastronomica", "caldarroste", "prodotti tipici", "cena evento", "cena di beneficenza", "cena a tema", "serata gastronomica", "serata di cucina", "show cooking")):
         return "Sagre & Food"
 
     # Gli indizi teatrali espliciti prevalgono sulle parole generiche.
@@ -657,7 +669,7 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
         return "Teatro & Spettacoli"
 
     # Le serate in locali e i format sociali hanno priorità sui generici riferimenti musicali.
-    if any(k in t for k in ("dinner show", "dinner party", "cena spettacolo", "music selection", "opening winter season", "opening summer season", "club opening", "vinyl set", "after show", "deejay", "dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca")):
+    if any(k in t for k in ("dinner show", "dinner party", "cena spettacolo", "music selection", "opening winter season", "opening summer season", "club opening", "vinyl set", "after show", "deejay", "dj set", "dj-set", "club night", "discotec", "party", "serata al pub", "serata nel locale", "serata disco", "serata latina", "aperitivo musicale", "aperitivi musicali", "karaoke", "notte bianca", "soft clubbing")):
         return "Locali & Serate"
 
     # Un concerto resta musica anche quando si svolge in un teatro.
@@ -1588,7 +1600,7 @@ def priorita_candidato_rss(titolo, descrizione):
     comune = _comune_nel_testo(testo)
     if not comune or REGEX_SCARTO.search(titolo):
         return -1
-    if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina|natale|tombolata|show cooking|dinner show|music selection)\w*\b", testo, re.I):
+    if not re.search(r"\b(evento|serata|concerto|live|dj|party|aperitivo|cena|gastronomic|clubbing|escursion|trekking|visita guidata|laboratorio|bambin|famigli|gita|passeggiat|camminat|cammino|birdwatching|cicloturismo|e-bike|masseria|fattoria|frantoio|caseificio|open day|family day|tour|mercatino|sagra|festa|locandina|natale|tombolata|show cooking|dinner show|music selection)\w*\b", testo, re.I):
         return -1
     punteggio = 10 if comune == "Cerignola" else 3
     if _comune_nel_testo(titolo):
@@ -1628,6 +1640,8 @@ def raccogli_da_feed_social(session, fonte):
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
             descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
             punteggio = priorita_candidato_rss(titolo, descrizione)
+            if fonte.get("solo_cerignola") and _comune_nel_testo(titolo + " " + descrizione) != "Cerignola":
+                continue
             if punteggio < 0 or not link or not titolo:
                 continue
             if urlparse(link).scheme not in ("http", "https") or not urlparse(link).hostname:
@@ -1672,6 +1686,8 @@ def raccogli_da_feed_social(session, fonte):
                 estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default="", fonte_curata_eventi=False)
             if fonte.get("nightlife"):
                 estratti = [e for e in estratti if evento_movida_documentato(e)]
+            if fonte.get("solo_cerignola"):
+                estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
             eventi.extend(estratti)
         registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
         print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
