@@ -120,7 +120,7 @@ jobs:
           const makeNotificationSummary = new Function(summarySource[0] + "; return riepilogoNuoviEventi;")();
           assert.equal(makeNotificationSummary([{titolo:"Concerto"},{titolo:"Teatro"},{titolo:"Festival"}]), "3 nuovi eventi: Concerto · Teatro e altri 1");
           const sw = fs.readFileSync("sw.js", "utf8");
-          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v21"'), "Versione cache service worker non aggiornata");
+          assert.ok(sw.includes('const CACHE_NAME = "chesifa-shell-v22"'), "Versione cache service worker non aggiornata");
           assert.ok(sw.includes('addEventListener("notificationclick"'), "Apertura app dal tocco notifica assente");
           assert.ok(html.includes("const LOCALI_CERIGNOLA_DEFAULT"), "Rubrica locali Instagram assente");
           const editorialSource = html.match(/const eventiEditoriali = (\[[\s\S]*?\]);/);
@@ -283,6 +283,12 @@ jobs:
           const ev={titolo:"Test",citta:"Cerignola",luogo:"Piazza",dataInizio:"2030-01-01",dataFine:"2030-01-01"};
           assert.ok(valid(ev));assert.ok(!valid(null));assert.ok(!valid({...ev,categoria:123}));assert.ok(!valid({...ev,dataFine:"2020-01-01"}));
           assert.ok(html.includes('if (isAndroidApp || isStandalone)'));
+          assert.ok(html.includes('beforeinstallprompt')&&html.includes('appinstalled'));
+          assert.ok(html.includes('id="btn-apk-alternativo"'));
+          const manifest=JSON.parse(require("node:fs").readFileSync("manifest.json","utf8"));
+          assert.equal(manifest.id,manifest.start_url);
+          assert.equal(manifest.display,"standalone");
+          assert.ok(require("node:fs").readFileSync("metrics.js","utf8").includes("csf_pwa_installed"));
           assert.ok(html.includes('campo("seg-descrizione")'));
           assert.ok(html.includes('timeZone:"Europe/Rome"'));
           NODE
