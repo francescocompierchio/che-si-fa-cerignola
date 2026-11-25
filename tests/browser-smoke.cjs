@@ -26,6 +26,24 @@ const assert = require("node:assert/strict");
     }
     await page.setViewportSize({width:393,height:852});
     await page.evaluate(originale=>{document.getElementById("event-counter").textContent=originale;for(const id of ["live-pill","views-pill"])document.getElementById(id).style.display="none";},conteggioOriginale);
+    for(const width of [320,360,393,430]){
+      await page.setViewportSize({width,height:852});
+      const layout=await page.evaluate(()=>{
+        const a=document.getElementById("sort-events").getBoundingClientRect(),b=document.getElementById("surprise-me").getBoundingClientRect();
+        return {a:{left:a.left,right:a.right,top:a.top,height:a.height},b:{left:b.left,right:b.right,top:b.top,height:b.height},w:document.documentElement.clientWidth};
+      });
+      assert.ok(Math.abs(layout.a.top-layout.b.top)<2&&layout.a.right<=layout.b.left&&layout.a.left>=0&&layout.b.right<=layout.w,"Comandi ordinamento/sorpresa fuori riga a "+width);
+      assert.ok(layout.a.height>=44&&layout.b.height>=44,"Area di tocco insufficiente");
+    }
+    await page.setViewportSize({width:393,height:852});
+    assert.match(await page.locator("#author-signature").textContent(),/Francesco Compierchio/);
+    assert.equal(await page.locator("#btn-author-ig").getAttribute("href"),"https://www.instagram.com/francesco_c_92/");
+    assert.equal(await page.locator(".footer-links a").count(),5);
+    await page.locator("#sort-events").selectOption("date");
+    assert.equal(await page.locator("#sort-events").inputValue(),"date");
+    await page.locator("#sort-events").selectOption("smart");
+    await page.locator("#surprise-me").click();
+    assert.ok(await page.locator("#events-container details[open]").count()>0);
     await page.locator("#search-input").fill("Cosa fare nel weekend a Cerignola?");
     await page.waitForFunction(()=>Array.from(document.querySelectorAll("#events-container details")).some(el=>el.textContent.includes("Il Sabato di ADE")));
     await page.locator("#search-input").fill("Discoteche a Trani sabato sera");
