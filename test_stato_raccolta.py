@@ -24,6 +24,15 @@ class StatoFontiTests(unittest.TestCase):
         self.assertEqual(s.riepilogo(m,[])["fontiDaRivedere"],["locale"])
         self.assertEqual(s.pianifica([(None,{"nome":"locale"})],m,7)[1],[])
 
+    def test_adattiva(self):
+        m={"fonti":{}}
+        for i in range(12):
+            s.aggiorna(m,{"secondaria":{"stato":"ok","eventiEstratti":0},"locale":{"stato":"ok","eventiEstratti":0,"prioritaria":True}},i)
+        task=[(None,{"nome":"secondaria"}),(None,{"nome":"locale","prioritaria":True})]
+        self.assertEqual(s.pianifica(task,m,12)[1],["secondaria"])
+        self.assertEqual(s.pianifica(task,m,12)[0],[task[1]])
+        self.assertEqual(len(s.pianifica(task,m,12,True)[0]),2)
+
     def test_cache_invalida(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"fonti.json"

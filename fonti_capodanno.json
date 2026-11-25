@@ -1,0 +1,159 @@
+[
+  {
+    "nome": "Villa Bautier",
+    "alias": [
+      "Villa Bautier",
+      "Il Borgo Restaurant"
+    ],
+    "sito": "https://www.villabautier.com/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Villa Demetra",
+    "alias": [
+      "Villa Demetra"
+    ],
+    "sito": "https://www.villademetra.it/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Villa Torre Quarto",
+    "alias": [
+      "Villa Torre Quarto",
+      "Villa Torrequarto"
+    ],
+    "sito": "https://www.villatorrequarto.it/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "La Venere",
+    "alias": [
+      "Sala Ricevimenti La Venere",
+      "La Venere Ricevimenti",
+      "Hotel Il Quadrifoglio"
+    ],
+    "sito": "https://www.ricevimentilavenere.it/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Masseria Belvedere",
+    "alias": [
+      "Masseria Belvedere"
+    ],
+    "sito": "https://masseriabelvedereeventi.it/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Masseria Cafora",
+    "alias": [
+      "Masseria Cafora"
+    ],
+    "sito": "https://www.agriturismomasseriacafora.it/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Agriturismo Moschella",
+    "alias": [
+      "Agriturismo Moschella",
+      "Masseria Moschella"
+    ],
+    "sito": "https://www.agriturismomoschella.com/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Masseria Pavoni",
+    "alias": [
+      "Masseria Pavoni"
+    ],
+    "sito": "https://www.masseriapavoni.com/",
+    "stato": "sito da monitorare; evento non confermato"
+  },
+  {
+    "nome": "Fattoria del Sole",
+    "alias": [
+      "Fattoria del Sole"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Tenuta Santa Maria dei Manzi",
+    "alias": [
+      "Santa Maria dei Manzi"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Giardini Jemma Resort",
+    "alias": [
+      "Giardini Jemma",
+      "Jemma Resort"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Masseria San Lorenzo",
+    "alias": [
+      "Masseria San Lorenzo"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Torre Giulia",
+    "alias": [
+      "Torre Giulia"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Relais dei Catapani",
+    "alias": [
+      "Relais dei Catapani"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Villa Eden",
+    "alias": [
+      "Villa Eden"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Terra Nostra",
+    "alias": [
+      "Sala Ricevimenti Terra Nostra",
+      "Ristorante Terra Nostra"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Torre Alemanna",
+    "alias": [
+      "Agriturismo Torre Alemanna"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "ADE Rooftop",
+    "alias": [
+      "ADE Rooftop",
+      "ADE Luxury Space"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "Safarà",
+    "alias": [
+      "Safarà",
+      "Safara"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  },
+  {
+    "nome": "NONZAI",
+    "alias": [
+      "NONZAI"
+    ],
+    "stato": "candidato da verificare, non calendario confermato"
+  }
+]
