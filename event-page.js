@@ -57,7 +57,7 @@
 })();
 
 
-// Sottofondo originale CSF: Luci della sera, melodic deep house stereo.
+// Sottofondo originale CSF: Terrazza Dorata, cocktail jazz lounge / bossa nova stereo.
 // Nessuna musica scaricata, servizio esterno, cookie o richiesta di rete.
 (function(){
   const Audio=window.AudioContext||window.webkitAudioContext;
@@ -65,97 +65,100 @@
   let enabled=true,ctx=null,source=null,master=null,buffer=null,button=null;
   try{enabled=localStorage.getItem(key)!=="off";}catch(_){}
   function loop(context){
-    // "Luci della sera": 16 battute, 114 BPM, piano elettrico, pad stereo,
-    // bassline morbida, batteria house e melodia originale a due frasi.
-    const rate=22050,beat=60/114,frames=Math.round(64*beat*rate);
+    // "Terrazza Dorata" — jazz lounge / bossa nova originale, 16 battute.
+    // Rhodes, contrabbasso, chitarra nylon e batteria a spazzole.
+    const rate=22050,beat=60/92,frames=Math.round(64*beat*rate);
     const out=context.createBuffer(2,frames,rate),L=out.getChannelData(0),R=out.getChannelData(1);
-    const freq=m=>440*Math.pow(2,(m-69)/12),tau=2*Math.PI;
-    function mix(i,value,pan=0){
-      i%=frames;
-      L[i]+=value*(1-.35*pan);R[i]+=value*(1+.35*pan);
+    const tau=2*Math.PI,cache=new Map();
+    function mix(i,v,pan=0){
+      i%=frames;L[i]+=v*(1-.38*pan);R[i]+=v*(1+.38*pan);
     }
-    function tone(at,duration,note,amp,kind,pan=0){
-      const offset=Math.round(at*rate),n=Math.round(duration*rate),f=freq(note);
-      for(let i=0;i<n;i++){
-        const x=i/rate,phase=tau*f*x;
-        let env,val;
-        if(kind==="pad"){
-          env=Math.min(1,x/.24)*Math.min(1,(duration-x)/.5);
-          val=.57*Math.sin(phase)+.20*Math.sin(phase*1.003)+.12*Math.sin(phase*.997)+.08*Math.sin(phase*2);
-        }else if(kind==="bass"){
-          env=Math.min(1,x/.012)*Math.exp(-x*2.7)*Math.min(1,(duration-x)/.045);
-          val=.75*Math.sin(phase)+.19*Math.sin(phase*2)+.06*Math.sin(phase*3);
-        }else if(kind==="piano"){
-          env=Math.min(1,x/.009)*Math.exp(-x*2.9)*Math.min(1,(duration-x)/.09);
-          val=.64*Math.sin(phase)+.23*Math.sin(phase*2.001)*Math.exp(-x*3)+.10*Math.sin(phase*3.003)*Math.exp(-x*5)+.03*Math.sin(phase*5.01)*Math.exp(-x*12);
-        }else{
-          env=Math.min(1,x/.035)*Math.exp(-x*2.1)*Math.min(1,(duration-x)/.13);
-          val=.71*Math.sin(phase+.22*Math.sin(tau*5*x))+.21*Math.sin(phase*2)+.08*Math.sin(phase*3)*Math.exp(-x*2);
+    function tone(at,beats,note,amp,kind,pan=0){
+      const duration=beats*beat,n=Math.round(duration*rate),key=[kind,n,note].join(":");
+      let sample=cache.get(key);
+      if(!sample){
+        sample=new Float32Array(n);
+        const f=440*Math.pow(2,(note-69)/12);
+        for(let i=0;i<n;i++){
+          const x=i/rate,p=tau*f*x,tail=Math.min(1,(duration-x)/.085);
+          let env,val;
+          if(kind==="rhodes"){
+            env=Math.min(1,x/.008)*Math.exp(-x*1.9)*tail;
+            val=.77*Math.sin(p+.22*Math.exp(-x*3)*Math.sin(p*2.002))+.16*Math.sin(p*2.001)*Math.exp(-x*4)+.07*Math.sin(p*4.002)*Math.exp(-x*13);
+            val*=.94+.06*Math.sin(tau*4.6*x);
+          }else if(kind==="bass"){
+            env=Math.min(1,x/.012)*Math.exp(-x*2.7)*tail;
+            val=.72*Math.sin(p)+.20*Math.sin(2*p)*Math.exp(-x*2)+.06*Math.sin(3*p)*Math.exp(-x*4)+.02*Math.sin(5*p)*Math.exp(-x*12);
+          }else if(kind==="guitar"){
+            env=Math.min(1,x/.005)*Math.exp(-x*4.1)*tail;
+            val=.63*Math.sin(p)+.22*Math.sin(p*2)*Math.exp(-x*2)+.10*Math.sin(p*3)*Math.exp(-x*5)+.05*Math.sin(p*5)*Math.exp(-x*9);
+          }else{
+            env=Math.min(1,x/.03)*Math.exp(-x*1.8)*tail;
+            val=.72*Math.sin(p+.13*Math.sin(tau*5.1*x))+.18*Math.sin(p*2)+.07*Math.sin(p*3)*Math.exp(-x*3);
+          }
+          sample[i]=env*val;
         }
-        mix(offset+i,amp*env*val,pan);
+        cache.set(key,sample);
       }
+      const offset=Math.round(at*rate);
+      for(let i=0;i<n;i++)mix(offset+i,amp*sample[i],pan);
     }
-    // Am9, Fmaj7, Cmaj9, G6: accordi aperti e bassi coerenti.
-    const chords=[[57,60,64,67,71],[53,57,60,64],[55,60,64,67,74],[55,59,62,64,69]];
-    const bass=[45,41,36,43];
-    const phrases=[
-      [[.5,76,.8],[1.5,79,.65],[2.5,81,1.15]],
-      [[0,79,.7],[1,76,.8],[2.5,74,1.2]],
-      [[.5,76,.6],[1.25,79,.55],[2,83,1.45]],
-      [[0,81,.7],[1.5,79,.7],[2.75,74,.95]],
-      [[.5,76,.8],[1.5,79,.65],[2.5,84,1.15]],
-      [[0,81,.7],[1,79,.8],[2.5,76,1.2]],
-      [[.5,74,.6],[1.25,76,.55],[2,79,1.45]],
-      [[0,76,.7],[1.5,74,.6],[2.5,72,1.35]]
+    // Voicing jazz a quattro voci e bassi separati: Dm9, G13, Cmaj9,
+    // A7b9, Dm9, G13, Em7, A13, Fmaj9, Fm6, Em9, A7, Dm9, G13, Cmaj9, G13.
+    const chords=[
+      [53,57,60,64],[53,57,59,64],[52,55,59,62],[55,58,61,64],
+      [53,57,60,64],[53,57,59,64],[55,59,62,66],[55,59,61,66],
+      [57,60,64,67],[56,60,62,65],[55,59,62,66],[55,57,61,64],
+      [53,57,60,64],[53,57,59,64],[52,55,59,62],[53,57,59,64]
+    ];
+    const roots=[38,43,36,45,38,43,40,45,41,41,40,45,38,43,36,43];
+    const lead=[
+      [[.5,69,.75],[1.5,72,.5],[2.25,76,.8]],
+      [[0,74,.75],[1,71,.5],[2.5,69,.9]],
+      [[.5,67,.65],[1.5,71,.65],[2.5,74,1.2]],
+      [[0,73,.6],[1,70,.65],[2.5,69,1.1]],
+      [[.5,65,.6],[1.5,69,.6],[2.5,72,1.15]],
+      [[0,71,.7],[1.5,67,.7],[3,64,.8]],
+      [[.5,66,.65],[1.5,67,.5],[2.5,71,1.1]],
+      [[0,69,.8],[2,73,.65],[3,76,.75]],
+      [[.5,76,.6],[1.5,79,.5],[2.5,77,1.0]],
+      [[0,77,.8],[1.5,74,.6],[2.5,72,.9]],
+      [[.5,71,.6],[1.5,74,.6],[2.5,78,1.1]],
+      [[0,76,.7],[1.5,73,.6],[3,69,.75]],
+      [[.5,65,.7],[1.5,69,.6],[2.5,72,1.0]],
+      [[0,71,.8],[1.5,74,.6],[3,69,.75]],
+      [[.5,67,.65],[1.5,64,.65],[2.5,62,1.2]],
+      [[0,65,.7],[1.5,67,.6],[2.75,71,.65]]
     ];
     for(let bar=0;bar<16;bar++){
-      const n=bar%4,at=bar*4*beat,chord=chords[n];
-      chord.forEach((note,j)=>tone(at,4*beat+.25,note,.026,"pad",j%2?.65:-.65));
-      for(const step of [.5,1.5,2.5,3.25]){
-        tone(at+step*beat,.40*beat,bass[n]+(step===3.25?12:0),.18,"bass");
-      }
-      for(const step of [0,1.75,3]){
-        chord.slice(0,4).forEach((note,j)=>tone(at+step*beat+j*.009,1.35*beat,note,.044,"piano",j%2?.55:-.55));
-      }
-      for(const [step,note,duration] of phrases[bar%8]){
-        tone(at+step*beat,duration*beat,note,.095,"lead",-.12);
-        tone(at+(step+.75)*beat,duration*beat,note,.023,"lead",.8);
+      const at=bar*4*beat,ch=chords[bar],root=roots[bar];
+      const next=roots[(bar+1)%16];
+      for(const [step,note,len] of [[0,root,.89],[1.5,root+7,.62],[2,root,.85],[3.5,next-1,.40]])
+        tone(at+step*beat,len,note,.17,"bass");
+      for(const step of [0,1.5,2.5])ch.forEach((note,j)=>tone(at+(step+j*.016)*beat,1.35,note,.037,"rhodes",-.35));
+      for(const step of [.75,1.75,3.25])ch.slice(1).forEach((note,j)=>tone(at+(step+j*.014)*beat,.47,note+12,.016,"guitar",.65));
+      for(const [step,note,len] of lead[bar]){
+        tone(at+step*beat,len,note,.073,"rhodes",.18);
+        tone(at+(step+.30)*beat,len,note,.012,"soft",.70);
       }
     }
-    let seed=12571;
+    let seed=67429;
     function noise(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296*2-1;}
     for(let step=0;step<128;step++){
       const at=Math.round(step*.5*beat*rate);
-      if(step%2===0){
-        for(let i=0;i<rate*.29;i++){
-          const x=i/rate,phase=tau*(47*x+54*(1-Math.exp(-36*x))/36);
-          mix(at+i,.23*Math.min(1,x/.005)*Math.exp(-x*15)*Math.sin(phase));
-        }
+      if(step%4===0||step%8===6){
+        for(let i=0;i<rate*.19;i++){const x=i/rate;mix(at+i,.095*Math.min(1,x/.005)*Math.exp(-x*21)*Math.sin(tau*(55*x+28*(1-Math.exp(-35*x))/35)));}
       }
       if(step%4===2){
-        let prev=0;
-        for(let i=0;i<rate*.12;i++){
-          const x=i/rate,z=noise(),high=z-prev*.78;prev=z;
-          mix(at+i,.037*high*Math.exp(-x*36)*(1+.25*Math.sin(tau*34*x)),.15);
-        }
+        let low=0;
+        for(let i=0;i<rate*.18;i++){const x=i/rate,z=noise();low=.78*low+.22*z;mix(at+i,.032*(z-low)*Math.exp(-x*19)*Math.min(1,x/.007),.25);}
       }
-      if(step%2===1||step%8===6){
-        let prev=0;
-        for(let i=0;i<rate*.075;i++){
-          const x=i/rate,z=noise(),high=z-prev;prev=z;
-          mix(at+i,.023*high*Math.exp(-x*58),step%4===1?-.65:.65);
-        }
-      }
+      let prev=0;
+      for(let i=0;i<rate*.045;i++){const x=i/rate,z=noise();mix(at+i,(step%2?.012:.008)*(z-prev)*Math.exp(-x*85),-.40);prev=z;}
     }
-    // Compressione morbida, senza clipping; piccolo crossfade sulla cucitura.
-    for(let i=0;i<frames;i++){
-      L[i]=Math.tanh(L[i]*1.3)*.85;R[i]=Math.tanh(R[i]*1.3)*.85;
-    }
-    const fade=128;
-    for(let i=0;i<fade;i++){
-      const g=i/fade;
-      L[i]*=g;R[i]*=g;L[frames-1-i]*=g;R[frames-1-i]*=g;
-    }
+    // Soft mastering; no harsh clipping. Seam is faded over 6 ms.
+    for(let i=0;i<frames;i++){L[i]=Math.tanh(L[i]*1.25)*.86;R[i]=Math.tanh(R[i]*1.25)*.86;}
+    for(let i=0;i<128;i++){const g=i/128;L[i]*=g;R[i]*=g;L[frames-1-i]*=g;R[frames-1-i]*=g;}
     return out;
   }
   function running(){return Boolean(enabled&&ctx?.state==="running"&&source&&!document.hidden);}

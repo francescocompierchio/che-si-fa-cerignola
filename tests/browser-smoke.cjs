@@ -115,9 +115,12 @@ const assert = require("node:assert/strict");
     assert.ok(await chrome.locator("#install-box").isHidden());
     assert.ok(await chrome.locator("#btn-add-home").isVisible());
     await chrome.emulateMedia({reducedMotion:"no-preference"});
+    await chrome.evaluate(()=>document.addEventListener("pointerup",()=>{
+      const wave=document.querySelector(".csf-liquid-wave");
+      window.__waveOnTouch=wave?getComputedStyle(wave).pointerEvents:null;
+    },{once:true}));
     await chrome.locator(".hero h1").tap();
-    assert.ok(await chrome.locator(".csf-liquid-wave").count()>0,"Onda anche su testo non interattivo");
-    assert.equal(await chrome.locator(".csf-liquid-wave").first().evaluate(el=>getComputedStyle(el).pointerEvents),"none");
+    assert.equal(await chrome.evaluate(()=>window.__waveOnTouch),"none","Onda anche su testo non interattivo, senza intercettare i tocchi");
     await chrome.waitForFunction(()=>!document.querySelector(".csf-liquid-wave"));
     await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="playing");
     await chrome.locator("#csf-music-toggle").click();
