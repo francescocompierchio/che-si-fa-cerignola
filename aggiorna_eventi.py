@@ -20,6 +20,7 @@ import stato_raccolta
 import capodanno
 import festivita
 import ricorrenze
+import discovery_locale
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -1886,8 +1887,18 @@ def raccogli_da_feed_social(session, fonte):
             titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
             descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
+            testo_candidato=titolo+" "+descrizione
             punteggio = priorita_candidato_rss(titolo, descrizione)
-            if fonte.get("solo_cerignola") and _comune_nel_testo(titolo + " " + descrizione) != "Cerignola":
+            locale_esplicito=_comune_nel_testo(testo_candidato)=="Cerignola"
+            if fonte.get("solo_cerignola"):
+                alias_noto=discovery_locale.alias_locale(testo_candidato,registro_cerignola()+capodanno.registro())
+                if not locale_esplicito and not alias_noto:
+                    continue
+                if discovery_locale.TEMI.search(testo_candidato) and not REGEX_SCARTO.search(titolo):
+                    punteggio=max(punteggio,10 if locale_esplicito else 3)
+            if fonte.get("ricorrente_verificata") and not discovery_locale.SETTIMANA.search(testo_candidato):
+                continue
+            if fonte.get("feed_editore") and not _host_appartiene(link,fonte["dominio"]):
                 continue
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
@@ -1917,6 +1928,10 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             visti_link.add(link)
             tentativi_scheda += 1
+            pub_el=item.find("pubDate")
+            pubblicazione=discovery_locale.data_pubblicazione(pub_el.get_text(strip=True) if pub_el else "")
+            if fonte.get("feed_editore") and pubblicazione and pubblicazione < oggi_dt().date()-timedelta(days=60):
+                continue
             url_finale = link
             html_pagina = ""
             try:
@@ -1931,13 +1946,15 @@ def raccogli_da_feed_social(session, fonte):
             # La pagina intermedia di Google News non è la fonte originale.
             if _host_appartiene(url_finale, "news.google.com"):
                 html_pagina = ""
+            if fonte.get("feed_editore") and not _host_appartiene(url_finale,fonte["dominio"]):
+                continue
             if fonte.get("anno_capodanno") or fonte.get("anno_festivita") or fonte.get("ricorrenze_annuali"):
                 # Non pubblicare da snippet Google News senza fonte primaria leggibile.
                 if html_pagina:
                     eventi.extend(analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte))
                 continue
             estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
-            if not estratti and not (html_pagina and registra_stati_negativi(html_pagina, url_finale)):
+            if not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
                 testo_locandina = estrai_testo_locandine(session, html_pagina, item_feed=item, max_immagini=1, base_url=url_finale)
                 testo_social = " ".join(x for x in (descrizione, testo_locandina) if x)
                 # Il motore può mostrare testo e immagine del post anche se Meta impedisce l'apertura.
@@ -1946,10 +1963,15 @@ def raccogli_da_feed_social(session, fonte):
                 estratti = analizza_pagina_evento(html_snippet, url_finale, citta_default="", fonte_curata_eventi=False)
             if fonte.get("nightlife"):
                 estratti = [e for e in estratti if evento_movida_documentato(e)]
+            if fonte.get("feed_editore") or fonte.get("ricorrente_verificata"):
+                estratti=[e for e in estratti if discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
+            if fonte.get("ricorrente_verificata"):
+                testo_pagina=BeautifulSoup(html_pagina,"html.parser").get_text(" ",strip=True) if html_pagina else ""
+                estratti=[e for e in estratti if e["dataInizio"]==e["dataFine"] and discovery_locale.data_evento_documentata(testo_pagina,e["dataInizio"]) and discovery_locale.SETTIMANA.search(e["titolo"]+" "+e["descrizione"])]
             if fonte.get("solo_cerignola"):
                 estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
             eventi.extend(estratti)
-        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
+        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, candidatiPertinenti=len(classificati), schedeInterrogate=tentativi_scheda, pagineScaricate=scaricate, eventiEstratti=len(eventi))
         print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
     except Exception as exc:
         registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
@@ -3019,7 +3041,7 @@ def esegui_aggiornamento():
         + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita + rss_annuali]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
-        + [(raccogli_da_feed_social, fonte) for fonte in fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
+        + [(raccogli_da_feed_social, fonte) for fonte in discovery_locale.fonti() + discovery_locale.settimanali() + fonti_registro_cerignola() + FONTI_SOCIAL_RSS]
         + [(esplora_lineup_atlas, {"nome":"Lineup Atlas API Barletta","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&limit=30","dominio":"lineupatlas.com","cache":"bat"}), (esplora_lineup_atlas, {"nome":"Lineup Atlas API raggio costiero","url":"https://lineupatlas.com/api/v1/events?city=barletta&country=IT&kind=PARTY&rayon=50&limit=50","dominio":"lineupatlas.com","cache":"raggio-bat"})]
     )
     percorso_stato = os.path.join(".csf-state", "fonti.json")
@@ -3055,6 +3077,11 @@ def esegui_aggiornamento():
     ritrovati = 0
     for ev in nuovi_unici:
         if not any(sono_duplicati(x, ev) for x in consolidati):
+            # Conserva una locandina già verificata soltanto per la stessa fonte, sede e data.
+            if not ev.get("locandinaUrl"):
+                precedente=next((x for x in precedenti_auto if x.get("locandinaUrl") and all(x.get(k)==ev.get(k) for k in ("fonteUrl","luogo","dataInizio","dataFine"))),None)
+                if precedente:
+                    ev=dict(ev,locandinaUrl=precedente["locandinaUrl"])
             consolidati.append(ev)
             if any(sono_duplicati(x, ev) for x in precedenti_auto):
                 ritrovati += 1
@@ -3087,6 +3114,8 @@ def esegui_aggiornamento():
     report = {
         "concordanzeFonti": concordanze,
         "eventiConcordanti": len(concordanze),
+        "locandineInArchivio": sum(bool(e.get("locandinaUrl")) for e in lista_finale),
+        "fontiConCandidatiNonEstratti": [n for n,d in STATISTICHE_FONTI.items() if d.get("candidatiPertinenti",0)>0 and not d.get("eventiEstratti",0)],
         "aggiornatoAl": oggi_dt().strftime("%Y-%m-%d %H:%M:%S %Z"),
         "fusoOrario": "Europe/Rome",
         "totaleContenuti": len(lista_finale),
