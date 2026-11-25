@@ -253,6 +253,34 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Classic Saturday & Habibi with OLIVE F - Sabato 28 Novembre 2026",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 22:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "15 Via Leonardo da Vinci, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club. CLASSIC SATURDAY × HABIBI ✨ Un sabato tutto da vivere, tra groove irresistibili, sonorità pop, funky e le hit del momento. In console OLIVE F per un viaggio musicale tra grandi classici, nuove vibes e r",
+    "fonteUrl": "https://xceed.me/it/barletta/event/classic-saturday-habibi-with-olive-f-sabato-28-novembre-2026/253326"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Trani",
+    "categoria": "Locali & Serate",
+    "titolo": "HABIBI · 28.11 · APHELION CLUB",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Aphelion Club",
+    "indirizzoMappa": "Contrada Fontanelle, 76125 Trani BT, Italia, Trani",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/trani/event/habibi-2811-aphelion-club/251413"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Lucera",
     "categoria": "Attività diurne",
     "titolo": "Lucera | Arteteca - Operazione Cicogna",
@@ -292,6 +320,20 @@
     "costo": "A pagamento",
     "descrizione": "SPEDIZIONI DON CHISCIOTTE Torna sul palco del Teatro Fantàsia “Spedizioni Don Chisciotte”, una commedia brillante, ironica e sorprendente! 🗣️ Sinossi: Quando le giornate lavorative diventano pesanti, il luogo di lavoro p",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337792.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Domenica 29 Novembre - KAYMA at ATRIO22",
+    "dataTesto": "Dom 29 Nov 2026 · Ore 20:00",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "15 Via Leonardo da Vinci, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club. KAYMA — Sunday at Atrio22 Domenica 29, lasciati trasportare dalle sonorità funky e le hit house del momento di KAYMA e goditi un aperitivo domenicale tra musica, atmosfera e good vibes. Un appuntament",
+    "fonteUrl": "https://xceed.me/it/barletta/event/domenica-29-novembre-kayma-at-atrio22/253630"
   },
   {
     "tipoContenuto": "evento",
@@ -519,6 +561,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Habibi with OCTAVE ONE live - Venerdì 11 Dicembre 2026",
+    "dataTesto": "Ven 11 Dic 2026 · Ore 22:00",
+    "dataInizio": "2026-12-11",
+    "dataFine": "2026-12-11",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "15 Via Leonardo da Vinci, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club. ATRIO22 IS BACK. ✨ HABIBI ✨ Ritmi orientali, sonorità afro e vibrazioni senza confini. 🌙🔥 Una notte che unisce culture, musica ed energia in un’atmosfera tutta da vivere. Habibi, welcome to the night.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/habibi-with-octave-one-live-venerdi-11-dicembre-2026/249788"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Manfredonia | Paladini di Francia. Spada avete voi, spada avete io!",
@@ -572,6 +628,20 @@
     "costo": "A pagamento",
     "descrizione": "Fuori stagione arriva Victoria Station, con Gianmarco Saurino e Roberto Galano. Lo spettacolo si sviluppa attraverso una conversazione surreale tra un tassista e il suo radio-operatore, in un dialogo attraversato da inco",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332942.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Habibi with BENJA - Venerdì 18 Dicembre 2026",
+    "dataTesto": "Ven 18 Dic 2026 · Ore 22:00",
+    "dataInizio": "2026-12-18",
+    "dataFine": "2026-12-18",
+    "luogo": "Atrio22",
+    "indirizzoMappa": "15 Via Leonardo da Vinci, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club. ATRIO22 IS BACK. ✨ HABIBI ✨ Ritmi orientali, sonorità afro e vibrazioni senza confini. 🌙🔥 Una notte che unisce culture, musica ed energia in un’atmosfera tutta da vivere. Habibi, welcome to the night.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/habibi-with-benja-venerdi-18-dicembre-2026/249791"
   },
   {
     "tipoContenuto": "evento",
