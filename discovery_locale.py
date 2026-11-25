@@ -80,6 +80,30 @@ def fonti_guide_movida(registro):
             out[-1]["prioritaria"]=True
     return out
 
+def fonti_organizzatori_movida(registro):
+    """Discovery per artisti e promoter: mai prova di sede, data o evento."""
+    # Evidenze storiche pubbliche, non annunci correnti:
+    # https://www.cerignolaviva.it/notizie/festa-della-birra-in-piazza-della-repubblica-a-cerignola-birra-food-giochi-e-musica/
+    # https://www.cerignolaviva.it/notizie/notte-fantastica-2024-a-cerignola-guest-star-paola-chiara/
+    # https://cerignola.halleyweb.it/zf/index.php/trasparenza/index/detail/categoria/63/page/60/serial/114838/serial-beneficiario/23075/tipo/3
+    # https://www.scienzesociali.unifg.it/sites/scienzesociali/files/2025-04/14-16%20Dicembre%202024_Programma-Generale%20Heritage%20of%20the%20Apulian%20Experience.pdf
+    # https://www.andreaordinemusic.it/
+    nomi_per_comune={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi","Andrea Ordine","Antonio Depalma","Nicola Lomuscio","Christian Antonacci"]}
+    tema='("dj set" OR deejay OR karaoke OR "musica dal vivo" OR "cena spettacolo" OR party OR "serata" OR apericena)'
+    for comune,locali in registro.items():
+        for locale in locali:
+            for nome in locale.get("organizzatori",[]):
+                if isinstance(nome,str) and 5<=len(nome)<=100 and '"' not in nome:
+                    nomi_per_comune.setdefault(comune,[]).append(nome)
+    out=[]
+    for comune,nomi in nomi_per_comune.items():
+        unici=list(dict.fromkeys(nomi))
+        for i in range(0,len(unici),4):
+            gruppo=unici[i:i+4]
+            q='"'+comune+'" ('+" OR ".join('"'+n+'"' for n in gruppo)+") "+tema+" when:30d"
+            out.append({"nome":"Radar Movida - "+comune+" organizzatori "+str(i//4+1),"url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"radar_movida":True,"nightlife":True,"focus_serate":True,"prioritaria":comune=="Cerignola","solo_cerignola":comune=="Cerignola","comune_radar":comune,"alias_movida":[],"max_schede_rss":4})
+    return out
+
 def alias_locale(testo,registro):
     """Un alias serve soltanto a trovare il candidato, non a provare la sede."""
     testo=testo or ""
