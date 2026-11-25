@@ -2584,22 +2584,25 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       if(oggi===anno+"-01-01")anno--;
       return [anno+"-12-31",(anno+1)+"-01-01"];
     }
-    function capodannoPasto(ev,inizio,fine){
+    function eventoCapodanno(ev,inizio,fine){
+      // La sola sovrapposizione con una mostra o rassegna lunga non basta.
       if(!ev||ev.tipoContenuto==="esperienza"||!ev.dataInizio||ev.dataInizio<inizio||ev.dataInizio>fine)return false;
+      const ultimo=ev.dataFine||ev.dataInizio;
+      if(ultimo<ev.dataInizio||ultimo>fine)return false;
       const titolo=normalizzaRicerca(ev.titolo),descrizione=normalizzaRicerca(ev.descrizione);
-      const tema=/\b(?:capodanno|san silvestro|ultimo dell['’ ]anno|new year(?:'s)? eve)\b/;
-      const pasto=/\b(?:cenon[ei]|cen[ae]|pranz[oi]|menu|brunch|dinner|banchett[oi])\b/;
-      if(!tema.test(titolo+" "+descrizione))return false;
-      return pasto.test(titolo)||pasto.test(descrizione);
+      const tema=/\b(?:capodanno|san silvestro|ultimo dell['’ ]anno|fine anno|new year(?:['’]s)?(?: eve| day)?|nye)\b/;
+      return tema.test(titolo+" "+descrizione);
     }
-    function pastiCapodanno(eventi,inizio,fine){
-      // Un solo risultato per lo stesso pasto, sede, giorno e fonte; preferire il prezzo documentato.
+    function eventiCapodanno(eventi,inizio,fine){
+      // Deduplica pasti uguali, senza accorpare spettacoli e feste diversi nella stessa sede.
       const unici=new Map();
+      const pasto=/\b(?:cenon[ei]|cen[ae]|pranz[oi]|menu|brunch|dinner|banchett[oi])\b/;
       for(const ev of eventi){
-        if(!capodannoPasto(ev,inizio,fine))continue;
+        if(!eventoCapodanno(ev,inizio,fine))continue;
         const luogo=normalizzaRicerca(ev.luogo).replace(/^(?:agriturismo|ristorante|hotel|sala ricevimenti)\s+/,"");
         const titolo=normalizzaRicerca(ev.titolo);
-        const tipo=/\b(?:pranz[oi]|brunch)\b/.test(titolo)?"pranzo":/\b(?:cenon[ei]|cen[ae]|dinner|veglion[ei]|san silvestro)\b/.test(titolo)?"cena":ev.dataInizio===inizio?"cena":"pranzo";
+        const haPasto=pasto.test(titolo+" "+normalizzaRicerca(ev.descrizione));
+        const tipo=haPasto?(/\b(?:pranz[oi]|brunch)\b/.test(titolo)?"pranzo":/\b(?:cenon[ei]|cen[ae]|dinner|veglion[ei]|san silvestro)\b/.test(titolo)?"cena":ev.dataInizio===inizio?"cena":"pranzo"):titolo;
         const chiave=[normalizzaRicerca(ev.citta),luogo,ev.dataInizio,tipo,ev.fonteUrl||ev.titolo].join("|");
         const precedente=unici.get(chiave);
         const valore=e=>Number(/\d\s*€|€\s*\d/.test(e.costo||""))*4+Number(!!e.locandinaUrl)*2+Number(/\bore\b/i.test(e.dataTesto||""));
@@ -2622,14 +2625,14 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         if(label)label.textContent=picker.value?"📅 "+new Date(picker.value+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"short"}):"📅 Altra data";
       }
       const nyActive=dataSelezionata===nyStart&&fineDataSelezionata===nyEnd;
-      const nyCount=pastiCapodanno(eventi,nyStart,nyEnd).length;
-      if(ny){ny.setAttribute("aria-pressed",String(nyActive));ny.textContent="🎆 Capodanno · "+nyCount;ny.setAttribute("aria-label","Cenoni e pranzi di Capodanno: "+nyCount);}
+      const nyCount=eventiCapodanno(eventi,nyStart,nyEnd).length;
+      if(ny){ny.setAttribute("aria-pressed",String(nyActive));ny.textContent="🎆 Capodanno · "+nyCount;ny.setAttribute("aria-label","Eventi di Capodanno: "+nyCount);}
       if(info){
         info.hidden=!dataSelezionata;
         if(dataSelezionata){
           const format=d=>new Date(d+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
           const count=nyActive?nyCount:eventi.filter(ev=>CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata)).length;
-          info.textContent=(nyActive?"Cenoni e pranzi di Capodanno":format(dataSelezionata))+" · "+count+(count===1?" evento annunciato":" eventi annunciati");
+          info.textContent=(nyActive?"Eventi di Capodanno":format(dataSelezionata))+" · "+count+(count===1?" evento annunciato":" eventi annunciati");
         }
       }
       for(let offset=0;offset<7;offset++){
@@ -3183,7 +3186,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       renderAgendaRapida(filtrati);
       if (dataSelezionata) {
         const [nyStart,nyEnd]=dateCapodanno();
-        filtrati = dataSelezionata===nyStart&&fineDataSelezionata===nyEnd?pastiCapodanno(filtrati,nyStart,nyEnd):filtrati.filter(ev => CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata));
+        filtrati = dataSelezionata===nyStart&&fineDataSelezionata===nyEnd?eventiCapodanno(filtrati,nyStart,nyEnd):filtrati.filter(ev => CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata));
       }
       // Eventi in evidenza, poi cronologia; esperienze senza data sempre in fondo.
       filtrati.sort((a,b)=>{
@@ -3201,7 +3204,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       if (filtrati.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
-        empty.textContent = fineDataSelezionata ? "Nessun cenone o pranzo di Capodanno ancora annunciato con questi filtri. Le proposte vengono aggiornate automaticamente." : modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : dataSelezionata ? "Nessun evento ancora annunciato per questa data con i filtri selezionati. Torna a consultare l’agenda: le proposte vengono aggiornate automaticamente." : "Nessun evento o attività trovata con i filtri selezionati.";
+        empty.textContent = fineDataSelezionata ? "Nessun evento specifico di Capodanno ancora annunciato con questi filtri. Le proposte vengono aggiornate automaticamente." : modalitaRapida === "FAVORITES" ? "Non hai ancora salvato proposte. Tocca la stella su una scheda per ritrovarla qui." : modalitaRapida === "WEEKEND" ? "Non risultano proposte per questo weekend. Prova a esplorare tutte le attività." : dataSelezionata ? "Nessun evento ancora annunciato per questa data con i filtri selezionati. Torna a consultare l’agenda: le proposte vengono aggiornate automaticamente." : "Nessun evento o attività trovata con i filtri selezionati.";
         const reset=document.createElement("button");reset.type="button";reset.className="btn btn-map";reset.textContent="Mostra tutte le proposte";reset.addEventListener("click",()=>{queryRicerca="";searchInput.value="";dataSelezionata="";fineDataSelezionata="";filtroSmart="ALL";impostaModalitaRapida("ALL");});empty.appendChild(document.createElement("br"));empty.appendChild(reset);if(modalitaRapida!=="FAVORITES"){const nearby=document.createElement("button");nearby.type="button";nearby.className="btn btn-soft";nearby.textContent="Scopri le serate dei prossimi giorni";nearby.addEventListener("click",()=>{queryRicerca="";searchInput.value="";impostaModalitaRapida("ALL");impostaFiltroSmart("NIGHT");});empty.appendChild(nearby);}container.appendChild(empty);
         return;
       }
