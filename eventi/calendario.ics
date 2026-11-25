@@ -488,6 +488,76 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:foggia-2026-11-25-serataccia-italiana-carlito-s@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261125
+DTEND;VALUE=DATE:20261126
+SUMMARY:Serataccia Italiana – Carlito's – Foggia
+LOCATION:Via Catalano 13\, Foggia
+DESCRIPTION:Mer 25 Nov 2026 · Ore 21:00\nCanta e balla con il DJ set di An
+ drew Rossetti. Inizio ore 21:00. Info e prenotazioni tavoli: 388 5818972.\
+ nAccesso: Non indicato · Contattare il locale\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/foggia-2026-11-25-serataccia-italiana-carlito-s.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-25-serataccia-italiana-carlito-s.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:foggia-2026-11-26-la-grande-spaghettata-lion-s@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261126
+DTEND;VALUE=DATE:20261127
+SUMMARY:La Grande Spaghettata – Lion's – Foggia
+LOCATION:Viale Gentile 79\, Foggia
+DESCRIPTION:Gio 26 Nov 2026 · Ore 20:30\nIl ruggito del giovedì: cena con
+  musica\, spaghetti alla carbonara oppure aglio\, olio e peperoncino\, con
+  calice di vino incluso. Prenotazioni: 0881 021913.\nAccesso: €6 aglio\,
+  olio e peperoncino\; €10 carbonara (entrambi con calice di vino)\nVerif
+ ica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio
+ .github.io/che-si-fa-cerignola/eventi/foggia-2026-11-26-la-grande-spaghett
+ ata-lion-s.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-26-la-grande-spaghettata-lion-s.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:foggia-2026-11-27-karaoke-di-venerdi-lion-s@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+SUMMARY:Karaoke di venerdì – Lion's – Foggia
+LOCATION:Via Gentile 79/81\, Foggia
+DESCRIPTION:Ven 27 Nov 2026 · Ore 21:00\nKaraoke con Antonio Acquaviva dal
+ le ore 21:00. Info e prenotazioni tavoli: 0881 021913.\nAccesso: Non indic
+ ato · Contattare il locale\nVerifica variazioni\, orari e fonte nella sch
+ eda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/fo
+ ggia-2026-11-27-karaoke-di-venerdi-lion-s.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-27-karaoke-di-venerdi-lion-s.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:foggia-2026-11-28-love-generation-90-domus-disco@chesifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Love Generation 90 – Domus Disco – Foggia
+LOCATION:Viale Leone XIII 201\, Foggia
+DESCRIPTION:Sab 28 Nov 2026 · Ore 21:30 / DJ set 23:30\nOre 21:30 cena buf
+ fet e spettacolo live: Enza Ganà (cover Raffaella Carrà) ed Ensamble Dan
+ se. Ore 23:30 DJ set anni 90: Andrew Rossetti\, Danilo Rossetti\, Gianni V
+ iola\, Ciccio Mix\, Alex Caso\, Paolo Mascolo e Angelisa voice. Percussion
+ i e sax: Ubaldo Pilla\, Antonio Aucello. Info: 340 3094778 · 327 3216954 
+ · 320 9050950.\nAccesso: Non indicato · Contattare il locale\nVerifica v
+ ariazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.gith
+ ub.io/che-si-fa-cerignola/eventi/foggia-2026-11-28-love-generation-90-domu
+ s-disco.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-28-love-generation-90-domus-disco.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-11-28-acquolina-in-cena-spettacolo@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261128
