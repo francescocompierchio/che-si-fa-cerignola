@@ -234,6 +234,28 @@ def misura(risultati,precedenti,pubblicati,duplicati):
         out[nome]={"eventiUtili":len(validi),"novitaUtili":len(nuovi),"novitaCerignola":len(locali),"nuoveSerateCerignola":len(serate),"nuoveSerate":len(serate_territorio)}
     return out
 
+def autodiagnosi(eventi, diagnostica, concordanze, oggi):
+    """Segnali operativi osservabili. Non elimina eventi e non stima la verita'."""
+    attivi=[e for e in eventi if e.get("dataFine",e.get("dataInizio",""))>=oggi.isoformat()]
+    serate=[e for e in attivi if e.get("categoria")=="Locali & Serate"]
+    mancanti=lacune_weekend(attivi,oggi)
+    tentate={n:d for n,d in diagnostica.items() if d.get("stato")!="pausa"}
+    errori={n:d.get("stato","n/d") for n,d in tentate.items() if d.get("stato")!="ok"}
+    problemi=[]
+    if any(d["mancanti"] for d in mancanti.values()):
+        problemi.append("copertura_weekend_insufficiente")
+    if serate and sum(bool(e.get("locandinaUrl")) for e in serate)/len(serate)<0.5:
+        problemi.append("poche_immagini_serate")
+    if tentate and len(errori)/len(tentate)>=0.25:
+        problemi.append("molte_fonti_in_errore")
+    if not tentate:
+        problemi.append("nessuna_fonte_tentata")
+    return {"segnali":problemi,"coperturaWeekend":mancanti,
+            "fontiTentate":len(tentate),"fontiInErrore":errori,
+            "serateConImmagine":sum(bool(e.get("locandinaUrl")) for e in serate),
+            "serateAttive":len(serate),"eventiConConcordanza":len(concordanze),
+            "criterio":"indicatori operativi; concordanza e immagine non certificano un evento"}
+
 def aggiorna(memoria,eventi,oggi,now):
     a=memoria.setdefault("apprendimento",{})
     a["cicli"]=int(a.get("cicli",0))+1
