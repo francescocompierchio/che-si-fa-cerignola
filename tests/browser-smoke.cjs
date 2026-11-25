@@ -9,6 +9,10 @@ const assert = require("node:assert/strict");
     await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
+    const acq=page.locator("#events-container details").filter({hasText:"Acquolina in Cena Spettacolo"});
+    assert.equal(await acq.count(),1,"Acquolina deve essere presente");
+    assert.ok(await acq.evaluate(el=>el.classList.contains("is-featured")),"Acquolina in evidenza");
+    assert.ok(await acq.evaluate(el=>Array.from(el.parentElement.querySelectorAll("details")).indexOf(el)<3),"Acquolina tra i primi eventi");
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
     const conteggioOriginale = await page.locator("#event-counter").textContent();
