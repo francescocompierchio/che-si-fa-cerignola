@@ -855,6 +855,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Venerdì 7 febbraio inaugurazione del parco urbano nel rione Fornaci",
+    "dataTesto": "Dom 07 Feb 2027",
+    "dataInizio": "2027-02-07",
+    "dataFine": "2027-02-07",
+    "luogo": "via dei Tigli",
+    "indirizzoMappa": "via dei Tigli, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "dal 07 Febbraio 2025 alle 17:00 al 07 Febbraio 2025",
+    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/venerdi-7-gennaio-inaugurazione-del-parco-urbano-nel-rione-fornaci/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Orta Nova",
     "categoria": "Attività diurne",
     "titolo": "Il Carnevale Ortese 2026 è pronto a colorare le strade di Orta Nova",
