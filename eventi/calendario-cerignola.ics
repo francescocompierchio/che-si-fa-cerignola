@@ -9,7 +9,7 @@ REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
 UID:cerignola-2026-11-28-il-sabato-di-ade@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Il Sabato di ADE – Cerignola
@@ -26,27 +26,9 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2026-11-25-vito-losciale-and-friends-cena-di-beneficenza@ches
- ifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20261125
-DTEND;VALUE=DATE:20261126
-SUMMARY:Vito Losciale and Friends – cena di beneficenza – Cerignola
-LOCATION:Villa Torre Quarto\, Cerignola
-DESCRIPTION:25/11/2026\nCena di beneficenza con 17 professionisti della cuc
- ina. Verificare disponibilità e condizioni di accesso con l'organizzatore
- .\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orari e fon
- te nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerigno
- la/eventi/cerignola-2026-11-25-vito-losciale-and-friends-cena-di-beneficen
- za.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-11-25-vito-losciale-and-friends-cena-di-beneficenza.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita@chesi
  facerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261126
 DTEND;VALUE=DATE:20261127
 SUMMARY:Le storie del Giovedì – Biblioteca di Comunità – Cerignola
@@ -64,7 +46,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri@chesif
  acerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Natale nelle Quattro Vie – Un Mondo di Auguri – Cerignola
@@ -82,7 +64,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos@chesiface
  rignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Babbo Natale va in pensione – Teatro Eidos – Cerignola
@@ -99,7 +81,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-01-natale-in-piazza@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261201
 DTEND;VALUE=DATE:20261202
 SUMMARY:Natale in Piazza – Cerignola
@@ -117,7 +99,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-04-iva-zanicchi-e-samuel-peron-viva-la-mamma@chesifac
  erignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261204
 DTEND;VALUE=DATE:20261205
 SUMMARY:Iva Zanicchi E Samuel Peron "viva La Mamma" – Cerignola
@@ -135,7 +117,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane
  @chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Natale nelle Quattro Vie – Il Rintocco delle Campane – Cerignol
@@ -155,7 +137,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-cerignola-breaking-brecht-sing-n-song-cabaret@ches
  ifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Cerignola | Breaking Brecht – Sing’n’Song Cabaret – Cerigno
@@ -174,7 +156,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-corricerignola@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:CorriCerignola – Cerignola
@@ -191,7 +173,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-13-mercatini-straordinari-la-cicogna@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261213
 DTEND;VALUE=DATE:20261214
 SUMMARY:Mercatini straordinari La Cicogna – Cerignola
@@ -210,7 +192,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-13-antiquariando-mercatino-dell-antiquariato-e-dell-u
  sato@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261213
 DTEND;VALUE=DATE:20261214
 SUMMARY:Antiquariando – mercatino dell'antiquariato e dell'usato – Ceri
@@ -232,7 +214,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-17-biagio-izzo-finche-giudice-non-ci-separi@chesiface
  rignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261217
 DTEND;VALUE=DATE:20261218
 SUMMARY:Biagio Izzo "finche Giudice Non Ci Separi" – Cerignola
@@ -250,7 +232,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-20-mercatini-straordinari-la-cicogna@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261220
 DTEND;VALUE=DATE:20261221
 SUMMARY:Mercatini straordinari La Cicogna – Cerignola
@@ -269,7 +251,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-03-ico-suoni-del-sud-gran-gala-di-capodanno@chesiface
  rignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270103
 DTEND;VALUE=DATE:20270104
 SUMMARY:Ico Suoni Del Sud "gran Gala Di Capodanno" – Cerignola
@@ -286,7 +268,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-20-cerignola-basta-un-filo-di-rossetto-barbara-foria@
  chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270120
 DTEND;VALUE=DATE:20270121
 SUMMARY:Cerignola | Basta un filo di rossetto – Barbara Foria – Cerigno
@@ -306,7 +288,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-29-cerignola-mio-sempre-mio-andrea-sergio-rubini@ches
  ifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270129
 DTEND;VALUE=DATE:20270130
 SUMMARY:Cerignola | Mio\, sempre\, mio Andrea – Sergio Rubini – Cerigno
@@ -326,7 +308,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-02-02-cerignola-c-era-una-volta-l-africa-bottega-degli-a
  pocrifi@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270202
 DTEND;VALUE=DATE:20270203
 SUMMARY:Cerignola | C’era una volta l’Africa – Bottega degli Apocrifi
@@ -347,7 +329,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-02-23-cerignola-la-mandragola-massimo-venturiello-e-maur
  izio-micheli@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270223
 DTEND;VALUE=DATE:20270224
 SUMMARY:Cerignola | La Mandragola – Massimo Venturiello e Maurizio Michel
@@ -368,7 +350,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-03-05-cerignola-l-arrago-storia-di-una-baby-gang-teatri-
  di-bari@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270305
 DTEND;VALUE=DATE:20270306
 SUMMARY:Cerignola | L’Arrago. Storia di una baby gang – Teatri di Bari 
@@ -389,7 +371,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-03-16-cerignola-malinconico-moderatamente-felice-massimi
  liano-gallo@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270316
 DTEND;VALUE=DATE:20270317
 SUMMARY:Cerignola | Malinconico. Moderatamente felice – Massimiliano Gall
@@ -410,7 +392,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-02-cerignola-ripetizioni-d-amore-ditemi-se-ho-capito-
  bene-angelo-mellone@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270402
 DTEND;VALUE=DATE:20270403
 SUMMARY:Cerignola | Ripetizioni d’amore: ditemi se ho capito bene! – An
@@ -431,7 +413,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-14-cerignola-come-il-brutto-anatroccolo-crest@chesifa
  cerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270414
 DTEND;VALUE=DATE:20270415
 SUMMARY:Cerignola | Come il brutto anatroccolo – Crest – Cerignola
@@ -450,7 +432,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-17-cerignola-kaos-la-vita-e-quantica-luca-perri@chesi
  facerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270417
 DTEND;VALUE=DATE:20270418
 SUMMARY:Cerignola | Kaos. La vita è quantica – Luca Perri – Cerignola
@@ -469,7 +451,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-05-06-cerignola-l-uomo-dal-fiore-in-bocca-gianni-ciardo-
  e-franco-ferrante@chesifacerignola
-DTSTAMP:20261125T000000Z
+DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270506
 DTEND;VALUE=DATE:20270507
 SUMMARY:Cerignola | L’uomo dal fiore in bocca – Gianni Ciardo e Franco 

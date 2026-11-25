@@ -29,49 +29,6 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337004.html"
   },
   {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Sagre & Food",
-    "titolo": "Vito Losciale and Friends – cena di beneficenza",
-    "dataTesto": "25/11/2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Villa Torre Quarto",
-    "indirizzoMappa": "Villa Torre Quarto, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Cena di beneficenza con 17 professionisti della cucina. Verificare disponibilità e condizioni di accesso con l'organizzatore.",
-    "fonteUrl": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Attività diurne",
-    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Piazza della Repubblica",
-    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
-    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337262_20261120_152325.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Foggia",
-    "categoria": "Attività diurne",
-    "titolo": "Foggia | La Fondazione per il 25 novembre con Lorenzo Sepalone e Alfredo Traiano",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "costo": "Ingresso libero",
-    "descrizione": "In occasione della Giornata internazionale per l'eliminazione della violenza contro le donne, la Fondazione dei Monti Uniti di Foggia propone una serata di memoria, riflessione e sensibilizzazione sul tema della violenza",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337262.html"
-  },
-  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336684_20261114_185323.jpg",
     "tipoContenuto": "evento",
     "citta": "Foggia",
@@ -85,21 +42,6 @@
     "costo": "Ingresso libero",
     "descrizione": "La Contemporanea Galleria d’Arte di Foggia presenta l’appuntamento espositivo “Mario Schifano e gli altri”, in programma da 25 novembre 2026 a 7 gennaio 2027. La mostra sarà ospitata negli spazi della galleria in Viale M",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336684.html"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336725_20261115_162150.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Trani",
-    "categoria": "Attività diurne",
-    "titolo": "Trani | Progetto BOTTEGA DELLE PAROLE. OFFICINA DI SCRITTURA CREATIVA",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Biblioteca Comunale \"G. Bovio\"",
-    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\", Piazzetta San Francesco, n. 1, Trani",
-    "costo": "Ingresso libero",
-    "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
   },
   {
     "tipoContenuto": "evento",
@@ -292,6 +234,21 @@
     "costo": "18€",
     "descrizione": "🥞 “Breakfast - Supertramp: musica e racconti” è uno spettacolo musicale e video dedicato alla storia ed ai più grandi successi dei Supertramp, con un repertorio che ripercorre le tappe più significative della band dalla",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330801.html"
+  },
+  {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/326867_20260808_103235.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Attività diurne",
+    "titolo": "Bisceglie | SUR - Tra bolero, flamenco, canción latinoamericana, folklore e improvvis",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Palazzo Vives Frisari",
+    "indirizzoMappa": "Palazzo Vives Frisari, Via Ottavio Tupputi, 13, Bisceglie",
+    "costo": "15€",
+    "descrizione": "🎶 SUR 🎶 Tra bolero, flamenco, canción latinoamericana, folklore e improvvisazione Dal calore del bolero all'energia del flamenco, passando per la canción latinoamericana e le sonorità della tradizione popolare, SUR è un",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/326867.html"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/classic-saturday-habibi-with-olive-f-sabato-28-novemvre-2026-barletta-xceed-square-6578.jpg?w=1920&h=1080&ar=16:9&fm=auto",
@@ -500,6 +457,7 @@
     "fonteUrl": "https://buzzeventmap.com/event/456318e1-763d-4d98-8068-3cbc3b4629c4"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/336619_20261113_204637.jpg",
     "tipoContenuto": "evento",
     "citta": "Lucera",
     "categoria": "Attività diurne",
