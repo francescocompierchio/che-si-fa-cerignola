@@ -9,6 +9,23 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_radar_organizzatori_non_alias_sede(self):
+        from radar_movida import fonti
+        from urllib.parse import parse_qs, urlparse
+        _, rss=fonti({"Cerignola": [], "Foggia":[{"nome":"Locale","organizzatori":["DBA Events","DBA Events"]}]},[])
+        sources=[s for s in rss if " organizzatori " in s["nome"]]
+        cer=next(s for s in sources if s["comune_radar"]=="Cerignola")
+        fog=next(s for s in sources if s["comune_radar"]=="Foggia")
+        q=parse_qs(urlparse(cer["url"]).query)["q"][0]
+        self.assertIn('"Cerignola"',q)
+        self.assertIn('"Neverland Cerignola"',q)
+        self.assertTrue(cer["solo_cerignola"])
+        self.assertEqual(cer["alias_movida"],[])
+        qf=parse_qs(urlparse(fog["url"]).query)["q"][0]
+        self.assertEqual(qf.count('"DBA Events"'),1)
+        self.assertIn('"Foggia"',qf)
+        self.assertEqual(fog["alias_movida"],[])
+
     def test_movida_live_locale_non_teatro(self):
         e={"categoria":"Musica & Concerti","titolo":"Rainbow Bridge live tribute","luogo":"Bohemien Pub","descrizione":"Concerto rock"}
         self.assertTrue(crawler.evento_movida_documentato(e))
