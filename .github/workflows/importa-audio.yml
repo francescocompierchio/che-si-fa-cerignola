@@ -1,0 +1,32 @@
+name: Importa audio Luxury Spa
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'audio/importa.py'
+      - '.github/workflows/importa-audio.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: csf-importa-audio
+  cancel-in-progress: false
+jobs:
+  importa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scarica i cinque brani CC BY e valida durata e formato
+        run: |
+          python3 audio/importa.py
+      - name: Pubblica solo gli audio verificati
+        run: |
+          set -euo pipefail
+          git config user.name "CSF audio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/*.mp3
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Importa registrazioni CC BY Luxury Spa"
+          git pull --rebase origin main
+          git push origin HEAD:main

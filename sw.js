@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v51";
+const CACHE_NAME = "chesifa-shell-v52";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -11,7 +11,7 @@ const SHELL_FILES = [
   new URL("public-views.js", self.registration.scope).href,
   new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,
-  new URL("event-page.js?v=51", self.registration.scope).href,
+  new URL("event-page.js?v=52", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
@@ -123,7 +123,7 @@ self.addEventListener("fetch", event => {
   // Non intercettare Firebase, Analytics, font, immagini o altri servizi esterni.
   if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE_PATH)) return;
   // L'APK è un download separato: non occupare inutilmente la cache della PWA.
-  if(/\.apk$/i.test(url.pathname))return;
+  if(/\.(apk|mp3)$/i.test(url.pathname)||request.headers.has("range"))return;
 
   const key = cacheKeyFor(request);
   const isData = [`${BASE_PATH}eventi.json`, `${BASE_PATH}esperienze.json`, `${BASE_PATH}sitemap.xml`].includes(url.pathname);

@@ -57,15 +57,41 @@
 })();
 
 
-// Aperitivo Lounge: registrazioni complete, CC BY 3.0, Kevin MacLeod.
+// Luxury Spa Lounge: registrazioni complete, CC BY 4.0, Kevin MacLeod.
 (function(){
+  const base=new URL(".",document.currentScript?.src||location.href);
   const tracks=[
-    {title:"Bossa Antigua",id:"USUAN1700069",file:"https://upload.wikimedia.org/wikipedia/commons/6/60/Bossa_Antigua_%28ISRC_USUAN1700069%29.mp3",duration:283},
-    {title:"Ultralounge",id:"USUAN1500017",file:"https://upload.wikimedia.org/wikipedia/commons/8/8d/Ultralounge_%28ISRC_USUAN1500017%29.mp3",duration:317},
-    {title:"Backbay Lounge",id:"USUAN1700068",file:"https://upload.wikimedia.org/wikipedia/commons/e/e2/Backbay_Lounge_%28ISRC_USUAN1700068%29.mp3",duration:267},
-    {title:"Lobby Time",id:"USUAN1600054",file:"https://upload.wikimedia.org/wikipedia/commons/e/e9/Lobby_Time_%28ISRC_USUAN1600054%29.mp3",duration:193},
-    {title:"Smooth Lovin",id:"USUAN1700077",file:"https://incompetech.com/music/royalty-free/mp3-royaltyfree/Smooth%20Lovin.mp3",duration:259}
-  ];
+  {
+    "title": "Groove Grove",
+    "id": "USUAN1200054",
+    "duration": 206,
+    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Groove%20Grove.mp3"
+  },
+  {
+    "title": "Clean Soul",
+    "id": "USUAN1300033",
+    "duration": 307,
+    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Clean%20Soul.mp3"
+  },
+  {
+    "title": "Windswept",
+    "id": "USUAN1100757",
+    "duration": 208,
+    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Windswept.mp3"
+  },
+  {
+    "title": "That Zen Moment",
+    "id": "USUAN2400001",
+    "duration": 602,
+    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/That%20Zen%20Moment.mp3"
+  },
+  {
+    "title": "Dream Catcher",
+    "id": "USUAN1800019",
+    "duration": 377,
+    "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dream%20Catcher.mp3"
+  }
+];
   const key="csf_music_v1",lastKey="csf_music_last_v1";
   let enabled=true,last="",audio=null,button=null,bag=[],track=null,failed=0,credits=null,started=false,blocked=false,attempt=0,sourceRetry=false;
   try{enabled=localStorage.getItem(key)!=="off";last=localStorage.getItem(lastKey)||"";}catch(_){}
@@ -79,8 +105,8 @@
     }
     track=bag.shift();last=track.id;
     sourceRetry=false;blocked=false;
-    audio.src=track.file;audio.loop=false;
-    audio.volume=.16;
+    audio.src=new URL("audio/"+track.id+".mp3",base).href;audio.loop=false;
+    audio.volume=.20;
     render();
   }
   function render(){
@@ -128,14 +154,14 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload=enabled?"metadata":"none";audio.autoplay=enabled;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
+    audio=document.createElement("audio");audio.id="csf-lounge-audio";audio.preload=enabled?"auto":"none";audio.autoplay=enabled;audio.setAttribute("playsinline","");audio.hidden=true;document.body.append(audio);
     const style=document.createElement("style");
     style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}.csf-music-credits{font-size:.75rem;color:var(--muted,#53627a);text-align:center;margin:8px auto;max-width:740px}.csf-music-credits a{color:var(--accent,#1746a2)}.csf-music-credits ul{list-style:none;padding:0;line-height:1.65}";
     document.head.append(style);
     const details=document.createElement("details");details.className="csf-music-credits";
     credits=document.createElement("summary");details.append(credits);
-    const p=document.createElement("p");p.append("Kevin MacLeod (Incompetech). Registrazioni originali, non modificate. Licenza ");
-    const license=document.createElement("a");license.href="https://creativecommons.org/licenses/by/3.0/";license.textContent="Creative Commons CC BY 3.0";license.target="_blank";license.rel="noopener noreferrer";p.append(license);details.append(p);
+    const p=document.createElement("p");p.append("Kevin MacLeod (Incompetech). Registrazioni complete; eventuale ricodifica MP3 per lo streaming. Licenza ");
+    const license=document.createElement("a");license.href="https://creativecommons.org/licenses/by/4.0/";license.textContent="Creative Commons CC BY 4.0";license.target="_blank";license.rel="noopener noreferrer";p.append(license);details.append(p);
     const list=document.createElement("ul");
     for(const tr of tracks){const li=document.createElement("li"),a=document.createElement("a");a.href=source(tr);a.textContent=tr.title+" — Kevin MacLeod";a.target="_blank";a.rel="noopener noreferrer";li.append(a);list.append(li);}
     details.append(list);(document.querySelector("footer")||document.body).append(details);
@@ -147,9 +173,7 @@
       attempt++;
       if(!sourceRetry){
         sourceRetry=true;
-        const original="https://incompetech.com/music/royalty-free/mp3-royaltyfree/"+encodeURIComponent(track.title)+".mp3";
-        const alternate=track.id==="USUAN1700077"?"https://upload.wikimedia.org/wikipedia/commons/9/99/Smooth_Lovin_%28ISRC_USUAN1700077%29.mp3":original;
-        audio.src=alternate;play();return;
+        audio.src=track.file;play();return;
       }
       if(++failed<tracks.length&&!document.hidden){choose();play();}else render();
     });
@@ -159,13 +183,15 @@
       if(audio.paused||blocked)play();
     };
     document.addEventListener("pointerup",gesture,{capture:true,passive:true});
+    document.addEventListener("touchend",gesture,{capture:true,passive:true});
+    document.addEventListener("pointerdown",ev=>{if(ev.pointerType==="mouse")gesture(ev);},{capture:true,passive:true});
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
     document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled)play();});
     window.addEventListener("pagehide",pause);
     window.addEventListener("pageshow",()=>{if(enabled)play();});
     render();
-    if(enabled)play();
+    if(enabled){play();}
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

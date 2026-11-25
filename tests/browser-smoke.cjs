@@ -115,7 +115,8 @@ const assert = require("node:assert/strict");
     wav.write("RIFF",0);wav.writeUInt32LE(36+size,4);wav.write("WAVEfmt ",8);wav.writeUInt32LE(16,16);
     wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);
     wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(size,40);
-    await chrome.route(/https:\/\/(?:upload\.wikimedia\.org|incompetech\.com)\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
+    await chrome.route(/\/audio\/USUAN\d+\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
+    await chrome.route(/https:\/\/incompetech\.com\/.*\.mp3$/,r=>r.fulfill({status:200,contentType:"audio/wav",body:wav}));
     await chrome.addInitScript(()=>{
       // Simula la policy restrittiva: i primi play senza gesto vengono rifiutati.
       const original=HTMLMediaElement.prototype.play;
@@ -142,6 +143,7 @@ const assert = require("node:assert/strict");
     await chrome.waitForFunction(()=>document.getElementById("csf-music-toggle")?.dataset.musicState==="playing");
     const firstTrack=await chrome.locator("#csf-music-toggle").getAttribute("data-music-track");
     assert.ok(firstTrack);
+    assert.match(await chrome.locator("#csf-lounge-audio").getAttribute("src"),/\/audio\/USUAN\d+\.mp3$/,"File sullo stesso sito");
     assert.equal(await chrome.locator("#csf-lounge-audio").evaluate(a=>a.loop),false);
     assert.equal(await chrome.locator(".csf-music-credits li").count(),5);
     await chrome.locator("#csf-lounge-audio").evaluate(a=>a.dispatchEvent(new Event("ended")));
