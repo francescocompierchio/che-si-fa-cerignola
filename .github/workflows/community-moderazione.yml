@@ -1,0 +1,63 @@
+name: Community - moderazione automatica
+on:
+  schedule:
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/community_moderator.py'
+      - '.github/workflows/community-moderazione.yml'
+      - 'community.js'
+permissions:
+  contents: read
+concurrency:
+  group: community-moderazione-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/community_moderator.py self-test
+      - name: Installa modello CPU
+        run: |
+          pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.51.3 safetensors==0.5.3
+      - name: Collaudo IA su esempi inventati
+        run: python scripts/community_moderator.py model-test
+  moderate:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.COMMUNITY_AUTOMOD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python scripts/community_moderator.py self-test
+          pip install google-auth==2.40.3 requests==2.32.5
+      - name: Verifica coda senza mostrare dati
+        id: probe
+        env:
+          COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/community_moderator.py probe >> "$GITHUB_OUTPUT"
+      - name: Installa modello CPU solo se necessario
+        if: steps.probe.outputs.pending == 'yes'
+        run: |
+          pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.51.3 safetensors==0.5.3
+      - name: Moderazione preventiva
+        if: steps.probe.outputs.pending == 'yes'
+        env:
+          COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/community_moderator.py run
