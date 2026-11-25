@@ -10,6 +10,22 @@ const assert = require("node:assert/strict");
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
     assert.ok(await page.locator("#btn-apk-footer").isHidden());
+    // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
+    const conteggioOriginale = await page.locator("#event-counter").textContent();
+    await page.evaluate(()=>{
+      document.getElementById("event-counter").textContent="89 eventi";
+      document.getElementById("online-users-count").textContent="2";
+      document.getElementById("total-views-count").textContent="1381";
+      for(const id of ["live-pill","views-pill"])document.getElementById(id).style.display="inline-flex";
+    });
+    for(const width of [320,360,393,430]){
+      await page.setViewportSize({width,height:852});
+      const badge=await page.locator(".stats-row > span").evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,center:r.top+r.height/2};}));
+      assert.equal(badge.length,3);
+      assert.ok(badge.every(r=>Math.abs(r.center-badge[0].center)<2&&r.left>=0&&r.right<=width),"Contatori a capo o fuori schermo a "+width+" px");
+    }
+    await page.setViewportSize({width:393,height:852});
+    await page.evaluate(originale=>{document.getElementById("event-counter").textContent=originale;for(const id of ["live-pill","views-pill"])document.getElementById(id).style.display="none";},conteggioOriginale);
     await page.locator("#search-input").fill("Cosa fare nel weekend a Cerignola?");
     await page.waitForFunction(()=>Array.from(document.querySelectorAll("#events-container details")).some(el=>el.textContent.includes("Il Sabato di ADE")));
     await page.locator("#search-input").fill("Discoteche a Trani sabato sera");
