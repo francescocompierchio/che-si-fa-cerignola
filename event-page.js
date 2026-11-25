@@ -1,4 +1,61 @@
 "use strict";
+
+// Liquid Touch: onde concentriche locali al tocco, nessuna cattura o modifica degli eventi.
+(function(){
+  if(window.CsfLiquidTouch)return;
+  window.CsfLiquidTouch=true;
+  const motion=window.matchMedia("(prefers-reduced-motion: reduce)");
+  const style=document.createElement("style");
+  style.textContent=
+    ".csf-liquid-wave{position:fixed;left:0;top:0;width:112px;height:112px;pointer-events:none!important;z-index:2147483647;border-radius:50%;margin:-56px 0 0 -56px;transform-origin:center;contain:layout style paint;background:radial-gradient(circle,transparent 25%,rgba(95,170,255,.12) 38%,rgba(245,252,255,.54) 43%,rgba(49,117,202,.26) 46%,transparent 50%,rgba(116,184,255,.12) 57%,rgba(255,255,255,.42) 61%,transparent 66%);animation:csf-liquid-wave .66s cubic-bezier(.15,.58,.3,1) both}"+
+    ".csf-liquid-wave::before{content:'';position:absolute;inset:16px;border-radius:50%;border:1px solid rgba(255,255,255,.65);box-shadow:inset 0 0 7px rgba(34,106,193,.25),0 0 8px rgba(73,158,245,.22)}"+
+    "@keyframes csf-liquid-wave{0%{transform:scale(.12);opacity:.95}40%{opacity:.75}100%{transform:scale(1.9);opacity:0}}"+
+    "@keyframes csf-page-arrive{from{opacity:.45;translate:0 7px}to{opacity:1;translate:0 0}}"+
+    "@keyframes csf-sheet-arrive{from{opacity:.5;scale:.985}to{opacity:1;scale:1}}"+
+    "@media(prefers-reduced-motion:no-preference){.csf-page-arrive main,.csf-page-arrive .hero{animation:csf-page-arrive .32s ease-out both}#csf-share-dialog[open],.modal-backdrop.open .modal-box{animation:csf-sheet-arrive .22s ease-out both}}"+
+    "@media(prefers-reduced-motion:reduce){.csf-liquid-wave{display:none!important}.csf-page-arrive main,.csf-page-arrive .hero{animation:none!important}}";
+  document.head.append(style);
+  const active=new Set();
+  function remove(el){active.delete(el);el.remove();}
+  function clear(){for(const el of active)remove(el);}
+  function wave(x,y,target){
+    if(motion.matches||document.hidden||!Number.isFinite(x)||!Number.isFinite(y)||!document.body)return;
+    while(active.size>=5)remove(active.values().next().value);
+    const el=document.createElement("span");
+    el.className="csf-liquid-wave";el.setAttribute("aria-hidden","true");
+    const dialog=target instanceof Element?target.closest("dialog[open]"):null;
+    // Il dialog nativo è nel top layer: l'onda va creata al suo interno.
+    el.style.left=x+"px";el.style.top=y+"px";
+    (dialog||document.body).append(el);active.add(el);
+    el.addEventListener("animationend",()=>remove(el),{once:true});
+    setTimeout(()=>remove(el),850);
+  }
+  const pointers=new Map();
+  document.addEventListener("pointerdown",ev=>{
+    if(!ev.isPrimary||ev.button!==0||motion.matches)return;
+    pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY,target:ev.target});
+  },{passive:true,capture:true});
+  document.addEventListener("pointermove",ev=>{
+    const p=pointers.get(ev.pointerId);
+    if(p&&Math.hypot(ev.clientX-p.x,ev.clientY-p.y)>12)pointers.delete(ev.pointerId);
+  },{passive:true,capture:true});
+  document.addEventListener("pointercancel",ev=>pointers.delete(ev.pointerId),{passive:true,capture:true});
+  document.addEventListener("pointerup",ev=>{
+    const p=pointers.get(ev.pointerId);pointers.delete(ev.pointerId);
+    if(p&&Math.hypot(ev.clientX-p.x,ev.clientY-p.y)<=12)wave(ev.clientX,ev.clientY,ev.target);
+  },{passive:true,capture:true});
+  function arrive(){
+    if(motion.matches)return;
+    document.documentElement.classList.remove("csf-page-arrive");
+    // Riavvia solo l'animazione di ingresso, anche quando si torna da cache.
+    requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.add("csf-page-arrive")));
+  }
+  window.addEventListener("pageshow",arrive);
+  if(document.readyState==="complete")arrive();
+  window.addEventListener("pagehide",()=>{clear();pointers.clear();});
+  motion.addEventListener?.("change",()=>{if(motion.matches){clear();pointers.clear();}});
+})();
+
 function csfLinkPaginaTracciato(raw,source){
   try{
     const u=new URL(raw,"https://francescocompierchio.github.io/che-si-fa-cerignola/");

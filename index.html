@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js"></script>
-  <script src="event-page.js?v=44" defer></script>
+  <script src="event-page.js?v=45" defer></script>
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
@@ -1613,7 +1613,11 @@ html[data-csf-theme="dark"]{--depth-ambient:rgba(0,0,0,.28);--depth-contact:rgba
     btnCloseInstall?.addEventListener("click",()=>chiudiInstallazione());
     window.addEventListener("beforeinstallprompt",aggiornaDisponibilitaHome);
     aggiornaDisponibilitaHome();
-    if(richiestaInstallazione&&!isStandalone&&!isAndroidApp)mostraGuidaInstallazione(true);
+    if(richiestaInstallazione){
+      if(!isStandalone&&!isAndroidApp)mostraGuidaInstallazione(true);
+      // Il link apre il pannello una volta sola; un reload di consenso non lo riapre.
+      try{const clean=new URL(location.href);clean.searchParams.delete("installa");history.replaceState(history.state,"",clean.href);}catch(_){}
+    }
     document.getElementById("btn-apk-alternativo")?.addEventListener("click",()=>window.CsfMetrics?.action?.("csf_apk_download"));
     window.addEventListener("appinstalled",()=>{
       installataOra=true;window.csfInstallPrompt=null;
