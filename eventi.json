@@ -913,16 +913,30 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Foggia",
+    "citta": "Manfredonia",
     "categoria": "Attività diurne",
     "titolo": "Menù di Capodanno – Posta Bassi",
     "dataTesto": "Ven 01 Gen 2027",
     "dataInizio": "2027-01-01",
     "dataFine": "2027-01-01",
     "luogo": "Agriturismo Posta Bassi",
-    "indirizzoMappa": "Via Manfredonia km 196+200, Foggia",
+    "indirizzoMappa": "Via Manfredonia km 196+200",
     "costo": "55 € a persona",
     "descrizione": "Menù speciale del primo gennaio annunciato dall'agriturismo. Il sito ufficiale contiene il menu e la richiesta di prenotazione. Info 0881 700155.",
+    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Sagre & Food",
+    "titolo": "Pranzo di Capodanno – Posta Bassi",
+    "dataTesto": "Ven 01 Gen 2027",
+    "dataInizio": "2027-01-01",
+    "dataFine": "2027-01-01",
+    "luogo": "Posta Bassi",
+    "indirizzoMappa": "Posta Bassi, Foggia",
+    "costo": "Consulta menu e prezzi nella fonte",
+    "descrizione": "Festivita & Occasioni Speciali Eventi Speciali Scopri i nostri menu dedicati per le festivita e le occasioni speciali. Scarica il PDF, scegli il tuo menu preferito e prenota il tuo posto. Menù pranzo Immacolata 08 Dicemb",
     "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
   },
   {
