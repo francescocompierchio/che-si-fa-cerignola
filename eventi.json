@@ -43,6 +43,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Sagre & Food",
+    "titolo": "Vito Losciale and Friends – cena di beneficenza",
+    "dataTesto": "25/11/2026",
+    "dataInizio": "2026-11-25",
+    "dataFine": "2026-11-25",
+    "luogo": "Villa Torre Quarto",
+    "indirizzoMappa": "Villa Torre Quarto, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Cena di beneficenza con 17 professionisti della cucina. Verificare disponibilità e condizioni di accesso con l'organizzatore.",
+    "fonteUrl": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
     "categoria": "Attività diurne",
     "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
@@ -96,20 +110,6 @@
     "costo": "Ingresso libero",
     "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Sagre & Food",
-    "titolo": "Vito Losciale and Friends – cena di beneficenza",
-    "dataTesto": "25/11/2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Villa Torre Quarto",
-    "indirizzoMappa": "Villa Torre Quarto, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Cena di beneficenza con 17 professionisti della cucina. Verificare disponibilità e condizioni di accesso con l'organizzatore.",
-    "fonteUrl": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html"
   },
   {
     "tipoContenuto": "evento",
@@ -337,6 +337,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
+    "dataTesto": "29/11/2026 · Ore 19:00",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Via Don Minzoni",
+    "indirizzoMappa": "Via Don Minzoni, 120-130, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tombolata di quartiere, musica e canti della tradizione natalizia.",
+    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Minervino Murge",
     "categoria": "Sagre & Food",
     "titolo": "Tra biodiversità e tradizione: a Minervino torna la Sagra della Cima di Rapa",
@@ -376,20 +390,6 @@
     "costo": "Consulta la biglietteria",
     "descrizione": "Serata in club. KAYMA — Sunday at Atrio22 Domenica 29, lasciati trasportare dalle sonorità funky e le hit house del momento di KAYMA e goditi un aperitivo domenicale tra musica, atmosfera e good vibes. Un appuntament",
     "fonteUrl": "https://xceed.me/it/barletta/event/domenica-29-novembre-kayma-at-atrio22/253630"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Natale nelle Quattro Vie – Un Mondo di Auguri",
-    "dataTesto": "29/11/2026 · Ore 19:00",
-    "dataInizio": "2026-11-29",
-    "dataFine": "2026-11-29",
-    "luogo": "Via Don Minzoni",
-    "indirizzoMappa": "Via Don Minzoni, 120-130, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Tombolata di quartiere, musica e canti della tradizione natalizia.",
-    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
   },
   {
     "tipoContenuto": "evento",
@@ -547,6 +547,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Natale nelle Quattro Vie – Il Rintocco delle Campane",
+    "dataTesto": "06/12/2026 · Ore 19:00",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Via Don Minzoni",
+    "indirizzoMappa": "Via Don Minzoni, 120-130, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento conclusivo della rassegna natalizia di quartiere.",
+    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
     "categoria": "Sagre & Food",
     "titolo": "Sagra della Sfogliatella",
@@ -617,20 +631,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Famiglie & Bambini",
-    "titolo": "Natale nelle Quattro Vie – Il Rintocco delle Campane",
-    "dataTesto": "06/12/2026 · Ore 19:00",
-    "dataInizio": "2026-12-06",
-    "dataFine": "2026-12-06",
-    "luogo": "Via Don Minzoni",
-    "indirizzoMappa": "Via Don Minzoni, 120-130, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Appuntamento conclusivo della rassegna natalizia di quartiere.",
-    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
     "titolo": "Macy Gray live al Teatro Giordano: l'icona mondiale del soul e dell’R&B in concerto a",
@@ -689,20 +689,6 @@
     "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Attività diurne",
-    "titolo": "Mercatini straordinari – La Cicogna",
-    "dataTesto": "13/12/2026 · Ore 07:00",
-    "dataInizio": "2026-12-13",
-    "dataFine": "2026-12-13",
-    "luogo": "Villa Comunale Umberto I",
-    "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Mercatini straordinari del consorzio La Cicogna, dalle 07:00 alle 14:30 lungo il perimetro della Villa Comunale.",
-    "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Attività diurne",
     "titolo": "Antiquariando – Mercatino dell'antiquariato e dell'usato",
     "dataTesto": "13/12/2026 · Ore 08:00",
     "dataInizio": "2026-12-13",
@@ -712,6 +698,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Mercatino mensile di antiquariato e usato dalle 08:00 alle 18:00; verificare eventuali variazioni con l'organizzatore.",
     "fonteUrl": "https://www.cosedicasa.live/mercatini/cerignola-antiquariando"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Attività diurne",
+    "titolo": "Mercatini straordinari – La Cicogna",
+    "dataTesto": "13/12/2026 · Ore 07:00",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Villa Comunale Umberto I",
+    "indirizzoMappa": "Villa Comunale Umberto I, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Mercatini straordinari del consorzio La Cicogna, dalle 07:00 alle 14:30 lungo il perimetro della Villa Comunale.",
+    "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665"
   },
   {
     "tipoContenuto": "evento",

@@ -26,6 +26,24 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:cerignola-2026-11-25-vito-losciale-and-friends-cena-di-beneficenza@ches
+ ifacerignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261125
+DTEND;VALUE=DATE:20261126
+SUMMARY:Vito Losciale and Friends – cena di beneficenza – Cerignola
+LOCATION:Villa Torre Quarto\, Cerignola
+DESCRIPTION:25/11/2026\nCena di beneficenza con 17 professionisti della cuc
+ ina. Verificare disponibilità e condizioni di accesso con l'organizzatore
+ .\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orari e fon
+ te nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerigno
+ la/eventi/cerignola-2026-11-25-vito-losciale-and-friends-cena-di-beneficen
+ za.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-25-vito-losciale-and-friends-cena-di-beneficenza.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita@chesi
  facerignola
 DTSTAMP:20261125T000000Z
@@ -290,25 +308,6 @@ DESCRIPTION:Mar 02 Feb 2027\nC’ERA UNA VOLTA L’AFRICA presso Teatro Com
  a-cerignola/eventi/cerignola-2027-02-02-c-era-una-volta-l-africa.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
  nola-2027-02-02-c-era-una-volta-l-africa.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:cerignola-2027-02-07-venerdi-7-febbraio-inaugurazione-del-parco-urbano-
- nel-rione-fornaci@chesifacerignola
-DTSTAMP:20261125T000000Z
-DTSTART;VALUE=DATE:20270207
-DTEND;VALUE=DATE:20270208
-SUMMARY:Venerdì 7 febbraio inaugurazione del parco urbano nel rione Fornac
- i – Cerignola
-LOCATION:via dei Tigli\, Cerignola
-DESCRIPTION:Dom 07 Feb 2027\ndal 07 Febbraio 2025 alle 17:00 al 07 Febbraio
-  2025\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orari e
-  fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cer
- ignola/eventi/cerignola-2027-02-07-venerdi-7-febbraio-inaugurazione-del-pa
- rco-urbano-nel-rione-fornaci.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-02-07-venerdi-7-febbraio-inaugurazione-del-parco-urbano-nel-rion
- e-fornaci.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
