@@ -2149,7 +2149,7 @@ def esplora_lineup_atlas(session, fonte):
             else:
                 scarti[motivo]+=1
                 if isinstance(ev,dict):
-                    dettagli.append({"titolo":str(ev.get("title") or "")[:120],"comune":str(ev.get("city") or "")[:70],"sede":str(ev.get("venue") or "")[:100],"stato":str(ev.get("cancelState"))[:40],"motivo":motivo})
+                    dettagli.append({"titolo":str(ev.get("title") or "")[:120],"comune":str(ev.get("city") or "")[:70],"sede":str(ev.get("venue") or "")[:150],"indirizzo":str(ev.get("venueAddress") or "")[:200],"tipoSede":type(ev.get("venue")).__name__,"tipoIndirizzo":type(ev.get("venueAddress")).__name__,"data":str(ev.get("startsAt") or "")[:50],"url":str(ev.get("webUrl") or "")[:250],"stato":str(ev.get("cancelState"))[:40],"motivo":motivo})
         registra_statistica_fonte(nome,stato="ok",linkCandidati=len(righe),pagineScaricate=1,eventiEstratti=len(eventi),scartiMovida=dict(scarti),candidatiDaVerificare=dettagli[:20],paginaSuccessiva=bool(payload.get("nextCursor")))
         print(f"{nome}: {len(righe)} candidati API, {len(eventi)} eventi validati; scarti {dict(scarti)}")
         return eventi
@@ -2605,6 +2605,15 @@ def evento_sede_riservata(ev):
     return "stefano andriezzi" in t and "opening" in t and ev.get("dataInizio") == "2026-11-28"
 
 
+def intervallo_editoriale_sostituito(ev):
+    """Un programma su date discontinue già pubblicato come singoli appuntamenti.
+    Escludi solo la scheda aggregata errata, non le date realmente confermate."""
+    return (ev.get("fonteUrl") == "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+            and ev.get("citta") == "Cerignola"
+            and ev.get("dataInizio") == "2026-11-21"
+            and ev.get("dataFine") == "2026-12-06")
+
+
 def prossimo_weekend_movida(ev):
     oggi = oggi_dt().date()
     venerdi = oggi + timedelta(days=(4-oggi.weekday())%7)
@@ -2643,8 +2652,8 @@ def esegui_aggiornamento():
     _scrivi_json_atomico(percorso_stato, memoria)
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
-    precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e)]
-    nuovi_raccolti = [e for e in nuovi_raccolti if not evento_non_attivo(e) and not evento_sede_riservata(e)]
+    precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]
+    nuovi_raccolti = [e for e in nuovi_raccolti if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]
     esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []

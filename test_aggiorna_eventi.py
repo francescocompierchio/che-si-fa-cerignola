@@ -9,6 +9,12 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_intervallo_editoriale_sostituito(self):
+        e={"fonteUrl":"https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html","citta":"Cerignola","dataInizio":"2026-11-21","dataFine":"2026-12-06"}
+        self.assertTrue(crawler.intervallo_editoriale_sostituito(e))
+        self.assertFalse(crawler.intervallo_editoriale_sostituito({**e,"dataInizio":"2026-11-29","dataFine":"2026-11-29"}))
+        self.assertFalse(crawler.intervallo_editoriale_sostituito({**e,"fonteUrl":"https://example.org"}))
+
     def test_atlas_citta_data_tipo_attribuzione(self):
         dt=crawler.oggi_dt()+crawler.timedelta(days=3)
         raw={"kind":"PARTY","countryCode":"IT","city":"Barletta","webUrl":"https://lineupatlas.com/fr/soirees/habibi-barletta-abc","startsAt":dt.strftime("%Y-%m-%d")+"T21:00:00Z","cancelState":None,"title":"Habibi DJ set","venue":"Atrio22","venueAddress":"Via Leonardo da Vinci 15, Barletta","genres":["house"],"currency":"EUR","priceFromCents":1500,"timeTbd":False}
