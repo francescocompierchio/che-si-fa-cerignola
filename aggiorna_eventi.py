@@ -44,7 +44,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it"
 )
 
 FONTI_VIVA = [
@@ -1121,6 +1121,14 @@ def estrai_costo_jsonld(evento, testo_pagina=None):
 
 
 def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
+    # Correzione circoscritta: la scheda aggregata include date e sedi di altre tappe.
+    # Data e sede pubblicate dall'organizzatore: /stagione/lisistrata/.
+    if (raw.get("fonteUrl") == "https://iltaccodibacco.it/puglia/eventi/335518.html"
+            and raw.get("citta") == "Manfredonia"):
+        raw = dict(raw, dataInizio="2027-01-15", dataFine="2027-01-15",
+                   dataTesto="Ven 15 Gen 2027 · Ore 21:00", luogo="Teatro Comunale Lucio Dalla",
+                   indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+                   descrizione="Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.")
     ref = ref_dt or oggi_dt()
     oggi = ref.strftime("%Y-%m-%d")
     limite_max = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).strftime("%Y-%m-%d")
@@ -2823,6 +2831,19 @@ def sono_duplicati(a, b):
     if fine_a < inizio_b or fine_b < inizio_a:
         return False
 
+    # Due serate omonime in club distinti non devono annullarsi a vicenda.
+    if a.get("categoria") == b.get("categoria") == "Locali & Serate":
+        registro = registro_locali_movida()
+        locali = registro.get(a.get("citta"), [])
+        def sede_nota(ev):
+            sede = str(ev.get("luogo") or "").casefold()
+            return next((r.get("nome") for r in locali if any(
+                re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
+                for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
+        sa, sb = sede_nota(a), sede_nota(b)
+        if sa and sb and sa != sb:
+            return False
+
     if capodanno.TEMA.search(str(a.get("titolo") or "")) and capodanno.TEMA.search(str(b.get("titolo") or "")):
         # Due cenoni in sale diverse non sono duplicati, anche con titoli identici.
         sa = re.sub(r"[^\w]+", "", str(a.get("luogo") or "").casefold())
@@ -3041,6 +3062,57 @@ def prossimo_weekend_movida(ev):
     return venerdi.strftime("%Y-%m-%d") <= ev.get("dataInizio","") <= (venerdi+timedelta(days=2)).strftime("%Y-%m-%d")
 
 
+def raccogli_calendario_kodo(session, fonte):
+    """Calendario pubblico del promoter: data completa, giorno e sede nella stessa scheda."""
+    risposta = session.get(fonte["url"], timeout=20)
+    risposta.raise_for_status()
+    soup = BeautifulSoup(risposta.text, "html.parser")
+    righe = [" ".join(s.split()) for s in soup.stripped_strings if s.strip()]
+    mesi = dict(zip("gen feb mar apr mag giu lug ago set ott nov dic".split(), range(1, 13)))
+    giorni = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"]
+    eventi = []
+    visti = set()
+    for i in range(len(righe) - 4):
+        data, giorno, titolo, artisti, sede = righe[i:i+5]
+        m = re.fullmatch(r"(\d{1,2})\s+([a-z]{3})\s+(20\d{2})", data, re.I)
+        g = re.fullmatch(r"([a-z]{3}),\s*(\d{1,2})\s+([a-z]{3})", giorno, re.I)
+        l = re.fullmatch(r"(.+?)\s*[•·]\s*(.+?)(?:\s+(?:FG|BT|PZ|BA))?", sede)
+        if not m or not g or not l:
+            continue
+        mese = mesi.get(m[2].lower())
+        if not mese or mesi.get(g[3].lower()) != mese or int(m[1]) != int(g[2]):
+            continue
+        try:
+            d = datetime(int(m[3]), mese, int(m[1]))
+        except ValueError:
+            continue
+        if giorni[d.weekday()] != g[1].lower():
+            continue
+        citta = _comune_nel_testo(l[2])
+        # La città deve essere l'intero campo, non una citazione nel testo.
+        if not citta or l[2].strip().casefold() != citta.casefold():
+            continue
+        luogo = l[1].strip()
+        if not _luogo_utilizzabile(luogo) or len(titolo) < 5 or len(artisti) > 120:
+            continue
+        iso = d.strftime("%Y-%m-%d")
+        chiave = (iso, citta.casefold(), luogo.casefold(), titolo.casefold())
+        if chiave in visti:
+            continue
+        ev = normalizza_e_valida_evento({
+            "titolo": titolo, "citta": citta, "luogo": luogo,
+            "indirizzoMappa": f"{luogo}, {citta}", "dataInizio": iso, "dataFine": iso,
+            "dataTesto": formatta_data_italiano(iso, iso),
+            "descrizione": f"DJ set / serata nel calendario ufficiale KODO. Artisti: {artisti}. Verifica orari e ingresso con il locale.",
+            "fonteUrl": fonte["url"], "costo": "Consulta la fonte", "categoria": "Locali & Serate",
+        }, fonte_curata_eventi=True)
+        if ev:
+            visti.add(chiave)
+            eventi.append(ev)
+    registra_statistica_fonte(fonte["nome"], stato="ok", pagineScaricate=1, eventiEstratti=len(eventi))
+    return eventi
+
+
 def esegui_aggiornamento():
     t_start = time.time()
     manuali_admin, precedenti_auto, scaduti_rimossi = carica_esistenti_protetti("eventi.json")
@@ -3073,7 +3145,8 @@ def esegui_aggiornamento():
                 f["ricorrenze_annuali"]=per_url[f["url"]]
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
     compiti = (
-        [(raccogli_capodanno_sito, fonte) for fonte in dirette_capodanno + dirette_annuali]
+        [(raccogli_calendario_kodo, {"nome":"KODO calendario DJ e promoter","url":"https://www.kodocollective.it/","dominio":"kodocollective.it","focus_serate":True,"nightlife":True})]
+        + [(raccogli_capodanno_sito, fonte) for fonte in dirette_capodanno + dirette_annuali]
         + [(raccogli_da_feed_social, fonte) for fonte in rss_capodanno + rss_festivita + rss_annuali]
         + [(raccogli_da_portale_viva, fonte) for fonte in FONTI_VIVA]
         + [(raccogli_da_portale_generico, fonte) for fonte in calendari_registro_cerignola() + FONTI_PORTALI]
