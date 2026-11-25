@@ -16,6 +16,7 @@ on:
       - "privacy.html"
       - "collabora.html"
       - "tests/seo-integrity.cjs"
+      - "tests/contatori.cjs"
       - ".github/workflows/test-frontend.yml"
   workflow_dispatch:
   pull_request:
@@ -30,6 +31,7 @@ on:
       - "app-extras.js"
       - "admin.html"
       - "privacy.html"
+      - "tests/contatori.cjs"
       - "eventi/**"
       - "sitemap.xml"
       - ".github/workflows/test-frontend.yml"
@@ -229,6 +231,9 @@ jobs:
           const files=genera([{...ev,fonteUrl:"https://example.test/ade",locandinaUrl:"https://example.test/poster.jpg"}],[],"2026-11-24");
           assert.ok(files["eventi/cerignola-2026-11-28-il-sabato-di-ade.html"].includes('property="og:image" content="https://example.test/poster.jpg"'));
           NODE
+
+      - name: Test contatori Firebase simulati
+        run: node tests/contatori.cjs
 
       - name: Verifica consenso statistiche
         run: |

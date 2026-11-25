@@ -2249,43 +2249,91 @@
     };
 
     let dbGlobal = null;
-    let miaConnessioneGlobal = null;
+    let contatoriGlobal = null;
+
+    function creaContatori(db, consentito, escluso, storage, mostra, avvisa) {
+      const visite=db.ref("statistiche/visiteTotali"), online=db.ref("statistiche/utentiOnline"), conn=db.ref(".info/connected");
+      const leggi=k=>{try{return storage.getItem(k)==="1";}catch(_){return false;}};
+      const scrivi=(k,v)=>{try{if(v)storage.setItem(k,"1");else storage.removeItem(k);}catch(_){}};
+      let collegato=false, epoca=0, presenza=null, presenzaInCorso=false, operazione=null;
+      let contata=leggi("csf_visitato"), confermata=leggi("csf_contata_confermata_v2");
+      const permesso=()=>{try{return !!consentito()&&!escluso();}catch(_){return false;}};
+      const errore=(nome,e)=>avvisa("Contatori Firebase: "+nome,e);
+      const ritira=async r=>{if(r)try{await r.remove();}catch(e){errore("rimozione presenza",e);}};
+      async function conta(){
+        if(!collegato||operazione||!permesso()||contata)return;
+        operazione="visita";
+        try{
+          const risultato=await visite.transaction(n=>n===null?1:Number.isSafeInteger(n)&&n>=0?n+1:undefined,undefined,false);
+          if(!risultato.committed)throw new Error("Visita non confermata");
+          contata=confermata=true;
+          scrivi("csf_visitato",true);scrivi("csf_contata_confermata_v2",true);
+        }catch(e){errore("visita non confermata",e);}
+        finally{operazione=null;if(confermata&&escluso())void escludiVisita();}
+      }
+      async function escludiVisita(){
+        if(!collegato||operazione||!escluso()||!confermata)return;
+        operazione="storno";
+        try{
+          const risultato=await visite.transaction(n=>Number.isSafeInteger(n)&&n>=0?Math.max(0,n-1):undefined,undefined,false);
+          if(!risultato.committed)throw new Error("Storno non confermato");
+          contata=confermata=false;
+          scrivi("csf_visitato",false);scrivi("csf_contata_confermata_v2",false);scrivi("csf_contata_ora",false);
+        }catch(e){errore("storno visita",e);}
+        finally{operazione=null;if(!escluso())void conta();}
+      }
+      async function registraPresenza(){
+        if(!collegato||!permesso()||presenza||presenzaInCorso)return;
+        presenzaInCorso=true;
+        const e=epoca;
+        let r=null;
+        try{
+          r=online.push();
+          await r.onDisconnect().remove();
+          if(e!==epoca||!collegato||!permesso())return;
+          await r.set(true);
+          if(e!==epoca||!collegato||!permesso())return;
+          presenza=r;r=null;
+        }catch(err){errore("registrazione presenza",err);}
+        finally{presenzaInCorso=false;await ritira(r);if(e!==epoca&&collegato&&permesso())void registraPresenza();}
+      }
+      function aggiorna(){
+        if(!collegato)return;
+        if(!permesso()){
+          const precedente=presenza;presenza=null;
+          if(precedente)void ritira(precedente);
+          if(escluso())void escludiVisita();
+          return;
+        }
+        void conta();void registraPresenza();
+      }
+      visite.on("value",s=>{
+        const n=s.val();
+        mostra("visite",n===null?0:Number.isSafeInteger(n)&&n>=0?n:null);
+      },e=>{mostra("visite",null);errore("lettura visite",e);});
+      online.on("value",s=>mostra("online",s.numChildren()),e=>{mostra("online",null);errore("lettura online",e);});
+      conn.on("value",s=>{
+        const attivo=s.val()===true;
+        if(attivo!==collegato){collegato=attivo;epoca++;if(!attivo)presenza=null;}
+        if(attivo)aggiorna();
+        else {mostra("visite",null);mostra("online",null);}
+      },e=>{collegato=false;epoca++;presenza=null;mostra("visite",null);mostra("online",null);errore("connessione",e);});
+      return {aggiorna};
+    }
 
     try {
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
       dbGlobal = db;
-
-      const visiteRef = db.ref("statistiche/visiteTotali");
-      if (window.CsfMetrics?.allowed() && !isDispositivoEscluso() && !sessionStorage.getItem("csf_visitato")) {
-        visiteRef.transaction(curr => (curr || 0) + 1);
-        sessionStorage.setItem("csf_visitato", "1");
-        sessionStorage.setItem("csf_contata_ora", "1");
-      }
-
-      visiteRef.on("value", snap => {
-        const tot = snap.val() ?? 0;
-        document.getElementById("total-visits-count").textContent = tot.toLocaleString("it-IT");
-        document.getElementById("visits-pill").style.display = "inline-flex";
-      });
-
-      const connessioniRef = db.ref("statistiche/utentiOnline");
-      const connectedRef = db.ref(".info/connected");
-      connectedRef.on("value", snap => {
-        if (snap.val() === true && window.CsfMetrics?.allowed() && !isDispositivoEscluso()) {
-          const miaConnessione = connessioniRef.push();
-          miaConnessione.onDisconnect().remove();
-          miaConnessione.set(true);
-          miaConnessioneGlobal = miaConnessione;
-        }
-      });
-
-      connessioniRef.on("value", snap => {
-        const reali = snap.numChildren();
-        const online = reali;
-        document.getElementById("online-users-count").textContent = online;
-        document.getElementById("live-pill").style.display = "inline-flex";
-      });
+      contatoriGlobal = creaContatori(db, () => window.CsfMetrics?.allowed(), isDispositivoEscluso, sessionStorage, (tipo, valore) => {
+        const visita = tipo === "visite";
+        const pill = document.getElementById(visita ? "visits-pill" : "live-pill");
+        if (valore === null) { pill.style.display = "none"; return; }
+        document.getElementById(visita ? "total-visits-count" : "online-users-count").textContent = valore.toLocaleString("it-IT");
+        pill.style.display = "inline-flex";
+      }, (msg, err) => console.warn(msg, err));
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) contatoriGlobal?.aggiorna(); });
+      window.addEventListener("online", () => contatoriGlobal?.aggiorna());
 
       db.ref("eventiManuali").on("value", snap => {
         const val = snap.val();
@@ -2512,17 +2560,11 @@
         if (!attualmenteEscluso) {
           localStorage.setItem(ADMIN_FLAG_KEY, "1");
           if (installBox) installBox.style.display = "none";
-          if (dbGlobal && sessionStorage.getItem("csf_contata_ora") === "1") {
-            dbGlobal.ref("statistiche/visiteTotali").transaction(curr => Math.max(0, (curr || 1) - 1));
-            sessionStorage.removeItem("csf_contata_ora");
-          }
-          if (miaConnessioneGlobal) {
-            miaConnessioneGlobal.remove();
-            miaConnessioneGlobal = null;
-          }
+          contatoriGlobal?.aggiorna();
           alert("Dispositivo Admin attivato: da ora le tue visite non verranno più contate.");
         } else {
           localStorage.removeItem(ADMIN_FLAG_KEY);
+          contatoriGlobal?.aggiorna();
           alert("Dispositivo Admin disattivato: questo dispositivo verrà contato di nuovo.");
         }
       }
