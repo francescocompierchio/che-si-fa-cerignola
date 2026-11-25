@@ -242,6 +242,67 @@
       "sito": "https://anticaenotria.it/",
       "social": "https://www.instagram.com/anticaenotria/",
       "facebook": "https://www.facebook.com/anticaenotria/"
+    },
+    {
+      "nome": "Villa Bautier",
+      "alias": [
+        "Villa Bautier",
+        "Il Borgo Restaurant"
+      ],
+      "sito": "https://www.villabautier.com/",
+      "evidenza": "https://www.villabautier.com/",
+      "social": "https://www.instagram.com/villa_bautier/",
+      "facebook": "https://www.facebook.com/villabautier/"
+    },
+    {
+      "nome": "Villa Demetra",
+      "alias": [
+        "Villa Demetra"
+      ],
+      "sito": "https://www.villademetra.it/",
+      "evidenza": "https://www.villademetra.it/",
+      "social": "https://www.instagram.com/villademetra/",
+      "facebook": "https://www.facebook.com/VillaDemetraRicevimenti/"
+    },
+    {
+      "nome": "La Venere",
+      "alias": [
+        "Sala Ricevimenti La Venere",
+        "La Venere Ricevimenti",
+        "Hotel Il Quadrifoglio"
+      ],
+      "sito": "https://www.ricevimentilavenere.it/",
+      "evidenza": "https://www.ricevimentilavenere.it/",
+      "social": "https://www.instagram.com/lavenerericevimenti/",
+      "facebook": "https://www.facebook.com/lavenerericevimenti/"
+    },
+    {
+      "nome": "Masseria Belvedere",
+      "alias": [
+        "Masseria Belvedere"
+      ],
+      "sito": "https://masseriabelvedereeventi.it/",
+      "evidenza": "https://masseriabelvedereeventi.it/",
+      "social": "https://www.instagram.com/masseria_belvedere_events/",
+      "facebook": "https://www.facebook.com/masseriabelvedereeventi/"
+    },
+    {
+      "nome": "Masseria Cafora",
+      "alias": [
+        "Masseria Cafora"
+      ],
+      "sito": "https://www.agriturismomasseriacafora.it/",
+      "evidenza": "https://www.agriturismomasseriacafora.it/",
+      "facebook": "https://www.facebook.com/agriturismomasseriacafora/"
+    },
+    {
+      "nome": "Masseria Pavoni",
+      "alias": [
+        "Masseria Pavoni"
+      ],
+      "sito": "https://www.masseriapavoni.com/",
+      "evidenza": "https://www.masseriapavoni.com/",
+      "social": "https://www.instagram.com/masseria_pavoni/"
     }
   ],
   "Barletta": [
@@ -267,7 +328,10 @@
         "saint patrick barletta",
         "saint patrick ristopub"
       ],
-      "evidenza": "https://2night.it/barletta/"
+      "evidenza": "https://2night.it/barletta/",
+      "sito": "https://www.saintpatrick.it/",
+      "social": "https://www.instagram.com/saint_patrick_barletta/",
+      "facebook": "https://www.facebook.com/saintpatrickbarletta/"
     },
     {
       "nome": "Bohémien Rock House Cafè",

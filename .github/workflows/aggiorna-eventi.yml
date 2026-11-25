@@ -23,6 +23,8 @@ on:
       - "esperienze.json"
       - "stato_raccolta.py"
       - "fonti_movida.json"
+      - "fonti_promoter.json"
+      - "test_radar_apify.py"
       - "fonti_cerignola.json"
       - "fonti_capodanno.json"
       - "fonti_capodanno_estese.json"
@@ -99,7 +101,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 3
         env:
-          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN || secrets.APIFY_API_TOKEN }}
         run: python radar_apify.py
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
@@ -195,6 +197,7 @@ jobs:
           name: copertura-eventi-${{ github.run_id }}
           path: |
             report_copertura.json
+            apify-rapporto.json
             backup-eventi.json
           if-no-files-found: ignore
           retention-days: 14

@@ -3287,6 +3287,7 @@ def esegui_aggiornamento():
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
+    eventi_apify = []
     if os.path.isfile("apify-eventi.json"):
         with open("apify-eventi.json", encoding="utf-8") as file_apify:
             eventi_apify = json.load(file_apify)
@@ -3356,6 +3357,11 @@ def esegui_aggiornamento():
     )
     concordanze = evidenze_fonti(nuovi_raccolti, lista_finale)
     report = {
+        "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
+                           if any(sono_duplicati(e, f) for f in lista_finale)],
+        "apifyNuovi": [e["fonteUrl"] for e in eventi_apify
+                       if any(sono_duplicati(e, f) for f in lista_finale)
+                       and not any(sono_duplicati(e, p) for p in manuali_admin + precedenti_auto + editoriali_statici)],
         "concordanzeFonti": concordanze,
         "eventiConcordanti": len(concordanze),
         "locandineInArchivio": sum(bool(e.get("locandinaUrl")) for e in lista_finale),

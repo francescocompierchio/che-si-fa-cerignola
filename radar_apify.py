@@ -38,23 +38,28 @@ def verifica_budget(plan, limits):
         raise Pausa("limite account o credito residuo insufficiente")
 
 
-def verifica_prezzi(actor, now):
+def verifica_prezzi(actor, now, primary="post"):
+    if actor.get("actorPermissionLevel") != "LIMITED_PERMISSIONS":
+        raise Pausa("permessi Actor non compatibili")
     active = [p for p in actor["pricingInfos"] if datetime.fromisoformat(
         p["startedAt"].replace("Z", "+00:00")) <= now]
     price = max(active, key=lambda p: p["startedAt"])
-    if price["pricingModel"] != "PAY_PER_EVENT" or numero(price["minimalMaxTotalChargeUsd"]) > CAP:
+    if price["pricingModel"] != "PAY_PER_EVENT" or numero(price.get("minimalMaxTotalChargeUsd", 0)) > CAP:
         raise Pausa("modello tariffario non compatibile")
     events = price["pricingPerEvent"]["actorChargeEvents"]
-    fees = {k: numero(v["eventTieredPricingUsd"]["FREE"]["tieredEventPriceUsd"])
+    fees = {k: numero(v["eventTieredPricingUsd"]["FREE"]["tieredEventPriceUsd"]
+                      if "eventTieredPricingUsd" in v else v["eventPriceUsd"])
             for k, v in events.items()}
-    if not 0 < fees["post"] <= .005 or any(v > CAP for v in fees.values()):
+    if not 0 < fees[primary] <= .005 or any(v > CAP for v in fees.values()):
         raise Pausa("tariffa oltre soglia")
     return fees
 
 
 def profili():
     result = {}
-    for city, rows in json.loads(Path("fonti_movida.json").read_text()).items():
+    venues = json.loads(Path("fonti_movida.json").read_text())
+    venues["Promoter territoriali"] = json.loads(Path("fonti_promoter.json").read_text())
+    for city, rows in venues.items():
         for row in rows:
             for field in ("social", "facebook"):
                 url = row.get(field, "")
@@ -77,7 +82,16 @@ def scegli(profiles, history, now):
         deadline = prev.get("at", 0) + (hours + rank * 24) * 3600
         if deadline <= now:
             due.append((deadline if prev else rank, rank, url, host))
-    return min(due)[2:] if due else None
+    if not due:
+        return None
+    # Cinque slot locali, due nella prima cintura e uno nella seconda.
+    # Se il gruppo non ha fonti dovute lo slot passa al gruppo più vicino.
+    rank_slot = (0, 0, 1, 0, 0, 1, 0, 2)[sum(p.get("visite", 1) for p in history.values()) % 8]
+    tier = [item for item in due if item[1] == rank_slot]
+    if not tier:
+        nearest = min(item[1] for item in due)
+        tier = [item for item in due if item[1] == nearest]
+    return min(tier)[2:]
 
 
 def api(session, path, body=None, **params):
@@ -88,27 +102,68 @@ def api(session, path, body=None, **params):
     return r.json()
 
 
+def pagine_google(rows, engine):
+    events = []
+    stats = {"pagineLette": 0, "pagineBloccate": 0, "erroriLettura": 0}
+    urls = dict.fromkeys(hit.get("url") for row in rows for hit in row.get("organicResults", []))
+    allowed = set(engine.DOMINI_AUTO) - {"facebook.com", "instagram.com", "news.google.com"}
+    for url in [u for u in urls if isinstance(u, str) and urlsplit(u).scheme == "https"
+                and (urlsplit(u).hostname or "").removeprefix("www.") in allowed
+                and not engine._url_pagina_elenco(u)][:4]:
+        try:
+            with requests.get(url, timeout=(3, 6), allow_redirects=False, stream=True) as response:
+                if response.status_code in (401, 403, 429):
+                    stats["pagineBloccate"] += 1
+                    continue
+                if response.status_code != 200 or "text/html" not in response.headers.get("Content-Type", ""):
+                    stats["erroriLettura"] += 1
+                    continue
+                body = bytearray()
+                for chunk in response.iter_content(65536):
+                    body.extend(chunk)
+                    if len(body) > 2_000_000:
+                        break
+                if len(body) <= 2_000_000:
+                    stats["pagineLette"] += 1
+                    events.extend(engine.analizza_pagina_evento(body.decode("utf-8", errors="replace"), url))
+        except (requests.RequestException, ValueError):
+            stats["erroriLettura"] += 1
+    return events, stats
+
+
 def raccogli():
     import aggiorna_eventi as engine
     now = int(time.time())
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
     if now - state.get("last", 0) < INTERVAL:
-        return {"stato": "pausa programmata"}
+        return {"stato": "pausa programmata", "prossimoUnix": state["last"] + INTERVAL}
     history = state.setdefault("profili", {})
     choice = scegli(profili(), history, now)
-    if not choice or not os.getenv("APIFY_TOKEN"):
-        return {"stato": "nessuna fonte dovuta o secret assente"}
+    if not os.getenv("APIFY_TOKEN"):
+        return {"stato": "secret APIFY_TOKEN assente nel workflow"}
+    if not choice:
+        return {"stato": "nessuna fonte dovuta"}
     url, host = choice
     actor = "acts/apify~" + ACTORS[host]
+    google = bool(history) and now - state.get("lastGoogle", 0) >= 7 * 86400
+    if google:
+        actor = "acts/automatic~google-search-results-scraper"
+        url = "Google Cerignola"
     with requests.Session() as auth:
         auth.headers["Authorization"] = "Bearer " + os.environ["APIFY_TOKEN"]
         verifica_budget(api(auth, "users/me")["data"]["plan"], api(auth, "users/me/limits")["data"])
-        fees = verifica_prezzi(api(auth, actor)["data"], datetime.now(timezone.utc))
+        fees = verifica_prezzi(api(auth, actor)["data"], datetime.now(timezone.utc),
+                               "apify-default-dataset-item" if google else "post")
         state["last"] = now
+        if google:
+            state["lastGoogle"] = now
         STATE.parent.mkdir(exist_ok=True)
         engine._scrivi_json_atomico(str(STATE), state)
         body = {"resultsLimit": 4}
-        if host == "instagram.com":
+        if google:
+            body = {"queries": ['Cerignola ("dj set" OR karaoke OR "cena spettacolo" OR concerto OR sagra)'],
+                    "maxPagesPerQuery": 1, "countryCode": "it", "languageCode": "it"}
+        elif host == "instagram.com":
             body["username"] = [urlsplit(url).path.strip("/")]
         else:
             body["startUrls"] = [{"url": url}]
@@ -121,8 +176,14 @@ def raccogli():
         report = {"profilo": url, "run": run["id"], "stato": run["status"],
                   "costoUsd": run.get("usageTotalUsd"), "tariffeFree": fees}
         if run["status"] != "SUCCEEDED":
+            history[url] = {"visite": history.get(url, {}).get("visite", 0) + 1, "at": now, "stato": "indeterminata", "validi": 0}
+            engine._scrivi_json_atomico(str(STATE), state)
             return report
         rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=4, clean="true")
+    if google:
+        events, stats = pagine_google(rows, engine)
+        engine._scrivi_json_atomico(str(OUTPUT), events)
+        return dict(report, **stats, validi=len(events))
     events = []
     posts = posters = 0
     errors = [r for r in rows if r.get("error") or r.get("errorDescription")]
@@ -154,7 +215,7 @@ def raccogli():
                     events.append(ev)
     denied = any(re.search(r"blocked|access denied|private|login", str(r), re.I) for r in errors)
     status = "bloccata" if denied else "indeterminata" if errors or not posts else "letta"
-    history[url] = {"at": now, "stato": status, "validi": len(events)}
+    history[url] = {"visite": history.get(url, {}).get("visite", 0) + 1, "at": now, "stato": status, "validi": len(events)}
     engine._scrivi_json_atomico(str(STATE), state)
     engine._scrivi_json_atomico(str(OUTPUT), events)
     return dict(report, esitoFonte=status, post=posts, immaginiOCR=posters, validi=len(events))
@@ -163,8 +224,17 @@ def raccogli():
 if __name__ == "__main__":
     OUTPUT.unlink(missing_ok=True)
     try:
-        print(json.dumps(raccogli(), ensure_ascii=False))
+        report = raccogli()
     except Pausa as exc:
-        print(f"Apify sospeso: {exc}")
+        report = {"stato": "sospeso", "motivo": str(exc)}
+    except KeyError as exc:
+        # Le chiavi attese sono nomi di campi, mai valori dell'account.
+        key = str(exc.args[0])
+        safe = key if key in {"data", "tier", "monthlyUsageCreditsUsd", "monthlyBasePriceUsd",
+                              "plan", "limits", "current", "monthlyUsageUsd", "maxMonthlyUsageUsd",
+                              "pricingInfos", "FREE", "tieredEventPriceUsd", "defaultDatasetId"} else "altro"
+        report = {"stato": "sospeso", "campoMancante": safe}
     except Exception as exc:
-        print("Apify indisponibile:", type(exc).__name__)
+        report = {"stato": "indisponibile", "errore": type(exc).__name__}
+    Path("apify-rapporto.json").write_text(json.dumps(report, ensure_ascii=False))
+    print(json.dumps(report, ensure_ascii=False))
