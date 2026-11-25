@@ -409,4 +409,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
  a-2026-12-19-riccardo-cocciante-live-al-teatro-umberto-giordano.html
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:san-ferdinando-di-puglia-2026-12-31-capodanno-in-piazza@chesifacerignol
+ a
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20261231
+DTEND;VALUE=DATE:20270101
+SUMMARY:Capodanno in Piazza – San Ferdinando di Puglia
+LOCATION:Piazza della Costituzione\, 76017\, San Ferdinando di Puglia\, BT
+DESCRIPTION:Gio 31 Dic 2026\nIl Capodanno in Piazza è il tradizionale vegl
+ ione di fine anno del Comune di San Ferdinando di Puglia\, nella provincia
+  di Barletta-Andria-Tr...\nAccesso: Non specificato nella fonte\nVerifica 
+ variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.git
+ hub.io/che-si-fa-cerignola/eventi/san-ferdinando-di-puglia-2026-12-31-capo
+ danno-in-piazza.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/san-f
+ erdinando-di-puglia-2026-12-31-capodanno-in-piazza.html
+TRANSP:TRANSPARENT
+END:VEVENT
 END:VCALENDAR

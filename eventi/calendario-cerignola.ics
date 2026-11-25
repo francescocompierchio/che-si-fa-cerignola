@@ -153,19 +153,23 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2026-12-06-breaking-brecht@chesifacerignola
+UID:cerignola-2026-12-06-cerignola-breaking-brecht-sing-n-song-cabaret@ches
+ ifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
-SUMMARY:BREAKING BRECHT – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Dom 06 Dic 2026\nBREAKING BRECHT presso Teatro Comunale S. Merc
- adante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte 
- nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/
- eventi/cerignola-2026-12-06-breaking-brecht.html
+SUMMARY:Cerignola | Breaking Brecht – Sing’n’Song Cabaret – Cerigno
+ la
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Dom 06 Dic 2026\nVeronica Pivetti\, Manuela Mandracchia e Lucia
+  Vasini sono le protagoniste di Breaking Brecht – Sing’n’Song Cabare
+ t\, scritto e diretto da Giovanna Gra\, con la direzione musicale di Aless
+ andro Nidi. Lo spettacolo è un caba\nAccesso: A pagamento\nVerifica varia
+ zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
+ o/che-si-fa-cerignola/eventi/cerignola-2026-12-06-cerignola-breaking-brech
+ t-sing-n-song-cabaret.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-12-06-breaking-brecht.html
+ nola-2026-12-06-cerignola-breaking-brecht-sing-n-song-cabaret.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -263,166 +267,224 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-01-20-basta-un-filo-di-rossetto@chesifacerignola
+UID:cerignola-2027-01-03-ico-suoni-del-sud-gran-gala-di-capodanno@chesiface
+ rignola
+DTSTAMP:20261125T000000Z
+DTSTART;VALUE=DATE:20270103
+DTEND;VALUE=DATE:20270104
+SUMMARY:Ico Suoni Del Sud "gran Gala Di Capodanno" – Cerignola
+LOCATION:Roma Teatro Cinema E…\, Corso Roma\, 49\, Cerignola
+DESCRIPTION:Dom 03 Gen 2027\nMaestro: Emilia Di Pasquale Orcestra ICO Suoni
+  del Sud\nAccesso: Non specificato nella fonte\nVerifica variazioni\, orar
+ i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
+ cerignola/eventi/cerignola-2027-01-03-ico-suoni-del-sud-gran-gala-di-capod
+ anno.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2027-01-03-ico-suoni-del-sud-gran-gala-di-capodanno.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2027-01-20-cerignola-basta-un-filo-di-rossetto-barbara-foria@
+ chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270120
 DTEND;VALUE=DATE:20270121
-SUMMARY:BASTA UN FILO DI ROSSETTO – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Mer 20 Gen 2027\nBASTA UN FILO DI ROSSETTO presso Teatro Comuna
- le S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orar
- i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
- cerignola/eventi/cerignola-2027-01-20-basta-un-filo-di-rossetto.html
+SUMMARY:Cerignola | Basta un filo di rossetto – Barbara Foria – Cerigno
+ la
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Mer 20 Gen 2027\nBarbara Foria porta in scena Basta un filo di 
+ rossetto\, scritto dalla stessa Foria insieme a Manuela D’Angelo e Marco
+  Terenzi\, che firma anche la regia. Lo spettacolo si presenta come il dia
+ rio ironico di una donna arriv\nAccesso: A pagamento\nVerifica variazioni\
+ , orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-
+ si-fa-cerignola/eventi/cerignola-2027-01-20-cerignola-basta-un-filo-di-ros
+ setto-barbara-foria.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-01-20-basta-un-filo-di-rossetto.html
+ nola-2027-01-20-cerignola-basta-un-filo-di-rossetto-barbara-foria.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-01-29-mio-sempre-mio-andrea@chesifacerignola
+UID:cerignola-2027-01-29-cerignola-mio-sempre-mio-andrea-sergio-rubini@ches
+ ifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270129
 DTEND;VALUE=DATE:20270130
-SUMMARY:MIO\, SEMPRE\, MIO ANDREA – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Ven 29 Gen 2027\nMIO\, SEMPRE\, MIO ANDREA presso Teatro Comuna
- le S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orar
- i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
- cerignola/eventi/cerignola-2027-01-29-mio-sempre-mio-andrea.html
+SUMMARY:Cerignola | Mio\, sempre\, mio Andrea – Sergio Rubini – Cerigno
+ la
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Ven 29 Gen 2027\nSergio Rubini è protagonista di Mio\, sempre\
+ , mio Andrea\, progetto dedicato ad Andrea Pazienza. Lo spettacolo coinvol
+ ge DauniaOrchestra feat. Giò Sada e Umberto Sangiovanni\, Angelo Verziera
+  e Michele De Costanzo. Lettere\,\nAccesso: A pagamento\nVerifica variazio
+ ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
+ he-si-fa-cerignola/eventi/cerignola-2027-01-29-cerignola-mio-sempre-mio-an
+ drea-sergio-rubini.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-01-29-mio-sempre-mio-andrea.html
+ nola-2027-01-29-cerignola-mio-sempre-mio-andrea-sergio-rubini.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-02-02-c-era-una-volta-l-africa@chesifacerignola
+UID:cerignola-2027-02-02-cerignola-c-era-una-volta-l-africa-bottega-degli-a
+ pocrifi@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270202
 DTEND;VALUE=DATE:20270203
-SUMMARY:C’ERA UNA VOLTA L’AFRICA – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Mar 02 Feb 2027\nC’ERA UNA VOLTA L’AFRICA presso Teatro Com
- unale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazioni\, or
- ari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-f
- a-cerignola/eventi/cerignola-2027-02-02-c-era-una-volta-l-africa.html
+SUMMARY:Cerignola | C’era una volta l’Africa – Bottega degli Apocrifi
+  – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Mar 02 Feb 2027\nBottega degli Apocrifi presenta C’era una vo
+ lta l’Africa\, secondo appuntamento della sezione Teatro Ragazzi della s
+ tagione del Teatro Comunale Mercadante. Lo spettacolo è rivolto alle nuov
+ e generazioni e contribuisce a u\nAccesso: A pagamento\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/cerignola-2027-02-02-cerignola-c-era-una-volta-l-
+ africa-bottega-degli-apocrifi.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-02-02-c-era-una-volta-l-africa.html
+ nola-2027-02-02-cerignola-c-era-una-volta-l-africa-bottega-degli-apocrifi.
+ html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-02-23-la-mandragola@chesifacerignola
+UID:cerignola-2027-02-23-cerignola-la-mandragola-massimo-venturiello-e-maur
+ izio-micheli@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270223
 DTEND;VALUE=DATE:20270224
-SUMMARY:LA MANDRAGOLA – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Mar 23 Feb 2027\nLA MANDRAGOLA presso Teatro Comunale S. Mercad
- ante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte ne
- lla scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/ev
- enti/cerignola-2027-02-23-la-mandragola.html
+SUMMARY:Cerignola | La Mandragola – Massimo Venturiello e Maurizio Michel
+ i – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Mar 23 Feb 2027\nMassimo Venturiello\, con la partecipazione di
+  Maurizio Micheli e Antonella Piccolo\, interpreta La Mandragola di Niccol
+ ò Machiavelli. In scena anche Guglielmo Poggi\, Marco Imparato\, Martina 
+ Fatighenti\, Enrico Spelta e Mat\nAccesso: A pagamento\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/cerignola-2027-02-23-cerignola-la-mandragola-mass
+ imo-venturiello-e-maurizio-micheli.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-02-23-la-mandragola.html
+ nola-2027-02-23-cerignola-la-mandragola-massimo-venturiello-e-maurizio-mic
+ heli.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-03-05-l-arrago-storia-di-una-baby-gang@chesifacerignola
+UID:cerignola-2027-03-05-cerignola-l-arrago-storia-di-una-baby-gang-teatri-
+ di-bari@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270305
 DTEND;VALUE=DATE:20270306
-SUMMARY:L’ARRAGO. STORIA DI UNA BABY GANG – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Ven 05 Mar 2027\nL’ARRAGO. STORIA DI UNA BABY GANG presso Tea
- tro Comunale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazio
- ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
- he-si-fa-cerignola/eventi/cerignola-2027-03-05-l-arrago-storia-di-una-baby
- -gang.html
+SUMMARY:Cerignola | L’Arrago. Storia di una baby gang – Teatri di Bari 
+ – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Ven 05 Mar 2027\nTeatri di Bari porta in scena L’Arrago. Stor
+ ia di una baby gang\, appuntamento della rassegna Teatro Ragazzi inserita 
+ nella stagione “Un teatro per tutti”. La proposta è dedicata alle nuo
+ ve generazioni e conferma la volon\nAccesso: A pagamento\nVerifica variazi
+ oni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/
+ che-si-fa-cerignola/eventi/cerignola-2027-03-05-cerignola-l-arrago-storia-
+ di-una-baby-gang-teatri-di-bari.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-03-05-l-arrago-storia-di-una-baby-gang.html
+ nola-2027-03-05-cerignola-l-arrago-storia-di-una-baby-gang-teatri-di-bari.
+ html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-03-16-malinconico@chesifacerignola
+UID:cerignola-2027-03-16-cerignola-malinconico-moderatamente-felice-massimi
+ liano-gallo@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270316
 DTEND;VALUE=DATE:20270317
-SUMMARY:MALINCONICO – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Mar 16 Mar 2027\nMALINCONICO presso Teatro Comunale S. Mercadan
- te (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fonte nell
- a scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/even
- ti/cerignola-2027-03-16-malinconico.html
+SUMMARY:Cerignola | Malinconico. Moderatamente felice – Massimiliano Gall
+ o – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Mar 16 Mar 2027\nMassimiliano Gallo porta in scena Malinconico.
+  Moderatamente felice\, scritto da Diego De Silva e Massimiliano Gallo e d
+ iretto dallo stesso Gallo. Con lui sul palco Biagio Musella\, Eleonora Rus
+ so\, Diego D’Elia\, Greta Espo\nAccesso: A pagamento\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/cerignola-2027-03-16-cerignola-malinconico-modera
+ tamente-felice-massimiliano-gallo.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-03-16-malinconico.html
+ nola-2027-03-16-cerignola-malinconico-moderatamente-felice-massimiliano-ga
+ llo.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-04-02-ripetizioni-d-amore-ditemi-se-ho-capito-bene@chesi
- facerignola
+UID:cerignola-2027-04-02-cerignola-ripetizioni-d-amore-ditemi-se-ho-capito-
+ bene-angelo-mellone@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270402
 DTEND;VALUE=DATE:20270403
-SUMMARY:RIPETIZIONI D’AMORE: ditemi se ho capito bene! – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Ven 02 Apr 2027\nRIPETIZIONI D’AMORE: ditemi se ho capito ben
- e! presso Teatro Comunale S. Mercadante (Cerignola).\nAccesso: € 12\nVer
- ifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierch
- io.github.io/che-si-fa-cerignola/eventi/cerignola-2027-04-02-ripetizioni-d
- -amore-ditemi-se-ho-capito-bene.html
+SUMMARY:Cerignola | Ripetizioni d’amore: ditemi se ho capito bene! – An
+ gelo Mellone – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Ven 02 Apr 2027\nAngelo Mellone presenta Ripetizioni d’amore:
+  ditemi se ho capito bene!\, con la regia di Raffaello Fusaro e l’accomp
+ agnamento di una band composta da Salvatore Russo\, Francesco Longo\, Gius
+ eppe Fornaro\, Pierluigi Balducci\nAccesso: A pagamento\nVerifica variazio
+ ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
+ he-si-fa-cerignola/eventi/cerignola-2027-04-02-cerignola-ripetizioni-d-amo
+ re-ditemi-se-ho-capito-bene-angelo-mellone.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-04-02-ripetizioni-d-amore-ditemi-se-ho-capito-bene.html
+ nola-2027-04-02-cerignola-ripetizioni-d-amore-ditemi-se-ho-capito-bene-ang
+ elo-mellone.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-04-14-come-il-brutto-anatroccolo@chesifacerignola
+UID:cerignola-2027-04-14-cerignola-come-il-brutto-anatroccolo-crest@chesifa
+ cerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270414
 DTEND;VALUE=DATE:20270415
-SUMMARY:COME IL BRUTTO ANATROCCOLO – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Mer 14 Apr 2027\nCOME IL BRUTTO ANATROCCOLO presso Teatro Comun
- ale S. Mercadante (Cerignola).\nAccesso: € 5\nVerifica variazioni\, orar
- i e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-
- cerignola/eventi/cerignola-2027-04-14-come-il-brutto-anatroccolo.html
+SUMMARY:Cerignola | Come il brutto anatroccolo – Crest – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Mer 14 Apr 2027\nCrest presenta Come il brutto anatroccolo\, qu
+ arto e ultimo appuntamento del Teatro Ragazzi all’interno della stagione
+  del Teatro Comunale Mercadante. Lo spettacolo completa un percorso dedica
+ to alle nuove generazioni\, na\nAccesso: A pagamento\nVerifica variazioni\
+ , orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-
+ si-fa-cerignola/eventi/cerignola-2027-04-14-cerignola-come-il-brutto-anatr
+ occolo-crest.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-04-14-come-il-brutto-anatroccolo.html
+ nola-2027-04-14-cerignola-come-il-brutto-anatroccolo-crest.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-04-17-la-vita-e-quantica@chesifacerignola
+UID:cerignola-2027-04-17-cerignola-kaos-la-vita-e-quantica-luca-perri@chesi
+ facerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270417
 DTEND;VALUE=DATE:20270418
-SUMMARY:LA VITA È QUANTICA – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Sab 17 Apr 2027\nLA VITA È QUANTICA presso Teatro Comunale S. 
- Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, orari e fo
- nte nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerign
- ola/eventi/cerignola-2027-04-17-la-vita-e-quantica.html
+SUMMARY:Cerignola | Kaos. La vita è quantica – Luca Perri – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Sab 17 Apr 2027\nLuca Perri conduce il pubblico in Kaos. La vit
+ a è quantica\, un viaggio tra fisica quantistica e biologia quantistica. 
+ Lo spettacolo intreccia scienza\, meraviglia e interrogativi sulla realtà
+ \, proponendo una divulgazione\nAccesso: A pagamento\nVerifica variazioni\
+ , orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-
+ si-fa-cerignola/eventi/cerignola-2027-04-17-cerignola-kaos-la-vita-e-quant
+ ica-luca-perri.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-04-17-la-vita-e-quantica.html
+ nola-2027-04-17-cerignola-kaos-la-vita-e-quantica-luca-perri.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2027-05-06-l-uomo-dal-fiore-in-bocca@chesifacerignola
+UID:cerignola-2027-05-06-cerignola-l-uomo-dal-fiore-in-bocca-gianni-ciardo-
+ e-franco-ferrante@chesifacerignola
 DTSTAMP:20261125T000000Z
 DTSTART;VALUE=DATE:20270506
 DTEND;VALUE=DATE:20270507
-SUMMARY:L’UOMO DAL FIORE IN BOCCA – Cerignola
-LOCATION:Teatro Comunale Saverio Mercadante\, Piazza G. Matteotti\, 1\, Cer
- ignola
-DESCRIPTION:Gio 06 Mag 2027\nL’UOMO DAL FIORE IN BOCCA presso Teatro Comu
- nale S. Mercadante (Cerignola).\nAccesso: € 12\nVerifica variazioni\, or
- ari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che-si-f
- a-cerignola/eventi/cerignola-2027-05-06-l-uomo-dal-fiore-in-bocca.html
+SUMMARY:Cerignola | L’uomo dal fiore in bocca – Gianni Ciardo e Franco 
+ Ferrante – Cerignola
+LOCATION:Teatro Mercadante\, P.zza Matteotti\, 1\, Cerignola
+DESCRIPTION:Gio 06 Mag 2027\nA chiudere la stagione è L’uomo dal fiore i
+ n bocca di Luigi Pirandello\, con Gianni Ciardo e Franco Ferrante e la reg
+ ia dello stesso Ciardo. Un incontro casuale in un bar vicino alla stazione
+  diventa l’occasione per rifle\nAccesso: A pagamento\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/cerignola-2027-05-06-cerignola-l-uomo-dal-fiore-i
+ n-bocca-gianni-ciardo-e-franco-ferrante.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2027-05-06-l-uomo-dal-fiore-in-bocca.html
+ nola-2027-05-06-cerignola-l-uomo-dal-fiore-in-bocca-gianni-ciardo-e-franco
+ -ferrante.html
 TRANSP:TRANSPARENT
 END:VEVENT
 END:VCALENDAR
