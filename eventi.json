@@ -15,6 +15,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Cerignola",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "A Cerignola si accende il “Natale nelle Quattro Vie”: dal 21 novembre al 6 dicembre",
+    "dataTesto": "Dal 21 Nov al 06 Dic 2026",
+    "dataInizio": "2026-11-21",
+    "dataFine": "2026-12-06",
+    "luogo": "Viale Roosevelt",
+    "indirizzoMappa": "Viale Roosevelt, Via Bologna, Via Don Minzoni e Via XXV Aprile, Cerignola",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Musica, luminarie e tombolate con gli studenti del “Don Puglisi – Pavoncelli”",
+    "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Teatro & Spettacoli",
     "titolo": "Cenerentola 301",
