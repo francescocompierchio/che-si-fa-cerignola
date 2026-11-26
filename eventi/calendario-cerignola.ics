@@ -26,6 +26,47 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri-tra-le
+ -vie-del-cuore@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:Natale nelle Quattro Vie – Un Mondo di Auguri tra le Vie del Cuor
+ e – Cerignola
+LOCATION:Via Don Minzoni 120\, Cerignola
+DESCRIPTION:Dom 29 Nov 2026 · 19:00–21:30\nTombolata e performance coral
+ e e strumentale degli studenti della scuola secondaria Don Puglisi – Pav
+ oncelli\, con canti della tradizione natalizia. Organizzazione: Collettivo
+  delle Quattro Vie.\nAccesso: Non indicato nella fonte\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/cerignola-2026-11-29-natale-nelle-quattro-vie-un-
+ mondo-di-auguri-tra-le-vie-del-cuore.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri-tra-le-vie-del
+ -cuore.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane
+ @chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:Natale nelle Quattro Vie – Il Rintocco delle Campane – Cerignol
+ a
+LOCATION:Via Don Minzoni 120\, Cerignola
+DESCRIPTION:Dom 6 Dic 2026 · 19:00–21:30\nTombolata e performance corale
+  e strumentale degli studenti della scuola secondaria Don Puglisi – Pavo
+ ncelli\, con canti natalizi. Organizzazione: Collettivo delle Quattro Vie.
+ \nAccesso: Non indicato nella fonte\nVerifica variazioni\, orari e fonte n
+ ella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/e
+ venti/cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-camp
+ ane.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:cerignola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita@chesi
  facerignola
 DTSTAMP:20261126T000000Z
@@ -41,24 +82,6 @@ DESCRIPTION:Gio 26 Nov 2026\ndal 26 Novembre 2026 alle 17:00 al 26 Novembre
  ml
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
  nola-2026-11-26-le-storie-del-giovedi-biblioteca-di-comunita.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri@chesif
- acerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20261129
-DTEND;VALUE=DATE:20261130
-SUMMARY:Natale nelle Quattro Vie – Un Mondo di Auguri – Cerignola
-LOCATION:Via Don Minzoni 120\, Cerignola
-DESCRIPTION:Dom 29 Nov 2026 · 19:00–21:30\nAppuntamento natalizio di qua
- rtiere con tombolata comunitaria e canti tradizionali\, organizzato dal Co
- llettivo delle Quattro Vie con la scuola Don Puglisi – Pavoncelli.\nAcce
- sso: Non indicato nella fonte\nVerifica variazioni\, orari e fonte nella s
- cheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/
- cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -112,26 +135,6 @@ DESCRIPTION:Ven 04 Dic 2026\nAutore: Diego Ruiz Regia: Diego Ruiz Protagoni
  4-iva-zanicchi-e-samuel-peron-viva-la-mamma.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
  nola-2026-12-04-iva-zanicchi-e-samuel-peron-viva-la-mamma.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane
- @chesifacerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20261206
-DTEND;VALUE=DATE:20261207
-SUMMARY:Natale nelle Quattro Vie – Il Rintocco delle Campane – Cerignol
- a
-LOCATION:Via Don Minzoni 120\, Cerignola
-DESCRIPTION:Dom 6 Dic 2026 · 19:00–21:30\nGran finale del programma nata
- lizio di quartiere con tombolata e musica corale e strumentale. Iniziativa
-  del Collettivo delle Quattro Vie e della scuola Don Puglisi – Pavoncell
- i.\nAccesso: Non indicato nella fonte\nVerifica variazioni\, orari e fonte
-  nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola
- /eventi/cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-ca
- mpane.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
