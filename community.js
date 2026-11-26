@@ -24,11 +24,11 @@
   const login=$("button","Accedi con Google",{type:"button",class:"csfc-primary"});
   const browserHint=$("small","L’accesso si apre nella stessa pagina e torna direttamente alla Community.",{hidden:""});
   const logout=$("button","Esci",{type:"button",hidden:""});
-  const nick=$("input",null,{required:"",maxlength:"24",minlength:"2",placeholder:"Nickname pubblico","aria-label":"Nickname pubblico",autocomplete:"off"});
+  const identity=$("small","",{id:"csfc-identity"});
   const msg=$("textarea",null,{required:"",maxlength:"300",rows:"3",placeholder:"Scrivi un messaggio sugli eventi…","aria-label":"Messaggio"});
   const send=$("button","Invia messaggio",{type:"submit",class:"csfc-primary"});
-  const form=$("form",null,{hidden:""});form.append(nick,msg,send);
-  const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Coda moderazione"});
+  const form=$("form",null,{hidden:""});form.append(identity,msg,send);
+  const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Segnalazioni"});
   panel.append(header,info,status,feed,rulesNotice,login,browserHint,logout,form,mod);
   root.append(toggle,panel);document.body.append(root);
   let app,auth,db,user,authUnsub,off=[],generation=0,opening=false,moderator=false,blocked=false;
@@ -38,7 +38,14 @@
   const listen=(q,cb)=>{q.on("value",cb,error);off.push(()=>q.off("value",cb));};
   function button(label,fn){const n=$("button",label,{type:"button"});n.addEventListener("click",async()=>{n.disabled=true;try{await fn();}catch{error();}finally{n.disabled=false;}});return n;}
   function safeText(v){return typeof v==="string"?v:"";}
-  function checkText(n,t){return n.length>=2&&n.length<=24&&t.length>0&&t.length<=300&&!/(https?:|www\.|[\w.+-]+@[\w.-]+\.[a-z]{2,}|\d[\d\s-]{7,}\d)/i.test(t+" "+n);}
+  function checkText(t){return t.length>0&&t.length<=300&&!/(https?:|www\.|[\w.+-]+@[\w.-]+\.[a-z]{2,}|\d[\d\s-]{7,}\d)/i.test(t);}
+  function identityFromEmail(u){
+    if(!u?.emailVerified||typeof u.email!=="string")return null;
+    const at=u.email.lastIndexOf("@");if(at<1)return null;
+    const nick=u.email.slice(0,at).slice(0,3),domain=u.email.slice(at+1);
+    if(!/^[A-Za-z0-9._+%-]{1,3}$/.test(nick)||! /^[A-Za-z0-9.-]{1,100}$/.test(domain))return null;
+    return {nick,domain,label:nick+"***@"+domain};
+  }
   async function loadAuth(){
     if(window.firebase?.auth)return;
     await new Promise((resolve,reject)=>{const s=$("script",null,{src:"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"});s.onload=resolve;s.onerror=reject;document.head.append(s);});
@@ -78,7 +85,7 @@
   async function refresh(){
     stop();const g=generation;moderator=false;blocked=false;
     const signed=!!user;
-    login.hidden=signed;login.disabled=false;rulesNotice.hidden=signed;logout.hidden=!signed;form.hidden=true;mod.hidden=true;browserHint.hidden=signed;
+    login.hidden=signed;login.disabled=false;rulesNotice.hidden=false;logout.hidden=!signed;form.hidden=true;mod.hidden=true;browserHint.hidden=signed;
     if(!signed){status.textContent="Accedi con Google per leggere e partecipare.";return;}
     db.goOnline();status.textContent="Connessione…";
     try{
@@ -87,7 +94,10 @@
       moderator=m.val()===true;blocked=b.val()===true;
       if(c.val()!==true){status.textContent="Community non ancora aperta.";return;}
       if(blocked){status.textContent="Account sospeso dalla community.";return;}
-      status.textContent=persistenceLimited?"Accesso riuscito. Il browser potrebbe non conservare la sessione.":"Messaggi controllati prima della pubblicazione.";form.hidden=false;
+      const verified=identityFromEmail(user);
+      if(!verified){status.textContent="Non è disponibile un indirizzo Google verificato compatibile.";return;}
+      identity.textContent="Scrivi come "+verified.label+" (email mascherata).";
+      status.textContent=persistenceLimited?"Accesso riuscito. Il browser potrebbe non conservare la sessione.":"Controllo automatico prima della pubblicazione.";form.hidden=false;
       listen(db.ref("published").orderByKey().limitToLast(40),snap=>{
         feed.replaceChildren();
         if(!snap.exists()){feed.append($("small","Non ci sono ancora messaggi approvati."));return;}
@@ -110,24 +120,11 @@
       });
       if(moderator){
         mod.hidden=false;
-        let submissions=[],reports=[];
+        let reports=[];
         const render=()=>{
-          mod.replaceChildren($("strong","Moderazione"));
-          if(!submissions.length&&!reports.length)mod.append($("small","Nessuna richiesta in attesa."));
-          for(const [uid,v] of submissions){
-            const a=$("article");a.append($("strong",safeText(v.nick)),$("p",safeText(v.text)));
-            a.append(button("Approva",async()=>{
-              const id=db.ref("published").push().key;
-              const live=await db.ref("submissions/"+uid).once("value");
-              if(live.val()?.state!=="pending"||live.val()?.createdAt!==v.createdAt)throw Error("changed");
-              const changes={};changes["published/"+id]={nick:v.nick,text:v.text,createdAt:firebase.database.ServerValue.TIMESTAMP};
-              changes["authors/"+id]=uid;changes["submissions/"+uid+"/state"]="approved";
-              await db.ref().update(changes);
-            }),button("Rifiuta",()=>db.ref("submissions/"+uid+"/state").set("rejected")),button("Sospendi",async()=>{
-              if(!confirm("Sospendere l’account?"))return;
-              const changes={};changes["bans/"+uid]=true;changes["submissions/"+uid+"/state"]="rejected";await db.ref().update(changes);
-            }));mod.append(a);
-          }
+          mod.replaceChildren($("strong","Segnalazioni (facoltative)"));
+          if(!reports.length){mod.hidden=true;return;}
+          mod.hidden=false;
           for(const [uid,v] of reports){
             const a=$("article");a.append($("p","Messaggio segnalato: "+safeText(v.messageId)));
             const details=$("p","Caricamento del contenuto segnalato…");a.append(details);
@@ -142,7 +139,6 @@
             }),button("Archivia",()=>db.ref("reports/"+uid+"/state").set("resolved")));mod.append(a);
           }
         };
-        listen(db.ref("submissions").orderByChild("state").equalTo("pending").limitToFirst(40),s=>{submissions=Object.entries(s.val()||{});render();});
         listen(db.ref("reports").orderByChild("state").equalTo("pending").limitToFirst(40),s=>{reports=Object.entries(s.val()||{});render();});
       }
     }catch{if(g===generation)error();}
@@ -155,9 +151,9 @@
   logout.onclick=async()=>{try{await auth.signOut();}catch{error();}};
   form.onsubmit=async e=>{
     e.preventDefault();if(!user||blocked)return;
-    const n=nick.value.trim(),t=msg.value.trim();if(!checkText(n,t)){status.textContent="Usa 2–24 caratteri per il nickname e 1–300 per il messaggio, senza link o recapiti.";return;}
+    const verified=identityFromEmail(user),t=msg.value.trim();if(!verified||!checkText(t)){status.textContent="Usa 1–300 caratteri per il messaggio, senza link o recapiti.";return;}
     send.disabled=true;
-    try{await db.ref("submissions/"+user.uid).set({nick:n,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="Messaggio ricevuto. In attesa del controllo.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Attendi o verifica lo stato del tuo account.";}
+    try{await db.ref("submissions/"+user.uid).set({nick:verified.nick,domain:verified.domain,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="Messaggio ricevuto. In attesa del controllo.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Riprova tra poco; il controllo potrebbe essere temporaneamente non disponibile.";}
   };
   // Il callback torna qui e riapre automaticamente il pannello.
   if(typeof location!=="undefined"&&new URLSearchParams(location.search).get("community")==="1"){

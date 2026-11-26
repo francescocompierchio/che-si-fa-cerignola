@@ -12,3 +12,7 @@
 
 ## Avvio controllato
 - Terzo collaudo: run 45701067909, 23/23 esempi indesiderati respinti, 13/16 messaggi corretti accettati. Campione piccolo; non è una misura generalizzabile. Il controllo di produzione richiede il secret dedicato e un probe riuscito. L'aggiornamento dell'informativa precede il primo run. Il push a main della modifica del workflow avvia il controllo; gli invii vengono elaborati solo se ci sono elementi in coda. Il comando manuale resta disponibile in Actions. L'interfaccia non afferma che l'IA sia attiva se non è verificata. Le approvazioni manuali e le segnalazioni rimangono come strumenti facoltativi.
+
+## Identità automatica
+- La UI non chiede nickname. Conserva in coda solo prefisso email (1–3 caratteri) e dominio, verificati da auth.token.email mediante le regole RTDB. Nessun indirizzo completo nel feed; il worker pubblica il nome mascherato, non i campi originali. I nomi legacy già pubblicati restano invariati. Le richieste pendenti legacy prive di dominio sono respinte: devono essere reinviate.
+- Nessuna approvazione manuale via client, nemmeno moderatore: il servizio amministrativo è l'unico a pubblicare. Segnalazioni e rimozione restano facoltative. Prima di ogni lettura operativa il worker confronta le regole reali; installa il nuovo set solo se il precedente coincide esattamente con la copia conservata in docs. Altrimenti si ferma senza sovrascrivere. Il secret dedicato è indispensabile. La migrazione deve superare il test emulatore e i test IA prima del merge.

@@ -32,8 +32,8 @@ test("config Community separata e disattivazione sicura: nessun accesso DOM o Fi
 test("modulo collegato senza modificare la logica eventi",()=>{
   const h=read("index.html");
   assert.ok(h.includes('src="community-config.js?v=2"'));
-  assert.ok(h.includes('src="community.js?v=7"'));
-  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=7"'));
+  assert.ok(h.includes('src="community.js?v=8"'));
+  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=8"'));
 });
 test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:process.env.CSFC_EMULATOR!=="1"},async()=>{
   assert.match(process.env.FIREBASE_DATABASE_EMULATOR_HOST||"",/^127\.0\.0\.1:\d+$/);
@@ -42,21 +42,26 @@ test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:
   const [host,port]=process.env.FIREBASE_DATABASE_EMULATOR_HOST.split(":");
   const env=await initializeTestEnvironment({projectId:"demo-csf-community",database:{host,port:Number(port),rules}});
   try{
-    const claims={email_verified:true,firebase:{sign_in_provider:"google.com"}};
+    const claims={email:"mario@example.com",email_verified:true,firebase:{sign_in_provider:"google.com"}};
     const user=env.authenticatedContext("reader",claims).database(), mod=env.authenticatedContext("moderator",claims).database(), guest=env.unauthenticatedContext().database();
     const id="-1234567890123456789";
-    const msg={nick:"Utente",text:"Quali eventi ci sono sabato?",createdAt:serverTimestamp(),state:"pending"};
+    const msg={nick:"mar",domain:"example.com",text:"Quali eventi ci sono sabato?",createdAt:serverTimestamp(),state:"pending"};
     await env.withSecurityRulesDisabled(async ctx=>{await set(ref(ctx.database()),{settings:{open:true},moderators:{moderator:true}});});
     await assertFails(set(ref(guest,"submissions/reader"),msg));
     await assertFails(set(ref(user,"submissions/other"),msg));
     await assertFails(set(ref(user,"moderators/reader"),true));
     await assertFails(set(ref(user,"published/"+id),{nick:"Utente",text:"spam",createdAt:serverTimestamp()}));
     await assertFails(set(ref(user,"submissions/reader"),{...msg,state:"approved"}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,nick:"abc"}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,nick:"ma"}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,domain:"evil.com"}));
     await assertSucceeds(set(ref(user,"submissions/reader"),msg));
     await assertFails(set(ref(user,"submissions/reader"),msg));
     await assertFails(get(ref(user,"submissions")));
     await assertFails(get(ref(user,"published")));
-    await assertSucceeds(update(ref(mod),{["published/"+id]:{nick:"Utente",text:msg.text,createdAt:serverTimestamp()},["authors/"+id]:"reader","submissions/reader/state":"approved"}));
+    const approved={["published/"+id]:{nick:"mar***@example.com",text:msg.text,createdAt:serverTimestamp()},["authors/"+id]:"reader","submissions/reader/state":"approved"};
+    await assertFails(update(ref(mod),approved));
+    await env.withSecurityRulesDisabled(async ctx=>{await update(ref(ctx.database()),approved);});
     await assertSucceeds(get(query(ref(user,"published"),orderByKey(),limitToLast(40))));
     await assertFails(get(query(ref(guest,"published"),orderByKey(),limitToLast(40))));
     await assertFails(get(ref(user,"authors/"+id)));
