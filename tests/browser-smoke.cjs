@@ -13,6 +13,8 @@ const assert = require("node:assert/strict");
     for(const [width,height] of [[320,568],[393,852],[430,740]]){
       await page.setViewportSize({width,height});
       const tab=await page.locator("#csfc-toggle").boundingBox();
+      assert.ok(tab&&tab.x>=0&&tab.x+tab.width<=width-5&&tab.width>=43&&tab.height>=95,"Linguetta interamente dentro lo schermo e leggibile");
+      assert.equal(await page.locator("#csfc-toggle").evaluate(el=>getComputedStyle(el).writingMode),"horizontal-tb","Testo normale ruotato, senza layout verticale nativo");
       assert.ok(tab&&tab.y>=0&&tab.y+tab.height<=height*.42,"Linguetta Community più in alto, fuori dai filtri rapidi");
       await page.locator("#csfc-toggle").click();
       const panel=page.locator("#csfc-panel");
