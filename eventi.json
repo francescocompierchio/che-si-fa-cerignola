@@ -686,6 +686,7 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335514.html"
   },
   {
+    "locandinaUrl": "https://glnbdtlftdlvofuhqmjo.supabase.co/storage/v1/object/public/il-borghista-backend/events/06a75296-b65c-488e-8b95-c097d35f4bba.webp",
     "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
     "categoria": "Sagre & Food",
@@ -695,10 +696,9 @@
     "dataFine": "2026-12-13",
     "luogo": "Villa Comunale Aldo Moro – Piazza Vittorio Veneto",
     "indirizzoMappa": "Piazza Vittorio Veneto, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
+    "costo": "Gratuito",
     "descrizione": "Terza edizione della sagra del dolce natalizio canosino, con degustazioni, musica e animazione. Date annunciate dalla Pro Loco; verificare orari e programma definitivo.",
-    "fonteUrl": "https://www.canosaviva.it/notizie/l-11-12-e-13-dicembre-la-3-edizione-della-sagra-della-sfogliatella-a-canosa/",
-    "locandinaUrl": "https://glnbdtlftdlvofuhqmjo.supabase.co/storage/v1/object/public/il-borghista-backend/events/06a75296-b65c-488e-8b95-c097d35f4bba.webp"
+    "fonteUrl": "https://www.canosaviva.it/notizie/l-11-12-e-13-dicembre-la-3-edizione-della-sagra-della-sfogliatella-a-canosa/"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/habibi-with-octave-one-live-venerdi-11-dicembre-2026-barletta-xceed-square-b7aa.jpg?w=1920&h=1080&ar=16:9&fm=auto",
