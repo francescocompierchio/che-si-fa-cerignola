@@ -67,7 +67,9 @@
       "alias": [
         "Caffè Plaza"
       ],
-      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+      "social": "https://www.instagram.com/caffe_plaza/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Bramo",
@@ -95,7 +97,9 @@
       "alias": [
         "Bar Gorizia"
       ],
-      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html"
+      "evidenza": "https://2night.it/0b41d5-/aperitivi-cerignola-piu-glamour.html",
+      "social": "https://www.instagram.com/barGorizia/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Il Paladino",
@@ -124,14 +128,18 @@
       "alias": [
         "Baraonda"
       ],
-      "evidenza": "https://amelipasticceria.it/baraonda/"
+      "evidenza": "https://amelipasticceria.it/baraonda/",
+      "social": "https://www.instagram.com/baraonda__/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Bar Roma",
       "alias": [
         "Bar Roma"
       ],
-      "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
+      "evidenza": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html",
+      "social": "https://www.instagram.com/bar_roma_perrucci/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Botanical 22",
@@ -173,7 +181,9 @@
       "alias": [
         "Civico 10"
       ],
-      "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d23068086-Reviews-CIVICO_10_Wine_Coffee_Bar-Cerignola_Province_of_Foggia_Puglia.html"
+      "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d23068086-Reviews-CIVICO_10_Wine_Coffee_Bar-Cerignola_Province_of_Foggia_Puglia.html",
+      "social": "https://www.instagram.com/civico10bistrot/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Hollywood Pub",
@@ -194,7 +204,9 @@
       "alias": [
         "Maximilian Pub"
       ],
-      "evidenza": "https://www.sluurpy.it/cerignola/brew-pub"
+      "evidenza": "https://www.sluurpy.it/cerignola/brew-pub",
+      "social": "https://www.instagram.com/maximilianpub4/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Alchimia Cucina & Vino",
@@ -214,7 +226,9 @@
         "Ossobuco Restaurant"
       ],
       "evidenza": "https://www.ossobucorestaurant.it/",
-      "sito": "https://www.ossobucorestaurant.it/"
+      "sito": "https://www.ossobucorestaurant.it/",
+      "social": "https://www.instagram.com/ossobuco.restaurant/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Figli di Puglia",
@@ -311,7 +325,9 @@
         "Teku 33"
       ],
       "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d12458957-Reviews-Teku33-Cerignola_Province_of_Foggia_Puglia.html",
-      "nota": "Anagrafica pubblica: non prova di serate attive."
+      "nota": "Anagrafica pubblica: non prova di serate attive.",
+      "social": "https://www.instagram.com/teku_33/",
+      "notaSocial": "Profilo già presente nella rubrica pubblica Instagram Locali dell'app."
     },
     {
       "nome": "Futur Club Movida",
@@ -321,6 +337,33 @@
       ],
       "evidenza": "https://restaurantguru.it/Disco-Pub-Futur-Club-Movida-Cerignola",
       "nota": "Anagrafica da verificare mediante annunci recenti; non prova di apertura."
+    },
+    {
+      "nome": "Alfredo Pizza e Cucina",
+      "alias": [
+        "Alfredo Pizza e Cucina"
+      ],
+      "social": "https://www.instagram.com/alfredo_pizzaecucina/",
+      "evidenza": "https://de.restaurantguru.com/Alfredo-pizza-e-cucina-Cerignola",
+      "nota": "Profilo indicato nella scheda pubblica del locale; non prova di un evento."
+    },
+    {
+      "nome": "La Cantinetta",
+      "alias": [
+        "La Cantinetta"
+      ],
+      "social": "https://www.instagram.com/lacantinettacerignola/",
+      "evidenza": "https://restaurantguru.it/La-Cantinetta-Cerignola",
+      "nota": "Profilo indicato nella scheda pubblica del locale; non prova di un evento."
+    },
+    {
+      "nome": "Pescherja",
+      "alias": [
+        "Pescherja"
+      ],
+      "social": "https://www.instagram.com/pescherja_cerignola/",
+      "evidenza": "https://restaurantguru.com/Pescherja-Cerignola",
+      "nota": "Profilo indicato nella scheda pubblica del locale; non prova di un evento."
     }
   ],
   "Barletta": [
@@ -398,7 +441,9 @@
       "alias": [
         "santo graal"
       ],
-      "calendario": "https://iltaccodibacco.it/trani/santo-graal/"
+      "calendario": "https://iltaccodibacco.it/trani/santo-graal/",
+      "social": "https://www.instagram.com/santograaltrani/",
+      "evidenzaSocial": "https://restaurantguru.it/Santo-Graal-Trani"
     }
   ],
   "Bisceglie": [
@@ -443,7 +488,9 @@
       "alias": [
         "minami"
       ],
-      "calendario": "https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/"
+      "calendario": "https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/",
+      "social": "https://www.instagram.com/minamilounge/",
+      "evidenzaSocial": "https://restaurantguru.it/Minami-Restaurant-and-Lounge-Manfredonia"
     },
     {
       "nome": "Café des Artistes",
