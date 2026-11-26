@@ -110,6 +110,12 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(ev[0]["citta"],"Bisceglie")
         self.assertEqual(crawler.analizza_nightz(html.replace("Bisceglie","Bari"),url),[])
         self.assertEqual(crawler.analizza_nightz(html,"https://nightz.it/eventi/"),[])
+        nuovo = "https://nightoutz.it/eventi/around-us/"
+        self.assertEqual(len(crawler.analizza_nightz(html,nuovo)),1)
+        self.assertTrue(crawler._fonte_appartiene_a_raccolta_automatica(nuovo))
+        self.assertEqual(crawler.analizza_nightz(html,"https://nightoutz.it.evil.test/eventi/around-us/"),[])
+        self.assertEqual(crawler.analizza_nightz(html.replace("Bisceglie","Bari"),nuovo),[])
+        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightoutz.it/eventi/", "nightoutz.it", "nightz"))
     def test_diagnostica_markup_pubblico(self):
         self.assertEqual(crawler.diagnostica_scheda_movida("<h1>Serata</h1><p>Location</p>","https://example.org")["h1"],"Serata")
 
