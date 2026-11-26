@@ -1,0 +1,33 @@
+name: Attiva e verifica statistiche eventi
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/attiva-statistiche-eventi.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: csf-event-stats-registry
+  cancel-in-progress: false
+jobs:
+  activate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts firebase-admin@13.6.0
+      - name: Attiva registro e regole isolate
+        env:
+          EVENT_STATS_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
+          EVENT_STATS_ACTIVATE: "true"
+        run: node scripts/sync-event-stats.cjs
+      - name: Verifica produzione senza alterare i contatori pubblici reali
+        env:
+          EVENT_STATS_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/verify-event-stats-live.cjs
