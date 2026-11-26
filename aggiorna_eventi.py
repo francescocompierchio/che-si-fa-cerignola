@@ -683,6 +683,10 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
             return "Sagre & Food"
         if re.search(r"\b(?:sfilata|luna park|attività per famiglie)\b",t):
             return "Famiglie & Bambini"
+    # Un laboratorio rivolto ai bambini resta familiare anche quando il locale
+    # usa "Party" nel nome commerciale.
+    if re.search(r"\blaborator\w*\b.{0,100}\b(?:per\s+)?(?:bambin\w*|ragazz\w*|famigli\w*)\b", t):
+        return "Famiglie & Bambini"
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
@@ -1158,6 +1162,26 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
                    indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
                    fonteUrl="https://www.bottegadegliapocrifi.it/stagione/lisistrata/",
                    descrizione="Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.")
+    # Rettifiche documentate: limitate alla singola edizione, non a future repliche.
+    if (raw.get("fonteUrl") == "https://iltaccodibacco.it/puglia/eventi/335513.html"
+            and "cenerentola 301" in str(raw.get("titolo") or "").casefold()):
+        raw = dict(raw, citta="Manfredonia", categoria="Teatro & Spettacoli",
+                   dataInizio="2026-12-06", dataFine="2026-12-06",
+                   dataTesto="Dom 06 Dic 2026 · Ore 18:00",
+                   luogo="Teatro Comunale Lucio Dalla",
+                   indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+                   descrizione="Spettacolo della Compagnia Burambò per famiglie e bambini dai 6 anni. Data confermata dal calendario ufficiale del teatro.")
+    posta_bassi = (_host_appartiene(raw.get("fonteUrl") or "", "postabassi.it")
+                   and raw.get("dataInizio") == "2027-01-01"
+                   and "capodanno" in str(raw.get("titolo") or "").casefold())
+    if posta_bassi:
+        # Sito ufficiale: Capodanno 01/01/2027, 55 euro, Via Manfredonia a Foggia.
+        raw = dict(raw, citta="Foggia", titolo="Pranzo di Capodanno – Posta Bassi",
+                   dataFine="2027-01-01", dataTesto="Ven 01 Gen 2027",
+                   luogo="Posta Bassi", indirizzoMappa="Posta Bassi, Via Manfredonia Km 196+200, 71121 Foggia (FG)",
+                   costo="55 € a persona",
+                   descrizione="Pranzo di Capodanno del 1 gennaio 2027. Menù e prenotazioni sul sito ufficiale dell'agriturismo.",
+                   fonteUrl="https://www.postabassi.it/eventi-speciali/")
     ref = ref_dt or oggi_dt()
     oggi = ref.strftime("%Y-%m-%d")
     limite_max = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).strftime("%Y-%m-%d")
@@ -1213,7 +1237,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         "luogo": luogo,
         "indirizzoMappa": indirizzo_grezzo,
     })
-    citta = risolvi_comune_50km(raw_pulito)
+    citta = "Foggia" if posta_bassi else risolvi_comune_50km(raw_pulito)
     if not citta:
         return None
 

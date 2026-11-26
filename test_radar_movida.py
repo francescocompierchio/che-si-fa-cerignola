@@ -15,6 +15,19 @@ class RadarMovidaTest(unittest.TestCase):
         self.assertTrue(r.alias_corrispondente("NONZAI DJ set",["NONZAI"]))
         self.assertFalse(r.alias_corrispondente("altro locale",["NONZAI"]))
 
+    def test_ricerca_cenoni_territoriale(self):
+        from urllib.parse import parse_qs, urlparse
+        _, rss = r.fonti({}, [])
+        stagionali = [f for f in rss if f["nome"].endswith(" feste e cenoni")]
+        self.assertEqual(len(stagionali), 12)
+        self.assertEqual(len({f["url"] for f in stagionali}), 12)
+        for f in stagionali:
+            q = parse_qs(urlparse(f["url"]).query)["q"][0]
+            self.assertIn('"'+f["comune_radar"]+'"', q)
+            self.assertIn('"cenone"', q)
+            self.assertEqual(f["solo_cerignola"], f["comune_radar"]=="Cerignola")
+            self.assertEqual(f["max_schede_rss"], 4)
+
     def test_ricerca_fonti_ufficiali(self):
         from urllib.parse import parse_qs, urlparse
         _,rss=r.fonti({"Cerignola":[{"nome":"Alchimia","alias":["Alchimia Cucina"],"sito":"https://alchimiacucinaevino.eatbu.com/","social":"https://www.instagram.com/alchimia.cucinaevino/"}]},[])

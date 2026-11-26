@@ -91,6 +91,24 @@ const assert = require("node:assert/strict");
     assert.match(await page.locator("#author-signature").textContent(),/Francesco Compierchio/);
     assert.equal(await page.locator("#btn-author-ig").getAttribute("href"),"https://www.instagram.com/francesco_c_92/");
     assert.equal(await page.locator(".footer-links a").count(),5);
+    // Stasera e città devono comporsi in entrambi gli ordini, senza modificare la grafica.
+    const tonightButton=page.locator('[data-smart-filter="TONIGHT"]');
+    const cityButton=page.locator("#filters .filter-btn").filter({hasText:/^Cerignola$/});
+    const allFilter=page.locator("#filters .filter-btn").filter({hasText:/^Tutti$/});
+    for(const order of [[tonightButton,cityButton],[cityButton,tonightButton]]){
+      await allFilter.click();
+      for(const button of order)await button.click();
+      assert.equal(await tonightButton.getAttribute("aria-pressed"),"true");
+      assert.ok(await cityButton.evaluate(el=>el.classList.contains("active")));
+      assert.ok(await page.evaluate(()=>{
+        const map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));
+        return [...document.querySelectorAll("#events-container details")].every(el=>{
+          const ev=map.get(el.dataset.eventKey);
+          return ev&&ev.citta==="Cerignola"&&CsfEventTools.tonight(ev,oggi);
+        });
+      }));
+    }
+    await allFilter.click();
     // Una data oltre la settimana deve essere consultabile e mostrare solo eventi di quel giorno.
     await page.locator("#agenda-future-date").fill("2026-12-31");
     assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Evento futuro già presente");

@@ -35,7 +35,20 @@ function strumenti(){
  }
  function dedup(list){const out=[];for(const ev of list)if(ev&&!out.some(x=>duplicate(x,ev)))out.push(ev);return out;}
  function quality(ev){return Number(!!ev.locandinaUrl)*2+Number(!!ev.luogo)+Number(String(ev.descrizione||"").length>=60)+Number(!!ev.costo&& !/non indicato|da definire/i.test(ev.costo));}
- function evening(ev){if(ev.tipoContenuto==="esperienza")return false;const text=norm(ev.categoria);return /locali|serat/.test(text)||/\b(?:ore|start|inizio|dalle|h)\s*(?:1[89]|2[0-3])(?=[:.\s]|$)/i.test([ev.dataTesto,ev.descrizione].join(" "));}
+ function evening(ev){
+   if(ev.tipoContenuto==="esperienza")return false;
+   const category=norm(ev.categoria),title=norm(ev.titolo),text=[ev.dataTesto,ev.descrizione].filter(Boolean).join(" ");
+   // Una festa per bambini o un laboratorio pomeridiano non è movida.
+   if(/\b(?:laboratori?\w*|festa|animazione)\b.*\b(?:bambin\w*|ragazz\w*)\b/.test(title))return false;
+   const start=text.match(/\b(?:dalle|start(?:\s+ore)?|inizio(?:\s+ore)?|ore|h)\s*([01]?\d|2[0-3])(?=[:.\s]|$)(?:[:.]([0-5]\d))?/i);
+   if(start)return Number(start[1])>=18 || Number(start[1])<=4&&/locali|serat/.test(category);
+   return /locali|serat/.test(category);
+ }
+ function tonight(ev,day){
+   if(!overlaps(ev,day,day)||!evening(ev))return false;
+   // Una rassegna su più giorni non prova una serata in ciascuna data.
+   return ev.dataInizio===(ev.dataFine||ev.dataInizio)||/\b(?:ogni sera|tutte le sere|ogni giorno|tutti i giorni|quotidianamente)\b/i.test([ev.dataTesto,ev.descrizione].join(" "));
+ }
  function shareUrl(ev,available,base){const candidate=base+"eventi/"+id(ev)+".html";return available.has(candidate)?candidate:base+"#evento="+encodeURIComponent(key(ev));}
  // Riepilogo aggiornato, senza esperienze non datate, eventi scaduti o doppioni.
  function weekendDigest(eventi,oggi){
@@ -85,7 +98,7 @@ function strumenti(){
    if(fascia<=1)return 4;
    return 5;
  }
- return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,shareUrl,weekendDigest,discoteca,vitaNotturna,statoTemporale,prioritaScoperta};
+ return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,tonight,shareUrl,weekendDigest,discoteca,vitaNotturna,statoTemporale,prioritaScoperta};
 }
 const CsfEventTools = strumenti();
 if (typeof module !== "undefined" && module.exports) module.exports=CsfEventTools;
