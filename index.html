@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=2"></script>
-  <script src="event-page.js?v=66" defer></script>
+  <script src="event-page.js?v=67" defer></script>
   <script src="metrics.js?v=34"></script>
 
   <meta charset="UTF-8" />
@@ -1228,6 +1228,14 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 .csf-side-close{min-width:44px;text-align:center!important}
 .csf-side-footer{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;min-height:30px;cursor:pointer;padding:0}
 html.csf-side-open{overflow:hidden}
+.csf-side-swipe{display:none}
+@media(max-width:900px) and (pointer:coarse){
+ .csf-side-swipe{display:block;position:fixed;top:38%;height:27%;width:18px;left:16px;z-index:160;touch-action:pan-y;background:transparent}
+ .csf-side-swipe[data-side="right"]{left:auto;right:16px}
+ html.csf-side-open .csf-side-swipe{pointer-events:none}
+ body:has(.modal-backdrop.open,.venues-drawer.open,#csfc-panel:not([hidden])) .csf-side-swipe{pointer-events:none}
+}
+.csf-side-dialog{touch-action:pan-y}
 @media(prefers-reduced-motion:reduce){.csf-side-dialog[open]{animation:none}}
   </style>
   <link rel="stylesheet" href="community.css?v=8">
@@ -3527,6 +3535,6 @@ html.csf-side-open{overflow:hidden}
   <script src="community-config.js?v=2"></script>
   <script src="community-auth-flow.js?v=1"></script>
   <script src="community.js?v=10"></script>
-  <script src="side-panels.js?v=1"></script>
+  <script src="side-panels.js?v=2"></script>
 </body>
 </html>

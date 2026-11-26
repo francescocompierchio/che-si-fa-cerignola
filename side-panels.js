@@ -13,7 +13,14 @@
  function busy(){return !!document.querySelector("dialog[open],.modal-backdrop.open,.venues-drawer.open")||!!$("csfc-panel")?.getClientRects().length&&getComputedStyle($("csfc-panel")).visibility!=="hidden"&&!$("csfc-panel").hidden;}
  function reset(){queryRicerca="";$("search-input").value="";impostaModalitaRapida("ALL");}
  function scrollEvents(){ $("events-container").scrollIntoView({block:"start"}); }
- function close(){if(active){active.close();}}
+ function release(d){
+  if(active!==d)return;
+  generation++;active=null;gesture=null;
+  document.documentElement.classList.remove("csf-side-open");
+  const focus=previousFocus;previousFocus=null;
+  focus?.focus?.({preventScroll:true});
+ }
+ function close(){if(active){const d=active;d.close();release(d);}}
  function showEvent(ev){close();reset();const card=[...$("events-container").querySelectorAll("details[data-event-key]")].find(n=>n.dataset.eventKey===key(ev));if(card){card.open=true;card.scrollIntoView({block:"center"});}else mostraToast("Evento non più disponibile");}
  function list(host,items,note,places=false){
   host.replaceChildren(mk("p",note));
@@ -75,6 +82,7 @@
   }
  }
  function open(side,from){
+  if(active&&!active.open)release(active);
   if(active||busy())return;
   previousFocus=from||document.activeElement;active=dialogs[side];generation++;
   active.querySelector(".csf-side-results").replaceChildren();
@@ -89,22 +97,36 @@
   for(const [action,label] of menu[side]){const b=mk("button",label);b.type="button";b.dataset.sideAction=action;b.onclick=()=>run(action,host);m.append(b);}
   d.append(m,host);document.body.append(d);dialogs[side]=d;
   d.addEventListener("click",e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close();}});
-  d.addEventListener("close",()=>{generation++;active=null;document.documentElement.classList.remove("csf-side-open");previousFocus?.focus?.({preventScroll:true});});
+  d.addEventListener("cancel",e=>{e.preventDefault();close();});
+  d.addEventListener("close",()=>{if(!d.open)release(d);});
   $("csf-open-"+side)?.addEventListener("click",e=>open(side,e.currentTarget));
  }
- // Solo fascia interna, mai l'ultimo bordo di sistema; nessuna cattura del normale scroll.
+ // Fasce trasparenti nella zona centrale dello schermo, interne al bordo di sistema.
+ // touch-action:pan-y consente lo scroll verticale ma non cede il gesto orizzontale al browser.
+ for(const side of ["left","right"]){
+  const area=mk("div","","csf-side-swipe");area.dataset.side=side;area.setAttribute("aria-hidden","true");document.body.append(area);
+ }
  document.addEventListener("touchstart",e=>{
   if(e.touches.length!==1||innerWidth>900){gesture=null;return;}
-  const t=e.touches[0],x=t.clientX,y=t.clientY,w=innerWidth;
-  if(e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]")){gesture=null;return;}
-  const side=active?active.dataset.side:(!busy()&&x>=16&&x<=44?"left":!busy()&&x>=w-44&&x<=w-16?"right":null);
-  gesture=side?{side,x,y,closing:!!active,time:Date.now()}:null;
+  if(active&&!active.open)release(active);
+  const t=e.touches[0],x=t.clientX,y=t.clientY,w=document.documentElement.clientWidth;
+  const strip=e.target.closest(".csf-side-swipe");
+  if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]")){gesture=null;return;}
+  const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=12&&x<=58?"left":x>=w-58&&x<=w-12?"right":null)));
+  gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false}:null;
  },{passive:true});
+ document.addEventListener("touchmove",e=>{
+  const g=gesture;if(!g||e.touches.length!==1)return;
+  const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+  if(!g.horizontal&&Math.abs(dy)>18&&Math.abs(dy)>Math.abs(dx)){gesture=null;return;}
+  if(Math.abs(dx)>18&&Math.abs(dx)>Math.abs(dy)*1.5)g.horizontal=true;
+  if(g.horizontal&&e.cancelable)e.preventDefault();
+ },{passive:false});
  document.addEventListener("touchcancel",()=>{gesture=null;},{passive:true});
  document.addEventListener("touchend",e=>{
-  const g=gesture;gesture=null;if(!g||e.changedTouches.length!==1||Date.now()-g.time>1000)return;
+  const g=gesture;gesture=null;if(!g||e.changedTouches.length!==1||Date.now()-g.time>1800)return;
   const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-  if(Math.abs(dx)<85||Math.abs(dx)<Math.abs(dy)*1.8)return;
+  if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return;
   if(g.closing){if(g.side==="left"?dx<0:dx>0)close();}
   else if(g.side==="left"?dx>0:dx<0)open(g.side);
  },{passive:true});

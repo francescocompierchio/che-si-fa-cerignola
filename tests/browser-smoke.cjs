@@ -58,10 +58,28 @@ const assert = require("node:assert/strict");
     await swipe(25,300,12,140);assert.equal(await leftPanel.isVisible(),false);
     await swipe(25,300,140,5);await leftPanel.waitFor({state:"visible"});
     await swipe(150,300,-130,0);await leftPanel.waitFor({state:"hidden"});
+    // No attesa artificiale: il close deve liberare subito il lato opposto.
     await swipe(368,300,-140,5);await rightPanel.waitFor({state:"visible"});
     await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
     assert.equal(await page.locator("html").evaluate(n=>n.classList.contains("csf-side-open")),false);
-    console.log("OK pannelli laterali: scomparsa, swipe, accesso alternativo, comuni e cronologia.");
+    // Touch reali via protocollo Chromium, con più movimenti e hit-testing del browser.
+    const cdp=await page.context().newCDPSession(page);
+    const realSwipe=async(x,y,dx,dy)=>{
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y}]});
+      for(let j=1;j<=6;j++)await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+dx*j/6,y:y+dy*j/6}]});
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    };
+    await page.evaluate(()=>window.scrollTo(0,0));
+    const areaL=await page.locator('.csf-side-swipe[data-side="left"]').boundingBox();
+    const areaR=await page.locator('.csf-side-swipe[data-side="right"]').boundingBox();
+    assert.ok(areaL&&areaR,"Fasce touch presenti sullo schermo");
+    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,125,2);await leftPanel.waitFor({state:"visible"});
+    await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-125,2);await rightPanel.waitFor({state:"visible"});
+    await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,3,100);assert.equal(await leftPanel.isVisible(),false);
+    await cdp.detach();
+    console.log("OK pannelli laterali: scomparsa, swipe, touch Chromium reale, accesso alternativo, comuni e cronologia.");
     // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
     for(const [width,height] of [[320,568],[393,852],[430,740]]){
       await page.setViewportSize({width,height});
