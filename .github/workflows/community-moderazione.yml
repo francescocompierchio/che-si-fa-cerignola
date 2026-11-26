@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/community-moderazione.yml'
   pull_request:
     paths:
       - 'scripts/community_moderator.py'
@@ -33,7 +37,7 @@ jobs:
       - name: Collaudo IA su esempi inventati
         run: python scripts/community_moderator.py model-test
   moderate:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.COMMUNITY_AUTOMOD_ENABLED == 'true'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.COMMUNITY_AUTOMOD_ENABLED != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -50,7 +54,13 @@ jobs:
         id: probe
         env:
           COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
-        run: python scripts/community_moderator.py probe >> "$GITHUB_OUTPUT"
+        run: |
+          if [ -z "$COMMUNITY_FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::Secret COMMUNITY_FIREBASE_SERVICE_ACCOUNT non configurato."
+            exit 1
+          fi
+          python scripts/community_moderator.py probe >> "$GITHUB_OUTPUT"
+          echo "Collegamento Firebase Community verificato in lettura. Nessun contenuto nei log."
       - name: Installa modello CPU solo se necessario
         if: steps.probe.outputs.pending == 'yes'
         run: |
