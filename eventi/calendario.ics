@@ -1016,6 +1016,26 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/lucer
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:andria-2026-11-28-nichi-vendola-ad-andria-con-il-vizio-della-ferocia-il
+ -festival-della-disperazione@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Nichi Vendola ad Andria con “Il vizio della ferocia”: il Festiv
+ al della Disperazione  – Andria
+LOCATION:Chiostro di San Francesco\, Andria
+DESCRIPTION:Sab 28 Nov 2026\nAppuntamento sabato 28 novembre\, alle ore 18:
+ 30\, al Food Policy Hub. A dialogare con l'autore sarà Anna Puricella\, g
+ iornalista de la Repubblica\nAccesso: Non specificato nella fonte\nVerific
+ a variazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.g
+ ithub.io/che-si-fa-cerignola/eventi/andria-2026-11-28-nichi-vendola-ad-and
+ ria-con-il-vizio-della-ferocia-il-festival-della-disperazione.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
+ a-2026-11-28-nichi-vendola-ad-andria-con-il-vizio-della-ferocia-il-festiva
+ l-della-disperazione.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-11-28-the-peak-w-danny-roma@chesifacerignola
 DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261128

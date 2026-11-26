@@ -296,6 +296,20 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330009.html"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Andria",
+    "categoria": "Attività diurne",
+    "titolo": "Nichi Vendola ad Andria con “Il vizio della ferocia”: il Festival della Disperazione ",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Chiostro di San Francesco",
+    "indirizzoMappa": "Chiostro di San Francesco, Andria",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento sabato 28 novembre, alle ore 18:30, al Food Policy Hub. A dialogare con l'autore sarà Anna Puricella, giornalista de la Repubblica",
+    "fonteUrl": "https://www.andriaviva.it/notizie/nichi-vendola-ad-andria-con-il-vizio-della-ferocia-il-festival-della-disperazione-inaugura-verso-la-fine-la-sua-programmazione-invernale/"
+  },
+  {
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/1bf2b8bd6f12cab630d17f05f292d54f9e6ed195-1672x941.png?w=1200&h=630&fit=crop&q=80",
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
