@@ -257,6 +257,15 @@ const assert = require("node:assert/strict");
     const searchTop=await chrome.locator("#search-input").evaluate(el=>el.getBoundingClientRect().top);
     await chrome.locator("#btn-open-venues").click();
     assert.ok(await chrome.locator("#venues-drawer").evaluate(el=>el.classList.contains("open")));
+    for(const [name,handle] of [["Hermes Club","hermesclub2024"],["Alfredo Pizza e Cucina","alfredo_pizzaecucina"],["Saint Patrick","saint_patrick_barletta"],["Santo Graal","santograaltrani"],["Minami Restaurant & Lounge","minamilounge"]]){
+      const venue=chrome.locator("#venues-list .venue-card").filter({has:chrome.locator(".venue-name",{hasText:name})});
+      assert.equal(await venue.count(),1,"Scheda locale unica: "+name);
+      assert.equal(await venue.getByRole("link",{name:"Instagram",exact:true}).getAttribute("href"),"https://www.instagram.com/"+handle+"/");
+    }
+    await chrome.locator("#venues-search").fill("Trani");
+    assert.ok(await chrome.locator("#venues-list .venue-card").filter({hasText:"Santo Graal"}).count());
+    await chrome.locator("#venues-search").fill("");
+
     assert.equal(await chrome.locator("#search-input").evaluate(el=>el.getBoundingClientRect().top),searchTop,"Il pannello non deve spostare la homepage");
     await chrome.locator("#btn-close-venues").click();
     assert.equal(await chrome.locator("#btn-open-venues").getAttribute("aria-expanded"),"false");
