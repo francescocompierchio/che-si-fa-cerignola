@@ -70,12 +70,21 @@ const assert = require("node:assert/strict");
       await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
     };
     await page.evaluate(()=>window.scrollTo(0,0));
+    // Le linguette hanno un'etichetta accessibile e sono apribili anche senza swipe.
+    for(const [side,panel] of [["left",leftPanel],["right",rightPanel]]){
+      const tab=page.locator('.csf-side-swipe[data-side="'+side+'"]');
+      await tab.waitFor({state:"visible"});assert.ok((await tab.boundingBox()).width>=44);
+      await page.waitForTimeout(550);
+      await tab.tap();await panel.waitFor({state:"visible"});
+      await panel.getByRole("button",{name:"Chiudi pannello"}).click();
+      await panel.waitFor({state:"hidden"});
+    }
     const areaL=await page.locator('.csf-side-swipe[data-side="left"]').boundingBox();
     const areaR=await page.locator('.csf-side-swipe[data-side="right"]').boundingBox();
     assert.ok(areaL&&areaR,"Fasce touch presenti sullo schermo");
-    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,125,2);await leftPanel.waitFor({state:"visible"});
+    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,45,2);await leftPanel.waitFor({state:"visible"});
     await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
-    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-125,2);await rightPanel.waitFor({state:"visible"});
+    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-45,2);await rightPanel.waitFor({state:"visible"});
     await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
     await realSwipe(areaL.x+areaL.width/2,areaL.y+30,3,100);assert.equal(await leftPanel.isVisible(),false);
     await cdp.detach();
@@ -132,11 +141,17 @@ const assert = require("node:assert/strict");
     await page.locator("#close-install-drawer").click();
     assert.ok(await page.locator("#btn-apk-alternativo").isVisible(),"APK sempre recuperabile anche da WebView");
     assert.equal(await page.locator("#btn-apk-alternativo").getAttribute("href"),"app-release.apk");
+    // La presenza reale continua a essere rilevata: il badge compare solo da tre connessioni.
+    for(const n of [null,0,1,2,3,7,2,null]){
+      await page.evaluate(v=>mostraOnline(v),n);
+      assert.equal(await page.locator("#live-pill").isVisible(),Number.isInteger(n)&&n>=3,"Soglia online "+n);
+      if(n>=3)assert.equal(await page.locator("#online-users-count").textContent(),String(n));
+    }
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
     const conteggioOriginale = await page.locator("#event-counter").textContent();
     await page.evaluate(()=>{
       document.getElementById("event-counter").textContent="89 eventi";
-      document.getElementById("online-users-count").textContent="2";
+      mostraOnline(3);
       document.getElementById("total-views-count").textContent="1381";
       for(const id of ["live-pill","views-pill"])document.getElementById(id).style.display="inline-flex";
     });

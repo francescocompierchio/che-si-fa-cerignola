@@ -101,10 +101,16 @@
   d.addEventListener("close",()=>{if(!d.open)release(d);});
   $("csf-open-"+side)?.addEventListener("click",e=>open(side,e.currentTarget));
  }
- // Fasce trasparenti nella zona centrale dello schermo, interne al bordo di sistema.
- // touch-action:pan-y consente lo scroll verticale ma non cede il gesto orizzontale al browser.
+ // Linguette visibili, con area tattile da 44px e apertura anche con un singolo tocco.
+ let ultimoSwipe=0;
  for(const side of ["left","right"]){
-  const area=mk("div","","csf-side-swipe");area.dataset.side=side;area.setAttribute("aria-hidden","true");document.body.append(area);
+  const area=mk("button","","csf-side-swipe");area.type="button";area.dataset.side=side;
+  const label=side==="left"?"Scopri":"Il mio spazio";
+  area.setAttribute("aria-label",side==="left"?"Apri Scopri il territorio":"Apri Il tuo spazio");
+  area.setAttribute("aria-haspopup","dialog");
+  area.append(mk("span",side==="left"?"› "+label:label+" ‹","csf-side-grip"));
+  area.addEventListener("click",()=>{if(Date.now()-ultimoSwipe>500)open(side,area);});
+  document.body.append(area);
  }
  document.addEventListener("touchstart",e=>{
   if(e.touches.length!==1||innerWidth>900){gesture=null;return;}
@@ -112,21 +118,22 @@
   const t=e.touches[0],x=t.clientX,y=t.clientY,w=document.documentElement.clientWidth;
   const strip=e.target.closest(".csf-side-swipe");
   if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]")){gesture=null;return;}
-  const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=12&&x<=58?"left":x>=w-58&&x<=w-12?"right":null)));
+  const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=8&&x<=65?"left":x>=w-65&&x<=w-8?"right":null)));
   gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false}:null;
  },{passive:true});
  document.addEventListener("touchmove",e=>{
   const g=gesture;if(!g||e.touches.length!==1)return;
   const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
   if(!g.horizontal&&Math.abs(dy)>18&&Math.abs(dy)>Math.abs(dx)){gesture=null;return;}
-  if(Math.abs(dx)>18&&Math.abs(dx)>Math.abs(dy)*1.5)g.horizontal=true;
+  if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3)g.horizontal=true;
   if(g.horizontal&&e.cancelable)e.preventDefault();
  },{passive:false});
  document.addEventListener("touchcancel",()=>{gesture=null;},{passive:true});
  document.addEventListener("touchend",e=>{
   const g=gesture;gesture=null;if(!g||e.changedTouches.length!==1||Date.now()-g.time>1800)return;
   const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-  if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return;
+  if(Math.abs(dx)<36||Math.abs(dx)<Math.abs(dy)*1.3)return;
+  ultimoSwipe=Date.now();
   if(g.closing){if(g.side==="left"?dx<0:dx>0)close();}
   else if(g.side==="left"?dx>0:dx<0)open(g.side);
  },{passive:true});
