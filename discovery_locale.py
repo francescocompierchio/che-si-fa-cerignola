@@ -1,6 +1,8 @@
 """Discovery locale da feed originali e ricerche di appuntamenti settimanali."""
 import re
 from datetime import datetime,timedelta
+from hashlib import sha256
+from zoneinfo import ZoneInfo
 from email.utils import parsedate_to_datetime
 from urllib.parse import urlencode,urlparse
 
@@ -111,16 +113,38 @@ def alias_locale(testo,registro):
                for r in registro for a in r.get("alias",[])
                if isinstance(a,str) and len(a.strip())>=5 and a.casefold() not in {"pro loco","il titolo","bar roma","villa eden","motus","nonzai"})
 
-def data_pubblicazione(valore):
+def istante_pubblicazione(valore):
     if not valore:
         return None
     try:
-        return parsedate_to_datetime(valore).date()
-    except (ValueError,TypeError,OverflowError):
+        return parsedate_to_datetime(valore)
+    except (ValueError, TypeError, OverflowError):
         try:
-            return datetime.fromisoformat(valore.replace("Z","+00:00")).date()
-        except (ValueError,TypeError,OverflowError):
+            return datetime.fromisoformat(valore.replace("Z", "+00:00"))
+        except (ValueError, TypeError, OverflowError):
             return None
+
+
+def data_pubblicazione(valore):
+    ts = istante_pubblicazione(valore)
+    return ts.date() if ts is not None else None
+
+
+def misura_ritardo(soup, url, ora, data_editore=""):
+    valori = []
+    if soup:
+        el = soup.select_one('meta[property="article:published_time"], [itemprop="datePublished"]')
+        if el:
+            valori.append(el.get("content") or el.get("datetime") or "")
+    valori.append(data_editore)
+    for valore in valori:
+        ts = istante_pubblicazione(valore)
+        if ts is None or ts.utcoffset() is None:
+            continue
+        delta = (ora - ts.astimezone(ZoneInfo("Europe/Rome"))).total_seconds() / 60
+        if 0 <= delta <= 180 * 1440:
+            return {sha256(url.encode()).hexdigest()[:16]: round(delta, 1)}
+    return {}
 
 def data_evento_documentata(testo,d):
     """Rifiuta 'ogni venerdì' o orari di apertura senza singola data esplicita."""

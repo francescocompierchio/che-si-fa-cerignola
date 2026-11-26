@@ -26,6 +26,8 @@ import radar_natura
 import radar_food
 import radar_movida
 import telegram_eventi
+import radar_territorio
+import fonti_editori
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -1351,7 +1353,7 @@ def ricontrolla_eventi_imminenti(eventi, massimo=10):
     Un errore o un blocco HTTP non autorizza mai una cancellazione."""
     oggi = oggi_iso()
     limite = (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")
-    scelti = []
+    candidati = []
     visti = set()
     for ev in sorted(eventi, key=lambda e: (priorita_km(e.get("citta", "")), e.get("dataInizio", ""))):
         url = ev.get("fonteUrl", "")
@@ -1360,9 +1362,20 @@ def ricontrolla_eventi_imminenti(eventi, massimo=10):
         if url in visti or _host_appartiene(url, "news.google.com") or _host_appartiene(url, "instagram.com") or _host_appartiene(url, "facebook.com"):
             continue
         visti.add(url)
-        scelti.append(url)
-        if len(scelti) >= massimo:
-            break
+        candidati.append((ev.get("citta") == "Cerignola", url))
+    slot = int(time.time() // 1800)
+
+    def ruota(urls, budget):
+        if not urls or budget <= 0:
+            return []
+        partenza = (slot * budget) % len(urls)
+        return (urls[partenza:] + urls[:partenza])[:budget]
+
+    locali = [url for locale, url in candidati if locale]
+    altri = [url for locale, url in candidati if not locale]
+    base = max((massimo + 1) // 2, massimo - len(altri))
+    scelti = ruota(locali, base)
+    scelti += ruota(altri, massimo - len(scelti))
     letti = 0
     with requests.Session() as session:
         session.headers.update(HEADERS)
@@ -1988,8 +2001,17 @@ def raccogli_da_feed_social(session, fonte):
     eventi = []
     candidati = 0
     scaricate = 0
+    scarti = Counter()
+    ritardi = {}
     try:
-        risposta = session.get(fonte["url"], timeout=(6, 12))
+        policy = None
+        if fonte.get("feed_autoscoperto"):
+            policy = fonti_editori.robots(session, fonte["url"])
+            if policy is None or not policy.can_fetch(fonti_editori.BOT, fonte["url"]):
+                registra_statistica_fonte(nome, stato="robots non consente o non verificabile")
+                return []
+        opzioni = {"allow_redirects": False, "headers": fonti_editori.HEADERS} if policy is not None else {}
+        risposta = session.get(fonte["url"], timeout=(6, 12), **opzioni)
         if risposta.status_code != 200:
             retry_after = (getattr(risposta, "headers", {}) or {}).get("Retry-After", "")
             registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0,
@@ -1999,16 +2021,20 @@ def raccogli_da_feed_social(session, fonte):
             return []
         # RSS è XML: il parser HTML tratta <link> come tag vuoto e perde gli URL.
         feed = BeautifulSoup(risposta.content, "xml")
-        items = feed.find_all("item")
+        items = feed.find_all(["item", "entry"])
         candidati = len(items)
         tentativi_scheda = 0
         classificati = []
         for item in items[:100]:
             titolo_el = item.find("title")
             link_el = item.find("link")
-            desc_el = item.find("description")
+            desc_el = item.find(["description", "summary", "content"])
             titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
+            if item.name == "entry":
+                link = next((el["href"] for el in item.find_all("link", href=True) if el.get("rel", "alternate") == "alternate"), "")
+            if policy is not None:
+                link = urljoin(fonte["url"], link) if link else ""
             descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
             testo_candidato=titolo+" "+descrizione
             punteggio = priorita_candidato_rss(titolo, descrizione)
@@ -2073,13 +2099,13 @@ def raccogli_da_feed_social(session, fonte):
         # A parità di pertinenza, le pubblicazioni più recenti dei promoter
         # hanno precedenza: la data del feed non diventa la data dell'evento.
         def ordine_rss(x):
-            pub=x[1].find("pubDate")
+            pub=x[1].find(["pubDate", "published"])
             data=discovery_locale.data_pubblicazione(pub.get_text(strip=True) if pub else "")
             return (-x[0],-data.toordinal() if data and fonte.get("promoter_mirato") else 0)
         classificati.sort(key=ordine_rss)
         # Il publisher RSS è solo un indizio di discovery, mai una prova di un evento.
         domini_candidati=[]
-        if fonte.get("solo_cerignola"):
+        if fonte.get("solo_cerignola") or fonte.get("origini_note") or fonte.get("solo_scoperta"):
             for _,item,_,link,_ in classificati[:30]:
                 pub=item.find("source")
                 u=(pub.get("url") or "") if pub else link
@@ -2098,15 +2124,27 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             visti_link.add(link)
             tentativi_scheda += 1
-            pub_el=item.find("pubDate")
-            pubblicazione=discovery_locale.data_pubblicazione(pub_el.get_text(strip=True) if pub_el else "")
+            pub_el=item.find(["pubDate", "published"])
+            pubblicazione_raw = pub_el.get_text(strip=True) if pub_el else ""
+            pubblicazione=discovery_locale.data_pubblicazione(pubblicazione_raw)
             if fonte.get("feed_editore") and pubblicazione and pubblicazione < oggi_dt().date()-timedelta(days=60):
+                scarti["pubblicazione datata"] += 1
                 continue
             url_finale = link
             html_pagina = ""
             try:
-                pagina = session.get(link, timeout=(5, 9), allow_redirects=True)
-                if pagina.status_code == 200 and "html" in pagina.headers.get("Content-Type", "text/html").lower():
+                if policy is not None:
+                    if (not radar_territorio.host_pubblico(link) or urlparse(link).netloc != urlparse(fonte["url"]).netloc
+                        or not policy.can_fetch(fonti_editori.BOT, link)):
+                        continue
+                    pagina = session.get(link, timeout=(5, 9), **opzioni)
+                elif fonte.get("origini_note"):
+                    # Le query generate autonomamente apprendono dai publisher
+                    # dichiarati, con acquisizione limitata alle origini configurate.
+                    pagina = fonti_editori.scheda_da_origini_note(session, link, set(DOMINI_AUTO) - {"instagram.com", "facebook.com"})
+                else:
+                    pagina = session.get(link, timeout=(5, 9), allow_redirects=True)
+                if pagina is not None and pagina.status_code == 200 and "html" in pagina.headers.get("Content-Type", "text/html").lower():
                     scaricate += 1
                     url_finale = pagina.url or link
                     pagina.encoding = pagina.apparent_encoding or "utf-8"
@@ -2117,11 +2155,17 @@ def raccogli_da_feed_social(session, fonte):
             if _host_appartiene(url_finale, "news.google.com"):
                 html_pagina = ""
             if fonte.get("feed_editore") and not _host_appartiene(url_finale,fonte["dominio"]):
+                scarti["origine non coerente"] += 1
+                continue
+            if not html_pagina:
+                scarti["scheda originale non leggibile"] += 1
                 continue
             if fonte.get("anno_capodanno") or fonte.get("anno_festivita") or fonte.get("ricorrenze_annuali"):
                 # Non pubblicare da snippet Google News senza fonte primaria leggibile.
-                if html_pagina:
-                    eventi.extend(analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte))
+                estratti = analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte)
+                eventi.extend(estratti)
+                if not estratti:
+                    scarti["scheda stagionale senza evento verificato"] += 1
                 continue
             # Usa i parser specializzati dei calendari pubblici anche quando la
             # scheda viene scoperta dal radar gratuito, non solo dal loro indice.
@@ -2129,7 +2173,7 @@ def raccogli_da_feed_social(session, fonte):
                 estratti = analizza_nightz(html_pagina,url_finale)
             else:
                 estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
-            if not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
+            if policy is None and not fonte.get("origini_note") and not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
                 # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
                 for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
                     estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
@@ -2139,7 +2183,7 @@ def raccogli_da_feed_social(session, fonte):
                 estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
             if fonte.get("nightlife"):
                 estratti = [dict(e,categoria="Locali & Serate") if radar_movida.live_in_locale(e["titolo"],e.get("descrizione",""),e.get("luogo","")) else e for e in estratti if evento_movida_documentato(e)]
-            if fonte.get("radar_movida") and fonte.get("comune_radar"):
+            if fonte.get("comune_radar"):
                 estratti=[e for e in estratti if e.get("citta")==fonte["comune_radar"]]
             if fonte.get("cene_show"):
                 estratti = [e for e in estratti if discovery_locale.CENE_SHOW.search(e["titolo"]+" "+e.get("descrizione","")) and discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
@@ -2150,8 +2194,15 @@ def raccogli_da_feed_social(session, fonte):
                 estratti=[e for e in estratti if e["dataInizio"]==e["dataFine"] and discovery_locale.data_evento_documentata(testo_pagina,e["dataInizio"]) and discovery_locale.SETTIMANA.search(e["titolo"]+" "+e["descrizione"])]
             if fonte.get("solo_cerignola"):
                 estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
+            if estratti:
+                origine_rss = pubblicazione_raw if fonte.get("feed_editore") else ""
+                ritardi.update(discovery_locale.misura_ritardo(BeautifulSoup(html_pagina, "html.parser"), url_finale, oggi_dt(), origine_rss))
+            else:
+                scarti["scheda letta senza evento verificato"] += 1
             eventi.extend(estratti)
-        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, candidatiPertinenti=len(classificati), schedeInterrogate=tentativi_scheda, pagineScaricate=scaricate, eventiEstratti=len(eventi))
+        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, candidatiPertinenti=len(classificati),
+                                  schedeInterrogate=tentativi_scheda, pagineScaricate=scaricate, eventiEstratti=len(eventi),
+                                  scartiSchede=dict(scarti), ritardoSchedeMinuti=ritardi)
         print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
     except Exception as exc:
         registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
@@ -2798,6 +2849,8 @@ def raccogli_da_portale_generico(session, fonte):
                 if rendered:
                     html_calendario = rendered
         soup = BeautifulSoup(html_calendario, "html.parser")
+        if dominio in DOMINI_AUTO and c_def and fonte.get("curata"):
+            registra_statistica_fonte(nome, feedDichiarati=fonti_editori.dichiarati(soup, getattr(r, "url", "") or url), cittaDichiarataFeed=c_def)
 
         if fonte.get("scheda_diretta"):
             eventi = analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata)
@@ -3102,7 +3155,7 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
                 and not _url_tacco_generica(url)
                 and _data_iso_valida(item.get("dataInizio"))
                 and item["dataInizio"] <= d_fin
-                and item.get("citta") in COMUNI_50KM
+                and item.get("citta") in COMUNI_50KM.values()
                 and _luogo_utilizzabile(item.get("luogo"))
             ):
                 # Un cambiamento al parser non revoca una scheda già pubblicata.
@@ -3339,10 +3392,26 @@ def esegui_aggiornamento():
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
     copertura_iniziale = apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati)
+    comuni = set(COMUNI_50KM.values())
+    approvati = []
+    feedback = memoria.setdefault("territorio", {}).setdefault("feedbackApprovati", {})
+    intervallo = 6 * 3600 if feedback.get("esito") == "ok" else 3600
+    if os.environ.get("CSF_FEEDBACK_APPROVATI") == "1" and now - feedback.get("ultimoTentativo", 0) >= intervallo:
+        approvati, esito_approvati = radar_territorio.leggi_approvati(
+            lambda record: radar_territorio.leggi_evento_editoriale(record, comuni, oggi_stagionale), oggi_stagionale
+        )
+        feedback.update(ultimoTentativo=now, esito=esito_approvati)
+        if esito_approvati == "ok":
+            feedback.update(campione=len(approvati), senzaRiscontroAutomatico=sum(
+                not any(sono_duplicati(e, x) for x in precedenti_auto) for e in approvati
+            ))
+    radar_territorio.aggiorna_registro(memoria, copertura_iniziale, approvati, oggi_stagionale, now)
     # Budget separati: 3 ricerche locali ordinarie, al massimo 3 radar e 1 esplorazione.
     fonti_adattive = (apprendimento.fonti(memoria,copertura_iniziale,oggi_stagionale)
                       + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
-                      + apprendimento.esplora_candidati(memoria,oggi_stagionale))
+                      + apprendimento.esplora_candidati(memoria,oggi_stagionale)
+                      + radar_territorio.ricerche(memoria, copertura_iniziale + approvati, oggi_stagionale, priorita_km, comuni)
+                      + fonti_editori.scegli(memoria, now, set(DOMINI_AUTO)))
     compiti += [(raccogli_da_feed_social, fonte) for fonte in fonti_adattive]
     for _, fonte in compiti:
         # Mantiene i filtri di estrazione originali: focus_serate è solo priorità operativa.
@@ -3375,19 +3444,28 @@ def esegui_aggiornamento():
     esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []
+    duplicati_evitati = 0
     # Biglietteria diretta prima dell’aggregatore, anche quando la fonte primaria è già in archivio.
     nuovi_raccolti.sort(key=lambda e: (_host_appartiene(e.get("fonteUrl"), "lineupatlas.com"), not bool(e.get("locandinaUrl"))))
     for ev in nuovi_raccolti:
         if _host_appartiene(ev.get("fonteUrl"), "lineupatlas.com") and any(sono_duplicati(x,ev) and not _host_appartiene(x.get("fonteUrl"),"lineupatlas.com") for x in precedenti_auto):
+            duplicati_evitati += 1
             continue
-        if not any(sono_duplicati(x, ev) for x in nuovi_unici):
+        if any(sono_duplicati(x, ev) for x in nuovi_unici):
+            duplicati_evitati += 1
+        else:
             nuovi_unici.append(ev)
 
     consolidati = list(manuali_admin)
     aggiunti_nuovi = 0
     ritrovati = 0
     for ev in nuovi_unici:
-        if not any(sono_duplicati(x, ev) for x in consolidati):
+        pubblicato = any(sono_duplicati(x, ev) for x in consolidati)
+        esterno = any(ev.get("dataInizio") == x.get("dataInizio") and ev.get("dataFine") == x.get("dataFine")
+                      and sono_duplicati(x, ev) for x in approvati)
+        if pubblicato or esterno:
+            duplicati_evitati += 1
+        else:
             # Conserva una locandina già verificata soltanto per la stessa fonte, sede e data.
             if not ev.get("locandinaUrl"):
                 precedente=next((x for x in precedenti_auto if x.get("locandinaUrl") and all(x.get(k)==ev.get(k) for k in ("fonteUrl","luogo","dataInizio","dataFine"))),None)
@@ -3419,22 +3497,27 @@ def esegui_aggiornamento():
         raise RuntimeError("Controllo integrità fallito: archivio eventi non valido")
     _scrivi_json_atomico("eventi.json", lista_finale)
     _scrivi_json_atomico(str(telegram_eventi.STATE), telegram_state)
-    for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto,lista_finale,sono_duplicati).items():
+    for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto+editoriali_statici+approvati,lista_finale,sono_duplicati).items():
         registra_statistica_fonte(nome,**dati)
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
     copertura_visibile=apprendimento.copertura_unita(lista_finale,editoriali_statici,sono_duplicati)
     stato_apprendimento=apprendimento.aggiorna(memoria,copertura_visibile,oggi_stagionale,now)
     domini_candidati=apprendimento.candidati_fonti(memoria,STATISTICHE_FONTI,set(DOMINI_AUTO),now)
+    nuovi_feed = fonti_editori.registrati(memoria, STATISTICHE_FONTI, now)
+    territorio = radar_territorio.aggiorna_registro(memoria, copertura_visibile, approvati, oggi_stagionale, now)
     fasce_apprese=sum(bool(d.get("fasce")) for d in memoria.get("fonti",{}).values())
     os.makedirs(".csf-state",exist_ok=True)
-    _scrivi_json_atomico(percorso_stato,memoria)
 
     eventi_per_fonte = Counter(
         (urlparse(str(e.get("fonteUrl") or "")).hostname or "fonte non specificata").lower()
         for e in lista_finale
     )
     concordanze = evidenze_fonti(nuovi_raccolti, lista_finale)
+    qualita = apprendimento.qualita_ciclo(memoria, STATISTICHE_FONTI, copertura_visibile, oggi_stagionale, now,
+                                       nuovi=aggiunti_nuovi, duplicati=duplicati_evitati, concordanti=len(concordanze))
+    _scrivi_json_atomico(percorso_stato,memoria)
     report = {
+        "misureCiclo": qualita,
         "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
         "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
                            if any(sono_duplicati(e, f) for f in lista_finale)],
@@ -3452,6 +3535,12 @@ def esegui_aggiornamento():
         "saluteFonti": stato_raccolta.riepilogo(memoria, pause),
         "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"],"coperturaIncludeEditoriali":True,"firebaseIncluso":False},
         "coperturaVisibileStatica": {"totale":sum(e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"cerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"serateCerignola":sum(e.get("citta")=="Cerignola" and e.get("categoria")=="Locali & Serate" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile)},
+        "registroTerritoriale": {
+            "organizzatoriOsservati": len(territorio["organizzatori"]),
+            "organizzatoriPerComune": dict(Counter(v["citta"] for v in territorio["organizzatori"].values())),
+            "feedEditori": len(memoria["feedEditori"]), "nuoviFeed": nuovi_feed,
+            "feedbackApprovati": feedback,
+        },
         "segnaliQualita":apprendimento.segnali(copertura_visibile,concordanze,set(DOMINI_AUTO)),
         "autodiagnosi":apprendimento.autodiagnosi(copertura_visibile,STATISTICHE_FONTI,concordanze,oggi_stagionale),
         "intelligenceTerritoriale":{"fontiConProfiloTemporale":fasce_apprese,"fascia":apprendimento.fascia(now),"dominiDaVerificare":domini_candidati,"criterio":"novita osservate per fascia di raccolta; candidati da verificare, non fonti approvate"},

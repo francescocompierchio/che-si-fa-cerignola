@@ -37,6 +37,9 @@ on:
       - "test_festivita.py"
       - "ricorrenze.py"
       - "discovery_locale.py"
+      - "radar_territorio.py"
+      - "test_radar_territorio.py"
+      - "fonti_editori.py"
       - "apprendimento.py"
       - "test_apprendimento.py"
       - "test_discovery_locale.py"
@@ -119,6 +122,7 @@ jobs:
           TELEGRAM_EVENT_BOT_TOKEN: ${{ secrets.TELEGRAM_EVENT_BOT_TOKEN }}
           TELEGRAM_EVENT_CHANNELS: ${{ secrets.TELEGRAM_EVENT_CHANNELS }}
           PYTHONUNBUFFERED: "1"
+          CSF_FEEDBACK_APPROVATI: "1"
           OMP_THREAD_LIMIT: "1"
           CSF_FORZA_FONTI: ${{ github.event_name == 'workflow_dispatch' && inputs.forza_fonti && '1' || '0' }}
         run: python aggiorna_eventi.py
@@ -185,6 +189,16 @@ jobs:
           print("### Apprendimento operativo")
           print(f"- Cicli di apprendimento: {appr.get('cicli', 0)}")
           print(f"- Copertura Cerignola prossimi 14 giorni: {appr.get('lacune14Giorni', {})}")
+          territorio = report.get("registroTerritoriale", {})
+          qualita = report.get("misureCiclo", {})
+          print("### Registro territoriale e qualità")
+          print(f"- Organizzatori osservati: {territorio.get('organizzatoriOsservati', 0)}")
+          print(f"- Feed rilevati: {territorio.get('feedEditori', 0)} (nuovi: {territorio.get('nuoviFeed', 0)})")
+          print(f"- Campione delle segnalazioni approvate: {territorio.get('feedbackApprovati', {})}")
+          print(f"- Duplicati evitati: {qualita.get('duplicatiEvitati', 0)}")
+          print(f"- Ritardo mediano delle schede con pubblicazione datata: {qualita.get('ritardoMedianoMinuti')} min, {qualita.get('campioniRitardo', 0)} campioni")
+          print(f"- Scarti per motivo: {qualita.get('scartiSchede', {})}")
+          print(f"- Anomalie rispetto alle ultime 24 ore: {', '.join(qualita.get('anomalie', [])) or 'nessuna'}")
           print("### Esito interrogazione fonti")
           print(f"- Fonti che hanno restituito eventi: {report.get('fontiConEventi', 0)}")
           print(f"- Fonti senza eventi: {len(report.get('fontiSenzaEventi', []))}")
