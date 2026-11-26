@@ -21,6 +21,8 @@ const assert = require("node:assert/strict");
       await panel.waitFor({state:"visible"});
       const login=panel.getByRole("button",{name:"Accedi con Google"});
       assert.equal(await panel.locator("#csfc-consent").count(),0,"Nessuna casella obbligatoria");
+      assert.equal(await panel.locator("#csfc-share-email").count(),0,"Nessuna scelta nickname o email");
+      assert.ok(await panel.locator("#csfc-email-notice").isVisible(),"Visibilità indirizzo comunicata prima della partecipazione");
       assert.ok(await panel.locator("#csfc-rules-notice a").isVisible(),"Informativa accessibile");
       await login.click({trial:true});
       const bounds=await panel.evaluate(el=>{const p=el.getBoundingClientRect(),d=document.querySelector(".mobile-dock").getBoundingClientRect();return {top:p.top,bottom:p.bottom,left:p.left,right:p.right,dock:d.top,width:document.documentElement.clientWidth};});

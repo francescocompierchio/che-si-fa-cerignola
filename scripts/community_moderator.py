@@ -2,6 +2,7 @@
 Esecuzione locale del modello; accesso esclusivo al progetto Community.
 """
 import argparse
+from pathlib import Path
 import hashlib
 import json
 import os
@@ -150,6 +151,20 @@ def classify(nick,message,judge=ask,language_check=italian_only):
     if HOSTILITY_HINT.search(clean(message)):prompts=prompts+(RESPECT,)
     return "approved" if all(judge(prompt,nick,message) for prompt in prompts) else "rejected"
 
+def public_alias(record):
+    prefix=record.get("nick")
+    domain=record.get("domain")
+    if not isinstance(prefix,str) or not isinstance(domain,str):return None
+    if not re.fullmatch(r"[A-Za-z0-9._+%-]{1,3}",prefix) or not re.fullmatch(r"[A-Za-z0-9.-]{1,100}",domain):return None
+    if "email" in record or "shareEmail" in record:
+        email=record.get("email")
+        if record.get("shareEmail") is not True or not isinstance(email,str) or len(email)>254:return None
+        if not re.fullmatch(r"[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+",email):return None
+        local,actual_domain=email.rsplit("@",1)
+        if local[:3]!=prefix or actual_domain!=domain:return None
+        return email
+    return None
+
 def message_id(uid,submission):
     ts=int(submission["createdAt"])
     prefix=""
@@ -181,12 +196,12 @@ def apply_decisions(root, decisions, now):
     for uid,original,decision in decisions:
         current=(root.get("submissions") or {}).get(uid)
         if current!=original or current.get("state")!="pending":continue
-        if (root.get("bans") or {}).get(uid) is True:decision="rejected"
+        if (root.get("bans") or {}).get(uid) is True or not public_alias(current):decision="rejected"
         if decision=="approved":
             mid=message_id(uid,current)
             if mid in (root.get("published") or {}) or mid in (root.get("authors") or {}):
                 continue
-            root.setdefault("published",{})[mid]={"nick":current["nick"],"text":current["text"],"createdAt":now}
+            root.setdefault("published",{})[mid]={"nick":public_alias(current),"text":current["text"],"createdAt":now}
             root.setdefault("authors",{})[mid]=uid
         elif decision!="rejected":continue
         current["state"]=decision
@@ -228,7 +243,25 @@ def snapshot(session):
         if not isinstance(root,dict):raise RuntimeError("unexpected_database")
         return root,etag
 
+def identity_rules(session,install=False):
+    # Rifiuta ogni configurazione sconosciuta. Mai sovrascrivere regole modificate altrove.
+    folder=Path(__file__).resolve().parent.parent
+    candidate=json.loads((folder/"community-database.rules.json").read_text())
+    previous=json.loads((folder/"docs/community-database.rules.previous.json").read_text())
+    endpoint=URL+"/.settings/rules.json"
+    response=session.get(endpoint,timeout=30)
+    if response.status_code!=200:raise RuntimeError("rules_read")
+    current=response.json()
+    if current==candidate:return
+    if not install or current!=previous:raise RuntimeError("rules_mismatch")
+    response=session.put(endpoint,json=candidate,timeout=30)
+    if response.status_code!=200:raise RuntimeError("rules_write")
+    response=session.get(endpoint,timeout=30)
+    if response.status_code!=200 or response.json()!=candidate:raise RuntimeError("rules_verify")
+    print("Regole identità Community aggiornate e verificate.",file=__import__("sys").stderr)
+
 def run(session):
+    identity_rules(session)
     root,_=snapshot(session)
     items=pending(root)
     if not items:print("Community: nessun invio da verificare.");return
@@ -237,7 +270,7 @@ def run(session):
         if (root.get("bans") or {}).get(uid) is True:
             decision="rejected"
         else:
-            decision=classify(record.get("nick"),record.get("text"))
+            decision=classify("Utente",record.get("text")) if public_alias(record) else "rejected"
         decisions.append((uid,record.copy(),decision))
     # ETag impedisce di sovrascrivere utenti/ruoli/ban o pubblicazioni cambiati durante l'analisi.
     for _ in range(5):
@@ -256,11 +289,19 @@ def self_test():
         assert preliminary("Mario",msg)=="reject"
     assert classify("Mario","Ci vediamo stasera?",lambda *_:True,lambda _:True)=="approved"
     assert classify("Mario","Ci vediamo stasera?",lambda *_:False,lambda _:True)=="rejected"
-    base={"nick":"Mario","text":"Buonasera","createdAt":1700000000000,"state":"pending"}
+    base={"nick":"Mar","domain":"gmail.com","email":"Mario@gmail.com","shareEmail":True,"text":"Buonasera","createdAt":1700000000000,"state":"pending"}
+    assert public_alias(base)=="Mario@gmail.com"
+    assert public_alias({k:v for k,v in base.items() if k not in ("email","shareEmail")}) is None
+    assert public_alias({"nick":"Mario"}) is None
+    assert public_alias(dict(base,email="Mario@gmail.com",shareEmail=True))=="Mario@gmail.com"
+    assert public_alias(dict(base,shareEmail=False)) is None
+    assert public_alias({k:v for k,v in base.items() if k!="shareEmail"}) is None
+    assert public_alias(dict(base,email="Other@gmail.com",shareEmail=True)) is None
     root={"settings":{"open":True},"submissions":{"a":base.copy()},"moderators":{"owner":True}}
     assert len(message_id("a",base))==20
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==1
     assert root["moderators"]=={"owner":True} and len(root["published"])==1
+    assert next(iter(root["published"].values()))["nick"]=="Mario@gmail.com"
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==0
     root={"settings":{"open":False},"submissions":{"a":base.copy()}}
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==0
@@ -310,6 +351,7 @@ if __name__=="__main__":
         elif a.mode=="model-test":model_test()
         elif a.mode=="probe":
             session=client()
+            identity_rules(session,install=True)
             # Query indicizzata: evita di scaricare tutto il DB a ogni ciclo senza messaggi.
             opened=session.get(URL+"/settings/open.json",timeout=15)
             if opened.status_code!=200:raise RuntimeError("settings_read_"+str(opened.status_code))
@@ -323,7 +365,7 @@ if __name__=="__main__":
     except Exception as exc:
         import sys
         # Mostra soltanto codici interni previsti; mai eccezioni arbitrarie, payload, UID o token.
-        known={"missing_configuration","invalid_json","wrong_project","invalid_token_endpoint","invalid_service_account","google_token_failed","google_token_invalid_grant","google_token_invalid_client","google_token_unauthorized_client","google_token_invalid_scope","google_token_access_denied","google_token_temporarily_unavailable","database_read","database_write","missing_etag","database_size_limit","unexpected_database","concurrent_updates","model_quality_gate"}
+        known={"missing_configuration","invalid_json","wrong_project","invalid_token_endpoint","invalid_service_account","google_token_failed","google_token_invalid_grant","google_token_invalid_client","google_token_unauthorized_client","google_token_invalid_scope","google_token_access_denied","google_token_temporarily_unavailable","rules_read","rules_mismatch","rules_write","rules_verify","database_read","database_write","missing_etag","database_size_limit","unexpected_database","concurrent_updates","model_quality_gate"}
         code=str(exc) if type(exc) is RuntimeError else ""
         allowed=code in known or bool(re.fullmatch(r"(?:settings_read|queue_read)_[1-5][0-9]{2}",code))
         print("Community: operazione interrotta in sicurezza. Diagnostica: "+(code if allowed else "internal_or_network_error"),file=sys.stderr)

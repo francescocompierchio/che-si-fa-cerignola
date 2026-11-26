@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/community-moderazione.yml'
+      - 'scripts/community_moderator.py'
+      - 'community-database.rules.json'
   pull_request:
     paths:
       - 'scripts/community_moderator.py'
