@@ -49,7 +49,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it", "regiohotel.it", "postabassi.it", "uvulesce.com", "lavolpeeluvarestaurant.it", "anticaenotria.it", "cantineparadiso.it", "hermesclub.it", "capodannofoggia.com", "capodanno31.com", "cenonecapodanno.com"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "nightoutz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it", "regiohotel.it", "postabassi.it", "uvulesce.com", "lavolpeeluvarestaurant.it", "anticaenotria.it", "cantineparadiso.it", "hermesclub.it", "capodannofoggia.com", "capodanno31.com", "cenonecapodanno.com"
 )
 
 FONTI_VIVA = [
@@ -83,10 +83,10 @@ FONTI_PORTALI = [
     {"nome":"Volontari per Minervino - iniziative","url":"https://volontariperminervino.it/","dominio":"volontariperminervino.it","citta_default":"Minervino Murge","curata":False,"notizie_locali":True,"max_schede":8},
     {"nome":"Tacco di Bacco concerti Barletta","url":"https://iltaccodibacco.it/barletta/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
     {"nome":"Tacco di Bacco concerti Bisceglie","url":"https://iltaccodibacco.it/bisceglie/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
-    {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "browser_pubblico": True, "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
-    {"nome": "Nightz Divine Club", "url": "https://nightz.it/locali/divine-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome": "Nightz Aphelion Club", "url": "https://nightz.it/locali/aphelion-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome": "Nightz Vyon Club", "url": "https://nightz.it/locali/vyon-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz eventi", "url": "https://nightoutz.it/eventi/", "browser_pubblico": True, "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
+    {"nome": "Nightz Divine Club", "url": "https://nightoutz.it/locali/divine-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Aphelion Club", "url": "https://nightoutz.it/locali/aphelion-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Vyon Club", "url": "https://nightoutz.it/locali/vyon-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome":"TicketSms Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
     {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -151,7 +151,7 @@ FONTI_SOCIAL_RSS = [
     {"nome":"Resident Advisor costa","url":"https://news.google.com/rss/search?q=site%3Ara.co%2Fevents%20(Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"KODO promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Akodocollective.it%20(Barletta%20OR%20Trani%20OR%20Foggia)%20(DJ%20OR%20party%20OR%20club)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Club e promoter Capitanata","url":"https://news.google.com/rss/search?q=(Foggia%20OR%20Manfredonia%20OR%20Cerignola%20OR%20%22Margherita%20di%20Savoia%22%20OR%20Zapponeta)%20(discoteca%20OR%20%22dj%20set%22%20OR%20%22club%20night%22%20OR%20%22opening%20party%22%20OR%20%22dinner%20show%22)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
-    {"nome":"Nightz Puglia nord","url":"https://news.google.com/rss/search?q=site%3Anightz.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(DJ%20OR%20club%20OR%20serata)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Nightz Puglia nord","url":"https://news.google.com/rss/search?q=site%3Anightoutz.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(DJ%20OR%20club%20OR%20serata)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Movida Trani DJ e discoteche","url":"https://news.google.com/rss/search?q=Trani%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Barletta DJ e discoteche","url":"https://news.google.com/rss/search?q=Barletta%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Manfredonia DJ e discoteche","url":"https://news.google.com/rss/search?q=Manfredonia%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
@@ -1270,7 +1270,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         cat="Locali & Serate"
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
-    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","lineupatlas.com")):
+    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","nightoutz.it","lineupatlas.com")):
         cat = "Locali & Serate"
 
     if not d_txt:
@@ -2108,7 +2108,7 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             # Usa i parser specializzati dei calendari pubblici anche quando la
             # scheda viene scoperta dal radar gratuito, non solo dal loro indice.
-            if html_pagina and _host_appartiene(url_finale,"nightz.it"):
+            if html_pagina and any(_host_appartiene(url_finale,d) for d in ("nightz.it","nightoutz.it")):
                 estratti = analizza_nightz(html_pagina,url_finale)
             else:
                 estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
@@ -2444,7 +2444,7 @@ def analizza_ticketsms(html_text, url, citta, luogo):
 
 def analizza_nightz(html_text, url):
     """Scheda individuale Nightz, con data e località dichiarate esplicitamente."""
-    if not _host_appartiene(url, "nightz.it") or not re.fullmatch(r"/eventi/[^/]+/?", urlparse(url).path):
+    if not any(_host_appartiene(url,d) for d in ("nightz.it","nightoutz.it")) or not re.fullmatch(r"/eventi/[^/]+/?", urlparse(url).path):
         return []
     if registra_stati_negativi(html_text, url):
         return []
