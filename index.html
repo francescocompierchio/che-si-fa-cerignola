@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=2"></script>
-  <script src="event-page.js?v=68" defer></script>
+  <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
   <meta charset="UTF-8" />
@@ -1213,8 +1213,8 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 .csf-side-dialog::backdrop{background:#07162e70;backdrop-filter:blur(4px)}
 .csf-side-dialog[open]{animation:csf-slide-left .22s ease-out}
 .csf-side-dialog[data-side="right"][open]{animation:csf-slide-right .22s ease-out}
-@keyframes csf-slide-left{from{transform:translateX(-100%)}to{transform:translateX(0)}}
-@keyframes csf-slide-right{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes csf-slide-left{from{transform:translateX(var(--csf-enter-offset,-100%))}to{transform:translateX(0)}}
+@keyframes csf-slide-right{from{transform:translateX(var(--csf-enter-offset,100%))}to{transform:translateX(0)}}
 .csf-side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
 .csf-side-head h2{color:#ffe09a;font-size:1.15rem;margin:0}
 .csf-side-dialog p{font-size:.83rem;color:#e3eaf9;line-height:1.45;margin:8px 0 12px}
@@ -1230,16 +1230,18 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 html.csf-side-open{overflow:hidden}
 .csf-side-swipe{display:none}
 @media(max-width:900px) and (pointer:coarse){
- .csf-side-swipe{display:flex;align-items:center;justify-content:center;position:fixed;top:48%;height:104px;width:44px;left:0;z-index:160;touch-action:pan-y;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
- .csf-side-swipe[data-side="right"]{left:auto;right:0}
- .csf-side-grip{display:flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;width:23px;height:94px;position:absolute;left:0;top:5px;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-size:10px;font-weight:800;letter-spacing:.015em;background:linear-gradient(145deg,#102b61,#2864c3);color:#fff4cd;border:1px solid #d5b360;border-radius:9px 0 0 9px;box-shadow:-2px 0 5px #102b6144,inset 0 1px 0 #ffffff35;pointer-events:none}
- .csf-side-swipe[data-side="right"] .csf-side-grip{left:auto;right:0;transform:none}
- .csf-side-swipe:focus-visible{outline:2px solid #e4bd5b;outline-offset:-2px}
- .csf-side-swipe:active .csf-side-grip{filter:brightness(1.2)}
+ .csf-side-swipe{display:flex;align-items:center;justify-content:center;position:fixed;top:48%;height:64px;width:44px;left:8px;z-index:160;touch-action:pan-y;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+ .csf-side-swipe[data-side="right"]{left:auto;right:8px}
+ .csf-side-grip{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:12px;height:44px;position:absolute;left:0;top:10px;font-size:16px;font-weight:800;line-height:1;background:linear-gradient(145deg,#102b61,#2864c3);color:#fff4cd;border:1px solid #d5b360;border-radius:8px;box-shadow:0 2px 6px #102b6144,inset 0 1px 0 #ffffff35;pointer-events:none}
+ .csf-side-swipe[data-side="right"] .csf-side-grip{left:auto;right:0}
+ .csf-side-swipe:focus{outline:none}
+ .csf-side-swipe:focus-visible .csf-side-grip{outline:2px solid #e4bd5b;outline-offset:2px}
+ .csf-side-swipe:active .csf-side-grip{filter:brightness(1.15)}
  html.csf-side-open .csf-side-swipe,body:has(.modal-backdrop.open,.venues-drawer.open,#csfc-panel:not([hidden])) .csf-side-swipe{visibility:hidden;pointer-events:none}
- @media(max-height:500px){.csf-side-swipe{top:43%;height:78px}.csf-side-grip{height:68px;font-size:9px}}
+ @media(max-height:500px){.csf-side-swipe{top:43%}}
 }
 .csf-side-dialog{touch-action:pan-y}
+.csf-side-dialog.csf-side-preview[open]{z-index:270;pointer-events:none;animation:none!important;overflow:hidden;will-change:transform;transition:none!important}
 @media(prefers-reduced-motion:reduce){.csf-side-dialog[open]{animation:none}}
   </style>
   <link rel="stylesheet" href="community.css?v=8">
@@ -3543,6 +3545,6 @@ html.csf-side-open{overflow:hidden}
   <script src="community-config.js?v=2"></script>
   <script src="community-auth-flow.js?v=1"></script>
   <script src="community.js?v=10"></script>
-  <script src="side-panels.js?v=3"></script>
+  <script src="side-panels.js?v=4"></script>
 </body>
 </html>
