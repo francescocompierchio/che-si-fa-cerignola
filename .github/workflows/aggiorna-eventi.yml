@@ -17,6 +17,8 @@ on:
       - "radar_food.py"
       - "radar_movida.py"
       - "radar_apify.py"
+      - "telegram_eventi.py"
+      - "test_telegram_eventi.py"
       - "test_radar_movida.py"
       - "test_radar_food.py"
       - "test_radar_natura.py"
@@ -106,6 +108,8 @@ jobs:
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
+          TELEGRAM_EVENT_BOT_TOKEN: ${{ secrets.TELEGRAM_EVENT_BOT_TOKEN }}
+          TELEGRAM_EVENT_CHANNELS: ${{ secrets.TELEGRAM_EVENT_CHANNELS }}
           PYTHONUNBUFFERED: "1"
           OMP_THREAD_LIMIT: "1"
           CSF_FORZA_FONTI: ${{ github.event_name == 'workflow_dispatch' && inputs.forza_fonti && '1' || '0' }}
@@ -213,7 +217,7 @@ jobs:
         run: |
           git config user.name "CheSiFa Bot"
           git config user.email "bot@users.noreply.github.com"
-          git add eventi.json eventi/ sitemap.xml
+          git add eventi.json telegram-eventi.json eventi/ sitemap.xml
           if ! git diff --cached --quiet; then
             # I file dell'agenda sono derivati dall'archivio e dal codice di
             # questa esecuzione: non fonderli con quelli di una versione diversa.

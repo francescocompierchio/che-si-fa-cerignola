@@ -25,6 +25,7 @@ import apprendimento
 import radar_natura
 import radar_food
 import radar_movida
+import telegram_eventi
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -3262,6 +3263,10 @@ def esegui_aggiornamento():
         "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
+    # Registro Telegram separato e atomico: le modifiche/cancellazioni valgono solo per gli annunci del bot.
+    telegram_state, telegram_report = telegram_eventi.collect(oggi_dt().date(), lambda raw: normalizza_e_valida_evento(raw, fonte_curata_eventi=False))
+    manuali_admin = [e for e in manuali_admin if not e.get("telegramImportato")]
+    precedenti_auto = [e for e in precedenti_auto if not e.get("telegramImportato")]
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
     editoriali_statici=apprendimento.editoriali()
@@ -3335,6 +3340,9 @@ def esegui_aggiornamento():
             eventi_apify = json.load(file_apify)
         nuovi_raccolti.extend(eventi_apify)
         risultati_per_fonte["Apify social pubblici"] = eventi_apify
+    eventi_telegram = list(telegram_state["events"].values())
+    nuovi_raccolti.extend(eventi_telegram)
+    registra_statistica_fonte("Telegram: annunci autorizzati", **telegram_report, eventiEstratti=len(eventi_telegram))
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
     precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]
@@ -3383,6 +3391,7 @@ def esegui_aggiornamento():
     if not isinstance(lista_finale, list) or any(not isinstance(e, dict) for e in lista_finale):
         raise RuntimeError("Controllo integrità fallito: archivio eventi non valido")
     _scrivi_json_atomico("eventi.json", lista_finale)
+    _scrivi_json_atomico(str(telegram_eventi.STATE), telegram_state)
     for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto,lista_finale,sono_duplicati).items():
         registra_statistica_fonte(nome,**dati)
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
@@ -3399,6 +3408,7 @@ def esegui_aggiornamento():
     )
     concordanze = evidenze_fonti(nuovi_raccolti, lista_finale)
     report = {
+        "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
         "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
                            if any(sono_duplicati(e, f) for f in lista_finale)],
         "apifyNuovi": [e["fonteUrl"] for e in eventi_apify
