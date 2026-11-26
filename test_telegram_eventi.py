@@ -61,3 +61,23 @@ class TelegramTests(unittest.TestCase):
                 path.write_text(json.dumps(s),encoding="utf-8")
                 session.post.return_value.status_code=403
                 self.assertEqual(tg.collect(self.today,self.validate,path,session)[0],s)
+
+    def test_didascalia_senza_json_e_solo_da_canale_aderente(self):
+        text = "\n".join((
+            "/evento_csf", "Evento: Dinner Show – Hermes Club", "Data: 2026-12-05",
+            "Locale: Hermes Club", "Indirizzo: Strada San Marco km 0.80, Cerignola",
+            "Orario: 21:00", "Descrizione: Cena spettacolo con DJ set.", tg.CONSENT,
+        ))
+        update = self.upd(text="")
+        post = update["channel_post"]
+        post["caption"] = text
+        post["photo"] = [{"file_id": "riferimento-test"}]
+        state, counts = tg.process([update], self.state, self.channels, self.today, self.validate)
+        self.assertEqual(counts["accettati"], 1)
+        self.assertNotIn("locandinaUrl", state["events"]["csf_test_source/12"])
+        for bad in (text.replace(tg.CONSENT, ""), text.replace("Orario:", "Data:")):
+            post["caption"] = bad
+            self.assertFalse(tg.process([update], self.state, self.channels, self.today, self.validate)[0]["events"])
+        post["caption"] = text
+        post["forward_origin"] = {"type": "channel"}
+        self.assertFalse(tg.process([update], self.state, self.channels, self.today, self.validate)[0]["events"])

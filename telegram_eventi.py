@@ -59,6 +59,30 @@ def poster_url(value, allowed):
         raise ValueError("Formato locandina non valido")
     return value
 
+ETICHETTE = {
+    "evento": "titolo", "data": "dataInizio", "al": "dataFine",
+    "locale": "luogo", "indirizzo": "indirizzoMappa", "descrizione": "descrizione",
+    "orario": "orario", "ingresso": "costo", "locandina": "locandinaUrl",
+}
+
+
+def annuncio(text):
+    """Accetta il formato esistente e una didascalia a righe esplicite."""
+    if text.startswith(PREFIX):
+        return json.loads(text[len(PREFIX):])
+    righe = [r.strip() for r in text.splitlines() if r.strip()]
+    if not righe or righe[0] != PREFIX.strip() or righe[-1] != CONSENT:
+        raise ValueError("Comando o consenso assente")
+    item = {"consenso": CONSENT}
+    for riga in righe[1:-1]:
+        nome, sep, dato = riga.partition(":")
+        campo = ETICHETTE.get(nome.strip().casefold())
+        if not sep or not campo or campo in item or not dato.strip():
+            raise ValueError("Campo non valido o duplicato")
+        item[campo] = dato.strip()
+    return item
+
+
 def process(updates, state, channels, today, validate):
     """Riceve esclusivamente aggiornamenti Bot API; non memorizza messaggi grezzi."""
     result={"version":1,"offset":state["offset"],"events":{k:v for k,v in state["events"].items() if v.get("dataFine","")>=today.isoformat()}}
@@ -85,11 +109,8 @@ def process(updates, state, channels, today, validate):
             if result["events"].pop(key,None) is not None:
                 count["annullati"]+=1
             continue
-        if not text.startswith(PREFIX):
-            count["ignorati"]+=1
-            continue
         try:
-            item=json.loads(text[len(PREFIX):])
+            item=annuncio(text)
             if not isinstance(item,dict) or set(item)-FIELDS or item.get("consenso")!=CONSENT:
                 raise ValueError("Consenso o schema assente")
             start=plain(item.get("dataInizio",""),10,True)

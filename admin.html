@@ -865,6 +865,20 @@
 
         const actions = document.createElement("div");
         actions.className = "item-actions";
+        if (seg.fonteUrl) {
+          try {
+            const fonte = new URL(seg.fonteUrl);
+            if (["https:", "http:"].includes(fonte.protocol) && !fonte.username && !fonte.password) {
+              const link = document.createElement("a");
+              link.className = "btn btn-sm";
+              link.href = fonte.href;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = "Apri fonte originale";
+              actions.appendChild(link);
+            }
+          } catch (_) {}
+        }
 
         const btnOk = document.createElement("button");
         btnOk.type = "button";

@@ -17,6 +17,8 @@ on:
       - "radar_food.py"
       - "radar_movida.py"
       - "radar_apify.py"
+      - "radar_meta.py"
+      - "test_radar_meta.py"
       - "telegram_eventi.py"
       - "test_telegram_eventi.py"
       - "test_radar_movida.py"
@@ -118,6 +120,18 @@ jobs:
           APIFY_META_AUTORIZZATO: ${{ vars.APIFY_META_AUTORIZZATO }}
           APIFY_GOOGLE_AUTORIZZATO: ${{ vars.APIFY_GOOGLE_AUTORIZZATO }}
         run: python radar_apify.py
+
+      - name: Radar ufficiale Meta per profili e pagine autorizzati
+        continue-on-error: true
+        timeout-minutes: 2
+        env:
+          META_GRAPH_VERSION: ${{ vars.META_GRAPH_VERSION }}
+          META_IG_ACCOUNT_ID: ${{ vars.META_IG_ACCOUNT_ID }}
+          META_IG_PROFILES: ${{ vars.META_IG_PROFILES }}
+          META_FB_PAGE_IDS: ${{ vars.META_FB_PAGE_IDS }}
+          META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+          META_FB_ACCESS_TOKEN: ${{ secrets.META_FB_ACCESS_TOKEN }}
+        run: python radar_meta.py
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
         env:
@@ -226,6 +240,7 @@ jobs:
           path: |
             report_copertura.json
             apify-rapporto.json
+            meta-rapporto.json
             backup-eventi.json
           if-no-files-found: ignore
           retention-days: 14
