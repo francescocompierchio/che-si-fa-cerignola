@@ -26,7 +26,7 @@
       ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) && query.orderByChild == 'state' && query.equalTo == 'pending' && query.limitToFirst != null && query.limitToFirst <= 40",
       "$uid": {
         ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && auth.uid == $uid) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
-        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) || (((auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('settings/open').val() == true && root.child('bans').child(auth.uid).val() != true) && auth.uid == $uid && auth.token.email != null && newData.child('nick').isString() && newData.child('domain').isString() && auth.token.email.beginsWith(newData.child('nick').val()) && auth.token.email.endsWith('@' + newData.child('domain').val()) && (newData.child('nick').val().length == 3 || auth.token.email.beginsWith(newData.child('nick').val() + '@'))) && newData.exists() && newData.child('state').val() == 'pending' && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now && newData.child('createdAt').val() >= now - 10000 && (!data.exists() || (data.child('state').val() != 'pending' && now >= data.child('createdAt').val() + 30000)))",
+        ".write": "(((auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('settings/open').val() == true && root.child('bans').child(auth.uid).val() != true) && auth.uid == $uid && auth.token.email != null && newData.child('nick').isString() && newData.child('domain').isString() && auth.token.email.beginsWith(newData.child('nick').val()) && auth.token.email.endsWith('@' + newData.child('domain').val()) && (newData.child('nick').val().length == 3 || auth.token.email.beginsWith(newData.child('nick').val() + '@'))) && ((!newData.child('email').exists() && !newData.child('shareEmail').exists()) || (newData.child('shareEmail').val() == true && newData.child('email').val() == auth.token.email)) && newData.exists() && newData.child('state').val() == 'pending' && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now && newData.child('createdAt').val() >= now - 10000 && (!data.exists() || (data.child('state').val() != 'pending' && now >= data.child('createdAt').val() + 30000)))",
         ".validate": "newData.hasChildren(['nick','domain','text','createdAt','state'])",
         "nick": {
           ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._+%-]{1,3}$/)"
@@ -45,6 +45,12 @@
         },
         "domain": {
           ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9.-]{1,100}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+$/)"
+        },
+        "shareEmail": {
+          ".validate": "newData.val() == true"
         }
       }
     },
@@ -55,7 +61,7 @@
         ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) && !newData.exists()",
         ".validate": "newData.hasChildren(['nick','text','createdAt'])",
         "nick": {
-          ".validate": "newData.isString() && newData.val().length <= 107"
+          ".validate": "newData.isString() && newData.val().length <= 254"
         },
         "text": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"

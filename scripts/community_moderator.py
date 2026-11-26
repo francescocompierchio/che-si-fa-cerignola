@@ -156,6 +156,13 @@ def public_alias(record):
     domain=record.get("domain")
     if not isinstance(prefix,str) or not isinstance(domain,str):return None
     if not re.fullmatch(r"[A-Za-z0-9._+%-]{1,3}",prefix) or not re.fullmatch(r"[A-Za-z0-9.-]{1,100}",domain):return None
+    if "email" in record or "shareEmail" in record:
+        email=record.get("email")
+        if record.get("shareEmail") is not True or not isinstance(email,str) or len(email)>254:return None
+        if not re.fullmatch(r"[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+",email):return None
+        local,actual_domain=email.rsplit("@",1)
+        if local[:3]!=prefix or actual_domain!=domain:return None
+        return email
     return prefix+"***@"+domain
 
 def message_id(uid,submission):
@@ -285,6 +292,9 @@ def self_test():
     base={"nick":"Mar","domain":"gmail.com","text":"Buonasera","createdAt":1700000000000,"state":"pending"}
     assert public_alias(base)=="Mar***@gmail.com"
     assert public_alias({"nick":"Mario"}) is None
+    assert public_alias(dict(base,email="Mario@gmail.com",shareEmail=True))=="Mario@gmail.com"
+    assert public_alias(dict(base,email="Mario@gmail.com")) is None
+    assert public_alias(dict(base,email="Other@gmail.com",shareEmail=True)) is None
     root={"settings":{"open":True},"submissions":{"a":base.copy()},"moderators":{"owner":True}}
     assert len(message_id("a",base))==20
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==1

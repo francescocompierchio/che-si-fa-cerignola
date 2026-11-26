@@ -32,8 +32,8 @@ test("config Community separata e disattivazione sicura: nessun accesso DOM o Fi
 test("modulo collegato senza modificare la logica eventi",()=>{
   const h=read("index.html");
   assert.ok(h.includes('src="community-config.js?v=2"'));
-  assert.ok(h.includes('src="community.js?v=8"'));
-  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=8"'));
+  assert.ok(h.includes('src="community.js?v=9"'));
+  assert.ok(h.indexOf('src="community-config.js?v=2"')<h.indexOf('src="community.js?v=9"'));
 });
 test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:process.env.CSFC_EMULATOR!=="1"},async()=>{
   assert.match(process.env.FIREBASE_DATABASE_EMULATOR_HOST||"",/^127\.0\.0\.1:\d+$/);
@@ -55,6 +55,12 @@ test("regole effettive su emulatore: autorizzazioni, coda e segnalazioni",{skip:
     await assertFails(set(ref(user,"submissions/reader"),{...msg,nick:"abc"}));
     await assertFails(set(ref(user,"submissions/reader"),{...msg,nick:"ma"}));
     await assertFails(set(ref(user,"submissions/reader"),{...msg,domain:"evil.com"}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,email:"mario@example.com"}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,shareEmail:true}));
+    await assertFails(set(ref(user,"submissions/reader"),{...msg,email:"maria@example.com",shareEmail:true}));
+    await assertFails(set(ref(mod,"submissions/reader"),{...msg,email:"mario@example.com",shareEmail:true}));
+    const second=env.authenticatedContext("second",claims).database();
+    await assertSucceeds(set(ref(second,"submissions/second"),{...msg,email:"mario@example.com",shareEmail:true}));
     await assertSucceeds(set(ref(user,"submissions/reader"),msg));
     await assertFails(set(ref(user,"submissions/reader"),msg));
     await assertFails(get(ref(user,"submissions")));

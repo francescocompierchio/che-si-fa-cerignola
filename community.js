@@ -23,13 +23,17 @@
   const privacy=$("a","Regole e informativa privacy",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});rulesNotice.append(privacy);
   const login=$("button","Accedi con Google",{type:"button",class:"csfc-primary"});
   const browserHint=$("small","L’accesso si apre nella stessa pagina e torna direttamente alla Community.",{hidden:""});
-  const logout=$("button","Esci",{type:"button",hidden:""});
+  const logout=$("button","Esci",{type:"button",hidden:"",class:"csfc-logout"});
+  const actions=$("div",null,{class:"csfc-header-actions"});actions.append(logout,close);header.append(actions);
   const identity=$("small","",{id:"csfc-identity"});
+  const shareEmail=$("input",null,{type:"checkbox",id:"csfc-share-email"});
+  const shareLabel=$("label",null,{class:"csfc-share-email"});shareLabel.append(shareEmail,$("span","Mostra il mio indirizzo Google completo agli iscritti alla chat"));
+  let identityUid=null;
   const msg=$("textarea",null,{required:"",maxlength:"300",rows:"3",placeholder:"Scrivi un messaggio sugli eventi…","aria-label":"Messaggio"});
   const send=$("button","Invia messaggio",{type:"submit",class:"csfc-primary"});
-  const form=$("form",null,{hidden:""});form.append(identity,msg,send);
+  const form=$("form",null,{hidden:""});form.append(identity,shareLabel,msg,send);
   const mod=$("div",null,{id:"csfc-moderation",hidden:"","aria-label":"Segnalazioni"});
-  panel.append(header,info,status,feed,rulesNotice,login,browserHint,logout,form,mod);
+  panel.append(header,info,status,feed,rulesNotice,login,browserHint,form,mod);
   root.append(toggle,panel);document.body.append(root);
   let app,auth,db,user,authUnsub,off=[],generation=0,opening=false,moderator=false,blocked=false;
   let authInit,persistenceLimited=false;
@@ -44,7 +48,7 @@
     const at=u.email.lastIndexOf("@");if(at<1)return null;
     const nick=u.email.slice(0,at).slice(0,3),domain=u.email.slice(at+1);
     if(!/^[A-Za-z0-9._+%-]{1,3}$/.test(nick)||! /^[A-Za-z0-9.-]{1,100}$/.test(domain))return null;
-    return {nick,domain,label:nick+"***@"+domain};
+    return {nick,domain,label:nick+"***@"+domain,email:u.email};
   }
   async function loadAuth(){
     if(window.firebase?.auth)return;
@@ -86,7 +90,7 @@
     stop();const g=generation;moderator=false;blocked=false;
     const signed=!!user;
     login.hidden=signed;login.disabled=false;rulesNotice.hidden=false;logout.hidden=!signed;form.hidden=true;mod.hidden=true;browserHint.hidden=signed;
-    if(!signed){status.textContent="Accedi con Google per leggere e partecipare.";return;}
+    if(!signed){identityUid=null;shareEmail.checked=false;status.textContent="Accedi con Google per leggere e partecipare.";return;}
     db.goOnline();status.textContent="Connessione…";
     try{
       const [m,b,c]=await Promise.all([db.ref("moderators/"+user.uid).once("value"),db.ref("bans/"+user.uid).once("value"),db.ref("settings/open").once("value")]);
@@ -96,11 +100,15 @@
       if(blocked){status.textContent="Account sospeso dalla community.";return;}
       const verified=identityFromEmail(user);
       if(!verified){status.textContent="Non è disponibile un indirizzo Google verificato compatibile.";return;}
-      identity.textContent="Scrivi come "+verified.label+" (email mascherata).";
+      if(identityUid!==user.uid){shareEmail.checked=false;identityUid=user.uid;}
+      const canShare=verified.email.length<=254&&/^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+$/.test(verified.email);
+      shareLabel.hidden=!canShare;if(!canShare)shareEmail.checked=false;
+      const renderIdentity=()=>{identity.textContent="Scrivi come "+(shareEmail.checked?verified.email:verified.label);};
+      shareEmail.onchange=renderIdentity;renderIdentity();
       status.textContent=persistenceLimited?"Accesso riuscito. Il browser potrebbe non conservare la sessione.":"Controllo automatico prima della pubblicazione.";form.hidden=false;
       listen(db.ref("published").orderByKey().limitToLast(40),snap=>{
         feed.replaceChildren();
-        if(!snap.exists()){feed.append($("small","Non ci sono ancora messaggi approvati."));return;}
+        if(!snap.exists()){feed.append($("div","Inizia la conversazione! Quali eventi consigli?",{class:"csfc-empty"}));return;}
         snap.forEach(child=>{
           const v=child.val(),a=$("article"),h=$("div",null,{class:"csfc-row"});
           h.append($("strong",safeText(v.nick)),button("Segnala",async()=>{
@@ -108,7 +116,11 @@
             await db.ref("reports/"+user.uid).set({messageId:child.key,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});
             status.textContent="Segnalazione inviata.";
           }));
-          a.append(h,$("p",safeText(v.text)));feed.append(a);
+          a.classList.add("csfc-bubble");
+          if(v.nick===verified.email)a.classList.add("csfc-bubble-own");
+          a.append(h,$("p",safeText(v.text)));
+          if(Number.isFinite(v.createdAt)){const date=new Date(v.createdAt);if(!Number.isNaN(date.getTime()))a.append($("time",date.toLocaleString("it-IT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Rome"}),{datetime:date.toISOString()}));}
+          feed.append(a);
         });
         feed.scrollTop=feed.scrollHeight;
       });
@@ -153,7 +165,9 @@
     e.preventDefault();if(!user||blocked)return;
     const verified=identityFromEmail(user),t=msg.value.trim();if(!verified||!checkText(t)){status.textContent="Usa 1–300 caratteri per il messaggio, senza link o recapiti.";return;}
     send.disabled=true;
-    try{await db.ref("submissions/"+user.uid).set({nick:verified.nick,domain:verified.domain,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"});msg.value="";status.textContent="Messaggio ricevuto. In attesa del controllo.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Riprova tra poco; il controllo potrebbe essere temporaneamente non disponibile.";}
+    const submission={nick:verified.nick,domain:verified.domain,text:t,createdAt:firebase.database.ServerValue.TIMESTAMP,state:"pending"};
+    if(shareEmail.checked&&!shareLabel.hidden){submission.email=verified.email;submission.shareEmail=true;}
+    try{await db.ref("submissions/"+user.uid).set(submission);msg.value="";status.textContent="Messaggio ricevuto. In attesa del controllo.";}catch{send.disabled=false;status.textContent="Invio non riuscito. Riprova tra poco; il controllo potrebbe essere temporaneamente non disponibile.";}
   };
   // Il callback torna qui e riapre automaticamente il pannello.
   if(typeof location!=="undefined"&&new URLSearchParams(location.search).get("community")==="1"){
