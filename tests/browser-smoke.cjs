@@ -74,7 +74,6 @@ const assert = require("node:assert/strict");
     for(const [side,panel] of [["left",leftPanel],["right",rightPanel]]){
       const tab=page.locator('.csf-side-swipe[data-side="'+side+'"]');
       await tab.waitFor({state:"visible"});assert.ok((await tab.boundingBox()).width>=44);
-      await page.waitForTimeout(550);
       await tab.tap();await panel.waitFor({state:"visible"});
       await panel.getByRole("button",{name:"Chiudi pannello"}).click();
       await panel.waitFor({state:"hidden"});

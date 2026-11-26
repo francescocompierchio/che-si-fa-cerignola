@@ -102,14 +102,14 @@
   $("csf-open-"+side)?.addEventListener("click",e=>open(side,e.currentTarget));
  }
  // Linguette visibili, con area tattile da 44px e apertura anche con un singolo tocco.
- let ultimoSwipe=0;
+
  for(const side of ["left","right"]){
   const area=mk("button","","csf-side-swipe");area.type="button";area.dataset.side=side;
   const label=side==="left"?"Scopri":"Il mio spazio";
   area.setAttribute("aria-label",side==="left"?"Apri Scopri il territorio":"Apri Il tuo spazio");
   area.setAttribute("aria-haspopup","dialog");
   area.append(mk("span",side==="left"?"› "+label:label+" ‹","csf-side-grip"));
-  area.addEventListener("click",()=>{if(Date.now()-ultimoSwipe>500)open(side,area);});
+  area.addEventListener("click",()=>open(side,area));
   document.body.append(area);
  }
  document.addEventListener("touchstart",e=>{
@@ -119,7 +119,7 @@
   const strip=e.target.closest(".csf-side-swipe");
   if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]")){gesture=null;return;}
   const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=8&&x<=65?"left":x>=w-65&&x<=w-8?"right":null)));
-  gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false}:null;
+  gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false,strip}:null;
  },{passive:true});
  document.addEventListener("touchmove",e=>{
   const g=gesture;if(!g||e.touches.length!==1)return;
@@ -132,11 +132,13 @@
  document.addEventListener("touchend",e=>{
   const g=gesture;gesture=null;if(!g||e.changedTouches.length!==1||Date.now()-g.time>1800)return;
   const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+  // Un tocco breve sulla linguetta non dipende dal click sintetico del browser.
+  if(!g.closing&&g.strip&&Math.abs(dx)<=12&&Math.abs(dy)<=12){if(e.cancelable)e.preventDefault();open(g.side,g.strip);return;}
   if(Math.abs(dx)<36||Math.abs(dx)<Math.abs(dy)*1.3)return;
-  ultimoSwipe=Date.now();
+  if(e.cancelable)e.preventDefault();
   if(g.closing){if(g.side==="left"?dx<0:dx>0)close();}
-  else if(g.side==="left"?dx>0:dx<0)open(g.side);
- },{passive:true});
+  else if(g.side==="left"?dx>0:dx<0)open(g.side,g.strip);
+ },{passive:false});
  // Solo aperture vere: la sessione non viene salvata o trasmessa.
  document.addEventListener("toggle",e=>{const el=e.target;if(el.matches?.("#events-container details[data-event-key]")&&el.open){const k=el.dataset.eventKey;const i=history.indexOf(k);if(i>=0)history.splice(i,1);history.unshift(k);history.length=Math.min(history.length,30);}},true);
 })();
