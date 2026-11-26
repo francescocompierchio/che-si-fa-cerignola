@@ -544,24 +544,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:manfredonia-2026-11-22-cenerentola-301@chesifacerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20261122
-DTEND;VALUE=DATE:20270107
-SUMMARY:Cenerentola 301 – Manfredonia
-LOCATION:Teatro Comunale Lucio Dalla prosegue\, Via della Crocie\, Manfredo
- nia
-DESCRIPTION:Dal 22 Nov al 06 Gen 2027\nManfredonia (Foggia) Teatro Comunale
-  Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigli
- ata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandi
- re )\nAccesso: A pagamento\nVerifica variazioni\, orari e fonte nella sche
- da.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/man
- fredonia-2026-11-22-cenerentola-301.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-22-cenerentola-301.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:foggia-2026-11-24-foggia-festival-sport-story-il-pallone-e-uguale-per-t
  utti@chesifacerignola
 DTSTAMP:20261126T000000Z
@@ -934,6 +916,24 @@ DESCRIPTION:Sab 28 Nov 2026\nSabato 28 novembre inauguriamo la nostra rasse
  eonetti-store.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
  a-2026-11-28-andria-sentiti-a-casa-da-leonetti-store.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-11-28-barletta-ctrl-z-in-concerto@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Barletta | CTRL+Z in concerto – Barletta
+LOCATION:Caffè Letterario\, Via Geremia di Scanno\, 94\, Barletta
+DESCRIPTION:Sab 28 Nov 2026\nSabato 28 novembre 2026 alle ore 21:30\, i CTR
+ L+Z saranno in concerto al Caffè Letterario di Barletta\, in Via Geremia 
+ Di Scanno 94/96. Ingresso gratuito. La band alternative rock barese presen
+ terà dal vivo i brani dell’EP\nAccesso: Ingresso libero\nVerifica varia
+ zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
+ o/che-si-fa-cerignola/eventi/barletta-2026-11-28-barletta-ctrl-z-in-concer
+ to.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-28-barletta-ctrl-z-in-concerto.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
@@ -1356,6 +1356,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:manfredonia-2026-12-06-manfredonia-cenerentola-301@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:Manfredonia | Cenerentola 301 – Manfredonia
+LOCATION:Teatro Comunale Lucio Dalla\, Via della Croce\, Manfredonia
+DESCRIPTION:Dom 06 Dic 2026 · Ore 18:00\nSpettacolo della Compagnia Buramb
+ ò per famiglie e bambini dai 6 anni. Data confermata dal calendario uffic
+ iale del teatro.\nAccesso: A pagamento\nVerifica variazioni\, orari e font
+ e nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignol
+ a/eventi/manfredonia-2026-12-06-manfredonia-cenerentola-301.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-06-manfredonia-cenerentola-301.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:monticchio-2026-12-06-wild-water-river-trekking-sull-ofanto@chesifaceri
  gnola
 DTSTAMP:20261126T000000Z
@@ -1735,36 +1751,17 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:manfredonia-2027-01-01-menu-di-capodanno-posta-bassi@chesifacerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20270101
-DTEND;VALUE=DATE:20270102
-SUMMARY:Menù di Capodanno – Posta Bassi – Manfredonia
-LOCATION:Via Manfredonia km 196+200
-DESCRIPTION:Ven 01 Gen 2027\nMenù speciale del primo gennaio annunciato da
- ll'agriturismo. Il sito ufficiale contiene il menu e la richiesta di preno
- tazione. Info 0881 700155.\nAccesso: 55 € a persona\nVerifica variazioni
- \, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/che
- -si-fa-cerignola/eventi/manfredonia-2027-01-01-menu-di-capodanno-posta-bas
- si.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2027-01-01-menu-di-capodanno-posta-bassi.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:foggia-2027-01-01-pranzo-di-capodanno-posta-bassi@chesifacerignola
 DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20270101
 DTEND;VALUE=DATE:20270102
 SUMMARY:Pranzo di Capodanno – Posta Bassi – Foggia
-LOCATION:Posta Bassi\, Foggia
-DESCRIPTION:Ven 01 Gen 2027\nFestivita & Occasioni Speciali Eventi Speciali
-  Scopri i nostri menu dedicati per le festivita e le occasioni speciali. S
- carica il PDF\, scegli il tuo menu preferito e prenota il tuo posto. Menù
-  pranzo Immacolata 08 Dicemb\nAccesso: Consulta menu e prezzi nella fonte\
- nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompi
- erchio.github.io/che-si-fa-cerignola/eventi/foggia-2027-01-01-pranzo-di-ca
- podanno-posta-bassi.html
+LOCATION:Posta Bassi\, Via Manfredonia Km 196+200\, 71121 Foggia (FG)
+DESCRIPTION:Ven 01 Gen 2027\nPranzo di Capodanno del 1 gennaio 2027. Menù 
+ e prenotazioni sul sito ufficiale dell'agriturismo.\nAccesso: 55 € a per
+ sona\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francesco
+ compierchio.github.io/che-si-fa-cerignola/eventi/foggia-2027-01-01-pranzo-
+ di-capodanno-posta-bassi.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
  a-2027-01-01-pranzo-di-capodanno-posta-bassi.html
 TRANSP:TRANSPARENT

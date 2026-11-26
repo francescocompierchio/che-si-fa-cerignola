@@ -118,48 +118,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:manfredonia-2026-11-22-cenerentola-301@chesifacerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20261122
-DTEND;VALUE=DATE:20270107
-SUMMARY:Cenerentola 301 – Manfredonia
-LOCATION:Teatro Comunale Lucio Dalla prosegue\, Via della Crocie\, Manfredo
- nia
-DESCRIPTION:Dal 22 Nov al 06 Gen 2027\nManfredonia (Foggia) Teatro Comunale
-  Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigli
- ata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandi
- re )\nAccesso: A pagamento\nVerifica variazioni\, orari e fonte nella sche
- da.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/man
- fredonia-2026-11-22-cenerentola-301.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-22-cenerentola-301.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:manfredonia-2026-11-26-gheghe-christmas-bakery-laboratorio-natalizio-pe
- r-bambini-party-con-gheghe@chesifacerignola
-DTSTAMP:20261126T000000Z
-DTSTART;VALUE=DATE:20261126
-DTEND;VALUE=DATE:20261127
-SUMMARY:Gheghè Christmas Bakery: laboratorio natalizio per bambini | Party
-  con Gheghè – Manfredonia
-LOCATION:PartyconGheghè\, Via Calle del Porto Torre b\, 71043 Manfredonia 
- (FG)\, FG
-DESCRIPTION:Gio 26 Nov 2026\nGiovedì 26 novembre 2026\, dalle ore 17:00 al
- le 20:00\, 𝗣𝗮𝗿𝘁𝘆 𝗰𝗼𝗻 𝗚𝗵𝗲𝗴𝗵𝗲̀ pr
- opone 𝗚𝗵𝗲𝗴𝗵𝗲̀ 𝗖𝗵𝗿𝗶𝘀𝘁𝗺𝗮𝘀 𝗕
- 𝗮𝗸𝗲𝗿𝘆\, un appuntamento dedicato ai bambini e all'atmosfera
-  delle festività natalizie. L'iniziativa richiama il mondo dell\nAccesso:
-  Non specificato nella fonte\nVerifica variazioni\, orari e fonte nella sc
- heda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/m
- anfredonia-2026-11-26-gheghe-christmas-bakery-laboratorio-natalizio-per-ba
- mbini-party-con-gheghe.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-26-gheghe-christmas-bakery-laboratorio-natalizio-per-bambin
- i-party-con-gheghe.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:trani-2026-11-26-trani-hendrix-birthday-eve-jam-al-santo-graal@chesifac
  erignola
 DTSTAMP:20261126T000000Z
@@ -379,6 +337,24 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/canos
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-11-28-barletta-ctrl-z-in-concerto@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:Barletta | CTRL+Z in concerto – Barletta
+LOCATION:Caffè Letterario\, Via Geremia di Scanno\, 94\, Barletta
+DESCRIPTION:Sab 28 Nov 2026\nSabato 28 novembre 2026 alle ore 21:30\, i CTR
+ L+Z saranno in concerto al Caffè Letterario di Barletta\, in Via Geremia 
+ Di Scanno 94/96. Ingresso gratuito. La band alternative rock barese presen
+ terà dal vivo i brani dell’EP\nAccesso: Ingresso libero\nVerifica varia
+ zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
+ o/che-si-fa-cerignola/eventi/barletta-2026-11-28-barletta-ctrl-z-in-concer
+ to.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-11-28-barletta-ctrl-z-in-concerto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:bisceglie-2026-11-28-bisceglie-alamar-symphonic-concert-ana-carla-maza-
  l-orchestra-ico-della-magna-gre@chesifacerignola
 DTSTAMP:20261126T000000Z
@@ -504,6 +480,22 @@ DESCRIPTION:Sab 05 Dic 2026 · Ore 21:30\nSerata di clubbing proposta da Mi
  eglie-2026-12-05-mirito-presents-solto.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
  glie-2026-12-05-mirito-presents-solto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-12-06-manfredonia-cenerentola-301@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261206
+DTEND;VALUE=DATE:20261207
+SUMMARY:Manfredonia | Cenerentola 301 – Manfredonia
+LOCATION:Teatro Comunale Lucio Dalla\, Via della Croce\, Manfredonia
+DESCRIPTION:Dom 06 Dic 2026 · Ore 18:00\nSpettacolo della Compagnia Buramb
+ ò per famiglie e bambini dai 6 anni. Data confermata dal calendario uffic
+ iale del teatro.\nAccesso: A pagamento\nVerifica variazioni\, orari e font
+ e nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignol
+ a/eventi/manfredonia-2026-12-06-manfredonia-cenerentola-301.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-06-manfredonia-cenerentola-301.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT

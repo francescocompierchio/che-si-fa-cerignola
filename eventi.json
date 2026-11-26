@@ -1,19 +1,5 @@
 [
   {
-    "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Teatro & Spettacoli",
-    "titolo": "Cenerentola 301",
-    "dataTesto": "Dal 22 Nov al 06 Gen 2027",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2027-01-06",
-    "luogo": "Teatro Comunale Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Via della Crocie, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigliata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
-  },
-  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337004_20261118_082336.jpg",
     "tipoContenuto": "evento",
     "citta": "Foggia",
@@ -61,7 +47,7 @@
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/52c4fb7b952ecc1f0fd55f688abe4f58fcbfb37d-1672x941.png?w=1200&h=630&fit=crop&q=80",
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
-    "categoria": "Locali & Serate",
+    "categoria": "Famiglie & Bambini",
     "titolo": "Gheghè Christmas Bakery: laboratorio natalizio per bambini | Party con Gheghè",
     "dataTesto": "Gio 26 Nov 2026",
     "dataInizio": "2026-11-26",
@@ -204,6 +190,21 @@
     "costo": "Ingresso libero",
     "descrizione": "Sabato 28 novembre inauguriamo la nostra rassegna natalizia “sentiti a Casa”, il progetto che ogni anno ci accompagna durante le feste torna con un calendario ricco di appuntamenti, pensati per condividere esperienze, sc",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337823.html"
+  },
+  {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/338121_20261126_095159.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Musica & Concerti",
+    "titolo": "Barletta | CTRL+Z in concerto",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Caffè Letterario",
+    "indirizzoMappa": "Caffè Letterario, Via Geremia di Scanno, 94, Barletta",
+    "costo": "Ingresso libero",
+    "descrizione": "Sabato 28 novembre 2026 alle ore 21:30, i CTRL+Z saranno in concerto al Caffè Letterario di Barletta, in Via Geremia Di Scanno 94/96. Ingresso gratuito. La band alternative rock barese presenterà dal vivo i brani dell’EP",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338121.html"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337025_20261118_145724.jpg",
@@ -643,6 +644,21 @@
     "fonteUrl": "https://www.minervinoviva.it/notizie/in-viaggio-verso-christmas-wonderland-al-castello-di-barletta/"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/335502_20261103_164919.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Teatro & Spettacoli",
+    "titolo": "Manfredonia | Cenerentola 301",
+    "dataTesto": "Dom 06 Dic 2026 · Ore 18:00",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Teatro Comunale Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Spettacolo della Compagnia Burambò per famiglie e bambini dai 6 anni. Data confermata dal calendario ufficiale del teatro.",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
+  },
+  {
     "tipoContenuto": "evento",
     "citta": "Monticchio",
     "categoria": "Natura & Escursioni",
@@ -988,20 +1004,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Attività diurne",
-    "titolo": "Menù di Capodanno – Posta Bassi",
-    "dataTesto": "Ven 01 Gen 2027",
-    "dataInizio": "2027-01-01",
-    "dataFine": "2027-01-01",
-    "luogo": "Agriturismo Posta Bassi",
-    "indirizzoMappa": "Via Manfredonia km 196+200",
-    "costo": "55 € a persona",
-    "descrizione": "Menù speciale del primo gennaio annunciato dall'agriturismo. Il sito ufficiale contiene il menu e la richiesta di prenotazione. Info 0881 700155.",
-    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Sagre & Food",
     "titolo": "Pranzo di Capodanno – Posta Bassi",
@@ -1009,9 +1011,9 @@
     "dataInizio": "2027-01-01",
     "dataFine": "2027-01-01",
     "luogo": "Posta Bassi",
-    "indirizzoMappa": "Posta Bassi, Foggia",
-    "costo": "Consulta menu e prezzi nella fonte",
-    "descrizione": "Festivita & Occasioni Speciali Eventi Speciali Scopri i nostri menu dedicati per le festivita e le occasioni speciali. Scarica il PDF, scegli il tuo menu preferito e prenota il tuo posto. Menù pranzo Immacolata 08 Dicemb",
+    "indirizzoMappa": "Posta Bassi, Via Manfredonia Km 196+200, 71121 Foggia (FG)",
+    "costo": "55 € a persona",
+    "descrizione": "Pranzo di Capodanno del 1 gennaio 2027. Menù e prenotazioni sul sito ufficiale dell'agriturismo.",
     "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
   },
   {
