@@ -77,4 +77,8 @@ def fonti(registro,anagrafiche):
             rss.append(feed("Cerignola fonte "+r["nome"]+" "+campo,q,"Cerignola",r.get("alias",[])))
     for comune in ("Stornara","Stornarella","Orta Nova","Trinitapoli","San Ferdinando di Puglia","Canosa di Puglia","Lavello","Margherita di Savoia","Foggia","Barletta","Trani","Manfredonia","Bisceglie","Andria","Melfi","Venosa"):
         rss.append(feed(comune,'"'+comune+'" '+temi,comune))
+    # Ricerche stagionali mirate: non sono eventi finché il parser non
+    # conferma una data futura e una sede. Il radar adattivo gestisce la frequenza.
+    for comune in ("Cerignola","Stornara","Stornarella","Orta Nova","Canosa di Puglia","San Ferdinando di Puglia","Trinitapoli","Lavello","Margherita di Savoia","Ascoli Satriano","Ordona","Carapelle"):
+        rss.append(feed(comune+" feste e cenoni",'"'+comune+'" ("cenone" OR "veglione" OR "pranzo di Capodanno" OR "cenone di San Silvestro" OR "festa di fine anno")',comune))
     return dirette,rss
