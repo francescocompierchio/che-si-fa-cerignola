@@ -5,7 +5,7 @@ const {chromium}=require("playwright");
 const site="https://francescocompierchio.github.io/che-si-fa-cerignola/";
 const db="https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/statisticheEventi/";
 const id="foggia-2026-11-28-test";
-const fixture='<!doctype html><meta charset="utf-8"><script src="metrics.js?v=33"></script><article><h2>Evento prova</h2><div id="stats"></div><button id="open">Dettagli</button><button id="share">Condividi</button></article><div style="height:1500px"></div><img id="poster" width="200" height="200" alt="Locandina" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22200%22%20height=%22200%22%3E%3Crect%20width=%22200%22%20height=%22200%22%20fill=%22red%22/%3E%3C/svg%3E"><script>const ev={titolo:"Test",citta:"Foggia",dataInizio:"2026-11-28"};CsfMetrics.attachStats(ev,document.querySelector("#stats"),document.querySelector("article"));CsfMetrics.observePoster(ev,document.querySelector("#poster"));document.querySelector("#open").onclick=()=>CsfMetrics.record("csf_event_open",ev);document.querySelector("#share").onclick=()=>CsfMetrics.record("csf_event_share",ev);</script>';
+const fixture='<!doctype html><meta charset="utf-8"><script src="metrics.js?v=34"></script><article><h2>Evento prova</h2><div id="stats"></div><button id="open">Dettagli</button><button id="share">Condividi</button></article><div style="height:1500px"></div><img id="poster" width="200" height="200" alt="Locandina" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22200%22%20height=%22200%22%3E%3Crect%20width=%22200%22%20height=%22200%22%20fill=%22red%22/%3E%3C/svg%3E"><script>const ev={titolo:"Test",citta:"Foggia",dataInizio:"2026-11-28"};CsfMetrics.attachStats(ev,document.querySelector("#stats"),document.querySelector("article"));CsfMetrics.observePoster(ev,document.querySelector("#poster"));document.querySelector("#open").onclick=()=>CsfMetrics.record("csf_event_open",ev);document.querySelector("#share").onclick=()=>CsfMetrics.record("csf_event_share",ev);</script>';
 (async()=>{
  const browser=await chromium.launch();
  try{
@@ -16,7 +16,7 @@ const fixture='<!doctype html><meta charset="utf-8"><script src="metrics.js?v=33
    await page.route("**/*",async route=>{
     const url=route.request().url();
     if(url===site)return route.fulfill({contentType:"text/html",body:fixture});
-    if(url===site+"metrics.js?v=33")return route.fulfill({contentType:"application/javascript",body:fs.readFileSync("metrics.js","utf8")});
+    if(url===site+"metrics.js?v=34")return route.fulfill({contentType:"application/javascript",body:fs.readFileSync("metrics.js","utf8")});
     if(url.startsWith(db)){
      if(route.request().method()==="PUT"){
       writes++;assert.deepEqual(route.request().postDataJSON(),{count:{".sv":{increment:1}},at:{".sv":"timestamp"}});

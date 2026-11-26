@@ -36,6 +36,32 @@ const assert = require("node:assert/strict");
     await page.locator("#dock-home").click();
     assert.ok(await page.locator("#dock-home").evaluate(el=>el.classList.contains("active")));
     console.log("OK dock: contrasto, gradiente, rilievo, temi e navigazione mobile.");
+    // Pannelli laterali: chiusi per default, accesso alternativo, swipe e funzioni reali.
+    const leftPanel=page.locator('.csf-side-dialog[data-side="left"]'),rightPanel=page.locator('.csf-side-dialog[data-side="right"]');
+    assert.equal(await leftPanel.isVisible(),false);assert.equal(await rightPanel.isVisible(),false);
+    await page.locator("#csf-open-left").click();
+    await leftPanel.waitFor({state:"visible"});
+    await leftPanel.locator('[data-side-action="city"]').click();
+    await leftPanel.getByRole("combobox",{name:"Scegli comune"}).waitFor();
+    await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await page.locator("#csf-open-right").click();
+    await rightPanel.waitFor({state:"visible"});
+    await rightPanel.locator('[data-side-action="recent"]').click();
+    await rightPanel.getByRole("button",{name:"Cancella cronologia"}).click();
+    await page.keyboard.press("Escape");await rightPanel.waitFor({state:"hidden"});
+    await page.evaluate(()=>window.scrollTo(0,0));
+    const swipe=async(x,y,dx,dy)=>page.evaluate(({x,y,dx,dy})=>{
+      const target=document.body;
+      const event=(type,a,b)=>{const t=new Touch({identifier:1,target,clientX:a,clientY:b});target.dispatchEvent(new TouchEvent(type,{bubbles:true,touches:type==="touchstart"?[t]:[],changedTouches:[t]}));};
+      event("touchstart",x,y);event("touchend",x+dx,y+dy);
+    },{x,y,dx,dy});
+    await swipe(25,300,12,140);assert.equal(await leftPanel.isVisible(),false);
+    await swipe(25,300,140,5);await leftPanel.waitFor({state:"visible"});
+    await swipe(150,300,-130,0);await leftPanel.waitFor({state:"hidden"});
+    await swipe(368,300,-140,5);await rightPanel.waitFor({state:"visible"});
+    await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    assert.equal(await page.locator("html").evaluate(n=>n.classList.contains("csf-side-open")),false);
+    console.log("OK pannelli laterali: scomparsa, swipe, accesso alternativo, comuni e cronologia.");
     // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
     for(const [width,height] of [[320,568],[393,852],[430,740]]){
       await page.setViewportSize({width,height});

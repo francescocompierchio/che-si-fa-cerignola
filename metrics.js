@@ -129,6 +129,7 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
  });
  window.CsfMetrics={
    attachStats, observePoster,
+   readPublicStats(ev){return liveStats?statsClient.read(csfEventStatsKey(ev)):Promise.resolve(null);},
    allowed, aggregateAllowed,
    action(name){if(allowed()&&window.__csfGaStarted&&typeof window.gtag==="function"&&appActions.has(name))window.gtag("event",name,{});},
    record(action,ev){if(liveStats)void statsClient.record(ev,action);if(!allowed()||!window.__csfGaStarted||typeof window.gtag!=="function"||!actions.has(action)||!ev?.titolo)return;window.gtag("event",action,{csf_event_id:[ev.titolo,ev.citta,ev.dataInizio].join("|").slice(0,100),csf_category:String(ev.categoria||"").slice(0,100)});}

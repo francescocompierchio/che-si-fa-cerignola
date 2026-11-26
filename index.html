@@ -16,8 +16,8 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=2"></script>
-  <script src="event-page.js?v=65" defer></script>
-  <script src="metrics.js?v=33"></script>
+  <script src="event-page.js?v=66" defer></script>
+  <script src="metrics.js?v=34"></script>
 
   <meta charset="UTF-8" />
   <script>
@@ -1205,6 +1205,30 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 @media(max-width:600px) and (prefers-reduced-motion:no-preference){
  .mobile-dock .dock-btn:active{transform:translateY(2px) scale(.985);box-shadow:inset 0 2px 5px var(--depth-contact),0 1px 2px var(--depth-ambient)}
 }
+
+/* Pannelli laterali: nessun ingombro quando chiusi. */
+.csf-side-dialog{box-sizing:border-box;position:fixed;inset:0 auto 0 0;margin:0;width:min(88vw,365px);max-width:100%;height:100%;max-height:100%;height:100dvh;padding:max(16px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom));border:0;border-right:1px solid #d5b360;background:linear-gradient(145deg,#102b61,#1746a2 65%,#102b61);color:#fff;box-shadow:8px 0 35px #06183d70;overflow-y:auto;overscroll-behavior:contain}
+.csf-side-dialog[data-side="right"]{inset:0 0 0 auto;border-right:0;border-left:1px solid #d5b360;box-shadow:-8px 0 35px #06183d70}
+.csf-side-dialog:not([open]){display:none!important}
+.csf-side-dialog::backdrop{background:#07162e70;backdrop-filter:blur(4px)}
+.csf-side-dialog[open]{animation:csf-slide-left .22s ease-out}
+.csf-side-dialog[data-side="right"][open]{animation:csf-slide-right .22s ease-out}
+@keyframes csf-slide-left{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes csf-slide-right{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.csf-side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.csf-side-head h2{color:#ffe09a;font-size:1.15rem;margin:0}
+.csf-side-dialog p{font-size:.83rem;color:#e3eaf9;line-height:1.45;margin:8px 0 12px}
+.csf-side-dialog button,.csf-side-dialog select{font:inherit;min-height:44px;border-radius:12px;border:1px solid #ffffff36;color:#fff;background:linear-gradient(150deg,#ffffff22,#ffffff0b);padding:10px 12px;box-shadow:inset 0 1px 0 #ffffff25,0 3px 8px #081d4640;cursor:pointer;text-align:left}
+.csf-side-dialog select{background:#1b3d76;width:100%}
+.csf-side-dialog button:focus-visible,.csf-side-dialog select:focus-visible{outline:2px solid #ffe09a;outline-offset:2px}
+.csf-side-menu,.csf-side-results{display:grid;gap:9px}
+.csf-side-results{margin-top:15px}
+.csf-side-results button{display:grid;gap:3px}
+.csf-side-results small{color:#e3eaf9;font-size:.73rem}
+.csf-side-close{min-width:44px;text-align:center!important}
+.csf-side-footer{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;min-height:30px;cursor:pointer;padding:0}
+html.csf-side-open{overflow:hidden}
+@media(prefers-reduced-motion:reduce){.csf-side-dialog[open]{animation:none}}
   </style>
   <link rel="stylesheet" href="community.css?v=8">
 </head>
@@ -1378,6 +1402,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         <a href="eventi/weekend.html">Eventi nel weekend</a>
         <a href="eventi/calendari.html">Calendari sincronizzabili</a>
         <a href="privacy.html">Privacy &amp; Cookie Policy</a>
+        <button type="button" class="csf-side-footer" id="csf-open-left">Scopri il territorio</button><button type="button" class="csf-side-footer" id="csf-open-right">Il tuo spazio</button>
       </nav>
       <p class="footer-update">Aggiornamento automatico</p>
     </div>
@@ -3502,5 +3527,6 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
   <script src="community-config.js?v=2"></script>
   <script src="community-auth-flow.js?v=1"></script>
   <script src="community.js?v=10"></script>
+  <script src="side-panels.js?v=1"></script>
 </body>
 </html>
