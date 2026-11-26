@@ -41,7 +41,12 @@ def obfuscated_pattern(word):
     return r"(?<![a-z0-9])"+SEP.join(p[1] for p in parts)+r"(?![a-z0-9])"
 OBSCENE_CAMOUFLAGE=re.compile("|".join(obfuscated_pattern(w) for w in OBSCENE_WORDS),re.I)
 HUMILIATION=re.compile(r"\b(?:sei|siete|e|sono)\s+(?:(?:un[oa]?|dei|delle|proprio|solo|davvero|completamente|assolutamente|totale|totali)\s+){0,5}(?:nullita|vergogn[ae]|inutil[ei]|patetic[oaie]|ridicol[oaie]|miserabil[ei]|disgustos[oaie]|spazzatura|feccia)\b|\b(?:nessuno\s+(?:ti|vi)\s+(?:sopporta|vuole|rispetta)|(?:non\s+sei|non\s+siete)\s+degn[oaie]\s+di|(?:non\s+capisci|non\s+capite)\s+(?:proprio\s+)?niente|(?:tutti|tutte)\s+(?:ti|vi)\s+odiano|non\s+merit[ai]\s+rispetto|non\s+merita\s+rispetto)\b",re.I)
-DIALECT_MORE=re.compile(r"\b(?:nun\s+(?:so|saccio|sape|voglio|vogghiu)|chistu|chista|chiddi|picciridd[ouia]|beddu|bedda|ajo|andamus|andemo|xe|ghe\s+(?:xe|se|digo)|boia\s+deh|annamo|magna|a\s+voja|belin|figgeu|fieui|va\s+a\s+ciapa|ue\s+uagn[o]n[eia]?|ce\s+fasc[ei]m[eo]?|sciamaninn|m[eo]\s+avim[m]?[eo])\b",re.I)
+DIALECT_MORE=re.compile(r"\b(?:nun\s+(?:so|saccio|sape|voglio|vogghiu)|chistu|chista|chiddi|picciridd[ouia]|beddu|bedda|ajo|andamus|andemo|xe|ghe\s+(?:xe|se|digo)|boia\s+deh|annamo|a\s+voja|belin|figgeu|fieui|va\s+a\s+ciapa|ue\s+uagn[o]n[eia]?|ce\s+fasc[ei]m[eo]?|sciamaninn|m[eo]\s+avim[m]?[eo])\b",re.I)
+# Secondo passaggio semantico mirato a segnali di ostilità, senza bloccare
+# automaticamente ogni normale domanda o avviso di servizio.
+HOSTILITY_HINT=re.compile(r"\b(?:tu|voi|sei|siete|te|vergogna|rispetto|disgustos[oaie]|rovini|rovinate|incapac[ei]|colpa|ridicol[oaie]|genio|brillante|come\s+al\s+solito|che\s+idea|nessuno|merit[ai]|odiano)\b",re.I)
+EXPLICIT_ABUSE=re.compile(r"\b(?:person[ae]\s+disgustos[oaie]|(?:come\s+al\s+solito|sempre)\s+rovin[ai](?:te)?\s+tutto|(?:tu|voi)\s+non\s+val[ei]t?e?\s+niente|non\s+merit[ai]\s+rispetto|non\s+merita\s+rispetto)\b",re.I)
+FOREIGN_PHRASE=re.compile(r"\b(?:what\s+are\s+you|how\s+are\s+you|where\s+are\s+you|on\s+sort\s+ce\s+soir|comment\s+ça\s+va|cómo\s+estás|que\s+hacemos|wie\s+geht\s+es)\b",re.I)
 def skeleton(value):
     normalized=unicodedata.normalize("NFKD",value.casefold()).translate(CONFUSABLE)
     return "".join(c for c in normalized if not unicodedata.category(c).startswith("M")).translate(LEET)
@@ -58,7 +63,7 @@ def preliminary(nick, message):
     for value in (nick,message):
         folded=skeleton(value)
         if OBSCENE_CAMOUFLAGE.search(folded) or HUMILIATION.search(folded):return "reject"
-    if DIALECT_MORE.search(skeleton(message)):return "reject"
+    if DIALECT_MORE.search(skeleton(message)) or EXPLICIT_ABUSE.search(skeleton(message)) or FOREIGN_PHRASE.search(clean(message)):return "reject"
     if re.search(r"\b(?:messaggio|nota|istruzion[ei]|comando)\s+(?:per|al|alla)\s+(?:il\s+|la\s+)?(?:moderator[ei]|filtro|sistema|ia|ai)\b|\b(?:approva|autorizza|pubblica|accetta)\s+(?:qualsiasi|qualunque|ogni|tutto)\b|\b(?:considera|classifica|tratta)\s+.{0,60}\b(?:educat[oaie]|sicuro|approvat[oaie]|consentit[oaie])\b",both):return "reject"
     # Anche il nome pubblico viene controllato. Non è richiesto che un nome proprio sia italiano.
     if BLOCK.search(both) or PRIVATE.search(both) or INJECTION.search(both) or DIALECT.search(clean(message)): return "reject"
@@ -140,8 +145,10 @@ def italian_only(message):
 def classify(nick,message,judge=ask,language_check=italian_only):
     if preliminary(nick,message)=="reject" or not language_check(message): return "rejected"
     # Anche saluti e frasi corte sono valutati per il nickname.
-    # Quattro controlli distinti sullo stesso modello, non indipendenti statisticamente.
-    return "approved" if all(judge(prompt,nick,message) for prompt in (SYSTEM,SYSTEM2,LANGUAGE,RESPECT)) else "rejected"
+    # Tre controlli per tutti, quarto per segnali di ostilità non già bloccati.
+    prompts=(SYSTEM,SYSTEM2,LANGUAGE)
+    if HOSTILITY_HINT.search(clean(message)):prompts=prompts+(RESPECT,)
+    return "approved" if all(judge(prompt,nick,message) for prompt in prompts) else "rejected"
 
 def message_id(uid,submission):
     ts=int(submission["createdAt"])
@@ -201,7 +208,11 @@ def client():
         credentials=service_account.Credentials.from_service_account_info(info,scopes=["https://www.googleapis.com/auth/firebase.database","https://www.googleapis.com/auth/userinfo.email"])
     except Exception:raise RuntimeError("invalid_service_account") from None
     try:credentials.refresh(google.auth.transport.requests.Request())
-    except Exception:raise RuntimeError("google_token_failed") from None
+    except Exception as exc:
+        # Solo codici OAuth documentati, mai descrizioni arbitrarie, token o chiavi.
+        allowed={"invalid_grant","invalid_client","unauthorized_client","invalid_scope","access_denied","temporarily_unavailable"}
+        code=next((a.get("error") for a in exc.args if isinstance(a,dict) and isinstance(a.get("error"),str) and a.get("error") in allowed),None)
+        raise RuntimeError("google_token_"+code if code else "google_token_failed") from None
     return google.auth.transport.requests.AuthorizedSession(credentials)
 
 def snapshot(session):
@@ -312,7 +323,7 @@ if __name__=="__main__":
     except Exception as exc:
         import sys
         # Mostra soltanto codici interni previsti; mai eccezioni arbitrarie, payload, UID o token.
-        known={"missing_configuration","invalid_json","wrong_project","invalid_token_endpoint","invalid_service_account","google_token_failed","database_read","database_write","missing_etag","database_size_limit","unexpected_database","concurrent_updates","model_quality_gate"}
+        known={"missing_configuration","invalid_json","wrong_project","invalid_token_endpoint","invalid_service_account","google_token_failed","google_token_invalid_grant","google_token_invalid_client","google_token_unauthorized_client","google_token_invalid_scope","google_token_access_denied","google_token_temporarily_unavailable","database_read","database_write","missing_etag","database_size_limit","unexpected_database","concurrent_updates","model_quality_gate"}
         code=str(exc) if type(exc) is RuntimeError else ""
         allowed=code in known or bool(re.fullmatch(r"(?:settings_read|queue_read)_[1-5][0-9]{2}",code))
         print("Community: operazione interrotta in sicurezza. Diagnostica: "+(code if allowed else "internal_or_network_error"),file=sys.stderr)
