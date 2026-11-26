@@ -15,7 +15,7 @@
     };
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
-  <script src="app-extras.js?v=2"></script>
+  <script src="app-extras.js?v=3"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -1243,7 +1243,8 @@ html.csf-side-open{overflow:hidden}
 .csf-side-dialog{touch-action:pan-y}
 .csf-side-dialog.csf-side-preview[open]{z-index:270;pointer-events:none;animation:none!important;overflow:hidden;will-change:transform;transition:none!important}
 @media(prefers-reduced-motion:reduce){.csf-side-dialog[open]{animation:none}}
-  </style>
+    #seg-social-testo[hidden], #seg-contatto-wrap[hidden], #seg-locandina-wrap[hidden] { display: none; }
+</style>
   <link rel="stylesheet" href="community.css?v=8">
 </head>
 <body>
@@ -1434,11 +1435,22 @@ html.csf-side-open{overflow:hidden}
       <div id="seg-scelta">
         <p class="seg-intro">Hai un locale o organizzi un evento a Cerignola o entro 50 km? Proponi il tuo appuntamento gratuitamente.</p>
         <button type="button" class="btn btn-map seg-full" id="seg-gestore">Sono un gestore / organizzatore</button>
+        <button type="button" class="btn btn-soft seg-full" id="seg-social" style="margin-top:8px;">Segnala un post o una Storia</button>
         <p class="seg-intro" style="margin-top:12px;">Vuoi soltanto consigliare un evento ad altre persone?</p>
         <button type="button" class="btn btn-soft seg-full" id="seg-community">Segnala nella Community</button>
       </div>
       <form id="form-segnalazione-pubblica" hidden>
-        <p class="seg-intro">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
+        <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
+        <div class="m-field">
+          <label for="seg-fonte" id="seg-fonte-label">Link del post o del sito</label>
+          <input type="url" id="seg-fonte" maxlength="1800" placeholder="https://www.instagram.com/..." />
+        </div>
+        <details class="m-field" id="seg-social-testo" hidden>
+          <summary>Compila dal testo del post</summary>
+          <textarea id="seg-social-incolla" maxlength="10000" aria-label="Testo del post" placeholder="Incolla la descrizione dell’annuncio"></textarea>
+          <button type="button" class="btn btn-soft" id="seg-social-applica">Usa i dati del testo</button>
+        </details>
+        <p id="seg-social-stato" role="status" aria-live="polite" hidden></p>
         <details class="m-field" id="seg-poster-tools">
           <summary>Hai una locandina? Compila dalla foto</summary>
           <p class="seg-intro">Scegli una foto JPG/PNG/WebP (max 8 MB). La lettura avviene sul dispositivo e non carica la foto. Per inviare anche la locandina, allegala nella chat WhatsApp.</p>
@@ -1477,7 +1489,7 @@ html.csf-side-open{overflow:hidden}
             <input type="text" id="seg-ora" required maxlength="40" placeholder="Es. 22:30" />
           </div>
         </div>
-        <div class="m-field">
+        <div class="m-field" id="seg-contatto-wrap">
           <label for="seg-contatto">Instagram o WhatsApp del locale *</label>
           <input type="text" id="seg-contatto" required maxlength="150" placeholder="@profilo o numero" />
           <small class="seg-intro">Solo per verificare la richiesta; non viene mostrato nella scheda evento.</small>
@@ -1506,16 +1518,12 @@ html.csf-side-open{overflow:hidden}
             <label for="seg-costo">Prezzo / ingresso</label>
             <input type="text" id="seg-costo" maxlength="100" placeholder="Es. Ingresso libero" />
           </div>
-          <div class="m-field">
-            <label for="seg-fonte">Link del post Instagram o del sito</label>
-            <input type="url" id="seg-fonte" placeholder="https://www.instagram.com/..." />
-          </div>
-          <div class="m-field">
+          <div class="m-field" id="seg-locandina-wrap">
             <label for="seg-locandina">Link diretto della locandina</label>
             <input type="url" id="seg-locandina" placeholder="https://.../locandina.jpg" />
           </div>
         </details>
-        <label class="seg-dichiarazione"><input type="checkbox" id="seg-autorizzato" required /> Dichiaro di essere il gestore o un organizzatore autorizzato.</label>
+        <label class="seg-dichiarazione"><input type="checkbox" id="seg-autorizzato" required /> <span id="seg-autorizzato-testo">Dichiaro di essere il gestore o un organizzatore autorizzato.</span></label>
         <button type="submit" class="btn btn-map seg-full" id="btn-invia-segnalazione">Invia evento gratis</button>
         <button type="button" class="btn btn-wa seg-full" id="btn-segnala-wa-diretto" style="margin-top:8px;">Invia locandina via WhatsApp</button>
         <p class="seg-intro" style="margin-top:5px;">Puoi inviare direttamente la foto allegandola nella conversazione WhatsApp, senza compilare tutto il modulo.</p>
@@ -1606,7 +1614,7 @@ html.csf-side-open{overflow:hidden}
       if(!document.getElementById("seg-autorizzato")?.checked){mostraToast("Conferma di essere autorizzato a proporre l’evento.");return;}
       const campo=id=>document.getElementById(id)?.value.trim()||"";
       const testoSegnalazione=encodeURIComponent([
-        "Ciao, sono un gestore o organizzatore autorizzato e vorrei pubblicare il mio evento su Che Si Fa Cerignola:",
+        modalitaSocial ? "Ciao, vorrei segnalare questo annuncio pubblico a Che Si Fa Cerignola:" : "Ciao, sono un gestore o organizzatore autorizzato e vorrei pubblicare il mio evento su Che Si Fa Cerignola:",
         "- Tipo: "+campo("seg-tipo"),
         "- Titolo: "+campo("seg-titolo"),
         "- Data e ora: "+[campo("seg-data"),campo("seg-ora")].filter(Boolean).join(" · "),
@@ -3002,6 +3010,13 @@ html.csf-side-open{overflow:hidden}
     }
 
     let ocrInCorso=false;
+    let modalitaSocial=false;
+    let posterCondiviso=null;
+    const segFonte=document.getElementById("seg-fonte");
+    const segContatto=document.getElementById("seg-contatto");
+    const segCitta=document.getElementById("seg-citta");
+    const segStatus=document.getElementById("seg-social-stato");
+    const segTesto=document.getElementById("seg-social-incolla");
     const posterFileInput=document.getElementById("seg-poster-file");
     const posterRead=document.getElementById("seg-poster-read");
     const posterStatus=document.getElementById("seg-poster-status");
@@ -3018,7 +3033,7 @@ html.csf-side-open{overflow:hidden}
     }
     posterRead.addEventListener("click",async()=>{
       if(ocrInCorso)return;
-      const file=posterFileInput.files[0];
+      const file=posterFileInput.files[0]||posterCondiviso;
       if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>8*1024*1024){posterStatus.textContent="Scegli un'immagine JPG, PNG o WebP di massimo 8 MB.";return;}
       ocrInCorso=true;posterRead.disabled=true;posterApply.hidden=true;posterText.hidden=true;posterText.value="";
       posterStatus.textContent="Preparazione lettura. Al primo utilizzo vengono scaricati i componenti OCR.";
@@ -3033,13 +3048,33 @@ html.csf-side-open{overflow:hidden}
       }catch(error){posterStatus.textContent="Lettura non disponibile su questo dispositivo. Puoi compilare il modulo manualmente.";}
       finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;}
     });
-    posterApply.addEventListener("click",()=>{
-      const result=CsfExtras.parsePoster(posterText.value);
-      const descr=document.getElementById("seg-descrizione");
-      if(!descr.value.trim())descr.value=result.text;
-      if(result.date&&result.date>=oggi&&(!segDataInput.value||segDataInput.value===oggi))segDataInput.value=result.date;
-      if(result.time&&!segOraInput.value.trim())segOraInput.value=result.time;
-      posterStatus.textContent="Dati suggeriti applicati ai campi vuoti (o alla data predefinita). Controlla titolo, luogo, data, orario e descrizione prima di inviare.";
+    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;});
+    function applicaDatiSegnalazione(testo,stato){
+      const result=CsfExtras.parsePoster(testo);
+      const campi=[
+        ["seg-titolo",result.title],["seg-luogo",result.venue],
+        ["seg-citta",result.city],["seg-ora",result.time],["seg-costo",result.price],
+        ["seg-descrizione",result.text.slice(0,1000)]
+      ];
+      for(const [id,valore] of campi){
+        const campo=document.getElementById(id);
+        if(valore&&(!campo.value.trim()||(id==="seg-citta"&&!modalitaSocial&&campo.value==="Cerignola")))campo.value=valore;
+      }
+      if(result.date&&result.date>=oggi&&(!segDataInput.value||(!modalitaSocial&&segDataInput.value===oggi)))segDataInput.value=result.date;
+      stato.hidden=false;
+      stato.textContent=result.ambiguousDate||result.ambiguousTime
+        ?"Il testo contiene più date o orari. Scegli quelli dell’evento e verifica i dati prima di inviare."
+        :"Dati suggeriti inseriti. Verifica i campi e completa quelli mancanti prima di inviare.";
+    }
+    posterApply.addEventListener("click",()=>applicaDatiSegnalazione(posterText.value,posterStatus));
+    document.getElementById("seg-social-applica").addEventListener("click",()=>{
+      const url=CsfExtras.socialLinkFromText(segTesto.value);
+      if(url&&!segFonte.value)segFonte.value=url;
+      applicaDatiSegnalazione(segTesto.value,segStatus);
+    });
+    segFonte.addEventListener("change",()=>{
+      const naturale=CsfExtras.socialUrl(segFonte.value)||CsfExtras.socialLinkFromText(segFonte.value);
+      if(naturale)segFonte.value=naturale;
     });
     document.getElementById("csf-weekend-reminder").addEventListener("click",()=>{
       try{
@@ -3054,11 +3089,67 @@ html.csf-side-open{overflow:hidden}
     segCategoriaSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
     const segForm=document.getElementById("form-segnalazione-pubblica");
     const segScelta=document.getElementById("seg-scelta");
-    document.getElementById("seg-gestore").addEventListener("click",()=>{
+    function apriModuloSegnalazione(social){
+      if(social!==modalitaSocial){
+        if(social&&segDataInput.value===oggi)segDataInput.value="";
+        if(social&&segCitta.value==="Cerignola")segCitta.value="";
+        if(!social&&!segDataInput.value)segDataInput.value=oggi;
+        if(!social&&!segCitta.value)segCitta.value="Cerignola";
+      }
+      modalitaSocial=social;
       segScelta.hidden=true;segForm.hidden=false;
+      segFonte.required=social;
+      segContatto.required=!social;
+      document.getElementById("seg-contatto-wrap").hidden=social;
+      document.getElementById("seg-locandina-wrap").hidden=social;
+      document.getElementById("seg-social-testo").hidden=!social;
+      document.getElementById("seg-fonte-label").textContent=social?"Link pubblico al post o alla Storia *":"Link del post o del sito";
+      document.getElementById("seg-autorizzato-testo").textContent=social
+        ?"Confermo che il link rimanda a un annuncio pubblico e che posso condividere l’eventuale locandina."
+        :"Dichiaro di essere il gestore o un organizzatore autorizzato.";
+      document.getElementById("seg-autorizzato").checked=false;
+      document.getElementById("seg-istruzioni").textContent=social
+        ?"Incolla il link all’annuncio. Puoi ricavare i dati dal testo o dalla locandina. La segnalazione sarà verificata prima della pubblicazione."
+        :"Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.";
       modalSegnala.querySelector(".modal-box").scrollTop=0;
-      document.getElementById("seg-titolo").focus({preventScroll:true});
-    });
+      (social?segFonte:document.getElementById("seg-titolo")).focus({preventScroll:true});
+    }
+    document.getElementById("seg-gestore").addEventListener("click",()=>apriModuloSegnalazione(false));
+    document.getElementById("seg-social").addEventListener("click",()=>apriModuloSegnalazione(true));
+
+    async function importaBozzaSocial(){
+      if(urlParams.get("segnalaSocial")!=="1")return;
+      modalSegnala.classList.add("open");
+      aggiornaCampiTipoSegnalazione();
+      apriModuloSegnalazione(true);
+      const token=urlParams.get("bozza")||"", timestamp=Number(urlParams.get("t"));
+      const clean=new URL(location.href);
+      for(const k of ["segnalaSocial","bozza","t"])clean.searchParams.delete(k);
+      history.replaceState(history.state,"",clean.href);
+      try{
+        if(!/^[a-f0-9-]{36}$/.test(token)||!Number.isSafeInteger(timestamp)||Date.now()-timestamp>30*60000||timestamp>Date.now()+60000)throw Error();
+        const store=await caches.open("chesifa-social-local-v1");
+        const key=new URL("__bozza-social/"+token+"?t="+timestamp,location.href);
+        const response=await store.match(key);
+        if(!response||!await store.delete(key))throw Error();
+        const draft=await response.formData();
+        if(!modalitaSocial||segForm.hidden||!modalSegnala.classList.contains("open"))return;
+        const testo=String(draft.get("testo")||"");
+        const fonte=CsfExtras.socialUrl(draft.get("fonte"))||CsfExtras.socialLinkFromText(testo);
+        if(fonte&&!segFonte.value)segFonte.value=fonte;
+        segTesto.value=testo;
+        if(testo){document.getElementById("seg-social-testo").open=true;applicaDatiSegnalazione(testo,segStatus);}
+        const foto=draft.get("foto");
+        if(foto instanceof File){
+          posterCondiviso=foto;
+          document.getElementById("seg-poster-tools").open=true;
+          posterStatus.textContent="Locandina pronta. Premi «Leggi locandina» per ricavare i dati.";
+        }
+      }catch(_){
+        segStatus.hidden=false;
+        segStatus.textContent="Puoi incollare il link o scegliere la locandina dal dispositivo.";
+      }
+    }
     document.getElementById("seg-community").addEventListener("click",()=>{
       const toggle=document.getElementById("csfc-toggle");
       if(!toggle){mostraToast("Community non disponibile: riprova.");return;}
@@ -3068,7 +3159,7 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
       window.CsfMetrics?.action?.("csf_report_open");
-      if (!segDataInput.value) segDataInput.value = oggi;
+      if (!modalitaSocial&&!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
       segScelta.hidden=false;segForm.hidden=true;
       document.getElementById("seg-autorizzato").checked=false;
@@ -3089,10 +3180,13 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("form-segnalazione-pubblica").addEventListener("submit", async e => {
       e.preventDefault();
-      if(segForm.hidden||!document.getElementById("seg-autorizzato").checked){mostraToast("Conferma di essere un gestore o organizzatore autorizzato.");return;}
+      if(segForm.hidden||!document.getElementById("seg-autorizzato").checked){mostraToast("Conferma la dichiarazione prima di inviare.");return;}
+      const fonteVal=modalitaSocial?CsfExtras.socialUrl(segFonte.value):segFonte.value.trim();
+      if(modalitaSocial&&!fonteVal){mostraToast("Inserisci il link pubblico al post o alla Storia.");segFonte.focus();return;}
       if(ocrInCorso){posterStatus.textContent="Lettura in corso. Riprova quando termina.";return;}
       if (!dbGlobal) {
-        apriSegnalazioneWhatsApp();
+        if(modalitaSocial)mostraToast("Invio al momento indisponibile. Riprova o usa il pulsante WhatsApp.");
+        else apriSegnalazioneWhatsApp();
         return;
       }
 
@@ -3102,12 +3196,12 @@ html.csf-side-open{overflow:hidden}
 
       const tipoScelto = segTipoSelect.value;
       const isLuogoFisso = tipoScelto === "Luogo da visitare";
-      const dataScelta = segDataInput.value || oggi;
+      const dataScelta = segDataInput.value || (modalitaSocial?"":oggi);
       const oraScelta = segOraInput.value.trim();
       const luogoVal = document.getElementById("seg-luogo").value.trim();
-      const cittaVal = document.getElementById("seg-citta").value.trim() || "Cerignola";
+      const cittaVal = segCitta.value.trim() || (modalitaSocial?"":"Cerignola");
 
-      if (dataScelta < oggi || !luogoVal || !cittaVal || !document.getElementById("seg-titolo").value.trim() || !document.getElementById("seg-contatto").value.trim() || !oraScelta) {
+      if (dataScelta < oggi || !luogoVal || !cittaVal || !document.getElementById("seg-titolo").value.trim() || (!modalitaSocial&&!segContatto.value.trim()) || !oraScelta) {
         alert("Controlla titolo, locale, comune, data, orario e contatto."); btn.disabled=false;btn.textContent="Invia evento gratis";return;
       }
       const dataTestoFinale = isLuogoFisso
@@ -3126,16 +3220,21 @@ html.csf-side-open{overflow:hidden}
         indirizzoMappa: `${luogoVal}, ${cittaVal}`,
         descrizione: document.getElementById("seg-descrizione").value.trim() || document.getElementById("seg-titolo").value.trim()+" presso "+luogoVal+".",
         costo: document.getElementById("seg-costo").value.trim(),
-        contatto: document.getElementById("seg-contatto").value.trim(),
-        fonteUrl: document.getElementById("seg-fonte").value.trim(),
-        locandinaUrl: isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "",
+        contatto: modalitaSocial ? "Segnalazione da fonte pubblica" : segContatto.value.trim(),
+        fonteUrl: fonteVal,
+        locandinaUrl: !modalitaSocial && isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "",
         inviatoIl: new Date().toISOString()
       };
 
+      if(modalitaSocial&&tuttiEventiAttivi.some(ev=>sonoEventiDuplicatiClient(ev,segnalazione))){
+        mostraToast("Questo evento è già nell’agenda.");
+        btn.disabled=false;btn.textContent="Invia evento gratis";
+        return;
+      }
       try {
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
         window.CsfMetrics?.action?.("csf_report_sent");
-        e.target.reset();posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
+        e.target.reset();posterCondiviso=null;segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
@@ -3536,6 +3635,7 @@ html.csf-side-open{overflow:hidden}
       document.getElementById("btn-segnala-evento").click();
     }
 
+    importaBozzaSocial();
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(err => console.error("SW:", err));

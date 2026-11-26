@@ -10,6 +10,19 @@ Non si esegue scraping di Telegram, non si leggono cronologie e non si usano mes
 ```
 /evento_csf {"titolo":"Dinner Show","dataInizio":"2026-12-05","luogo":"Nome locale","indirizzoMappa":"Via del locale, Cerignola","descrizione":"Cena spettacolo con DJ set.","orario":"21:00","consenso":"Autorizzo la pubblicazione su Che Si Fa Cerignola"}
 ```
+Lo stesso annuncio può essere pubblicato come testo o scritto nella didascalia di una foto, con una riga per campo:
+```
+/evento_csf
+Evento: Dinner Show
+Data: 2026-12-05
+Locale: Nome locale
+Indirizzo: Via del locale, Cerignola
+Orario: 21:00
+Descrizione: Cena spettacolo con DJ set.
+Autorizzo la pubblicazione su Che Si Fa Cerignola
+```
+Le righe facoltative sono `Al:`, `Ingresso:` e `Locandina:`. Il bot usa il testo della didascalia. Per pubblicare una locandina sulla scheda, indica il suo URL diretto nella riga `Locandina:`.
+
 L’indirizzo deve terminare con una virgola e il comune autorizzato, ad esempio `Via Roma 1, Cerignola`. Facoltativi: dataFine, costo, locandinaUrl (URL HTTPS diretto su un dominio autorizzato dell'organizzatore, senza token o query). Nessun allegato Telegram scaricato. Fonte ufficiale: link al singolo annuncio pubblico. Per correggere, modificare il post mantenendo il formato. Per annullare, modificare il post in /annulla_csf oppure inviare /annulla_csf ID_DEL_POST dallo stesso canale. Non usare la semplice cancellazione del post come notifica (Bot API non consegna tale evento).
 5. Il workflow esistente ogni 30 minuti riceve gli annunci, applica i filtri di area, data, pertinenza e duplicati, pubblica solo gli eventi validi, e registra i totali nel report. Lo stato di ricezione è salvato nello stesso commit di eventi.json per non perdere aggiornamenti in caso di push concorrente. Telegram conserva gli aggiornamenti non ricevuti al massimo 24 ore; il recupero storico non è previsto.
 

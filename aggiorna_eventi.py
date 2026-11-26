@@ -3494,6 +3494,18 @@ def esegui_aggiornamento():
             eventi_apify = json.load(file_apify)
         nuovi_raccolti.extend(eventi_apify)
         risultati_per_fonte["Apify social pubblici"] = eventi_apify
+    meta_report = {"stato": "non_configurato"}
+    if os.path.isfile("meta-rapporto.json"):
+        with open("meta-rapporto.json", encoding="utf-8") as file_rapporto:
+            meta_report = json.load(file_rapporto)
+    meta_path = "meta-eventi.json"
+    if os.path.isfile(meta_path):
+        with open(meta_path, encoding="utf-8") as file_meta:
+            eventi_meta = json.load(file_meta)
+        nuovi_raccolti.extend(eventi_meta)
+        risultati_per_fonte["Meta API ufficiale"] = eventi_meta
+        registra_statistica_fonte("Meta API ufficiale", stato=meta_report.get("stato", "n/d"),
+                                  eventiEstratti=len(eventi_meta))
     eventi_telegram = list(telegram_state["events"].values())
     nuovi_raccolti.extend(eventi_telegram)
     registra_statistica_fonte("Telegram: annunci autorizzati", **telegram_report, eventiEstratti=len(eventi_telegram))
@@ -3582,6 +3594,7 @@ def esegui_aggiornamento():
     _scrivi_json_atomico(percorso_stato,memoria)
     report = {
         "misureCiclo": qualita,
+        "meta": meta_report,
         "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
         "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
                            if any(sono_duplicati(e, f) for f in lista_finale)],
