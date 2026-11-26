@@ -504,6 +504,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:foggia-2026-11-28-la-notte-della-musica-carlito-s@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+SUMMARY:La Notte della Musica – Carlito's – Foggia
+LOCATION:Via Catalano 13\, Foggia
+DESCRIPTION:Sab 28 Nov 2026 · Ore 21:00\nPiano bar e karaoke con Antonio A
+ cquaviva dalle ore 21:00. Info e prenotazioni tavoli: 388 5818972.\nAccess
+ o: Non indicato · Contattare il locale\nVerifica variazioni\, orari e fon
+ te nella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerigno
+ la/eventi/foggia-2026-11-28-la-notte-della-musica-carlito-s.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-11-28-la-notte-della-musica-carlito-s.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-11-28-love-generation-90-domus-disco@chesifacerignola
 DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261128
