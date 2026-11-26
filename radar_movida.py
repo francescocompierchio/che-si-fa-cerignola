@@ -138,6 +138,15 @@ def fonti(registro,anagrafiche,oggi=None,promoter=None):
             host,handle=profile
             alias=[x for x in (nome,handle) if len(x)>=5]
             rss.append(feed("Promoter pubblico "+nome,f'site:{host} "{handle}" {temi}',"",alias))
+            # Una ricerca generica regionale satura il budget con risultati
+            # lontani. Due ricerche mirate separano le zone e usano una finestra
+            # più recente; non assumono mai la città a partire dalla query.
+            if host=="instagram.com":
+                for zona,comuni in (("Cerignola e Reali Siti",'(Cerignola OR "Orta Nova" OR Stornara OR Stornarella OR Canosa OR Trinitapoli OR "San Ferdinando di Puglia")'),("Foggia e costa",'(Foggia OR Manfredonia OR Barletta OR Trani OR Bisceglie OR Andria)')):
+                    f=feed("Promoter mirato "+nome+" "+zona,f'site:{host} "{handle}" {comuni} (karaoke OR "piano bar" OR "dj set" OR "musica dal vivo" OR "serata" OR "cena spettacolo")',"",alias)
+                    f["url"]=f["url"].replace("when%3A30d","when%3A7d")
+                    f["promoter_mirato"]=True
+                    rss.append(f)
     # Solo in stagione, con il validatore Capodanno dedicato: il filtro
     # nightlife generico scarterebbe i pranzi e i cenoni senza DJ.
     anno=capodanno.stagione(oggi or date.today())
