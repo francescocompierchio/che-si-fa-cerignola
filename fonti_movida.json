@@ -303,6 +303,24 @@
       "sito": "https://www.masseriapavoni.com/",
       "evidenza": "https://www.masseriapavoni.com/",
       "social": "https://www.instagram.com/masseria_pavoni/"
+    },
+    {
+      "nome": "Teku33",
+      "alias": [
+        "Teku33",
+        "Teku 33"
+      ],
+      "evidenza": "https://www.tripadvisor.it/Restaurant_Review-g1913931-d12458957-Reviews-Teku33-Cerignola_Province_of_Foggia_Puglia.html",
+      "nota": "Anagrafica pubblica: non prova di serate attive."
+    },
+    {
+      "nome": "Futur Club Movida",
+      "alias": [
+        "Futur Club",
+        "Futur Club Movida"
+      ],
+      "evidenza": "https://restaurantguru.it/Disco-Pub-Futur-Club-Movida-Cerignola",
+      "nota": "Anagrafica da verificare mediante annunci recenti; non prova di apertura."
     }
   ],
   "Barletta": [
@@ -356,7 +374,9 @@
       "alias": [
         "aphelion club"
       ],
-      "calendario": "https://xceed.me/it/trani/venue/aphelion-club-1"
+      "calendario": "https://xceed.me/it/trani/venue/aphelion-club-1",
+      "social": "https://www.instagram.com/aphelion.club/",
+      "evidenzaSocial": "https://nightz.it/locali/aphelion-club/"
     },
     {
       "nome": "Baia Nhà",
@@ -395,7 +415,9 @@
       "alias": [
         "divine club"
       ],
-      "calendario": "https://nightz.it/locali/divine-club/"
+      "calendario": "https://nightz.it/locali/divine-club/",
+      "social": "https://www.instagram.com/divineclub.it/",
+      "evidenzaSocial": "https://nightz.it/locali/divine-club/"
     },
     {
       "nome": "Ferus Pub",
@@ -403,7 +425,9 @@
         "ferus pub",
         "ferus bisceglie"
       ],
-      "evidenza": "https://iltaccodibacco.it/bisceglie/ferus-pub"
+      "evidenza": "https://iltaccodibacco.it/bisceglie/ferus-pub",
+      "social": "https://www.facebook.com/feruspub",
+      "evidenzaSocial": "https://www.touringclub.it/destinazioni/bisceglie/fare/269521-ferus"
     },
     {
       "nome": "Da Sergio e Davide",
@@ -443,6 +467,15 @@
         "bar movida"
       ],
       "evidenza": "https://www.manfredoniaeventi.com/luogo/bar-movida/"
+    },
+    {
+      "nome": "Maiorano Boutique Hotel",
+      "alias": [
+        "Maiorano Boutique Hotel",
+        "Italianissima"
+      ],
+      "sito": "https://www.hotelmaiorano.it/eventi/",
+      "evidenza": "https://www.hotelmaiorano.it/eventi/"
     }
   ],
   "Foggia": [
