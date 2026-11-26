@@ -23,6 +23,7 @@ def indirizzo_feed(base, href):
         or parts.query or parts.fragment or ":" in parts.netloc or len(parts.path) > 150
         or not re.fullmatch(r"/[a-zA-Z0-9._/-]+", parts.path)
         or ".." in parts.path
+        or re.search(r"(?:^|/)(?:comments?|commenti)(?:/|$)", parts.path, re.I)
         or not re.search(r"(?:\.(?:rss|xml|atom)$|/(?:feed|rss|atom)/?$)", parts.path, re.I)):
         return ""
     return url
@@ -48,7 +49,8 @@ def registrati(memoria, diagnostica, now):
             entry = elenco.setdefault(url, {"scopertoAl": now})
             entry.update({"confermatoAl": now, "citta": dati.get("cittaDichiarataFeed", "")})
     vivi = sorted(
-        ((url, entry) for url, entry in elenco.items() if now - entry["confermatoAl"] <= 60 * 86400),
+        ((url, entry) for url, entry in elenco.items()
+         if indirizzo_feed(url, url) and now - entry["confermatoAl"] <= 60 * 86400),
         key=lambda kv: (-kv[1]["confermatoAl"], kv[0]),
     )
     memoria["feedEditori"] = dict(vivi[:50])

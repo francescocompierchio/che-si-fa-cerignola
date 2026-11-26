@@ -50,6 +50,7 @@ class RadarTerritorioTests(unittest.TestCase):
         soup = BeautifulSoup(
             '<link rel="alternate" type="application/rss+xml" href="/agenda/feed/">'
             '<link rel="alternate" type="application/atom+xml" href="https://altro.it/atom.xml">'
+            '<link rel="alternate" type="application/rss+xml" href="/comments/feed/">'
             '<link rel="alternate" type="application/rss+xml" href="/feed?token=valore">',
             "html.parser",
         )
@@ -61,6 +62,10 @@ class RadarTerritorioTests(unittest.TestCase):
         }, 90000), 1)
         self.assertEqual(fonti_editori.scegli(memoria, 90001, {"altro.it"}), [])
         self.assertTrue(fonti_editori.scegli(memoria, 90001, {"editore.it"})[0]["feed_autoscoperto"])
+        commenti = "https://editore.it/comments/feed/"
+        memoria["feedEditori"][commenti] = {"scopertoAl": 90000, "confermatoAl": 90000}
+        fonti_editori.registrati(memoria, {}, 90001)
+        self.assertNotIn(commenti, memoria["feedEditori"])
 
     def test_redirect_inatteso_e_robots_fermano_la_lettura(self):
         session = Mock()

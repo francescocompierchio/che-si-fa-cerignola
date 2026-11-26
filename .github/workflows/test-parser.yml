@@ -6,6 +6,13 @@ on:
       - main
     paths:
       - "aggiorna_eventi.py"
+      - "apprendimento.py"
+      - "discovery_locale.py"
+      - "fonti_editori.py"
+      - "radar_territorio.py"
+      - "radar_apify.py"
+      - "stato_raccolta.py"
+      - "test_radar_territorio.py"
       - "test_aggiorna_eventi.py"
       - ".github/workflows/test-parser.yml"
 
