@@ -134,40 +134,68 @@
   return offset;
  }
  function abortGesture(){gesture=null;clearPreview();}
- document.addEventListener("touchstart",e=>{
+ function beginGesture(target,x,y,pointerId=null){
   keyboardInput=false;abortGesture();
-  if(e.touches.length!==1||innerWidth>900)return;
+  if(innerWidth>900)return;
   if(active&&!active.open)release(active);
-  const t=e.touches[0],x=t.clientX,y=t.clientY,w=document.documentElement.clientWidth;
-  const strip=e.target.closest(".csf-side-swipe");
-  if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]"))return;
+  const w=document.documentElement.clientWidth,strip=target.closest(".csf-side-swipe");
+  if(!strip&&target.closest("input,textarea,select,button,a,summary,[contenteditable=true]"))return;
   const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=8&&x<=65?"left":x>=w-65&&x<=w-8?"right":null)));
-  gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false,strip}:null;
- },{passive:true});
- document.addEventListener("touchmove",e=>{
-  const g=gesture;if(!g)return;if(e.touches.length!==1){abortGesture();return;}
-  const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+  gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false,strip,pointerId}:null;
+ }
+ function moveGesture(x,y,e){
+  const g=gesture;if(!g)return;
+  const dx=x-g.x,dy=y-g.y,inward=g.side==="left"?dx:-dx;
   if(!g.horizontal&&Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx)){abortGesture();return;}
-  const inward=g.side==="left"?dx:-dx;
-  const directed=g.closing?-inward:inward;
-  if(directed>=6&&Math.abs(dx)>Math.abs(dy)*1.25)g.horizontal=true;
+  if((g.closing?-inward:inward)>=6&&Math.abs(dx)>Math.abs(dy)*1.25)g.horizontal=true;
   if(g.horizontal){
    if(e.cancelable)e.preventDefault();
    if(!g.closing)g.offset=previewAt(g.side,Math.max(0,inward));
   }
- },{passive:false});
- document.addEventListener("touchcancel",abortGesture,{passive:true});
- document.addEventListener("touchend",e=>{
+ }
+ function finishGesture(x,y,e){
   const g=gesture;gesture=null;clearPreview();
-  if(!g||e.changedTouches.length!==1||Date.now()-g.time>2500)return;
-  const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-  const inward=g.side==="left"?dx:-dx;
+  if(!g||Date.now()-g.time>2500)return;
+  const dx=x-g.x,dy=y-g.y,inward=g.side==="left"?dx:-dx;
   if(!g.closing&&g.strip&&!g.horizontal&&Math.abs(dx)<=7&&Math.abs(dy)<=7){if(e.cancelable)e.preventDefault();open(g.side,g.strip);return;}
-  if(Math.abs(dx)<20||Math.abs(dx)<Math.abs(dy)*1.25)return;
-  if(g.closing?inward>=0:inward<=0)return;
+  if(Math.abs(dx)<20||Math.abs(dx)<Math.abs(dy)*1.25||(g.closing?inward>=0:inward<=0))return;
   if(e.cancelable)e.preventDefault();
-  if(g.closing)close();
-  else open(g.side,g.strip,g.offset);
+  if(g.closing)close();else open(g.side,g.strip,g.offset);
+ }
+ // Pointer Events sulle linguette: reagiscono al movimento senza attendere la soglia touchmove del browser.
+ // Il touch-action:pan-y lascia al sistema lo scorrimento verticale; pointercancel annulla l'anteprima.
+ let pointerTouch=false;
+ document.addEventListener("pointerdown",e=>{
+  if(e.pointerType!=="touch"||!e.isPrimary||!e.target.closest(".csf-side-swipe"))return;
+  pointerTouch=true;beginGesture(e.target,e.clientX,e.clientY,e.pointerId);
+ },{passive:true});
+ document.addEventListener("pointermove",e=>{
+  if(pointerTouch&&gesture?.pointerId===e.pointerId)moveGesture(e.clientX,e.clientY,e);
+ },{passive:false});
+ document.addEventListener("pointerup",e=>{
+  if(pointerTouch&&gesture?.pointerId===e.pointerId)finishGesture(e.clientX,e.clientY,e);
+ },{passive:false});
+ document.addEventListener("pointercancel",e=>{if(gesture?.pointerId===e.pointerId)abortGesture();},{passive:true});
+ // Touch Events per il bordo circostante e i browser senza Pointer Events.
+ document.addEventListener("touchstart",e=>{
+  if(pointerTouch){if(e.touches.length!==1)abortGesture();return;}
+  if(e.touches.length!==1){abortGesture();return;}
+  const t=e.touches[0];beginGesture(e.target,t.clientX,t.clientY);
+ },{passive:true});
+ document.addEventListener("touchmove",e=>{
+  if(pointerTouch)return;
+  if(e.touches.length!==1){abortGesture();return;}
+  const t=e.touches[0];moveGesture(t.clientX,t.clientY,e);
+ },{passive:false});
+ document.addEventListener("touchcancel",()=>{pointerTouch=false;abortGesture();},{passive:true});
+ document.addEventListener("touchend",e=>{
+  if(pointerTouch){
+   // Non far arrivare il click sintetico al backdrop dopo l'apertura.
+   pointerTouch=false;if(e.cancelable)e.preventDefault();
+   if(gesture?.pointerId!==null&&gesture)abortGesture();return;
+  }
+  if(e.changedTouches.length!==1){abortGesture();return;}
+  const t=e.changedTouches[0];finishGesture(t.clientX,t.clientY,e);
  },{passive:false});
  // Solo aperture vere: la sessione non viene salvata o trasmessa.
  document.addEventListener("toggle",e=>{const el=e.target;if(el.matches?.("#events-container details[data-event-key]")&&el.open){const k=el.dataset.eventKey;const i=history.indexOf(k);if(i>=0)history.splice(i,1);history.unshift(k);history.length=Math.min(history.length,30);}},true);
