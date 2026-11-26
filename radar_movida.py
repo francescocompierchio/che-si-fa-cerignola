@@ -1,5 +1,7 @@
 """Radar movida: ricerca per locale e formato, con città e data verificate a valle."""
 import re
+from datetime import date
+import capodanno
 from urllib.parse import urlencode,urlparse
 
 FORMATI=re.compile(r"\b(?:jam session|open mic|quiz game|music quiz|cervellone|tribut[oi]|tribute|live|dj[\s-]*set|deejay|karaoke|clubbing|discotec\w*|club night|party|apericena|aperitivo musicale|dinner show|cena spettacolo|serata latin[ae]|bachata|salsa|reggaeton|techno|house music|musica dal vivo|vinyl di wine|vinyl set|music selection|opening(?: winter| summer)? season|opening party|serata a tema|serata anni|piano bar)\b",re.I)
@@ -18,7 +20,7 @@ def live_in_locale(titolo,descrizione,sede,registro=()):
                 (SEDI.search(sede) or alias_corrispondente(sede,registro)) and
                 not re.search(r"\b(?:teatro|auditorium|chiesa|cattedrale)\b",sede,re.I))
 
-def fonti(registro,anagrafiche):
+def fonti(registro,anagrafiche,oggi=None):
     dirette=[];rss=[]
     def feed(nome,q,comune="",alias=()):
         return {"nome":"Radar Movida - "+nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":q+" when:30d","hl":"it","gl":"IT","ceid":"IT:it"}),
@@ -77,7 +79,12 @@ def fonti(registro,anagrafiche):
             rss.append(feed("Cerignola fonte "+r["nome"]+" "+campo,q,"Cerignola",r.get("alias",[])))
     for comune in ("Stornara","Stornarella","Orta Nova","Trinitapoli","San Ferdinando di Puglia","Canosa di Puglia","Lavello","Margherita di Savoia","Foggia","Barletta","Trani","Manfredonia","Bisceglie","Andria","Melfi","Venosa"):
         rss.append(feed(comune,'"'+comune+'" '+temi,comune))
-    # Discovery stagionale a basso costo: data e sede restano obbligatorie a valle.
-    for comune in ("Cerignola","Stornara","Stornarella","Orta Nova","Canosa di Puglia","San Ferdinando di Puglia","Trinitapoli","Lavello","Margherita di Savoia","Ascoli Satriano","Ordona","Carapelle"):
-        rss.append(feed(comune+" feste e cenoni",'"'+comune+'" ("cenone" OR "veglione" OR "pranzo di Capodanno" OR "cenone di San Silvestro" OR "festa di fine anno")',comune))
+    # Solo in stagione, con il validatore Capodanno dedicato: il filtro
+    # nightlife generico scarterebbe i pranzi e i cenoni senza DJ.
+    anno=capodanno.stagione(oggi or date.today())
+    if anno is not None:
+        for comune in ("Cerignola","Stornara","Stornarella","Orta Nova","Canosa di Puglia","San Ferdinando di Puglia","Trinitapoli","Lavello","Margherita di Savoia","Ascoli Satriano","Ordona","Carapelle"):
+            f=feed(comune+" feste e cenoni",f'"{comune}" ("cenone" OR "veglione" OR "pranzo di Capodanno" OR "cenone di San Silvestro" OR "festa di fine anno") ({anno} OR {anno+1})',comune)
+            f.update(anno_capodanno=anno,comune_capodanno=comune,nightlife=False,radar_movida=False)
+            rss.append(f)
     return dirette,rss

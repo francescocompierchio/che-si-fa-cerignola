@@ -10,14 +10,16 @@ class RadarMovidaTest(unittest.TestCase):
     def test_fonti(self):
         direct,rss=r.fonti({"Cerignola":[{"nome":"Safarà","alias":["Safarà"],"calendario":"https://iltaccodibacco.it/cerignola/safara"}],"Trani":[{"nome":"Santo Graal","alias":["santo graal"],"calendario":"https://iltaccodibacco.it/trani/santo-graal/"}]},[])
         self.assertEqual(len(direct),2)
-        self.assertTrue(all(x["nightlife"] for x in direct+rss))
+        self.assertTrue(all(x["nightlife"] for x in direct+rss if not x.get("anno_capodanno")))
         self.assertTrue(any(x["alias_movida"] and x["solo_cerignola"] for x in rss))
         self.assertTrue(r.alias_corrispondente("NONZAI DJ set",["NONZAI"]))
         self.assertFalse(r.alias_corrispondente("altro locale",["NONZAI"]))
 
     def test_ricerca_cenoni_territoriale(self):
         from urllib.parse import parse_qs, urlparse
-        _, rss = r.fonti({}, [])
+        from datetime import date
+        _, rss = r.fonti({}, [], date(2026,11,26))
+        self.assertFalse(any(f.get("anno_capodanno") for f in r.fonti({},[],date(2027,5,1))[1]))
         stagionali = [f for f in rss if f["nome"].endswith(" feste e cenoni")]
         self.assertEqual(len(stagionali), 12)
         self.assertEqual(len({f["url"] for f in stagionali}), 12)
@@ -27,6 +29,9 @@ class RadarMovidaTest(unittest.TestCase):
             self.assertIn('"cenone"', q)
             self.assertEqual(f["solo_cerignola"], f["comune_radar"]=="Cerignola")
             self.assertEqual(f["max_schede_rss"], 4)
+            self.assertEqual(f["anno_capodanno"],2026)
+            self.assertEqual(f["comune_capodanno"],f["comune_radar"])
+            self.assertFalse(f["nightlife"])
 
     def test_ricerca_fonti_ufficiali(self):
         from urllib.parse import parse_qs, urlparse
