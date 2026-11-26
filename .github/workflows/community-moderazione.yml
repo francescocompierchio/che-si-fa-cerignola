@@ -52,7 +52,7 @@ jobs:
       - run: |
           python scripts/community_moderator.py self-test
           pip install google-auth==2.40.3 requests==2.32.5
-      - name: Verifica coda senza mostrare dati
+      - name: Verifica coda ogni 60 secondi senza mostrare dati
         id: probe
         env:
           COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
@@ -61,7 +61,11 @@ jobs:
             echo "::error::Secret COMMUNITY_FIREBASE_SERVICE_ACCOUNT non configurato."
             exit 1
           fi
-          result="$(python scripts/community_moderator.py probe)"
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            result="$(python scripts/community_moderator.py watch)"
+          else
+            result="$(python scripts/community_moderator.py probe)"
+          fi
           case "$result" in
             pending=yes|pending=no) printf "%s\n" "$result" >> "$GITHUB_OUTPUT" ;;
             *) echo "::error::Risposta del controllo non valida."; exit 1 ;;
