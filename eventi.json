@@ -413,6 +413,20 @@
     "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Natura & Escursioni",
+    "titolo": "A Minervino un trekking tra paesaggi, masserie e sapori locali",
+    "dataTesto": "Dom 29 Nov 2026",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Caserma",
+    "indirizzoMappa": "Caserma, Minervino Murge",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Iniziativa in programma domenica 29 novembre",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/a-minervino-un-trekking-tra-paesaggi-masserie-e-sapori-locali/"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337792_20261124_091458.jpg",
     "tipoContenuto": "evento",
     "citta": "Barletta",
@@ -942,7 +956,7 @@
     "dataFine": "2026-12-19",
     "luogo": "Vetus Vallum",
     "indirizzoMappa": "Vetus Vallum, Via Antico Ospedale Orsini, 85, 71043 Manfredonia FG, Manfredonia, FG",
-    "costo": "Non specificato nella fonte",
+    "costo": "15€",
     "descrizione": "Sabato 19 dicembre 2026 torna a Manfredonia 𝗠𝗮𝗿𝗲𝗰𝗵𝗶𝗮̀, con 𝗫𝗺𝗮𝘀 𝗡𝗶𝗴𝗵𝘁, una serata dedicata alla musica e al divertimento in occasione delle festività natalizie. L'appuntamento è al 𝗩𝗲𝘁𝘂𝘀 𝗩𝗮𝗹𝗹𝘂𝗺, presso l'Antico Ospedale",
     "fonteUrl": "https://www.manfredoniaeventi.com/evento/marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox-manfredonia-19-dicembre-2026/"
   },
