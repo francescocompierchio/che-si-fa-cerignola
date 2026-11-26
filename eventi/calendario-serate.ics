@@ -26,6 +26,23 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:cerignola-2026-12-05-dinner-show-hermes-club@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:Dinner Show – Hermes Club – Cerignola
+LOCATION:Strada San Marco km 0.80\, Cerignola (FG)
+DESCRIPTION:Sab 5 Dic 2026 · Orario da confermare\nDinner Show re-clap con
+  voice show di EMA e music selection di Angel D. Info e prenotazioni: +39 
+ 351 490 2504. Orario e prezzo non indicati nella locandina.\nAccesso: Non 
+ indicato · Contattare il locale\nVerifica variazioni\, orari e fonte nell
+ a scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/even
+ ti/cerignola-2026-12-05-dinner-show-hermes-club.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
+ nola-2026-12-05-dinner-show-hermes-club.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:cerignola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos@chesiface
  rignola
 DTSTAMP:20261126T000000Z
