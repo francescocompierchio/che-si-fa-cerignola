@@ -10,6 +10,7 @@ const assert=require("node:assert/strict");
       await p.route("**/*",route=>route.request().url().startsWith("http://127.0.0.1:8765/")?route.continue():route.abort());
       await p.addInitScript(()=>{if(!sessionStorage.getItem("test_music_init")){localStorage.setItem("csf_music_v1","off");sessionStorage.setItem("test_music_init","1");}});
       // Fixture minima: carica esattamente lo script di produzione senza modificare i contatori.
+      await p.addInitScript(()=>{const calls=[];Object.defineProperty(window,"__audioSessionCalls",{value:calls});const mock={get type(){return calls.at(-1)||"auto";},set type(v){calls.push(v);}};try{Object.defineProperty(navigator,"audioSession",{configurable:true,value:mock});}catch(_){}});
       await p.goto("http://127.0.0.1:8765/tests/music-fixture.html");
       const button=p.locator("#csf-music-toggle");
       await button.waitFor();
@@ -17,6 +18,7 @@ const assert=require("node:assert/strict");
       await button.tap();
       await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="playing",null,{timeout:25000});
       if(name.startsWith("iPhone")){
+        assert.ok(await p.evaluate(()=>window.__audioSessionCalls.includes("playback")),"iOS richiede categoria playback");
         const audio=p.locator("#csf-music-audio");
         await p.waitForFunction(()=>{const a=document.querySelector("#csf-music-audio");return a&&!a.paused&&a.currentTime>.2&&a.duration>179&&a.duration<182;},null,{timeout:20000});
         assert.ok((await audio.getAttribute("src")).endsWith("/audio/oro-al-tramonto-v1.mp3"));
