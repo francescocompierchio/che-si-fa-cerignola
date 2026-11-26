@@ -130,8 +130,10 @@ jobs:
           const cacheVersion=sw.match(/const CACHE_NAME = "chesifa-shell-v(\d+)"/)?.[1];
           const shareVersion=html.match(/event-page\.js\?v=(\d+)/)?.[1];
           assert.ok(Number(cacheVersion)>=57, "Versione cache service worker non aggiornata");
-          assert.equal(cacheVersion,shareVersion,"Versione script e cache non allineate");
+          assert.ok(Number(shareVersion) <= Number(cacheVersion), "La cache è precedente allo script condivisione");
           assert.ok(sw.includes("event-page.js?v="+shareVersion),"Script condivisione assente dalla cache");
+          const extrasVersion=html.match(/app-extras\.js\?v=(\d+)/)?.[1];
+          assert.ok(extrasVersion && sw.includes("app-extras.js?v="+extrasVersion), "Script del modulo assente dalla cache");
           const shareScript=fs.readFileSync("event-page.js","utf8");
           assert.ok(shareScript.includes("https://www.instagram.com/direct/inbox/"));
           assert.ok(shareScript.includes("https://www.messenger.com/"));
