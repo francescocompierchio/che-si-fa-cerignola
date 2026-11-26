@@ -1,5 +1,7 @@
 """Radar movida: ricerca per locale e formato, con città e data verificate a valle."""
 import re
+import json
+from pathlib import Path
 from datetime import date
 import capodanno
 from urllib.parse import urlencode,urlparse
@@ -20,7 +22,25 @@ def live_in_locale(titolo,descrizione,sede,registro=()):
                 (SEDI.search(sede) or alias_corrispondente(sede,registro)) and
                 not re.search(r"\b(?:teatro|auditorium|chiesa|cattedrale)\b",sede,re.I))
 
-def fonti(registro,anagrafiche,oggi=None):
+def registro_promoter():
+    try:
+        data=json.loads(Path(__file__).with_name("fonti_promoter.json").read_text(encoding="utf-8"))
+        return [r for r in data if isinstance(r,dict)] if isinstance(data,list) else []
+    except (OSError,ValueError):
+        return []
+
+def profilo_social(url):
+    """Accetta soltanto profili pubblici esplicitamente registrati, non reel/post."""
+    p=urlparse(str(url or ""))
+    host=(p.hostname or "").removeprefix("www.")
+    handle=p.path.strip("/")
+    if p.scheme!="https" or host not in {"instagram.com","facebook.com"} or not re.fullmatch(r"[\w.-]{3,80}",handle,re.ASCII):
+        return None
+    if handle.casefold() in {"p","reel","reels","posts","stories","share","events","groups","login","explore","watch"}:
+        return None
+    return host,handle
+
+def fonti(registro,anagrafiche,oggi=None,promoter=None):
     dirette=[];rss=[]
     def feed(nome,q,comune="",alias=()):
         return {"nome":"Radar Movida - "+nome,"url":"https://news.google.com/rss/search?"+urlencode({"q":q+" when:30d","hl":"it","gl":"IT","ceid":"IT:it"}),
@@ -79,6 +99,45 @@ def fonti(registro,anagrafiche,oggi=None):
             rss.append(feed("Cerignola fonte "+r["nome"]+" "+campo,q,"Cerignola",r.get("alias",[])))
     for comune in ("Stornara","Stornarella","Orta Nova","Trinitapoli","San Ferdinando di Puglia","Canosa di Puglia","Lavello","Margherita di Savoia","Foggia","Barletta","Trani","Manfredonia","Bisceglie","Andria","Melfi","Venosa"):
         rss.append(feed(comune,'"'+comune+'" '+temi,comune))
+    # Copertura indipendente da Apify: nomi e handle indicizzati, anche
+    # Facebook e calendari social. Raggruppa al massimo quattro profili,
+    # mantenendo il comune come vincolo sui risultati e non come prova.
+    for comune,righe in registro.items():
+        if comune=="Cerignola":
+            righe=locali
+        profili={}
+        for r in righe:
+            for campo in ("social","facebook","calendario"):
+                profile=profilo_social(r.get(campo))
+                if not profile:
+                    continue
+                host,handle=profile
+                # Le vecchie ricerche individuali locali coprono già il campo social.
+                if comune=="Cerignola" and profile==profilo_social(r.get("social")):
+                    continue
+                profili.setdefault(host,{}).setdefault(handle.casefold(),(handle,list(r.get("alias",[]))))
+        for host,entries in sorted(profili.items()):
+            gruppi=list(entries.values())
+            for i in range(0,len(gruppi),4):
+                blocco=gruppi[i:i+4]
+                handles="("+" OR ".join('"'+h+'"' for h,_ in blocco)+")"
+                alias=list(dict.fromkeys(x for h,aa in blocco for x in [h]+aa if isinstance(x,str) and len(x)>=5))
+                rss.append(feed(f"{comune} profili pubblici {host} {i//4+1}",f"site:{host} {handles} {temi}",comune,alias))
+        if comune!="Cerignola":
+            alias=list(dict.fromkeys(x for r in righe for x in r.get("alias",[]) if isinstance(x,str) and len(x)>=5 and '"' not in x))
+            for i in range(0,len(alias),6):
+                blocco=alias[i:i+6]
+                nomi="("+" OR ".join('"'+x+'"' for x in blocco)+")"
+                rss.append(feed(f"{comune} locali nominativi {i//6+1}",f'{nomi} "{comune}" {temi}',comune,blocco))
+    # Promoter regionali: non attribuire automaticamente il comune della sede
+    # del promoter. La località deve provenire dalla singola scheda originale.
+    for r in (registro_promoter() if promoter is None else promoter):
+        profile=profilo_social(r.get("social"))
+        nome=r.get("nome","")
+        if profile and isinstance(nome,str) and nome:
+            host,handle=profile
+            alias=[x for x in (nome,handle) if len(x)>=5]
+            rss.append(feed("Promoter pubblico "+nome,f'site:{host} "{handle}" {temi}',"",alias))
     # Solo in stagione, con il validatore Capodanno dedicato: il filtro
     # nightlife generico scarterebbe i pranzi e i cenoni senza DJ.
     anno=capodanno.stagione(oggi or date.today())

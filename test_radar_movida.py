@@ -15,6 +15,24 @@ class RadarMovidaTest(unittest.TestCase):
         self.assertTrue(r.alias_corrispondente("NONZAI DJ set",["NONZAI"]))
         self.assertFalse(r.alias_corrispondente("altro locale",["NONZAI"]))
 
+    def test_profili_pubblici_senza_apify(self):
+        from datetime import date
+        from urllib.parse import parse_qs,urlparse
+        reg={"Cerignola":[{"nome":"Locale Test","alias":["Locale Test"],"social":"https://www.instagram.com/localetest/","facebook":"https://www.facebook.com/localetest/"}],
+             "Trani":[{"nome":"Club Test","alias":["Club Test"],"calendario":"https://www.instagram.com/clubtest/"},
+                      {"nome":"Post","alias":["Post non profilo"],"calendario":"https://www.instagram.com/reel/abcdef/"}]}
+        _,rss=r.fonti(reg,[],date(2026,11,26),[{"nome":"Promoter Test","social":"https://www.instagram.com/promotertest/"}])
+        feeds=[(f,parse_qs(urlparse(f["url"]).query)["q"][0]) for f in rss]
+        self.assertTrue(any("site:facebook.com" in q and '"localetest"' in q and f["solo_cerignola"] for f,q in feeds))
+        self.assertTrue(any("site:instagram.com" in q and '"clubtest"' in q and f["comune_radar"]=="Trani" for f,q in feeds))
+        self.assertTrue(any('"Club Test"' in q and f["comune_radar"]=="Trani" for f,q in feeds))
+        p=next(f for f,q in feeds if "Promoter pubblico" in f["nome"])
+        self.assertEqual(p["comune_radar"],"")
+        self.assertIn("promotertest",p["alias_movida"])
+        self.assertFalse(any("abcdef" in q for f,q in feeds))
+        self.assertIsNone(r.profilo_social("https://www.instagram.com/stories/"))
+        self.assertIsNone(r.profilo_social("https://instagram.com.evil.test/clubtest/"))
+
     def test_ricerca_cenoni_territoriale(self):
         from urllib.parse import parse_qs, urlparse
         from datetime import date

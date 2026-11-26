@@ -2106,7 +2106,12 @@ def raccogli_da_feed_social(session, fonte):
                 if html_pagina:
                     eventi.extend(analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte))
                 continue
-            estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
+            # Usa i parser specializzati dei calendari pubblici anche quando la
+            # scheda viene scoperta dal radar gratuito, non solo dal loro indice.
+            if html_pagina and _host_appartiene(url_finale,"nightz.it"):
+                estratti = analizza_nightz(html_pagina,url_finale)
+            else:
+                estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
             if not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
                 # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
                 for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
