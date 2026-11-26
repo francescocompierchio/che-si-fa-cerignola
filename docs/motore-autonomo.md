@@ -13,6 +13,12 @@ Il [run 45902685298](https://github.com/francescocompierchio/che-si-fa-cerignola
 5. **Locandine e misurazione.** L'OCR richiede una data esplicita univoca o confermata dal titolo. La raccolta acquisisce orari e recapiti espressamente indicati per prenotare. Con Schema.org acquisisce anche artisti e link di acquisto. Il report conta duplicati, scarti osservati, nuove fonti e copertura. Confronta i cicli con le ultime 24 ore disponibili e misura il ritardo solo quando la fonte originale fornisce orario e fuso.
 6. **Apify.** Il runner usa `APIFY_TOKEN` o `APIFY_API_TOKEN` dai secret già previsti. La configurazione distingue le autorizzazioni con `APIFY_META_AUTORIZZATO` e `APIFY_GOOGLE_AUTORIZZATO`, valore `1` solo per la piattaforma per cui esiste l'autorizzazione all'acquisizione automatica. Il preflight verifica il piano gratuito e il credito residuo prima di avviare un Actor compatibile con il tetto per esecuzione.
 
+## Verifica della prima distribuzione
+
+Il [run 45905567425](https://github.com/francescocompierchio/che-si-fa-cerignola/actions/runs/45905567425) è riuscito alle 23:37 ora italiana del 26 novembre 2026. Ha consultato con esito OK 227 fonti, osservato 69 sedi di cui 11 a Cerignola, evitato 54 duplicati e ricontrollato 10 schede. La prima scansione ha riconosciuto 10 URL dichiarati come feed. Quattro riguardavano i commenti e il filtro di produzione li scarta anche dai checkpoint esistenti. L'archivio ha mantenuto 96 record, 54 locandine e 109 eventi nell'unione statica, di cui 25 a Cerignola. Il ciclo ha registrato zero nuove pubblicazioni e 78 schede originali non leggibili. La lettura del nodo pubblico Firebase è riuscita e il campione conteneva zero eventi idonei. Il runner ha segnalato Apify e Telegram privi delle rispettive configurazioni effettive.
+
+Il [checkpoint pubblico](https://github.com/francescocompierchio/che-si-fa-cerignola/tree/stato-motore-eventi) ha salvato il ciclo 130. La [distribuzione Pages](https://github.com/francescocompierchio/che-si-fa-cerignola/actions/runs/45905567287) è riuscita sul commit della PR #106. L'archivio, la pagina SEO di Cerignola, la sitemap, il manifest e il service worker hanno risposto con HTTP 200.
+
 ## Collaudo e ripresa
 
 - Eseguire `python -m unittest discover -s . -p "test_*.py" -q`, `python -m unittest discover -s tests -p "test_*.py" -q` e `node tests/seo-integrity.cjs`. Il ripristino e la riscrittura idempotente del checkpoint sono stati collaudati con un remoto Git temporaneo.
