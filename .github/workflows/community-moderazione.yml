@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/community-moderazione.yml'
+      - 'scripts/community_moderator.py'
+      - 'community-database.rules.json'
   pull_request:
     paths:
       - 'scripts/community_moderator.py'
@@ -59,7 +61,11 @@ jobs:
             echo "::error::Secret COMMUNITY_FIREBASE_SERVICE_ACCOUNT non configurato."
             exit 1
           fi
-          python scripts/community_moderator.py probe >> "$GITHUB_OUTPUT"
+          result="$(python scripts/community_moderator.py probe)"
+          case "$result" in
+            pending=yes|pending=no) printf "%s\n" "$result" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::Risposta del controllo non valida."; exit 1 ;;
+          esac
           echo "Collegamento Firebase Community verificato in lettura. Nessun contenuto nei log."
       - name: Installa modello CPU solo se necessario
         if: steps.probe.outputs.pending == 'yes'
