@@ -163,7 +163,7 @@ def public_alias(record):
         local,actual_domain=email.rsplit("@",1)
         if local[:3]!=prefix or actual_domain!=domain:return None
         return email
-    return prefix+"***@"+domain
+    return None
 
 def message_id(uid,submission):
     ts=int(submission["createdAt"])
@@ -289,17 +289,19 @@ def self_test():
         assert preliminary("Mario",msg)=="reject"
     assert classify("Mario","Ci vediamo stasera?",lambda *_:True,lambda _:True)=="approved"
     assert classify("Mario","Ci vediamo stasera?",lambda *_:False,lambda _:True)=="rejected"
-    base={"nick":"Mar","domain":"gmail.com","text":"Buonasera","createdAt":1700000000000,"state":"pending"}
-    assert public_alias(base)=="Mar***@gmail.com"
+    base={"nick":"Mar","domain":"gmail.com","email":"Mario@gmail.com","shareEmail":True,"text":"Buonasera","createdAt":1700000000000,"state":"pending"}
+    assert public_alias(base)=="Mario@gmail.com"
+    assert public_alias({k:v for k,v in base.items() if k not in ("email","shareEmail")}) is None
     assert public_alias({"nick":"Mario"}) is None
     assert public_alias(dict(base,email="Mario@gmail.com",shareEmail=True))=="Mario@gmail.com"
-    assert public_alias(dict(base,email="Mario@gmail.com")) is None
+    assert public_alias(dict(base,shareEmail=False)) is None
+    assert public_alias({k:v for k,v in base.items() if k!="shareEmail"}) is None
     assert public_alias(dict(base,email="Other@gmail.com",shareEmail=True)) is None
     root={"settings":{"open":True},"submissions":{"a":base.copy()},"moderators":{"owner":True}}
     assert len(message_id("a",base))==20
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==1
     assert root["moderators"]=={"owner":True} and len(root["published"])==1
-    assert next(iter(root["published"].values()))["nick"]=="Mar***@gmail.com"
+    assert next(iter(root["published"].values()))["nick"]=="Mario@gmail.com"
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==0
     root={"settings":{"open":False},"submissions":{"a":base.copy()}}
     assert apply_decisions(root,[("a",base,"approved")],1700000001000)==0

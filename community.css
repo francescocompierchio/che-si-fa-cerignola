@@ -48,8 +48,6 @@
 #csfc-feed strong{font-size:12px;color:#364b9d;min-width:0;overflow-wrap:anywhere}
 #csfc-feed time{display:block;text-align:right;font-size:11px;color:#536472}
 #csfc-feed .csfc-empty{text-align:center;padding:18px 8px;color:#536472;font-size:13px}
-#csfc-panel .csfc-share-email{display:flex;align-items:center;gap:8px;line-height:1.35;min-height:32px}
-#csfc-share-email{width:18px;height:18px;flex:0 0 auto;accent-color:#4657bf}
 #csfc-identity{overflow-wrap:anywhere}
 #csfc-panel .csfc-primary{background:linear-gradient(135deg,#5146ba,#275ca7);border-color:#4055aa}
 @media(max-width:600px){#csfc{top:calc(21% + 12px)}#csfc-panel{left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));max-width:none}#csfc-panel input:not([type=checkbox]),#csfc-panel textarea{font-size:16px}}
