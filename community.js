@@ -17,7 +17,7 @@
   const close=$("button","Chiudi",{type:"button","aria-label":"Chiudi community"});
   const header=$("header");header.append(title,close);
   const status=$("div","",{id:"csfc-status",role:"status"});
-  const info=$("small","Scrivi in italiano e con educazione. I messaggi vengono controllati prima di apparire in chat. Non condividere dati personali.");
+  const info=$("small","Non condividere dati personali.");
   const feed=$("div",null,{id:"csfc-feed",role:"log","aria-label":"Messaggi approvati"});
   const rulesNotice=$("small","Community riservata ai maggiorenni. ",{id:"csfc-rules-notice"});
   const privacy=$("a","Regole e informativa privacy",{href:"community-privacy.html",target:"_blank",rel:"noopener noreferrer"});rulesNotice.append(privacy);
@@ -116,7 +116,7 @@
         const v=s.val();send.disabled=v?.state==="pending";
         if(v?.state==="pending")status.textContent="Messaggio ricevuto. Il controllo può richiedere alcuni minuti o più se il servizio è occupato.";
         else if(v?.state==="approved")status.textContent="Messaggio approvato e pubblicato.";
-        else if(v?.state==="rejected")status.textContent="Messaggio non pubblicato. Scrivi in italiano, con educazione e senza dati personali, e riprova. Puoi chiedere un riesame."
+        else if(v?.state==="rejected")status.textContent="Messaggio non pubblicato. Puoi riprovare o chiedere un riesame."
       });
       if(moderator){
         mod.hidden=false;
