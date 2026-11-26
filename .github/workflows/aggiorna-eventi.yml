@@ -2,11 +2,11 @@ name: Aggiorna Eventi Cerignola
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "8,38 * * * *"
   workflow_dispatch:
     inputs:
       forza_fonti:
-        description: 'Ignora temporaneamente le pause adattive delle fonti'
+        description: 'Ignora le pause per resa bassa; rispetta i limiti HTTP'
         type: boolean
         default: true
   push:
@@ -24,6 +24,7 @@ on:
       - "test_radar_natura.py"
       - "esperienze.json"
       - "stato_raccolta.py"
+      - "scripts/memoria_raccolta.py"
       - "fonti_movida.json"
       - "fonti_promoter.json"
       - "test_radar_apify.py"
@@ -91,13 +92,20 @@ jobs:
           key: fonti-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: fonti-v1-
 
+      - name: Controlla il checkpoint persistente
+        continue-on-error: true
+        timeout-minutes: 1
+        run: python scripts/memoria_raccolta.py ripristina
+
       - name: Pulisce report e salva copia precedente
         run: |
           rm -f report_copertura.json
           cp eventi.json backup-eventi.json
 
       - name: Verifica parser, categorie e indirizzi
-        run: python -m unittest discover -s . -p "test_*.py" -v
+        run: |
+          python -m unittest discover -s . -p "test_*.py" -q
+          python -m unittest discover -s tests -p "test_*.py" -q
 
       - name: Radar Apify con budget gratuito
         continue-on-error: true
@@ -208,6 +216,11 @@ jobs:
 
       - name: Verifica integrità SEO e aggiornamento archivio
         run: node tests/seo-integrity.cjs
+
+      - name: Salva il checkpoint giornaliero
+        continue-on-error: true
+        timeout-minutes: 1
+        run: python scripts/memoria_raccolta.py salva
 
       - name: Genera pagine HTML e sitemap SEO
         run: node genera_pagine_eventi.js
