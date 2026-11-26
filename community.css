@@ -1,5 +1,5 @@
-#csfc{position:fixed;right:0;top:42%;z-index:45;font:inherit;color:inherit}
-#csfc-toggle{border:0;background:#20374a;color:white;padding:11px 8px;border-radius:12px 0 0 12px;box-shadow:0 3px 12px #0003;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);border-radius:0 12px 12px 0;font:inherit;font-size:12px;font-weight:700}
+#csfc{position:fixed;right:max(6px,env(safe-area-inset-right,0px));top:42%;width:44px;height:96px;z-index:45;font:inherit;color:inherit}
+#csfc-toggle{position:absolute;top:50%;left:50%;box-sizing:border-box;width:96px;height:44px;display:flex;align-items:center;justify-content:center;border:0;background:#20374a;color:#fff;padding:0 8px;border-radius:10px;box-shadow:0 3px 12px #0003;cursor:pointer;-webkit-appearance:none;appearance:none;writing-mode:horizontal-tb;white-space:nowrap;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;font:inherit;font-size:13px;font-weight:700;line-height:1.2;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #csfc-panel{position:fixed;right:12px;bottom:max(12px,env(safe-area-inset-bottom));width:min(370px,calc(100vw - 24px));max-height:min(76dvh,620px);display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:18px;background:#fff;color:#182b3b;box-shadow:0 8px 40px #0005;border:1px solid #d7dfe6;overflow:auto;overscroll-behavior:contain;font-size:14px}
 #csfc-panel[hidden],#csfc [hidden]{display:none!important}
 #csfc-panel header,#csfc-panel .csfc-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
