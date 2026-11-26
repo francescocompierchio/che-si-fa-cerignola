@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=2"></script>
-  <script src="event-page.js?v=67" defer></script>
+  <script src="event-page.js?v=68" defer></script>
   <script src="metrics.js?v=34"></script>
 
   <meta charset="UTF-8" />
@@ -1230,10 +1230,14 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 html.csf-side-open{overflow:hidden}
 .csf-side-swipe{display:none}
 @media(max-width:900px) and (pointer:coarse){
- .csf-side-swipe{display:block;position:fixed;top:38%;height:27%;width:18px;left:16px;z-index:160;touch-action:pan-y;background:transparent}
- .csf-side-swipe[data-side="right"]{left:auto;right:16px}
- html.csf-side-open .csf-side-swipe{pointer-events:none}
- body:has(.modal-backdrop.open,.venues-drawer.open,#csfc-panel:not([hidden])) .csf-side-swipe{pointer-events:none}
+ .csf-side-swipe{display:flex;align-items:center;justify-content:center;position:fixed;top:48%;height:104px;width:44px;left:0;z-index:160;touch-action:pan-y;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+ .csf-side-swipe[data-side="right"]{left:auto;right:0}
+ .csf-side-grip{display:flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;width:23px;height:94px;position:absolute;left:0;top:5px;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-size:10px;font-weight:800;letter-spacing:.015em;background:linear-gradient(145deg,#102b61,#2864c3);color:#fff4cd;border:1px solid #d5b360;border-radius:9px 0 0 9px;box-shadow:-2px 0 5px #102b6144,inset 0 1px 0 #ffffff35;pointer-events:none}
+ .csf-side-swipe[data-side="right"] .csf-side-grip{left:auto;right:0;transform:none}
+ .csf-side-swipe:focus-visible{outline:2px solid #e4bd5b;outline-offset:-2px}
+ .csf-side-swipe:active .csf-side-grip{filter:brightness(1.2)}
+ html.csf-side-open .csf-side-swipe,body:has(.modal-backdrop.open,.venues-drawer.open,#csfc-panel:not([hidden])) .csf-side-swipe{visibility:hidden;pointer-events:none}
+ @media(max-height:500px){.csf-side-swipe{top:43%;height:78px}.csf-side-grip{height:68px;font-size:9px}}
 }
 .csf-side-dialog{touch-action:pan-y}
 @media(prefers-reduced-motion:reduce){.csf-side-dialog[open]{animation:none}}
@@ -1270,7 +1274,7 @@ html.csf-side-open{overflow:hidden}
         <span class="counter" id="event-counter" title="Eventi in programma">Caricamento…</span>
         <span class="live-pill" id="live-pill" style="display:none;">
           <span class="live-dot"></span>
-          <span title="Connessioni attive rilevate nell’app; non persone uniche"><strong id="online-users-count">0</strong> online</span>
+          <span title="Connessioni attive rilevate nell’app; non persone uniche"><strong id="online-users-count"></strong> online</span>
         </span>
         <span class="live-pill" id="views-pill" style="display:none;">
           <span title="1.367 visualizzazioni storiche GA4 fino al 24 novembre 2026 (possibili accessi admin inclusi) + aperture rilevate da Firebase dal 25 novembre, esclusi i dispositivi admin riconosciuti. Non persone uniche.">👁 <strong id="total-views-count">0</strong> visualizzazioni</span>
@@ -2849,6 +2853,13 @@ html.csf-side-open{overflow:hidden}
     let dbGlobal = null;
     let contatoriGlobal = null;
 
+    function mostraOnline(valore) {
+      const pill = document.getElementById("live-pill");
+      const valido=Number.isSafeInteger(valore)&&valore>=3;
+      document.getElementById("online-users-count").textContent=valido?valore.toLocaleString("it-IT"):"";
+      pill.style.display=valido?"inline-flex":"none";
+    }
+
     function creaContatori(db, consentito, escluso, visibile, mostra, avvisa) {
       const visite=db.ref("statistiche/visiteTotali"), online=db.ref("statistiche/utentiOnline"), conn=db.ref(".info/connected");
       // Nessun identificativo o flag statistico in cookie, localStorage o sessionStorage.
@@ -2926,10 +2937,7 @@ html.csf-side-open{overflow:hidden}
       contatoriGlobal = creaContatori(db, () => window.CsfMetrics?.aggregateAllowed(), isDispositivoEscluso, () => !document.hidden, (tipo, valore) => {
         // Le visite restano registrate in Firebase, senza contatore nell'intestazione.
         if (tipo !== "online") return;
-        const pill = document.getElementById("live-pill");
-        if (valore === null) { pill.style.display = "none"; return; }
-        document.getElementById("online-users-count").textContent = valore.toLocaleString("it-IT");
-        pill.style.display = "inline-flex";
+        mostraOnline(valore);
       }, (msg, err) => console.warn(msg, err));
       document.addEventListener("visibilitychange", () => contatoriGlobal?.aggiorna());
       window.setInterval(() => { if (!document.hidden) contatoriGlobal?.aggiorna(); }, 60000);
@@ -3535,6 +3543,6 @@ html.csf-side-open{overflow:hidden}
   <script src="community-config.js?v=2"></script>
   <script src="community-auth-flow.js?v=1"></script>
   <script src="community.js?v=10"></script>
-  <script src="side-panels.js?v=2"></script>
+  <script src="side-panels.js?v=3"></script>
 </body>
 </html>
