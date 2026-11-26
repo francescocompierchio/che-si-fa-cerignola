@@ -1300,6 +1300,22 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:bisceglie-2026-12-05-mirito-act-i-con-solto@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:Mirito · Act I con Solto – Bisceglie
+LOCATION:Divine Club\, Bisceglie\, BT\, Italia
+DESCRIPTION:Sab 05 Dic 2026 · Ore 23:00\nSerata pubblicata sul calendario 
+ Nightz. Verifica condizioni di ingresso e disponibilità con il locale.\nA
+ ccesso: Consulta la fonte\nVerifica variazioni\, orari e fonte nella sched
+ a.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisc
+ eglie-2026-12-05-mirito-act-i-con-solto.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-12-05-mirito-act-i-con-solto.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:barletta-2026-12-06-christmas-wonderland-si-aprono-le-porte-del-villagg
  io-al-castello-di-barletta@chesifacerignola
 DTSTAMP:20261126T000000Z

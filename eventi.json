@@ -206,6 +206,20 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337823.html"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Around Us",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Divine Club",
+    "indirizzoMappa": "Divine Club, Bisceglie, BT, Italia",
+    "costo": "Consulta la fonte",
+    "descrizione": "Serata pubblicata sul calendario Nightz. Verifica condizioni di ingresso e disponibilità con il locale.",
+    "fonteUrl": "https://nightoutz.it/eventi/around-us/"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/338121_20261126_095159.jpg",
     "tipoContenuto": "evento",
     "citta": "Barletta",
@@ -556,6 +570,20 @@
     "costo": "A pagamento",
     "descrizione": "La gatta con gli stivali è il secondo appuntamento di Merende da Favola. Lo spettacolo è scritto da Michele Ciuffreda e diretto da M. Ciuffreda e Maggie Salice. La produzione del Teatro dei Limoni propone al pubblico del",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332948.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Mirito · Act I con Solto",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 23:00",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Divine Club",
+    "indirizzoMappa": "Divine Club, Bisceglie, BT, Italia",
+    "costo": "Consulta la fonte",
+    "descrizione": "Serata pubblicata sul calendario Nightz. Verifica condizioni di ingresso e disponibilità con il locale.",
+    "fonteUrl": "https://nightoutz.it/eventi/mirito-%c2%b7-act-i-con-solto/"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/331608_20260928_111241.jpg",
