@@ -1,0 +1,69 @@
+name: Verifica sola lettura locandine live
+on:
+  push:
+    branches: ['verifica/locandine-live-20261126']
+permissions:
+  contents: read
+jobs:
+  verifica:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install chromium
+      - name: Controlla byte, schede e immagini renderizzate sul sito pubblico
+        run: |
+          node <<'NODE'
+          const { chromium }=require("playwright");
+          const assert=require("node:assert/strict");
+          const crypto=require("node:crypto");
+          const base="https://francescocompierchio.github.io/che-si-fa-cerignola/";
+          const files={"carlitos-locandina.webp":"8e056a9d94f5cbcd612d339dabeb0f01a9c34583186d503e990a82c740772abc","natale-quattro-vie-locandina.webp":"cd5acd6370445f0bafe4674d53b000abeab0f619f2aeb8aee3a8e532de1d61aa"};
+          const entries=[
+            ["La Notte della Musica – Carlito's","carlitos-locandina.webp","foggia-2026-11-28-la-notte-della-musica-carlito-s.html"],
+            ["Natale nelle Quattro Vie – Un Mondo di Auguri tra le Vie del Cuore","natale-quattro-vie-locandina.webp","cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri-tra-le-vie-del-cuore.html"],
+            ["Natale nelle Quattro Vie – Il Rintocco delle Campane","natale-quattro-vie-locandina.webp","cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane.html"]
+          ];
+          (async()=>{
+            for(const [name,hash] of Object.entries(files)){
+              const res=await fetch(base+"locandine/"+name+"?verifica="+Date.now(),{signal:AbortSignal.timeout(20000),cache:"no-store"});
+              assert.equal(res.status,200,name);
+              const bytes=Buffer.from(await res.arrayBuffer());
+              assert.equal(crypto.createHash("sha256").update(bytes).digest("hex"),hash,name);
+              console.log("HTTP 200 + SHA256 OK "+name+" "+bytes.length+" byte");
+            }
+            for(const [title,filename,slug] of entries){
+              const res=await fetch(base+"eventi/"+slug,{signal:AbortSignal.timeout(20000),cache:"no-store"});
+              assert.equal(res.status,200,slug);
+              assert.ok((await res.text()).includes("/locandine/"+filename),slug);
+              console.log("Pagina pubblica HTTP 200 e locandina collegata: "+title);
+            }
+            const browser=await chromium.launch();
+            try{
+              const p=await browser.newPage({viewport:{width:393,height:852},isMobile:true,hasTouch:true,serviceWorkers:"block",timezoneId:"Europe/Rome"});
+              // Solo risorse pubbliche del sito; nessun contatore, accesso o scrittura Firebase.
+              await p.route("**/*",route=>route.request().url().startsWith(base)&&route.request().method()==="GET"?route.continue():route.abort());
+              await p.addInitScript(()=>localStorage.setItem("csf_escludi_visite","1"));
+              await p.clock.setFixedTime(new Date("2026-11-26T14:49:00+01:00"));
+              await p.goto(base+"?verifica="+Date.now(),{waitUntil:"domcontentloaded",timeout:30000});
+              for(const [title,filename] of entries){
+                const card=p.locator("#events-container details").filter({hasText:title});
+                await card.waitFor({state:"visible",timeout:25000});
+                assert.equal(await card.count(),1,title+" duplicato");
+                assert.ok(await card.evaluate(el=>el.classList.contains("is-featured")),title+" non in evidenza");
+                if(!await card.evaluate(el=>el.open))await card.locator("summary").click();
+                const poster=card.locator("img.event-poster");
+                await poster.waitFor({state:"visible",timeout:15000});
+                await poster.scrollIntoViewIfNeeded();
+                await p.waitForFunction(title=>Array.from(document.querySelectorAll("#events-container img.event-poster")).some(img=>img.alt==="Locandina: "+title&&img.complete&&img.naturalWidth>0),title,{timeout:20000});
+                const info=await poster.evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,src:img.currentSrc}));
+                assert.ok(info.src.includes("/locandine/"+filename),title+" immagine errata");
+                console.log("RENDER MOBILE OK: "+title+" "+info.width+"x"+info.height);
+              }
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exitCode=1;});
+          NODE
