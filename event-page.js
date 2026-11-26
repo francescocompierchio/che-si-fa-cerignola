@@ -190,6 +190,12 @@
     return out;
   }
   function running(){return Boolean(enabled&&!document.hidden&&(nativeAudio?mediaPlaying&&media&&!media.paused:ctx?.state==="running"&&source));}
+  function sessionePlayback(){
+    // Safari iOS: esplicita la categoria media, non ambient, prima del gesto play.
+    // Il browser decide comunque volume, routing e interruzioni.
+    if(!nativeAudio)return;
+    try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(_){}
+  }
   function ensureMedia(){
     if(media)return media;
     media=document.createElement("audio");
@@ -210,6 +216,7 @@
   function playNative(){
     const a=ensureMedia();
     if(mediaPlaying||mediaPending)return;
+    sessionePlayback();
     if(a.error){mediaError=false;a.load();}
     if(a.ended)a.currentTime=0;
     const attempt=++mediaAttempt;
@@ -284,7 +291,7 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    if(nativeAudio)ensureMedia();
+    if(nativeAudio){ensureMedia();if(enabled)sessionePlayback();}
     const style=document.createElement("style");
     style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}";
     document.head.append(style);
