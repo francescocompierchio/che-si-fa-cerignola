@@ -58,10 +58,13 @@
 
 
 // Sottofondo originale CSF: Oro al tramonto, aperitivo lounge completo.
-// Nessuna musica scaricata, servizio esterno, cookie o richiesta di rete.
+// Android conserva il sintetizzatore; iOS usa lo stesso brano prerenderizzato in MP3 locale.
 (function(){
   const Audio=window.AudioContext||window.webkitAudioContext;
   const key="csf_music_v1";
+  const nativeAudio=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)||!Audio;
+  const musicUrl=new URL("audio/oro-al-tramonto-v1.mp3",document.currentScript?.src||document.baseURI).href;
+  let media=null,mediaPending=false,mediaPlaying=false,mediaError=false,mediaAttempt=0;
   let enabled=true,ctx=null,source=null,master=null,buffer=null,button=null,finished=false;
   try{enabled=localStorage.getItem(key)!=="off";}catch(_){}
   function composition(context){
@@ -186,14 +189,52 @@
     }
     return out;
   }
-  function running(){return Boolean(enabled&&ctx?.state==="running"&&source&&!document.hidden);}
+  function running(){return Boolean(enabled&&!document.hidden&&(nativeAudio?mediaPlaying&&media&&!media.paused:ctx?.state==="running"&&source));}
+  function ensureMedia(){
+    if(media)return media;
+    media=document.createElement("audio");
+    media.id="csf-music-audio";
+    media.preload="none";media.hidden=true;media.loop=false;media.autoplay=false;
+    media.setAttribute("playsinline","");
+    media.src=musicUrl;
+    media.addEventListener("playing",()=>{
+      if(!enabled||document.hidden){media.pause();return;}
+      mediaPlaying=true;mediaError=false;render();
+    });
+    for(const ev of ["pause","waiting","stalled"])media.addEventListener(ev,()=>{mediaPlaying=false;render();});
+    media.addEventListener("ended",()=>{mediaPlaying=false;finished=true;render();});
+    media.addEventListener("error",()=>{mediaPlaying=false;mediaPending=false;mediaError=true;render();});
+    document.body.append(media);
+    return media;
+  }
+  function playNative(){
+    const a=ensureMedia();
+    if(mediaPlaying||mediaPending)return;
+    if(a.error){mediaError=false;a.load();}
+    if(a.ended)a.currentTime=0;
+    const attempt=++mediaAttempt;
+    mediaPending=true;mediaError=false;
+    // Chiamata sincrona nel gesto reale: niente await/fetch prima di play().
+    try{
+      Promise.resolve(a.play()).then(()=>{
+        if(attempt!==mediaAttempt)return;
+        mediaPending=false;
+        if(!enabled||document.hidden)a.pause();
+        render();
+      },()=>{
+        if(attempt!==mediaAttempt)return;
+        mediaPending=false;mediaPlaying=false;render();
+      });
+    }catch(_){mediaPending=false;mediaPlaying=false;render();}
+    render();
+  }
   function render(){
     if(!button)return;
     const playing=running();
     button.setAttribute("aria-pressed",String(playing));
     button.setAttribute("aria-label",playing?"Disattiva musica di sottofondo":"Attiva musica di sottofondo");
-    button.title=playing?"Disattiva musica":finished?"Riascolta Oro al tramonto":"Attiva musica";
-    button.dataset.musicState=playing?"playing":!enabled?"off":finished?"finished":"ready";
+    button.title=playing?"Disattiva musica":mediaError?"Riprova musica":finished?"Riascolta Oro al tramonto":"Attiva musica";
+    button.dataset.musicState=playing?"playing":!enabled?"off":finished?"finished":mediaPending?"loading":mediaError?"error":"ready";
     button.classList.toggle("music-playing",playing);
     const mark=button.querySelector(".csf-music-mark");
     if(mark)mark.textContent=playing?"♫":"♪";
@@ -211,7 +252,9 @@
     render();
   }
   function play(allowCreate=true){
-    if(!enabled||finished||document.hidden||!Audio)return;
+    if(!enabled||finished||document.hidden)return;
+    if(nativeAudio){if(allowCreate||media)playNative();return;}
+    if(!Audio)return;
     try{
       if(!ctx){
         if(!allowCreate)return;
@@ -223,12 +266,13 @@
     }catch(_){render();}
   }
   function pause(){
+    if(nativeAudio){++mediaAttempt;mediaPending=false;mediaPlaying=false;media?.pause();render();return;}
     if(ctx?.state==="running")ctx.suspend().catch(()=>{});
     render();
   }
   function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
   function toggle(){
-    if(running()){enabled=false;save();pause();}
+    if(running()||mediaPending){enabled=false;save();pause();}
     else{finished=false;enabled=true;save();play();}
     render();
   }
@@ -240,7 +284,7 @@
       document.querySelector("header").append(button);
     }
     if(!button)return;
-    if(!Audio){button.hidden=true;return;}
+    if(nativeAudio)ensureMedia();
     const style=document.createElement("style");
     style.textContent=".csf-music-toggle{display:inline-grid;place-items:center;min-width:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--border,#dde3ec);border-radius:14px;background:var(--card,#fff);color:var(--accent,#1746a2);font-size:1.3rem;font-weight:800;cursor:pointer;line-height:1;vertical-align:middle}.csf-music-toggle.music-playing{background:var(--premium-selected,#e7efff);box-shadow:inset 0 1px 0 #ffffff50,0 2px 0 var(--depth-button-bottom,#d2ddeb),0 5px 9px var(--depth-ambient,#14213d18)}.csf-music-toggle:focus-visible{outline:3px solid var(--accent,#1746a2);outline-offset:3px}";
     document.head.append(style);
@@ -250,14 +294,15 @@
       if(!running())play();
     };
     document.addEventListener("pointerup",gesture,{capture:true,passive:true});
+    document.addEventListener("touchend",gesture,{capture:true,passive:true});
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
-    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&ctx)play(false);});
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&(ctx||media))play(false);});
     window.addEventListener("pagehide",pause);
-    window.addEventListener("pageshow",()=>{if(enabled&&ctx)play(false);});
+    window.addEventListener("pageshow",()=>{if(enabled&&(ctx||media))play(false);});
     render();
     // Prova l'avvio immediato; i browser che vietano autoplay attendono il gesto.
-    if(enabled){if(document.readyState==="complete")setTimeout(()=>play(),0);else window.addEventListener("load",()=>setTimeout(()=>play(),0),{once:true});}
+    if(enabled&&!nativeAudio){if(document.readyState==="complete")setTimeout(()=>play(),0);else window.addEventListener("load",()=>setTimeout(()=>play(),0),{once:true});}
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
