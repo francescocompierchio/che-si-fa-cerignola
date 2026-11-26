@@ -17,8 +17,11 @@ const assert = require("node:assert/strict");
         const dock=await page.locator(".mobile-dock").evaluate(el=>{
           const active=el.querySelector(".dock-btn.active"),items=[...el.querySelectorAll(".dock-btn")];
           const bounds=el.getBoundingClientRect();
-          return {activeColor:getComputedStyle(active).color,activeBg:getComputedStyle(active).backgroundImage,quickBg:getComputedStyle(document.getElementById("quick-all")).backgroundImage,items:items.map(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return {left:r.left,right:r.right,height:r.height,color:s.color,bg:s.backgroundImage,shadow:s.boxShadow};}),left:bounds.left,right:bounds.right};
+          return {dockBg:getComputedStyle(el).backgroundImage,dockBorder:getComputedStyle(el).borderTopColor,dockShadow:getComputedStyle(el).boxShadow,activeColor:getComputedStyle(active).color,activeBg:getComputedStyle(active).backgroundImage,quickBg:getComputedStyle(document.getElementById("quick-all")).backgroundImage,items:items.map(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return {left:r.left,right:r.right,height:r.height,color:s.color,bg:s.backgroundImage,shadow:s.boxShadow};}),left:bounds.left,right:bounds.right};
         });
+        assert.ok(dock.dockBg.includes(theme==="dark"?"rgb(11, 28, 62)":"rgb(16, 43, 97)"),"Dock blu profondo distinto dalla pagina");
+        assert.equal(dock.dockBorder,theme==="dark"?"rgb(191, 161, 84)":"rgb(228, 189, 91)","Bordo dorato");
+        assert.ok(dock.dockShadow!=="none","Ombra dock");
         assert.equal(dock.activeColor,"rgb(255, 255, 255)");
         assert.equal(dock.activeBg,dock.quickBg,"Gradiente uguale al comando rapido attivo");
         assert.ok(dock.items.length===4&&dock.items.every(b=>b.height>=44&&b.left>=dock.left&&b.right<=dock.right&&b.bg.includes("linear-gradient")&&b.shadow!=="none"),"Dock leggibile e in rilievo: "+theme+" "+width);
