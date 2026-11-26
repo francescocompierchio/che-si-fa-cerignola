@@ -661,6 +661,10 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     sede = (luogo or "").casefold()
     url = (fonte_url or "").casefold()
 
+    # Un laboratorio rivolto ai bambini resta familiare anche quando il locale
+    # usa "Party" nel nome commerciale.
+    if re.search(r"\blaborator\w*\b.{0,100}\b(?:per\s+)?(?:bambin\w*|ragazz\w*|famigli\w*)\b", t):
+        return "Famiglie & Bambini"
     if re.search(r"\b(?:capodanno|san silvestro)\b", t) and re.search(r"\b(?:cenon[ei]|veglion[ei]|party|dj set|cena)\b", t):
         return "Locali & Serate"
     if _host_appartiene(fonte_url, "kodocollective.it") and re.search(r"\b(?:serata|dj[\s-]*set)\b", t):
@@ -683,10 +687,6 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
             return "Sagre & Food"
         if re.search(r"\b(?:sfilata|luna park|attività per famiglie)\b",t):
             return "Famiglie & Bambini"
-    # Un laboratorio rivolto ai bambini resta familiare anche quando il locale
-    # usa "Party" nel nome commerciale.
-    if re.search(r"\blaborator\w*\b.{0,100}\b(?:per\s+)?(?:bambin\w*|ragazz\w*|famigli\w*)\b", t):
-        return "Famiglie & Bambini"
     # Le gare di corsa e gli eventi fitness rientrano nelle attività diurne.
     if any(k in t for k in ("corricerignola", "gara podistica", "maratona", "mezza maratona", "corsa podistica", "corsa su strada", "corsa campestre", "trail running", "urban trail", "spartan race", "hyrox")):
         return "Attività diurne"
