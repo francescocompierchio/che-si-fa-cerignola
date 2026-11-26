@@ -842,6 +842,16 @@
       margin-bottom: 10px;
     }
 
+    #modal-segnala .modal-box { box-sizing:border-box; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); margin:auto; overscroll-behavior:contain; }
+    #modal-segnala .modal-head { position:sticky; top:-18px; background:var(--card); z-index:2; padding:8px 0; }
+    #modal-segnala .modal-close { min-height:44px; min-width:44px; }
+    #modal-segnala .seg-intro { font-size:.83rem; color:var(--muted); line-height:1.4; margin:0 0 8px; }
+    #modal-segnala .seg-full { display:flex; width:100%; min-height:44px; justify-content:center; align-items:center; text-align:center; }
+    #modal-segnala .seg-dichiarazione { display:flex; align-items:flex-start; gap:9px; font-size:.8rem; margin:8px 0 12px; }
+    #modal-segnala .seg-dichiarazione input { flex:0 0 20px; width:20px; height:20px; margin:0; }
+    #modal-segnala details[open] summary { margin-bottom:10px; }
+    #modal-segnala [hidden] { display:none!important; }
+    #modal-segnala .m-row > * { min-width:0; }
     .modal-head h2 {
       margin: 0;
       font-size: 1.08rem;
@@ -1321,10 +1331,10 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       </div>
       <a href="privacy.html">Informativa privacy</a>
     </section>
-    <p>Organizzi una serata, un'attività o conosci un luogo da valorizzare a Cerignola o nel raggio di 50 km?</p>
+    <p>Gestisci un locale o organizzi eventi? Invia il tuo appuntamento per la pubblicazione gratuita.</p>
     <div class="footer-actions">
       <button type="button" class="btn btn-map" id="btn-segnala-evento">
-        Segnala evento / attività
+        Pubblica un evento
       </button>
       <a class="btn btn-soft" id="btn-apk-footer" href="?installa=1#home-shortcut">
         Installa App
@@ -1362,52 +1372,69 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
   </footer>
 
 
-  <nav class="mobile-dock" aria-label="Navigazione rapida"><button type="button" class="dock-btn active" id="dock-home"><span>⌂</span><span>Esplora</span></button><button type="button" class="dock-btn" id="dock-weekend"><span>🌿</span><span>Weekend</span></button><button type="button" class="dock-btn" id="dock-saved"><span>☆</span><span>Salvati</span></button><button type="button" class="dock-btn" id="dock-suggest"><span>＋</span><span>Segnala</span></button></nav><div class="toast-message" id="app-toast" role="status" aria-live="polite"></div>
+  <nav class="mobile-dock" aria-label="Navigazione rapida"><button type="button" class="dock-btn active" id="dock-home"><span>⌂</span><span>Esplora</span></button><button type="button" class="dock-btn" id="dock-weekend"><span>🌿</span><span>Weekend</span></button><button type="button" class="dock-btn" id="dock-saved"><span>☆</span><span>Salvati</span></button><button type="button" class="dock-btn" id="dock-suggest"><span>＋</span><span>Pubblica</span></button></nav><div class="toast-message" id="app-toast" role="status" aria-live="polite"></div>
   <!-- MODALE SEGNALAZIONE EVENTI, SERATE, ATTIVITÀ E LUOGHI -->
   <div class="modal-backdrop" id="modal-segnala" role="dialog" aria-modal="true" aria-labelledby="modal-segnala-title">
     <div class="modal-box">
       <div class="modal-head">
-        <h2 id="modal-segnala-title">Segnala Evento, Serata o Attività</h2>
+        <h2 id="modal-segnala-title">Pubblica il tuo evento</h2>
         <button type="button" class="modal-close" id="btn-chiudi-modale" aria-label="Chiudi">✕</button>
       </div>
-      <p style="font-size:0.83rem; color:var(--muted); margin:0 0 12px;">
-        Proponi una serata, un'attività serale o diurna, un'iniziativa per famiglie, un'escursione o un luogo da visitare a Cerignola o nei comuni vicini (entro 50 km): verrà verificato e pubblicato gratuitamente.
-      </p>
-
-      <form id="form-segnalazione-pubblica">
+      <div id="seg-scelta">
+        <p class="seg-intro">Hai un locale o organizzi un evento a Cerignola o entro 50 km? Proponi il tuo appuntamento gratuitamente.</p>
+        <button type="button" class="btn btn-map seg-full" id="seg-gestore">Sono un gestore / organizzatore</button>
+        <p class="seg-intro" style="margin-top:12px;">Vuoi soltanto consigliare un evento ad altre persone?</p>
+        <button type="button" class="btn btn-soft seg-full" id="seg-community">Segnala nella Community</button>
+      </div>
+      <form id="form-segnalazione-pubblica" hidden>
+        <p class="seg-intro">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
         <details class="m-field" id="seg-poster-tools">
-          <summary>Hai già una locandina? Leggi il testo dalla foto</summary>
-          <p style="font-size:.83rem;color:var(--muted)">Facoltativo. Scegli una foto JPG/PNG/WebP (max 8 MB). Il riconoscimento avviene sul dispositivo; l'immagine non viene pubblicata né inviata a Firebase. Puoi correggere il testo prima di usarlo.</p>
+          <summary>Hai una locandina? Compila dalla foto</summary>
+          <p class="seg-intro">Scegli una foto JPG/PNG/WebP (max 8 MB). La lettura avviene sul dispositivo e non carica la foto. Per inviare anche la locandina, allegala nella chat WhatsApp.</p>
           <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" />
           <button type="button" class="btn btn-soft" id="seg-poster-read">Leggi locandina</button>
           <p id="seg-poster-status" role="status" aria-live="polite"></p>
           <textarea id="seg-poster-text" aria-label="Testo estratto dalla locandina" hidden></textarea>
           <button type="button" class="btn btn-soft" id="seg-poster-apply" hidden>Usa testo e dati riconosciuti</button>
         </details>
+        <select id="seg-tipo" hidden aria-hidden="true" tabindex="-1">
+          <option value="Evento / Serata">Evento / Serata</option>
+          <option value="Attività serale">Attività serale</option>
+          <option value="Attività per famiglie">Attività per famiglie</option>
+          <option value="Escursione / Esperienza">Escursione / Esperienza</option>
+          <option value="Attività diurna">Attività diurna</option>
+        </select>
         <div class="m-field">
-          <label for="seg-tipo">Cosa vuoi segnalare? *</label>
-          <select id="seg-tipo">
-            <option value="Evento / Serata">Evento / Serata in un locale (DJ set, live, drink)</option>
-            <option value="Attività serale">Attività serale (apericena, cena spettacolo, quiz, karaoke...)</option>
-            <option value="Attività per famiglie">Attività per famiglie e bambini</option>
-            <option value="Escursione / Esperienza">Escursione o esperienza nella natura</option>
-            <option value="Attività diurna">Attività diurna</option>
-            <option value="Luogo da visitare">Luogo da visitare / Punto di interesse</option>
-          </select>
+          <label for="seg-titolo" id="lbl-seg-titolo">Nome dell'evento *</label>
+          <input type="text" id="seg-titolo" required maxlength="150" placeholder="Es. Sabato con DJ Set" />
         </div>
-
         <div class="m-field">
-          <label for="seg-titolo" id="lbl-seg-titolo">Titolo evento, serata o attività *</label>
-          <input type="text" id="seg-titolo" required placeholder="Es. Aperitivo con DJ Set / Cena spettacolo / Passeggiata" />
+          <label for="seg-luogo">Nome del locale e indirizzo *</label>
+          <input type="text" id="seg-luogo" required maxlength="200" placeholder="Es. Nome locale, via e numero" />
         </div>
-
+        <div class="m-field">
+          <label for="seg-citta">Comune *</label>
+          <input type="text" id="seg-citta" required maxlength="80" value="Cerignola" />
+        </div>
         <div class="m-row">
           <div class="m-field">
-            <label for="seg-citta">Comune (Cerignola o entro 50 km) *</label>
-            <input type="text" id="seg-citta" required value="Cerignola" />
+            <label for="seg-data" id="lbl-seg-data">Data *</label>
+            <input type="date" id="seg-data" required />
           </div>
           <div class="m-field">
-            <label for="seg-categoria">Categoria *</label>
+            <label for="seg-ora" id="lbl-seg-ora">Orario *</label>
+            <input type="text" id="seg-ora" required maxlength="40" placeholder="Es. 22:30" />
+          </div>
+        </div>
+        <div class="m-field">
+          <label for="seg-contatto">Instagram o WhatsApp del locale *</label>
+          <input type="text" id="seg-contatto" required maxlength="150" placeholder="@profilo o numero" />
+          <small class="seg-intro">Solo per verificare la richiesta; non viene mostrato nella scheda evento.</small>
+        </div>
+        <details class="m-field" id="seg-altri-dati">
+          <summary>Altri dettagli (facoltativi)</summary>
+          <div class="m-field">
+            <label for="seg-categoria">Categoria</label>
             <select id="seg-categoria">
               <option value="Locali & Serate">Locali &amp; Serate</option>
               <option value="Attività serali">Attività serali</option>
@@ -1416,62 +1443,31 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
               <option value="Famiglie & Bambini">Famiglie &amp; Bambini</option>
               <option value="Natura & Escursioni">Natura &amp; Escursioni</option>
               <option value="Attività diurne">Attività diurne</option>
-              <option value="Luoghi da visitare">Luoghi da visitare</option>
               <option value="Sport">Sport</option>
               <option value="Altro">Altro</option>
             </select>
           </div>
-        </div>
-
-        <div class="m-row">
           <div class="m-field">
-            <label for="seg-data" id="lbl-seg-data">Data *</label>
-            <input type="date" id="seg-data" required />
+            <label for="seg-descrizione">Descrizione</label>
+            <textarea id="seg-descrizione" maxlength="1000" placeholder="Programma, prenotazioni, informazioni utili"></textarea>
           </div>
           <div class="m-field">
-            <label for="seg-ora" id="lbl-seg-ora">Orario o giorni apertura *</label>
-            <input type="text" id="seg-ora" required placeholder="Es. Ore 21:30" />
-          </div>
-        </div>
-
-        <div class="m-field">
-          <label for="seg-luogo">Nome locale / punto di ritrovo e indirizzo *</label>
-          <input type="text" id="seg-luogo" required placeholder="Es. Civico 10 Bistrot, Via G. Gentile" />
-        </div>
-
-        <div class="m-field">
-          <label for="seg-descrizione">Descrizione breve *</label>
-          <textarea id="seg-descrizione" required placeholder="Dettagli serata, apericena, cena spettacolo, quiz, karaoke, escursione o informazioni utili..."></textarea>
-        </div>
-
-        <div class="m-row">
-          <div class="m-field">
-            <label for="seg-costo">Accesso / Costo</label>
-            <input type="text" id="seg-costo" placeholder="Es. Ingresso libero" />
+            <label for="seg-costo">Prezzo / ingresso</label>
+            <input type="text" id="seg-costo" maxlength="100" placeholder="Es. Ingresso libero" />
           </div>
           <div class="m-field">
-            <label for="seg-contatto">Tuo IG o WhatsApp (per conferma)</label>
-            <input type="text" id="seg-contatto" placeholder="@pagina o numero" />
+            <label for="seg-fonte">Link del post Instagram o del sito</label>
+            <input type="url" id="seg-fonte" placeholder="https://www.instagram.com/..." />
           </div>
-        </div>
-
-        <div class="m-field">
-          <label for="seg-locandina">Link diretto locandina (opzionale)</label>
-          <input type="url" id="seg-locandina" placeholder="https://.../locandina.jpg" />
-        </div>
-        <div class="m-field">
-          <label for="seg-fonte">Link post Instagram / sito (opzionale)</label>
-          <input type="url" id="seg-fonte" placeholder="https://www.instagram.com/..." />
-        </div>
-
-        <div class="actions" style="margin-top:12px;">
-          <button type="submit" class="btn btn-map" id="btn-invia-segnalazione" style="flex:1;">
-            Invia per pubblicazione
-          </button>
-          <button type="button" class="btn btn-wa" id="btn-segnala-wa-diretto">
-            Oppure via WhatsApp
-          </button>
-        </div>
+          <div class="m-field">
+            <label for="seg-locandina">Link diretto della locandina</label>
+            <input type="url" id="seg-locandina" placeholder="https://.../locandina.jpg" />
+          </div>
+        </details>
+        <label class="seg-dichiarazione"><input type="checkbox" id="seg-autorizzato" required /> Dichiaro di essere il gestore o un organizzatore autorizzato.</label>
+        <button type="submit" class="btn btn-map seg-full" id="btn-invia-segnalazione">Invia evento gratis</button>
+        <button type="button" class="btn btn-wa seg-full" id="btn-segnala-wa-diretto" style="margin-top:8px;">Invia locandina via WhatsApp</button>
+        <p class="seg-intro" style="margin-top:5px;">Puoi inviare direttamente la foto allegandola nella conversazione WhatsApp, senza compilare tutto il modulo.</p>
       </form>
     </div>
   </div>
@@ -1556,9 +1552,10 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     }
 
     function apriSegnalazioneWhatsApp() {
+      if(!document.getElementById("seg-autorizzato")?.checked){mostraToast("Conferma di essere autorizzato a proporre l’evento.");return;}
       const campo=id=>document.getElementById(id)?.value.trim()||"";
       const testoSegnalazione=encodeURIComponent([
-        "Ciao, vorrei segnalare un evento o un’attività per Che Si Fa Cerignola:",
+        "Ciao, sono un gestore o organizzatore autorizzato e vorrei pubblicare il mio evento su Che Si Fa Cerignola:",
         "- Tipo: "+campo("seg-tipo"),
         "- Titolo: "+campo("seg-titolo"),
         "- Data e ora: "+[campo("seg-data"),campo("seg-ora")].filter(Boolean).join(" · "),
@@ -1566,6 +1563,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         "- Luogo: "+campo("seg-luogo"),
         "- Costo: "+campo("seg-costo"),
         "- Descrizione: "+campo("seg-descrizione"),
+        "- Contatto locale: "+campo("seg-contatto"),
         "- Fonte: "+campo("seg-fonte"),
         "- Link locandina: "+campo("seg-locandina")
       ].join("\n"));
@@ -2907,38 +2905,11 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     const lblSegOra = document.getElementById("lbl-seg-ora");
 
     function aggiornaCampiTipoSegnalazione() {
-      const tipo = segTipoSelect.value;
-      if (tipo === "Luogo da visitare") {
-        segCategoriaSelect.value = "Luoghi da visitare";
-        segDataInput.required = false;
-        segDataInput.removeAttribute("min");
-        segOraInput.required = false;
-        lblSegData.textContent = "Data (opzionale per luoghi fissi)";
-        lblSegOra.textContent = "Giorni / orari di apertura";
-        segOraInput.placeholder = "Es. Sempre visitabile / Weekend";
-      } else {
-        segDataInput.required = true;
-        segDataInput.min = oggi;
-        segOraInput.required = true;
-        lblSegData.textContent = "Data *";
-        lblSegOra.textContent = "Orario indicativo *";
-        if (tipo === "Attività serale") {
-          segCategoriaSelect.value = "Attività serali";
-          segOraInput.placeholder = "Es. Ore 21:00";
-        } else if (tipo === "Attività per famiglie") {
-          segCategoriaSelect.value = "Famiglie & Bambini";
-          segOraInput.placeholder = "Es. Ore 17:30";
-        } else if (tipo === "Escursione / Esperienza") {
-          segCategoriaSelect.value = "Natura & Escursioni";
-          segOraInput.placeholder = "Es. Ore 09:30";
-        } else if (tipo === "Attività diurna") {
-          segCategoriaSelect.value = "Attività diurne";
-          segOraInput.placeholder = "Es. Ore 10:30";
-        } else {
-          segCategoriaSelect.value = "Locali & Serate";
-          segOraInput.placeholder = "Es. Ore 22:30";
-        }
-      }
+      const tipi={"Attività serali":"Attività serale","Famiglie & Bambini":"Attività per famiglie","Natura & Escursioni":"Escursione / Esperienza","Attività diurne":"Attività diurna"};
+      segTipoSelect.value=tipi[segCategoriaSelect.value]||"Evento / Serata";
+      segDataInput.required=true;
+      segDataInput.min=oggi;
+      segOraInput.required=true;
     }
 
     let ocrInCorso=false;
@@ -2991,13 +2962,30 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       }catch(_){mostraToast("Impossibile creare il promemoria.");}
     });
 
-    segTipoSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
+    segCategoriaSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
+    const segForm=document.getElementById("form-segnalazione-pubblica");
+    const segScelta=document.getElementById("seg-scelta");
+    document.getElementById("seg-gestore").addEventListener("click",()=>{
+      segScelta.hidden=true;segForm.hidden=false;
+      modalSegnala.querySelector(".modal-box").scrollTop=0;
+      document.getElementById("seg-titolo").focus({preventScroll:true});
+    });
+    document.getElementById("seg-community").addEventListener("click",()=>{
+      const toggle=document.getElementById("csfc-toggle");
+      if(!toggle){mostraToast("Community non disponibile: riprova.");return;}
+      modalSegnala.classList.remove("open");
+      if(toggle.getAttribute("aria-expanded")!=="true")toggle.click();
+    });
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
       window.CsfMetrics?.action?.("csf_report_open");
       if (!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
+      segScelta.hidden=false;segForm.hidden=true;
+      document.getElementById("seg-autorizzato").checked=false;
       modalSegnala.classList.add("open");
+      modalSegnala.querySelector(".modal-box").scrollTop=0;
+      document.getElementById("seg-gestore").focus({preventScroll:true});
     });
 
     document.getElementById("btn-chiudi-modale").addEventListener("click", () => {
@@ -3012,6 +3000,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 
     document.getElementById("form-segnalazione-pubblica").addEventListener("submit", async e => {
       e.preventDefault();
+      if(segForm.hidden||!document.getElementById("seg-autorizzato").checked){mostraToast("Conferma di essere un gestore o organizzatore autorizzato.");return;}
       if(ocrInCorso){posterStatus.textContent="Lettura in corso. Riprova quando termina.";return;}
       if (!dbGlobal) {
         apriSegnalazioneWhatsApp();
@@ -3029,8 +3018,8 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       const luogoVal = document.getElementById("seg-luogo").value.trim();
       const cittaVal = document.getElementById("seg-citta").value.trim() || "Cerignola";
 
-      if ((!isLuogoFisso && dataScelta < oggi) || !luogoVal || !document.getElementById("seg-titolo").value.trim() || !document.getElementById("seg-descrizione").value.trim() || (!isLuogoFisso && !oraScelta)) {
-        alert("Controlla titolo, luogo, descrizione, data e orario."); btn.disabled=false;btn.textContent="Invia per pubblicazione";return;
+      if (dataScelta < oggi || !luogoVal || !cittaVal || !document.getElementById("seg-titolo").value.trim() || !document.getElementById("seg-contatto").value.trim() || !oraScelta) {
+        alert("Controlla titolo, locale, comune, data, orario e contatto."); btn.disabled=false;btn.textContent="Invia evento gratis";return;
       }
       const dataTestoFinale = isLuogoFisso
         ? (oraScelta || "Sempre visitabile")
@@ -3046,7 +3035,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         dataTesto: dataTestoFinale,
         luogo: luogoVal,
         indirizzoMappa: `${luogoVal}, ${cittaVal}`,
-        descrizione: document.getElementById("seg-descrizione").value.trim(),
+        descrizione: document.getElementById("seg-descrizione").value.trim() || document.getElementById("seg-titolo").value.trim()+" presso "+luogoVal+".",
         costo: document.getElementById("seg-costo").value.trim(),
         contatto: document.getElementById("seg-contatto").value.trim(),
         fonteUrl: document.getElementById("seg-fonte").value.trim(),
@@ -3061,12 +3050,12 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
-        alert("Grazie! La segnalazione è stata ricevuta e verrà pubblicata dopo verifica.");
+        alert("Richiesta ricevuta! L’evento sarà pubblicato gratuitamente dopo verifica.");
       } catch (err) {
         alert("Errore durante l'invio. Puoi comunque inviarla su WhatsApp.");
       } finally {
         btn.disabled = false;
-        btn.textContent = "Invia per pubblicazione";
+        btn.textContent = "Invia evento gratis";
       }
     });
 
