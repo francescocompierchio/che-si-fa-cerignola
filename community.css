@@ -35,8 +35,8 @@
 
 /* Community: linguetta in rilievo, chat compatta e safe area iOS. */
 #csfc{top:calc(42% + 12px)}
-#csfc-toggle{background:linear-gradient(150deg,#5740c7 0%,#3849bc 48%,#235fa2 100%);border:1px solid #aaa8ff;border-radius:12px;box-shadow:0 4px 0 #202b76,0 7px 16px #15215d66,inset 0 1px 2px #ffffff66;color:#fff;transition:filter .18s ease,box-shadow .18s ease;touch-action:manipulation}
-#csfc-toggle:active,#csfc-toggle[aria-expanded="true"]{filter:brightness(1.14);box-shadow:0 1px 0 #202b76,0 3px 10px #15215d55,inset 0 1px 2px #ffffff66}
+#csfc-toggle{background:linear-gradient(150deg,#fff1ba 0%,#f5d77c 38%,#d7a63b 100%);border:1px solid #fff0ba;border-radius:12px;box-shadow:0 4px 0 #98701e,0 7px 16px #674a2066,inset 0 1px 2px #ffffff88;color:#17304e;transition:filter .18s ease,box-shadow .18s ease;touch-action:manipulation}
+#csfc-toggle:active,#csfc-toggle[aria-expanded="true"]{filter:brightness(1.14);box-shadow:0 1px 0 #98701e,0 3px 10px #674a2055,inset 0 1px 2px #ffffff88}
 @media(hover:hover){#csfc-toggle:hover{filter:brightness(1.15)}}
 #csfc-toggle:focus-visible,#csfc-panel button:focus-visible{outline:3px solid #6198ff;outline-offset:2px}
 #csfc-panel .csfc-header-actions{display:flex;gap:5px;align-items:center}
