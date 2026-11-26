@@ -105,7 +105,7 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
  }
  document.addEventListener("DOMContentLoaded",()=>{
    const eventPage=document.getElementById("csf-event-page");
-   if(eventPage){const ev={titolo:eventPage.dataset.title,citta:eventPage.dataset.city,dataInizio:eventPage.dataset.date};const target=eventPage.querySelector("img")||eventPage.querySelector("h1");if(target){const holder=document.createElement("div");target.after(holder);attachStats(ev,holder,eventPage);}}
+   if(eventPage?.dataset?.title){const ev={titolo:eventPage.dataset.title,citta:eventPage.dataset.city,dataInizio:eventPage.dataset.date};const target=eventPage.querySelector("img")||eventPage.querySelector("h1");if(target){const holder=document.createElement("div");target.after(holder);attachStats(ev,holder,eventPage);}}
    const banner=document.getElementById("csf-consent");
    if(!banner)return;
    // Nessun banner automatico. Le statistiche dettagliate richiedono consenso esplicito.
