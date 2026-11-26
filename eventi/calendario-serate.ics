@@ -532,6 +532,21 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-12-05-the-peak-w-inkaari@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:The peak w/INKAARI – Barletta
+LOCATION:Viale Regina Elena 100\, Barletta
+DESCRIPTION:Sab 05 Dic 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
+ a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
+ s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
+ 6-12-05-the-peak-w-inkaari.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-05-the-peak-w-inkaari.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:manfredonia-2026-12-06-manfredonia-cenerentola-301@chesifacerignola
 DTSTAMP:20261126T000000Z
 DTSTART;VALUE=DATE:20261206
@@ -749,6 +764,21 @@ DESCRIPTION:Gio 31 Dic 2026 · Ore 20:30\nCenone con la Band Suonovia\, bal
  egiohotel-manfredi.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
  edonia-2026-12-31-gran-gala-di-san-silvestro-regiohotel-manfredi.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:barletta-2026-12-31-new-year-s-eve@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261231
+DTEND;VALUE=DATE:20270101
+SUMMARY:NEW YEAR'S EVE – Barletta
+LOCATION:Viale Regina Elena 100\, Barletta
+DESCRIPTION:Gio 31 Dic 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
+ a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
+ s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
+ 6-12-31-new-year-s-eve.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-31-new-year-s-eve.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT

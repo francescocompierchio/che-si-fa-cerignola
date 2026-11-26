@@ -600,6 +600,21 @@
     "fonteUrl": "https://nightoutz.it/eventi/mirito-%c2%b7-act-i-con-solto/"
   },
   {
+    "locandinaUrl": "https://images.xceed.me/events/banners/the-peak-w-inkaari-barletta-xceed-square-ac25.png?w=1920&h=1080&ar=16:9&fm=auto",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "The peak w/INKAARI",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 23:59",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Luma Club",
+    "indirizzoMappa": "Viale Regina Elena 100, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/the-peak-w-inkaari/254347"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/331608_20260928_111241.jpg",
     "tipoContenuto": "evento",
     "citta": "Cerignola",
@@ -1072,6 +1087,21 @@
     "costo": "120 € adulti; 80 € bambini 3–11 anni",
     "descrizione": "Cenone con la Band Suonovia, balli e brindisi. Ingresso dalle 20:30, cena alle 21:00. Info 0884 530122.",
     "fonteUrl": "https://regiohotel.it/it/promo/cenone-di-san-silvestro-e-pranzo-di-capodanno"
+  },
+  {
+    "locandinaUrl": "https://images.xceed.me/events/banners/new-years-eve-45-barletta-xceed-square-ce88.png?w=1920&h=1080&ar=16:9&fm=auto",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "NEW YEAR'S EVE",
+    "dataTesto": "Gio 31 Dic 2026 · Ore 23:59",
+    "dataInizio": "2026-12-31",
+    "dataFine": "2026-12-31",
+    "luogo": "Luma Club",
+    "indirizzoMappa": "Viale Regina Elena 100, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/new-years-eve-45/254346"
   },
   {
     "tipoContenuto": "evento",
