@@ -169,10 +169,17 @@ def client():
     from google.oauth2 import service_account
     raw=os.environ.get("COMMUNITY_FIREBASE_SERVICE_ACCOUNT","")
     if not raw:raise RuntimeError("missing_configuration")
-    info=json.loads(raw)
+    try:info=json.loads(raw)
+    except (ValueError,TypeError):raise RuntimeError("invalid_json") from None
+    if not isinstance(info,dict):raise RuntimeError("invalid_json")
     if info.get("project_id")!=PROJECT or info.get("type")!="service_account" or not str(info.get("client_email","")).endswith("@"+PROJECT+".iam.gserviceaccount.com"):
         raise RuntimeError("wrong_project")
-    credentials=service_account.Credentials.from_service_account_info(info,scopes=["https://www.googleapis.com/auth/firebase.database","https://www.googleapis.com/auth/userinfo.email"])
+    if info.get("token_uri")!="https://oauth2.googleapis.com/token":raise RuntimeError("invalid_token_endpoint")
+    try:
+        credentials=service_account.Credentials.from_service_account_info(info,scopes=["https://www.googleapis.com/auth/firebase.database","https://www.googleapis.com/auth/userinfo.email"])
+    except Exception:raise RuntimeError("invalid_service_account") from None
+    try:credentials.refresh(google.auth.transport.requests.Request())
+    except Exception:raise RuntimeError("google_token_failed") from None
     return google.auth.transport.requests.AuthorizedSession(credentials)
 
 def snapshot(session):
@@ -265,15 +272,19 @@ if __name__=="__main__":
             session=client()
             # Query indicizzata: evita di scaricare tutto il DB a ogni ciclo senza messaggi.
             opened=session.get(URL+"/settings/open.json",timeout=15)
-            if opened.status_code!=200:raise RuntimeError("settings_read")
+            if opened.status_code!=200:raise RuntimeError("settings_read_"+str(opened.status_code))
             if opened.json() is not True:
                 print("pending=no")
             else:
                 result=session.get(URL+"/submissions.json",params={"orderBy":json.dumps("state"),"equalTo":json.dumps("pending"),"limitToFirst":"1"},timeout=15)
-                if result.status_code!=200:raise RuntimeError("queue_read")
+                if result.status_code!=200:raise RuntimeError("queue_read_"+str(result.status_code))
                 print("pending=yes" if result.json() else "pending=no")
         else:run(client())
-    except Exception:
-        # Mai stampare eccezioni HTTP, payload, prompt, UID o credenziali nei log pubblici.
-        print("Community: operazione interrotta in sicurezza. Nessuna approvazione non verificata.")
+    except Exception as exc:
+        import sys
+        # Mostra soltanto codici interni previsti; mai eccezioni arbitrarie, payload, UID o token.
+        known={"missing_configuration","invalid_json","wrong_project","invalid_token_endpoint","invalid_service_account","google_token_failed","database_read","database_write","missing_etag","database_size_limit","unexpected_database","concurrent_updates","model_quality_gate"}
+        code=str(exc) if type(exc) is RuntimeError else ""
+        allowed=code in known or bool(re.fullmatch(r"(?:settings_read|queue_read)_[1-5][0-9]{2}",code))
+        print("Community: operazione interrotta in sicurezza. Diagnostica: "+(code if allowed else "internal_or_network_error"),file=sys.stderr)
         raise SystemExit(1)
