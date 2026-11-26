@@ -100,6 +100,8 @@ def process(updates, state, channels, today, validate):
             title=plain(item.get("titolo",""),85,True)
             place=plain(item.get("luogo",""),100,True)
             desc=plain(item.get("descrizione",""),220,True)
+            if re.search(r"\b(?:cronaca|arrestat\w*|arresto|omicidi\w*|furto|rapina|incidente stradale|elezioni|comizio|consiglio comunale|convegno|seminario)\b", title+" "+desc, re.I):
+                raise ValueError("Annuncio non pertinente")
             address=plain(item.get("indirizzoMappa",""),140,True)
             # La città deve essere esplicita, non inferita dal registro del canale.
             if "," not in address or address.rsplit(",",1)[-1].strip().casefold()!=channel["comune"].strip().casefold():
