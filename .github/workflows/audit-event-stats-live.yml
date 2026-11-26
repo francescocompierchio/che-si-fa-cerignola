@@ -1,0 +1,27 @@
+name: Collaudo contatori sul sito pubblico
+on:
+  push:
+    branches: ['audit/statistiche-live-20261126']
+permissions:
+  contents: read
+concurrency:
+  group: csf-event-stats-registry
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save --no-package-lock --ignore-scripts firebase-admin@13.6.0 playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+      - name: Verifica reale isolata su Android e WebKit
+        env:
+          EVENT_STATS_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/audit-event-stats-live.cjs
