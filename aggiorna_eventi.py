@@ -2036,8 +2036,14 @@ def raccogli_da_feed_social(session, fonte):
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
             if fonte.get("radar_movida") and radar_movida.pertinente(testo_candidato) and not REGEX_SCARTO.search(titolo):
-                if _comune_nel_testo(testo_candidato)==fonte.get("comune_radar") or radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[])):
+                comune_radar=fonte.get("comune_radar")
+                comune_candidato=_comune_nel_testo(testo_candidato)
+                alias_radar=radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[]))
+                if (comune_radar and comune_candidato==comune_radar) or alias_radar:
                     punteggio=max(punteggio,13 if locale_esplicito else 8)
+                if fonte.get("promoter_mirato") and comune_candidato:
+                    punteggio=max(punteggio,8)+4
+                    if alias_radar:punteggio+=3
             if fonte.get("food"):
                 if not radar_food.pertinente(testo_candidato):
                     continue
@@ -2059,7 +2065,13 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             classificati.append((punteggio, item, titolo, link, descrizione))
         # Ordina tutti i candidati: il budget di rete resta invariato.
-        classificati.sort(key=lambda x: -x[0])
+        # A parità di pertinenza, le pubblicazioni più recenti dei promoter
+        # hanno precedenza: la data del feed non diventa la data dell'evento.
+        def ordine_rss(x):
+            pub=x[1].find("pubDate")
+            data=discovery_locale.data_pubblicazione(pub.get_text(strip=True) if pub else "")
+            return (-x[0],-data.toordinal() if data and fonte.get("promoter_mirato") else 0)
+        classificati.sort(key=ordine_rss)
         # Il publisher RSS è solo un indizio di discovery, mai una prova di un evento.
         domini_candidati=[]
         if fonte.get("solo_cerignola"):

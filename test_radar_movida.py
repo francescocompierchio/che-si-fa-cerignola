@@ -29,6 +29,11 @@ class RadarMovidaTest(unittest.TestCase):
         p=next(f for f,q in feeds if "Promoter pubblico" in f["nome"])
         self.assertEqual(p["comune_radar"],"")
         self.assertIn("promotertest",p["alias_movida"])
+        mirate=[(f,q) for f,q in feeds if f.get("promoter_mirato")]
+        self.assertEqual(len(mirate),2)
+        self.assertTrue(all(f["comune_radar"]=="" and "when:7d" in q and '"piano bar"' in q for f,q in mirate))
+        self.assertTrue(any("Foggia" in q for f,q in mirate))
+        self.assertTrue(any("Cerignola" in q for f,q in mirate))
         self.assertFalse(any("abcdef" in q for f,q in feeds))
         self.assertIsNone(r.profilo_social("https://www.instagram.com/stories/"))
         self.assertIsNone(r.profilo_social("https://instagram.com.evil.test/clubtest/"))
