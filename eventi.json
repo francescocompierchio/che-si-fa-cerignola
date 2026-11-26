@@ -44,6 +44,20 @@
     "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Trani",
+    "categoria": "Attività diurne",
+    "titolo": "\"Comunitaria Fest\", parte il festival per i 40anni della Comunità Oasi di Trani",
+    "dataTesto": "Gio 26 Nov 2026",
+    "dataInizio": "2026-11-26",
+    "dataFine": "2026-11-26",
+    "luogo": "Comunità Oasi",
+    "indirizzoMappa": "Comunità Oasi, Trani",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Oggi in Biblioteca Comunale alle 18:30 inizia la tre giorni di incontri, arte e partecipazione su legalità e giustizia sociale, teatro, laboratori, mostre e attività gratuite tra Trani, Andria e Ruvo di Puglia",
+    "fonteUrl": "https://www.traniviva.it/notizie/comunitaria-fest-parte-il-festival-per-i-40anni-della-comunita-oasi-di-trani/"
+  },
+  {
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/52c4fb7b952ecc1f0fd55f688abe4f58fcbfb37d-1672x941.png?w=1200&h=630&fit=crop&q=80",
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
@@ -888,6 +902,21 @@
     "costo": "Consulta l’organizzatore",
     "descrizione": "Itinerario archeologico organizzato da Daunia TuR APS con degustazione finale. Posti limitati, prenotazione obbligatoria. Confermare ritrovo e orario con l’organizzatore: 0884 660558.",
     "fonteUrl": "https://www.csvfoggia.it/capitanata-escursioni-con-daunia-tur-aps/"
+  },
+  {
+    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/8b2046e7a2723a8127b3ec9bf5741654ac36330d-1672x941.png?w=1200&h=630&fit=crop&q=80",
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Locali & Serate",
+    "titolo": "Marechià Xmas Night 2026 – DJ set con Ambro e Cyrox",
+    "dataTesto": "Sab 19 Dic 2026 · Ore 22:00",
+    "dataInizio": "2026-12-19",
+    "dataFine": "2026-12-19",
+    "luogo": "Vetus Vallum",
+    "indirizzoMappa": "Vetus Vallum, Via Antico Ospedale Orsini, 85, 71043 Manfredonia FG, Manfredonia, FG",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Sabato 19 dicembre 2026 torna a Manfredonia 𝗠𝗮𝗿𝗲𝗰𝗵𝗶𝗮̀, con 𝗫𝗺𝗮𝘀 𝗡𝗶𝗴𝗵𝘁, una serata dedicata alla musica e al divertimento in occasione delle festività natalizie. L'appuntamento è al 𝗩𝗲𝘁𝘂𝘀 𝗩𝗮𝗹𝗹𝘂𝗺, presso l'Antico Ospedale",
+    "fonteUrl": "https://www.manfredoniaeventi.com/evento/marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox-manfredonia-19-dicembre-2026/"
   },
   {
     "tipoContenuto": "evento",

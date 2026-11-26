@@ -583,6 +583,27 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:trani-2026-11-26-comunitaria-fest-parte-il-festival-per-i-40anni-della-
+ comunita-oasi-di-trani@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261126
+DTEND;VALUE=DATE:20261127
+SUMMARY:"Comunitaria Fest"\, parte il festival per i 40anni della Comunità
+  Oasi di Trani – Trani
+LOCATION:Comunità Oasi\, Trani
+DESCRIPTION:Gio 26 Nov 2026\nOggi in Biblioteca Comunale alle 18:30 inizia 
+ la tre giorni di incontri\, arte e partecipazione su legalità e giustizia
+  sociale\, teatro\, laboratori\, mostre e attività gratuite tra Trani\, A
+ ndria e Ruvo di Puglia\nAccesso: Non specificato nella fonte\nVerifica var
+ iazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github
+ .io/che-si-fa-cerignola/eventi/trani-2026-11-26-comunitaria-fest-parte-il-
+ festival-per-i-40anni-della-comunita-oasi-di-trani.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/trani
+ -2026-11-26-comunitaria-fest-parte-il-festival-per-i-40anni-della-comunita
+ -oasi-di-trani.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:manfredonia-2026-11-26-gheghe-christmas-bakery-laboratorio-natalizio-pe
  r-bambini-party-con-gheghe@chesifacerignola
 DTSTAMP:20261126T000000Z
@@ -1617,6 +1638,28 @@ DESCRIPTION:Sab 19 Dic 2026\nItinerario archeologico organizzato da Daunia
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
  edonia-2026-12-19-anello-di-siponto-itinerario-archeologico-e-degustazione
  .html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:manfredonia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyro
+ x@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:Marechià Xmas Night 2026 – DJ set con Ambro e Cyrox – Manfredo
+ nia
+LOCATION:Vetus Vallum\, Via Antico Ospedale Orsini\, 85\, 71043 Manfredonia
+  FG\, Manfredonia\, FG
+DESCRIPTION:Sab 19 Dic 2026 · Ore 22:00\nSabato 19 dicembre 2026 torna a M
+ anfredonia 𝗠𝗮𝗿𝗲𝗰𝗵𝗶𝗮̀\, con 𝗫𝗺𝗮𝘀 𝗡
+ 𝗶𝗴𝗵𝘁\, una serata dedicata alla musica e al divertimento in oc
+ casione delle festività natalizie. L'appuntamento è al 𝗩𝗲𝘁𝘂
+ 𝘀 𝗩𝗮𝗹𝗹𝘂𝗺\, presso l'Antico Ospedale\nAccesso: Non spe
+ cificato nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nh
+ ttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfredon
+ ia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT

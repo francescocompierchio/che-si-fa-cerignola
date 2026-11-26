@@ -589,6 +589,28 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:manfredonia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyro
+ x@chesifacerignola
+DTSTAMP:20261126T000000Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:Marechià Xmas Night 2026 – DJ set con Ambro e Cyrox – Manfredo
+ nia
+LOCATION:Vetus Vallum\, Via Antico Ospedale Orsini\, 85\, 71043 Manfredonia
+  FG\, Manfredonia\, FG
+DESCRIPTION:Sab 19 Dic 2026 · Ore 22:00\nSabato 19 dicembre 2026 torna a M
+ anfredonia 𝗠𝗮𝗿𝗲𝗰𝗵𝗶𝗮̀\, con 𝗫𝗺𝗮𝘀 𝗡
+ 𝗶𝗴𝗵𝘁\, una serata dedicata alla musica e al divertimento in oc
+ casione delle festività natalizie. L'appuntamento è al 𝗩𝗲𝘁𝘂
+ 𝘀 𝗩𝗮𝗹𝗹𝘂𝗺\, presso l'Antico Ospedale\nAccesso: Non spe
+ cificato nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nh
+ ttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfredon
+ ia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-12-19-riccardo-cocciante-live-al-teatro-umberto-giordano@ch
  esifacerignola
 DTSTAMP:20261126T000000Z
