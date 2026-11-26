@@ -9,6 +9,23 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_rettifiche_documentate_novembre_2026(self):
+        from datetime import datetime
+        ref = datetime(2026,11,26,12)
+        raw = {"titolo":"Cenerentola 301","citta":"Manfredonia","luogo":"Teatro Comunale Lucio Dalla","dataInizio":"2026-11-22","dataFine":"2027-01-06","fonteUrl":"https://iltaccodibacco.it/puglia/eventi/335513.html"}
+        ev = crawler.normalizza_e_valida_evento(raw, ref, True)
+        self.assertIsNotNone(ev)
+        self.assertEqual((ev["dataInizio"],ev["dataFine"]),("2026-12-06","2026-12-06"))
+        self.assertEqual(ev["citta"],"Manfredonia")
+        raw = {"titolo":"Menù di Capodanno – Posta Bassi","citta":"Manfredonia","luogo":"Agriturismo Posta Bassi","indirizzoMappa":"Via Manfredonia km 196+200","dataInizio":"2027-01-01","dataFine":"2027-01-01","fonteUrl":"https://www.postabassi.it/eventi-speciali/"}
+        a = crawler.normalizza_e_valida_evento(raw, ref, True)
+        b = crawler.normalizza_e_valida_evento(dict(raw,citta="Foggia",luogo="Posta Bassi",titolo="Pranzo di Capodanno – Posta Bassi"),ref,True)
+        self.assertIsNotNone(a)
+        self.assertEqual(a,b)
+        self.assertEqual(a["citta"],"Foggia")
+        self.assertEqual(a["costo"],"55 € a persona")
+        self.assertEqual(crawler.classifica_categoria("Gheghè Christmas Bakery: laboratorio natalizio per bambini | Party con Gheghè"),"Famiglie & Bambini")
+
     def test_radar_organizzatori_non_alias_sede(self):
         from discovery_locale import fonti_organizzatori_movida
         from urllib.parse import parse_qs, urlparse

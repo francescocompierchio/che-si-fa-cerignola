@@ -661,6 +661,10 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     sede = (luogo or "").casefold()
     url = (fonte_url or "").casefold()
 
+    # Un laboratorio rivolto ai bambini resta familiare anche quando il locale
+    # usa "Party" nel nome commerciale.
+    if re.search(r"\blaborator\w*\b.{0,100}\b(?:per\s+)?(?:bambin\w*|ragazz\w*|famigli\w*)\b", t):
+        return "Famiglie & Bambini"
     if re.search(r"\b(?:capodanno|san silvestro)\b", t) and re.search(r"\b(?:cenon[ei]|veglion[ei]|party|dj set|cena)\b", t):
         return "Locali & Serate"
     if _host_appartiene(fonte_url, "kodocollective.it") and re.search(r"\b(?:serata|dj[\s-]*set)\b", t):
@@ -1158,6 +1162,26 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
                    indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
                    fonteUrl="https://www.bottegadegliapocrifi.it/stagione/lisistrata/",
                    descrizione="Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.")
+    # Rettifiche documentate: limitate alla singola edizione, non a future repliche.
+    if (raw.get("fonteUrl") == "https://iltaccodibacco.it/puglia/eventi/335513.html"
+            and "cenerentola 301" in str(raw.get("titolo") or "").casefold()):
+        raw = dict(raw, citta="Manfredonia", categoria="Teatro & Spettacoli",
+                   dataInizio="2026-12-06", dataFine="2026-12-06",
+                   dataTesto="Dom 06 Dic 2026 · Ore 18:00",
+                   luogo="Teatro Comunale Lucio Dalla",
+                   indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+                   descrizione="Spettacolo della Compagnia Burambò per famiglie e bambini dai 6 anni. Data confermata dal calendario ufficiale del teatro.")
+    posta_bassi = (_host_appartiene(raw.get("fonteUrl") or "", "postabassi.it")
+                   and raw.get("dataInizio") == "2027-01-01"
+                   and "capodanno" in str(raw.get("titolo") or "").casefold())
+    if posta_bassi:
+        # Sito ufficiale: Capodanno 01/01/2027, 55 euro, Via Manfredonia a Foggia.
+        raw = dict(raw, citta="Foggia", titolo="Pranzo di Capodanno – Posta Bassi",
+                   dataFine="2027-01-01", dataTesto="Ven 01 Gen 2027",
+                   luogo="Posta Bassi", indirizzoMappa="Posta Bassi, Via Manfredonia Km 196+200, 71121 Foggia (FG)",
+                   costo="55 € a persona",
+                   descrizione="Pranzo di Capodanno del 1 gennaio 2027. Menù e prenotazioni sul sito ufficiale dell'agriturismo.",
+                   fonteUrl="https://www.postabassi.it/eventi-speciali/")
     ref = ref_dt or oggi_dt()
     oggi = ref.strftime("%Y-%m-%d")
     limite_max = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).strftime("%Y-%m-%d")
@@ -1213,7 +1237,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         "luogo": luogo,
         "indirizzoMappa": indirizzo_grezzo,
     })
-    citta = risolvi_comune_50km(raw_pulito)
+    citta = "Foggia" if posta_bassi else risolvi_comune_50km(raw_pulito)
     if not citta:
         return None
 
@@ -3246,7 +3270,7 @@ def esegui_aggiornamento():
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
     dirette_natura, rss_natura = radar_natura.fonti()
     dirette_food, rss_food = radar_food.fonti()
-    dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola())
+    dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola(),oggi_stagionale)
     rss_movida += discovery_locale.fonti_organizzatori_movida(registro_locali_movida())
     esistenti={f["url"] for f in FONTI_PORTALI+calendari_registro_cerignola()}
     dirette_movida=[f for f in dirette_movida if f["url"] not in esistenti]

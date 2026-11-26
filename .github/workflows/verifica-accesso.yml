@@ -11,19 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Verifica homepage pubblica e risorse essenziali
         shell: bash
         run: |
           set -euo pipefail
           base='https://francescocompierchio.github.io/che-si-fa-cerignola/'
+          asset="$(grep -oE 'event-page\.js\?v=[0-9]+' index.html | head -n1)"
+          community="$(grep -oE 'community\.css\?v=[0-9]+' index.html | head -n1)"
+          tools="$(grep -oE 'event-tools\.js\?v=[0-9]+' index.html | head -n1)"
+          test -n "$asset" && test -n "$community" && test -n "$tools"
           for n in $(seq 1 16); do
-            if curl -fsSL --max-time 12 "${base}?verifica=${GITHUB_SHA}" -o /tmp/csf-home.html && grep -q 'event-page.js?v=57' /tmp/csf-home.html && grep -q 'Che Si Fa Cerignola' /tmp/csf-home.html; then
+            if curl -fsSL --max-time 12 "${base}?verifica=${GITHUB_SHA}" -o /tmp/csf-home.html && grep -Fq "$asset" /tmp/csf-home.html && grep -Fq "$community" /tmp/csf-home.html && grep -Fq "$tools" /tmp/csf-home.html && grep -Fq 'Che Si Fa Cerignola' /tmp/csf-home.html; then
               break
             fi
             if [ "$n" -eq 16 ]; then echo "::error::Homepage aggiornata non raggiungibile"; exit 1; fi
             sleep 10
           done
-          for path in index.html manifest.json sw.js 'event-page.js?v=57' eventi.json; do
+          for path in index.html manifest.json sw.js "$asset" "$community" "$tools" eventi.json; do
             curl -fsSL --max-time 20 -o /dev/null -w "%{http_code} %{size_download} %{url_effective}\n" "${base}${path}"
           done
           echo "Homepage e risorse raggiungibili" >> "$GITHUB_STEP_SUMMARY"

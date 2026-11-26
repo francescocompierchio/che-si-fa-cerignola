@@ -56,7 +56,7 @@ function util(){
    if(intento.tipo==="NIGHT"&&!tools.vitaNotturna(ev))return false;
    const shift=n=>{const d=new Date(oggi+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
    const has=(start,end=start)=>tools.overlaps(ev,start,end);
-   if(intento.modo==="TONIGHT"&&(!has(oggi)||!tools.evening(ev)))return false;
+   if(intento.modo==="TONIGHT"&&!tools.tonight(ev,oggi))return false;
    if(intento.modo==="TODAY"&&!has(oggi))return false;
    if(intento.modo==="TOMORROW"&&!has(shift(1)))return false;
    if(intento.modo==="WEEKEND"){const [s,e]=tools.weekend(oggi);if(!has(oggi>s?oggi:s,e))return false;}

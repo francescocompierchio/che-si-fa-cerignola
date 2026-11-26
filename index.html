@@ -15,8 +15,8 @@
     };
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
-  <script src="app-extras.js"></script>
-  <script src="event-page.js?v=59" defer></script>
+  <script src="app-extras.js?v=2"></script>
+  <script src="event-page.js?v=60" defer></script>
   <script src="metrics.js?v=31"></script>
 
   <meta charset="UTF-8" />
@@ -1476,7 +1476,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     </div>
   </div>
 
-  <script src="event-tools.js?v=42"></script>
+  <script src="event-tools.js?v=43"></script>
   <!-- SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -1536,7 +1536,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         if(u.origin!=="https://francescocompierchio.github.io"||!u.pathname.startsWith("/che-si-fa-cerignola/"))return raw;
         u.searchParams.set("utm_source",source);
         u.searchParams.set("utm_medium","social");
-        u.searchParams.set("utm_campaign",u.pathname.endsWith("/eventi/weekend.html")?"condivisione_weekend":u.searchParams.get("installa")==="1"?"installa_app":"condivisione_eventi");
+        u.searchParams.set("utm_campaign",(u.pathname.endsWith("/eventi/weekend.html")||u.searchParams.get("vista")==="weekend")?"condivisione_weekend":u.searchParams.get("installa")==="1"?"installa_app":"condivisione_eventi");
         return u.href;
       }catch(_){return raw;}
     }
@@ -2547,7 +2547,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       const testo=CsfEventTools.weekendDigest?.(tuttiEventiAttivi,oggi);
       if(!testo){mostraToast("Nessun appuntamento del weekend da condividere");return;}
       window.CsfMetrics?.action?.("csf_weekend_share");
-      condividiContenuto("Weekend · Che Si Fa Cerignola",testo,APP_URL+"eventi/weekend.html");
+      condividiContenuto("Weekend · Che Si Fa Cerignola",testo,CsfEventTools.weekendShareUrl(pagineEventoPubbliche,APP_URL));
     });
 
     function piegaRigaICS(riga){let parti=[],corrente="",byteCount=0;for(const carattere of String(riga)){const byteSize=new TextEncoder().encode(carattere).length;if(byteCount+byteSize>73){parti.push(corrente);corrente=" "+carattere;byteCount=1+byteSize;}else{corrente+=carattere;byteCount+=byteSize;}}parti.push(corrente);return parti.join("\r\n");}
@@ -2670,7 +2670,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
     function entroSetteGiorni(ev){
       return CsfEventTools.overlaps(ev,oggi,spostaGiorniISO(oggi,6));
     }
-    function impostaFiltroSmart(modo){window.CsfMetrics?.action?.("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";filtroAttivo="ALL";dataSelezionata="";fineDataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
+    function impostaFiltroSmart(modo){window.CsfMetrics?.action?.("csf_filter_used");filtroSmart=filtroSmart===modo?"ALL":modo;modalitaRapida="ALL";dataSelezionata="";fineDataSelezionata="";if(filtroAttivo==="OGGI"&&modo!=="TONIGHT"){filtroAttivo="ALL";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));}aggiornaComandiRapidi();renderEventi();}
     document.querySelectorAll(".smart-filter-btn").forEach(b=>b.addEventListener("click",()=>impostaFiltroSmart(b.dataset.smartFilter)));
     function impostaModalitaRapida(m){modalitaRapida=m;filtroSmart="ALL";filtroAttivo="ALL";dataSelezionata="";fineDataSelezionata="";document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));aggiornaComandiRapidi();renderEventi();}
     document.getElementById("quick-all").addEventListener("click",()=>impostaModalitaRapida("ALL"));
@@ -3121,7 +3121,8 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         btn.textContent = item.label;
         btn.addEventListener("click", () => {
           modalitaRapida = "ALL";
-          filtroSmart = "ALL";
+          // Città, raggio e categoria sono indipendenti dal filtro rapido.
+          if (item.id === "ALL" || item.id === "OGGI") filtroSmart = "ALL";
           aggiornaComandiRapidi();
           filtroAttivo = item.id;
           document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
@@ -3175,7 +3176,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         if(filtroSmart==="FAMILY"&&!(/famigl|bambin|ragazz|famiglie|children/i.test(categoriaSmart+" "+targetSmart+" "+testoSmart)))return false;
         if(filtroSmart==="NATURE"&&!eventoNatura(ev))return false;
         if(filtroSmart==="NEXT7"&&!entroSetteGiorni(ev))return false;
-        if(filtroSmart==="TONIGHT"&&(!isToday||!CsfEventTools.evening(ev)))return false;
+        if(filtroSmart==="TONIGHT"&&!CsfEventTools.tonight(ev,oggi))return false;
         const contestoOccasione=normalizzaRicerca([ev.categoria,ev.adattoA,ev.tipoEsperienza,ev.titolo,ev.descrizione,ev.luogo].join(" "));
         if(filtroSmart==="COUPLE"&&!(/copp|romant|degustaz|cantin|agritur|panoram|passeggiat|ristor|teatro|cen|aperitiv|natura|borgo|benessere/.test(contestoOccasione)))return false;
         if(filtroSmart==="FRIENDS"&&!(/amic|grupp|bowling|dj|live|karaoke|quiz|concert|sport|sagra|festival|aperitiv|serat|locale|birr|street food/.test(contestoOccasione)))return false;
