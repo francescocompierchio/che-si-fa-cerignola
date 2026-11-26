@@ -1,0 +1,41 @@
+name: Sincronizza registro statistiche eventi
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+    inputs:
+      activate_rules:
+        description: 'Aggiungi soltanto le regole statistiche, senza sovrascrivere quelle esistenti'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths: ['eventi.json','index.html','scripts/sync-event-stats.cjs','event-stats.rules.json']
+permissions:
+  contents: read
+concurrency:
+  group: csf-event-stats-registry
+  cancel-in-progress: false
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sincronizza solo quando il progetto è autorizzato
+        env:
+          EVENT_STATS_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
+          EVENT_STATS_ACTIVATE: ${{ inputs.activate_rules || false }}
+        run: |
+          if [ -z "$EVENT_STATS_FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::notice::Statistiche non attivate: credenziale dedicata assente."
+            exit 0
+          fi
+          npm install --no-save --no-package-lock --ignore-scripts firebase-admin@13.6.0
+          node scripts/sync-event-stats.cjs
