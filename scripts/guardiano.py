@@ -14,6 +14,8 @@ REPO="francescocompierchio/che-si-fa-cerignola"
 BASE="https://api.github.com/repos/"+REPO
 SITE="https://francescocompierchio.github.io/che-si-fa-cerignola/"
 WORKFLOW="/actions/workflows/aggiorna-eventi.yml"
+COMMUNITY="/actions/workflows/community-moderazione.yml"
+SOGLIA_COMMUNITY=timedelta(minutes=25)
 
 def data(v):
     try:
@@ -21,7 +23,7 @@ def data(v):
     except (TypeError,ValueError):
         return None
 
-def decisione(runs,now):
+def decisione(runs,now,soglia=SOGLIA):
     """Niente recupero se esiste attività, errore non diagnosticato o storico incerto."""
     if not runs or not isinstance(runs,list):
         return "storico_insufficiente"
@@ -36,7 +38,7 @@ def decisione(runs,now):
     esito=latest.get("conclusion")
     if esito not in {"success","cancelled","timed_out"}:
         return "errore_da_diagnosticare"
-    if now-timestamp < SOGLIA:
+    if now-timestamp < soglia:
         return "raccolta_recente"
     if esito=="timed_out":
         # Un solo recupero di un timeout programmato; mai ripetere un dispatch
@@ -79,6 +81,22 @@ def verifica_archivio():
     eventi=[x for x in rows if x.get("tipoContenuto")=="evento" and x.get("dataFine",x.get("dataInizio",""))>=oggi]
     return {"eventi":len(eventi),"cerignola":sum(x.get("citta")=="Cerignola" for x in eventi),"serateCerignola":sum(x.get("citta")=="Cerignola" and x.get("categoria")=="Locali & Serate" for x in eventi)}
 
+def verifica_community(now,note,allarmi):
+    stato=api(COMMUNITY)
+    if stato.get("state")!="active":
+        allarmi.append("Moderazione Community non attiva: nessuna riattivazione automatica.")
+        return
+    def storico():
+        return [r for r in api(COMMUNITY+"/runs?branch=main&per_page=30").get("workflow_runs",[]) if r.get("event") in ("schedule","push","workflow_dispatch")]
+    azione=decisione(storico(),now,SOGLIA_COMMUNITY)
+    note.append("Stato moderazione Community: "+azione)
+    if azione in {"errore_da_diagnosticare","storico_insufficiente","stato_incerto"}:
+        allarmi.append("Moderazione Community da verificare: nessun bypass.")
+    if azione=="recupera" and os.environ.get("GITHUB_EVENT_NAME")=="schedule":
+        if decisione(storico(),datetime.now(timezone.utc),SOGLIA_COMMUNITY)=="recupera":
+            api(COMMUNITY+"/dispatches",{"ref":"main"})
+            note.append("Moderazione di recupero richiesta, filtri invariati.")
+
 def main():
     now=datetime.now(timezone.utc)
     note=[]
@@ -112,6 +130,10 @@ def main():
     except (URLError,ValueError,TimeoutError,OSError,KeyError) as exc:
         note.append("Stato GitHub non verificabile ("+type(exc).__name__+"): nessun recupero forzato.")
         allarmi.append("Stato della raccolta non verificabile.")
+    try:
+        verifica_community(now,note,allarmi)
+    except (URLError,ValueError,TimeoutError,OSError,KeyError) as exc:
+        allarmi.append("Stato Community non verificabile ("+type(exc).__name__+").")
     note.extend("ALLARME: "+x for x in allarmi)
     message="## Guardiano tecnico Che Si Fa\n\n"+"\n".join("- "+x for x in note)+"\n\nLe metriche non includono Firebase o eventi editoriali. Nessuna modifica al sito."
     print(message)
