@@ -8,7 +8,7 @@ const assert=require("node:assert/strict");
       const ctx=await browser.newContext({...options,serviceWorkers:"block"});
       const p=await ctx.newPage();
       await p.route("**/*",route=>route.request().url().startsWith("http://127.0.0.1:8765/")?route.continue():route.abort());
-      await p.addInitScript(()=>localStorage.setItem("csf_music_v1","off"));
+      await p.addInitScript(()=>{if(!sessionStorage.getItem("test_music_init")){localStorage.setItem("csf_music_v1","off");sessionStorage.setItem("test_music_init","1");}});
       // Fixture minima: carica esattamente lo script di produzione senza modificare i contatori.
       await p.goto("http://127.0.0.1:8765/tests/music-fixture.html");
       const button=p.locator("#csf-music-toggle");

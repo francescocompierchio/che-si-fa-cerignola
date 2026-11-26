@@ -272,7 +272,7 @@
   }
   function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
   function toggle(){
-    if(running()||mediaPending){enabled=false;save();pause();}
+    if(running()||mediaPending||(nativeAudio&&media&&!media.paused&&!media.ended)){enabled=false;save();pause();}
     else{finished=false;enabled=true;save();play();}
     render();
   }
@@ -294,7 +294,7 @@
       if(!running())play();
     };
     document.addEventListener("pointerup",gesture,{capture:true,passive:true});
-    document.addEventListener("touchend",gesture,{capture:true,passive:true});
+    if(nativeAudio)document.addEventListener("touchend",gesture,{capture:true,passive:true});
     document.addEventListener("click",gesture,{capture:true,passive:true});
     document.addEventListener("keydown",gesture,{capture:true,passive:true});
     document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();else if(enabled&&(ctx||media))play(false);});
