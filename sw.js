@@ -13,6 +13,7 @@ const SHELL_FILES = [
   new URL("event-page.js", self.registration.scope).href,
   new URL("event-page.js?v=59", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
+  new URL("app-extras.js?v=2", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 

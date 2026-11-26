@@ -50,6 +50,7 @@ function strumenti(){
    return ev.dataInizio===(ev.dataFine||ev.dataInizio)||/\b(?:ogni sera|tutte le sere|ogni giorno|tutti i giorni|quotidianamente)\b/i.test([ev.dataTesto,ev.descrizione].join(" "));
  }
  function shareUrl(ev,available,base){const candidate=base+"eventi/"+id(ev)+".html";return available.has(candidate)?candidate:base+"#evento="+encodeURIComponent(key(ev));}
+ function weekendShareUrl(available,base){const candidate=base+"eventi/weekend.html";return available.has(candidate)?candidate:base+"?vista=weekend";}
  // Riepilogo aggiornato, senza esperienze non datate, eventi scaduti o doppioni.
  function weekendDigest(eventi,oggi){
    if(!validDate(oggi))return "";
@@ -98,7 +99,7 @@ function strumenti(){
    if(fascia<=1)return 4;
    return 5;
  }
- return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,tonight,shareUrl,weekendDigest,discoteca,vitaNotturna,statoTemporale,prioritaScoperta};
+ return {norm,slug,key,id,overlaps,weekend,duplicate,dedup,quality,evening,tonight,shareUrl,weekendShareUrl,weekendDigest,discoteca,vitaNotturna,statoTemporale,prioritaScoperta};
 }
 const CsfEventTools = strumenti();
 if (typeof module !== "undefined" && module.exports) module.exports=CsfEventTools;

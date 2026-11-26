@@ -15,7 +15,7 @@
     };
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
-  <script src="app-extras.js"></script>
+  <script src="app-extras.js?v=2"></script>
   <script src="event-page.js?v=59" defer></script>
   <script src="metrics.js?v=31"></script>
 
@@ -1536,7 +1536,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
         if(u.origin!=="https://francescocompierchio.github.io"||!u.pathname.startsWith("/che-si-fa-cerignola/"))return raw;
         u.searchParams.set("utm_source",source);
         u.searchParams.set("utm_medium","social");
-        u.searchParams.set("utm_campaign",u.pathname.endsWith("/eventi/weekend.html")?"condivisione_weekend":u.searchParams.get("installa")==="1"?"installa_app":"condivisione_eventi");
+        u.searchParams.set("utm_campaign",(u.pathname.endsWith("/eventi/weekend.html")||u.searchParams.get("vista")==="weekend")?"condivisione_weekend":u.searchParams.get("installa")==="1"?"installa_app":"condivisione_eventi");
         return u.href;
       }catch(_){return raw;}
     }
@@ -2547,7 +2547,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
       const testo=CsfEventTools.weekendDigest?.(tuttiEventiAttivi,oggi);
       if(!testo){mostraToast("Nessun appuntamento del weekend da condividere");return;}
       window.CsfMetrics?.action?.("csf_weekend_share");
-      condividiContenuto("Weekend · Che Si Fa Cerignola",testo,APP_URL+"eventi/weekend.html");
+      condividiContenuto("Weekend · Che Si Fa Cerignola",testo,CsfEventTools.weekendShareUrl(pagineEventoPubbliche,APP_URL));
     });
 
     function piegaRigaICS(riga){let parti=[],corrente="",byteCount=0;for(const carattere of String(riga)){const byteSize=new TextEncoder().encode(carattere).length;if(byteCount+byteSize>73){parti.push(corrente);corrente=" "+carattere;byteCount=1+byteSize;}else{corrente+=carattere;byteCount+=byteSize;}}parti.push(corrente);return parti.join("\r\n");}

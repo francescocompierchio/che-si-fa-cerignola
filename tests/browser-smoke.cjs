@@ -95,11 +95,16 @@ const assert = require("node:assert/strict");
     const tonightButton=page.locator('[data-smart-filter="TONIGHT"]');
     const cityButton=page.locator("#filters .filter-btn").filter({hasText:/^Cerignola$/});
     const allFilter=page.locator("#filters .filter-btn").filter({hasText:/^Tutti$/});
+    await page.evaluate(()=>{
+      tuttiEventiAttivi.push({tipoContenuto:"evento",titolo:"Test filtro serale",citta:"Cerignola",categoria:"Locali & Serate",dataInizio:oggi,dataFine:oggi,dataTesto:"Ore 21:00",luogo:"Locale test",descrizione:"DJ set di prova",fonteUrl:"https://example.test/serata"});
+      renderEventi();
+    });
     for(const order of [[tonightButton,cityButton],[cityButton,tonightButton]]){
       await allFilter.click();
       for(const button of order)await button.click();
       assert.equal(await tonightButton.getAttribute("aria-pressed"),"true");
       assert.ok(await cityButton.evaluate(el=>el.classList.contains("active")));
+      assert.equal(await page.locator("#events-container details").filter({hasText:"Test filtro serale"}).count(),1);
       assert.ok(await page.evaluate(()=>{
         const map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));
         return [...document.querySelectorAll("#events-container details")].every(el=>{
@@ -109,6 +114,7 @@ const assert = require("node:assert/strict");
       }));
     }
     await allFilter.click();
+    await page.evaluate(()=>{const i=tuttiEventiAttivi.findIndex(ev=>ev.titolo==="Test filtro serale");if(i>=0)tuttiEventiAttivi.splice(i,1);renderEventi();});
     // Una data oltre la settimana deve essere consultabile e mostrare solo eventi di quel giorno.
     await page.locator("#agenda-future-date").fill("2026-12-31");
     assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Evento futuro già presente");

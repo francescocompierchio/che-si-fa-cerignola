@@ -12,6 +12,8 @@ assert.ok(!u.tonight({...eveningSample,titolo:"Pranzo",dataTesto:"Ore 12:30"},"2
 assert.ok(u.tonight({...eveningSample,dataFine:"2026-12-05",descrizione:"Tutte le sere"},"2026-11-27"));
 const html=fs.readFileSync("index.html","utf8");
 const base="https://francescocompierchio.github.io/che-si-fa-cerignola/";
+assert.equal(u.weekendShareUrl(new Set([base+"eventi/weekend.html"]),base),base+"eventi/weekend.html");
+assert.equal(u.weekendShareUrl(new Set(),base),base+"?vista=weekend");
 const ev={titolo:"Serata di prova",citta:"Cerignola",categoria:"Locali & Serate",luogo:"Piazza",dataInizio:"2026-11-28",dataFine:"2026-11-28",fonteUrl:"https://example.org/evento"};
 const second={...ev,titolo:"Serata due",dataInizio:"2026-11-29",dataFine:"2026-11-29"};
 const third={...ev,titolo:"Serata tre",citta:"Foggia"};
