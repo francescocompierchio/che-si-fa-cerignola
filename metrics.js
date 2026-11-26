@@ -69,7 +69,7 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
  const actions=new Set(["csf_event_open","csf_event_share","csf_event_map","csf_event_source","csf_event_save","csf_event_calendar"]);
  const appActions=new Set(["csf_app_share","csf_weekend_reminder","csf_report_open","csf_report_sent","csf_filter_used","csf_search_used","csf_install_guide","csf_install_prompt","csf_install_accepted","csf_pwa_installed","csf_standalone_open","csf_apk_download","csf_weekend_share","csf_install_link","csf_calendar_subscribe","csf_install_entry"]);
  // Interruttore prudenziale: attivare soltanto dopo collaudo del Firebase reale.
- const EVENT_STATS_ENABLED=false;
+ const EVENT_STATS_ENABLED=true;
  const liveStats=EVENT_STATS_ENABLED&&location.hostname==="francescocompierchio.github.io"&&location.pathname.startsWith("/che-si-fa-cerignola/");
  const statsBase="https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/statisticheEventi/";
  function statsRender(node,data){

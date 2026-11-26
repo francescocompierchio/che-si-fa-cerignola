@@ -8,3 +8,5 @@
 La prima pubblicazione distribuisce il codice con `EVENT_STATS_ENABLED=false` in `metrics.js`: nessuna lettura/scrittura dei nuovi contatori e nessuna riga visibile. Dopo attivazione delle regole, registro e verifica di produzione, aprire una PR separata per impostare il flag a true e rieseguire i collaudi. Non attivare il flag in caso di errori o regole superiori non verificate.
 
 L'attivazione esplicitamente autorizzata avviene anche tramite `attiva-statistiche-eventi.yml` al primo merge di quel workflow su main. Verifica gli incrementi e le protezioni con un nodo temporaneo isolato e lo rimuove; non altera i contatori di eventi reali. Il flag frontend rimane disattivato finché il collaudo di produzione non risulta verde.
+
+Esito collaudo produzione del 26/11/2026: 113 eventi registrati, incrementi reali e protezioni verificati, nodo temporaneo rimosso (run 45842315949). Abilitazione frontend con cache metrics v32 e collaudo browser simulato.
