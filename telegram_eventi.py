@@ -101,6 +101,9 @@ def process(updates, state, channels, today, validate):
             place=plain(item.get("luogo",""),100,True)
             desc=plain(item.get("descrizione",""),220,True)
             address=plain(item.get("indirizzoMappa",""),140,True)
+            # La città deve essere esplicita, non inferita dal registro del canale.
+            if "," not in address or address.rsplit(",",1)[-1].strip().casefold()!=channel["comune"].strip().casefold():
+                raise ValueError("Indirizzo senza comune autorizzato")
             hour=plain(item.get("orario",""),5)
             if hour and not re.fullmatch(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]",hour):
                 raise ValueError("Orario non valido")
