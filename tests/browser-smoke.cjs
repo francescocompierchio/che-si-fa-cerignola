@@ -9,6 +9,30 @@ const assert = require("node:assert/strict");
     await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
+    // Dock: stesso gradiente dei filtri, contrasto e dimensioni anche in tema scuro.
+    for(const theme of ["light","dark"]){
+      await page.evaluate(t=>document.documentElement.dataset.csfTheme=t,theme);
+      for(const width of [320,360,393,430]){
+        await page.setViewportSize({width,height:852});
+        const dock=await page.locator(".mobile-dock").evaluate(el=>{
+          const active=el.querySelector(".dock-btn.active"),items=[...el.querySelectorAll(".dock-btn")];
+          const bounds=el.getBoundingClientRect();
+          return {activeColor:getComputedStyle(active).color,activeBg:getComputedStyle(active).backgroundImage,quickBg:getComputedStyle(document.getElementById("quick-all")).backgroundImage,items:items.map(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return {left:r.left,right:r.right,height:r.height,color:s.color,bg:s.backgroundImage,shadow:s.boxShadow};}),left:bounds.left,right:bounds.right};
+        });
+        assert.equal(dock.activeColor,"rgb(255, 255, 255)");
+        assert.equal(dock.activeBg,dock.quickBg,"Gradiente uguale al comando rapido attivo");
+        assert.ok(dock.items.length===4&&dock.items.every(b=>b.height>=44&&b.left>=dock.left&&b.right<=dock.right&&b.bg.includes("linear-gradient")&&b.shadow!=="none"),"Dock leggibile e in rilievo: "+theme+" "+width);
+      }
+    }
+    await page.evaluate(()=>document.documentElement.dataset.csfTheme="light");
+    await page.setViewportSize({width:393,height:852});
+    await page.locator("#dock-weekend").click();
+    assert.ok(await page.locator("#dock-weekend").evaluate(el=>el.classList.contains("active")));
+    await page.locator("#dock-saved").click();
+    assert.ok(await page.locator("#dock-saved").evaluate(el=>el.classList.contains("active")));
+    await page.locator("#dock-home").click();
+    assert.ok(await page.locator("#dock-home").evaluate(el=>el.classList.contains("active")));
+    console.log("OK dock: contrasto, gradiente, rilievo, temi e navigazione mobile.");
     // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
     for(const [width,height] of [[320,568],[393,852],[430,740]]){
       await page.setViewportSize({width,height});
