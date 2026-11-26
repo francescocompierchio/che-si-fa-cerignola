@@ -1,0 +1,31 @@
+name: Esporta backup 26 novembre 2026
+on:
+  push:
+    branches: ['backup-export/2026-11-26']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6f53517d8c6e95dfffb33802ff6013ed66852fbd
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Crea archivio e verifica
+        run: |
+          mkdir -p /tmp/backup
+          git archive --format=zip --prefix=Che_Si_Fa_Cerignola/ -o /tmp/backup/Che_Si_Fa_Cerignola_2026-11-26.zip 6f53517d8c6e95dfffb33802ff6013ed66852fbd
+          unzip -tq /tmp/backup/Che_Si_Fa_Cerignola_2026-11-26.zip
+          git bundle create /tmp/backup/Che_Si_Fa_Cerignola_storia.bundle HEAD
+          git bundle verify /tmp/backup/Che_Si_Fa_Cerignola_storia.bundle
+          cd /tmp/backup
+          sha256sum *.zip *.bundle > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Che_Si_Fa_Cerignola_backup_2026-11-26
+          path: /tmp/backup/
+          retention-days: 30
+          if-no-files-found: error
