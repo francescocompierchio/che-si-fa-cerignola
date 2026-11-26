@@ -7,7 +7,7 @@ const SHELL_FILES = [
   new URL("event-tools.js", self.registration.scope).href,
   new URL("event-tools.js?v=43", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
-  new URL("metrics.js?v=32", self.registration.scope).href,
+  new URL("metrics.js?v=33", self.registration.scope).href,
   new URL("public-views.js", self.registration.scope).href,
   new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,

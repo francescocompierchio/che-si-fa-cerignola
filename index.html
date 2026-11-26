@@ -17,7 +17,7 @@
   </script>
   <script src="app-extras.js?v=2"></script>
   <script src="event-page.js?v=63" defer></script>
-  <script src="metrics.js?v=32"></script>
+  <script src="metrics.js?v=33"></script>
 
   <meta charset="UTF-8" />
   <script>
@@ -3338,6 +3338,7 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
           poster.alt = "Locandina: " + ev.titolo;
           poster.loading = "lazy";
           poster.decoding = "async";
+          window.CsfMetrics?.observePoster?.(ev,poster);
           // Scarica la locandina soltanto quando viene aperta la scheda.
           const caricaLocandina = () => {
             if (details.open && !poster.hasAttribute("src")) {
