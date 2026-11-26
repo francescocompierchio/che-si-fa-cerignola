@@ -906,12 +906,13 @@ class ComuneHomepageEIndirizziTests(unittest.TestCase):
           <p>Gratuito. E' necessaria prenotazione.</p>
         </main></body></html>
         """
-        eventi = motore.analizza_pagina_evento(
-            html,
-            "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
-            citta_default="Cerignola",
-            fonte_curata_eventi=True,
-        )
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
         self.assertEqual(len(eventi), 1)
         self.assertEqual(eventi[0]["dataInizio"], "2026-11-26")
         self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")
