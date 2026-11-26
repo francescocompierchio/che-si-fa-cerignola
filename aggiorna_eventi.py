@@ -326,16 +326,16 @@ def registra_statistica_fonte(nome, **dati):
 
 
 def crea_session_raccolta():
-    """Sessione HTTP con retry controllati per errori transitori e rate limit."""
+    """Sessione HTTP con retry limitati per errori transitori."""
     retry = Retry(
-        total=3,
-        connect=2,
-        read=2,
-        status=3,
+        total=1,
+        connect=1,
+        read=1,
+        status=1,
         backoff_factor=0.7,
-        status_forcelist=(429, 500, 502, 503, 504),
+        status_forcelist=(500, 502, 504),
         allowed_methods=frozenset({"GET"}),
-        respect_retry_after_header=True,
+        respect_retry_after_header=False,
         raise_on_status=False,
     )
     adapter = HTTPAdapter(
@@ -1289,6 +1289,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     poster_ok = urlparse(poster).scheme in ("http", "https") and bool(urlparse(poster).hostname)
     return {
         **({"locandinaUrl": poster} if poster_ok else {}),
+        **({"raccoltaAutomatica": True} if raw.get("raccoltaAutomatica") is True else {}),
         "tipoContenuto": "evento",
         "citta": citta,
         "categoria": cat,
@@ -1990,7 +1991,10 @@ def raccogli_da_feed_social(session, fonte):
     try:
         risposta = session.get(fonte["url"], timeout=(6, 12))
         if risposta.status_code != 200:
-            registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
+            retry_after = (getattr(risposta, "headers", {}) or {}).get("Retry-After", "")
+            registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0,
+                                      pagineScaricate=0, eventiEstratti=0,
+                                      riprovaDopoSecondi=min(int(retry_after), 86400) if retry_after.isascii() and retry_after.isdigit() and len(retry_after) < 10 else 0)
             print(f"{nome}: HTTP {risposta.status_code}")
             return []
         # RSS è XML: il parser HTML tratta <link> come tag vuoto e perde gli URL.
@@ -3071,7 +3075,9 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             continue
 
         url = str(item.get("fonteUrl") or "").strip()
-        is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
+        is_manuale = bool(item.get("manuale")) or not (
+            item.get("raccoltaAutomatica") is True or _fonte_appartiene_a_raccolta_automatica(url)
+        )
         # I record manuali sono sempre protetti, anche se la data è passata:
         # la loro rimozione deve essere una scelta editoriale, non del crawler.
         if is_manuale:
@@ -3091,6 +3097,17 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             )
             if evento_pulito:
                 auto_validi.append(evento_pulito)
+            elif (
+                not _url_pagina_elenco(url)
+                and not _url_tacco_generica(url)
+                and _data_iso_valida(item.get("dataInizio"))
+                and item["dataInizio"] <= d_fin
+                and item.get("citta") in COMUNI_50KM
+                and _luogo_utilizzabile(item.get("luogo"))
+            ):
+                # Un cambiamento al parser non revoca una scheda già pubblicata.
+                auto_validi.append(item)
+                print("Evento esistente conservato dopo riconvalida inconcludente.")
             else:
                 print(f"Evento automatico scartato in riconvalida: {titolo[:70]}")
         else:
@@ -3127,8 +3144,13 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI, risultati_per
     def raccogli_gruppo(gruppo):
         risultati = []
         with crea_session_raccolta() as session:
+            limitato = False
             for indice, raccoglitore, fonte in gruppo:
                 nome = fonte["nome"]
+                if limitato:
+                    registra_statistica_fonte(nome, stato="pausa", motivoPausa="HTTP 429 sul dominio")
+                    risultati.append((indice, []))
+                    continue
                 inizio = time.monotonic()
                 session._csf_ocr_budget = {"rimanenti": MAX_OCR_PER_FONTE}
                 try:
@@ -3140,6 +3162,8 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI, risultati_per
                 registra_statistica_fonte(nome, durataSecondi=round(time.monotonic() - inizio, 2),
                                           tentativiOCR=MAX_OCR_PER_FONTE - session._csf_ocr_budget["rimanenti"])
                 print(f"{nome}: completata in {time.monotonic() - inizio:.1f}s", flush=True)
+                with _LOCK_STATISTICHE:
+                    limitato = STATISTICHE_FONTI.get(nome, {}).get("stato") == "HTTP 429"
                 risultati.append((indice, eventi))
         return risultati
 
@@ -3326,11 +3350,12 @@ def esegui_aggiornamento():
             fonte["focus_serate"]=True
         if fonte["nome"]=="Tacco di Bacco Nightlife Cerignola":
             fonte["prioritaria"]=True
-    compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
+    compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1", priorita_km)
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
     for _, fonte in compiti:
-        registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte), focus_serate=stato_raccolta.fonte_serale(fonte))
+        registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte),
+                                  focus_serate=stato_raccolta.fonte_serale(fonte), dominio=stato_raccolta.dominio(fonte))
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
@@ -3368,6 +3393,8 @@ def esegui_aggiornamento():
                 precedente=next((x for x in precedenti_auto if x.get("locandinaUrl") and all(x.get(k)==ev.get(k) for k in ("fonteUrl","luogo","dataInizio","dataFine"))),None)
                 if precedente:
                     ev=dict(ev,locandinaUrl=precedente["locandinaUrl"])
+            if not _fonte_appartiene_a_raccolta_automatica(ev.get("fonteUrl")) and not ev.get("telegramImportato"):
+                ev = dict(ev, raccoltaAutomatica=True)
             consolidati.append(ev)
             if any(sono_duplicati(x, ev) for x in precedenti_auto):
                 ritrovati += 1
