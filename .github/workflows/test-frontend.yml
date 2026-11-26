@@ -273,7 +273,7 @@ jobs:
           assert.ok(!html.includes('src="https://www.googletagmanager.com/gtag/js'));
           assert.ok(metrics.includes('choice==="yes"'));
           assert.ok(html.includes('window.CsfMetrics?.aggregateAllowed()'));
-          assert.ok(html.includes('src="metrics.js?v=32"'));
+          assert.ok(html.includes('src="metrics.js?v=33"'));
           assert.ok(metrics.includes("public-views.js?v=31"));
           assert.ok(!html.includes("visualizzazioni (incl. storico)"));
           assert.ok(!html.includes('id="visits-pill"'));

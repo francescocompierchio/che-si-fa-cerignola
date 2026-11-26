@@ -21,11 +21,12 @@ async function reject(p,method,value){const r=await request(p,method,value);asse
   const snapshot=(await db.ref("statisticheEventi").get()).val()||{};
   assert.ok(Object.entries(snapshot).some(([k,v])=>!k.startsWith("csf-collaudo-")&&v?.enabled===true),"Nessun evento reale registrato");
   // ID isolato, non associato a eventi visibili, rimosso sempre dopo il test.
-  await test.set({enabled:true});
+  await test.set({enabled:true,posterEnabled:true});
+  await reject(path+"/posterEnabled","PUT",false);
   assert.equal((await request(path)).data.enabled,true);
   await reject(path+"/enabled","PUT",false);
   await reject(path+"/open","PUT",{count:10000,at:{".sv":"timestamp"}});
-  for(const metric of ["open","share"]){
+  for(const metric of ["open","share","poster"]){
    const r=await request(path+"/"+metric,"PUT",body);
    assert.ok(r.ok,"Incremento reale non accettato: "+r.status);
    assert.equal((await request(path+"/"+metric)).data.count,1);
@@ -36,7 +37,7 @@ async function reject(p,method,value){const r=await request(p,method,value);asse
   await reject(path+"/extra","PUT",true);
   await test.child("enabled").set(false);
   await reject(path+"/open","PUT",body);
-  console.log("OK produzione: apertura e condivisione persistono; scritture arbitrarie, eliminazioni e nodi non abilitati rifiutati.");
+  console.log("OK produzione: apertura, condivisione e vista locandina persistono; scritture arbitrarie, eliminazioni e nodi non abilitati rifiutati.");
  }finally{
   try{await test.remove();console.log("Nodo temporaneo rimosso.");}finally{await deleteApp(app);}
  }

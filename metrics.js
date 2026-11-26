@@ -10,7 +10,10 @@ function csfEventStatsData(value){
   if(!value||typeof value.enabled!=="boolean")return null;
   const metric=k=>{if(value[k]==null)return 0;const n=value[k].count;return Number.isSafeInteger(n)&&n>=0&&n<=1000000000?n:null;};
   const open=metric("open"),share=metric("share");
-  return open===null||share===null?null:{enabled:value.enabled,open,share};
+  if(open===null||share===null)return null;
+  const result={enabled:value.enabled,open,share};
+  if(value.posterEnabled===true||value.poster!=null){const poster=metric("poster");if(poster!==null){result.poster=poster;result.posterEnabled=value.posterEnabled===true;}}
+  return result;
 }
 function csfEventStatsClient({request,allowed,visible,now=Date.now,notify=()=>{}}){
   const cache=new Map(),pending=new Map(),cooldown=new Map();let denied=false;
@@ -27,12 +30,12 @@ function csfEventStatsClient({request,allowed,visible,now=Date.now,notify=()=>{}
     pending.set(id,promise);return promise;
   }
   async function record(ev,action){
-    const id=csfEventStatsKey(ev),metric=action==="csf_event_open"?"open":action==="csf_event_share"?"share":null;
+    const id=csfEventStatsKey(ev),metric=action==="csf_event_open"?"open":action==="csf_event_share"?"share":action==="csf_poster_view"?"poster":null;
     if(!id||!metric||!allowed()||!visible()||denied)return false;
     const key=id+"/"+metric,t=now(),previous=cooldown.get(key);
     if(previous!==undefined&&t-previous<60000)return false;
     cooldown.set(key,t);
-    const stats=await read(id);if(!stats?.enabled||!allowed()||!visible())return false;
+    const stats=await read(id);if(!stats?.enabled||(metric==="poster"&&!stats.posterEnabled)||!allowed()||!visible())return false;
     try{
       const res=await request(key+".json",{method:"PUT",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({count:{".sv":{increment:1}},at:{".sv":"timestamp"}})});
       if(!res.ok)return false;await read(id,true);return true;
@@ -74,7 +77,8 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
  const statsBase="https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/statisticheEventi/";
  function statsRender(node,data){
    if(!data){node.style.display="none";return;}
-   node.textContent="👁 "+data.open.toLocaleString("it-IT")+" aperture · ↗ "+data.share.toLocaleString("it-IT")+" condivisioni avviate";
+   const views=data.poster!==undefined?"▧ "+data.poster.toLocaleString("it-IT")+" viste locandina · ":"";
+   node.textContent=views+"👁 "+data.open.toLocaleString("it-IT")+" aperture · ↗ "+data.share.toLocaleString("it-IT")+" condivisioni avviate";
    node.style.display="block";
  }
  function statsNotify(id,data){document.querySelectorAll("[data-csf-event-stats]").forEach(node=>{if(node.dataset.csfEventStats===id)statsRender(node,data);});}
@@ -88,13 +92,43 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
    const id=csfEventStatsKey(ev);if(!id)return;
    const node=document.createElement("small");node.dataset.csfEventStats=id;
    node.style.cssText="display:none;font-size:.73rem;line-height:1.35;opacity:.82;margin-top:4px;font-weight:500;overflow-wrap:anywhere";
-   node.title="Interazioni rilevate da Che Si Fa Cerignola, non persone uniche né invii confermati. I limiti anti-abuso possono ridurre il totale.";
+   node.title="Interazioni rilevate da Che Si Fa Cerignola, non persone uniche né invii confermati. Viste locandina: immagine caricata e almeno metà visibile per un secondo. I limiti anti-abuso possono ridurre il totale.";
    parent.appendChild(node);
    if(statsObserver){statsNodes.set(anchor,node);statsObserver.observe(anchor);}
    else void statsClient.read(id).then(data=>statsRender(node,data));
  }
+ // Una vista richiede una locandina caricata, almeno metà nel viewport per 1 secondo.
+ const posterEntries=new Map();
+ function stopPosterTimer(entry){if(entry.timer!==null){clearTimeout(entry.timer);entry.timer=null;}}
+ function retirePoster(img,entry){stopPosterTimer(entry);posterObserver?.unobserve(img);img.removeEventListener("load",entry.load);img.removeEventListener("error",entry.error);posterEntries.delete(img);}
+ function evaluatePoster(img,entry){
+   if(!img.isConnected){retirePoster(img,entry);return;}
+   if(!entry.inView||!img.complete||img.naturalWidth<=0||document.hidden||!aggregateAllowed()){stopPosterTimer(entry);return;}
+   if(entry.timer!==null)return;
+   entry.timer=setTimeout(()=>{
+     entry.timer=null;
+     if(!img.isConnected){retirePoster(img,entry);return;}
+     if(!entry.inView||document.hidden||!aggregateAllowed()||!img.complete||img.naturalWidth<=0)return;
+     retirePoster(img,entry);
+     void statsClient.record(entry.ev,"csf_poster_view");
+   },1000);
+ }
+ const posterObserver=liveStats&&typeof IntersectionObserver==="function"?new IntersectionObserver(entries=>{
+   for(const item of entries){const entry=posterEntries.get(item.target);if(!entry)continue;entry.inView=item.isIntersecting&&item.intersectionRatio>=.5;evaluatePoster(item.target,entry);}
+ },{threshold:[0,.5]}):null;
+ function observePoster(ev,img){
+   if(!posterObserver||!img||!csfEventStatsKey(ev)||posterEntries.has(img))return;
+   for(const [el,entry] of posterEntries)if(!el.isConnected)retirePoster(el,entry);
+   const entry={ev,inView:false,timer:null,load:()=>evaluatePoster(img,entry),error:()=>stopPosterTimer(entry)};
+   posterEntries.set(img,entry);
+   img.addEventListener("load",entry.load);img.addEventListener("error",entry.error);
+   posterObserver.observe(img);
+ }
+ if(liveStats)document.addEventListener("visibilitychange",()=>{
+   for(const [img,entry] of posterEntries){if(document.hidden)stopPosterTimer(entry);else evaluatePoster(img,entry);}
+ });
  window.CsfMetrics={
-   attachStats,
+   attachStats, observePoster,
    allowed, aggregateAllowed,
    action(name){if(allowed()&&window.__csfGaStarted&&typeof window.gtag==="function"&&appActions.has(name))window.gtag("event",name,{});},
    record(action,ev){if(liveStats)void statsClient.record(ev,action);if(!allowed()||!window.__csfGaStarted||typeof window.gtag!=="function"||!actions.has(action)||!ev?.titolo)return;window.gtag("event",action,{csf_event_id:[ev.titolo,ev.citta,ev.dataInizio].join("|").slice(0,100),csf_category:String(ev.categoria||"").slice(0,100)});}
@@ -107,7 +141,7 @@ if(typeof module==="object"&&module.exports){module.exports={csfEventStatsKey,cs
  }
  document.addEventListener("DOMContentLoaded",()=>{
    const eventPage=document.getElementById("csf-event-page");
-   if(eventPage?.dataset?.title){const ev={titolo:eventPage.dataset.title,citta:eventPage.dataset.city,dataInizio:eventPage.dataset.date};const target=eventPage.querySelector("img")||eventPage.querySelector("h1");if(target){const holder=document.createElement("div");target.after(holder);attachStats(ev,holder,eventPage);}}
+   if(eventPage?.dataset?.title){const ev={titolo:eventPage.dataset.title,citta:eventPage.dataset.city,dataInizio:eventPage.dataset.date};const target=eventPage.querySelector("img")||eventPage.querySelector("h1");if(target){const holder=document.createElement("div");target.after(holder);attachStats(ev,holder,eventPage);if(target.tagName==="IMG")observePoster(ev,target);}}
    const banner=document.getElementById("csf-consent");
    if(!banner)return;
    // Nessun banner automatico. Le statistiche dettagliate richiedono consenso esplicito.
