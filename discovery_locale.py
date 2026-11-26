@@ -1,6 +1,8 @@
 """Discovery locale da feed originali e ricerche di appuntamenti settimanali."""
 import re
 from datetime import datetime,timedelta
+from hashlib import sha256
+from zoneinfo import ZoneInfo
 from email.utils import parsedate_to_datetime
 from urllib.parse import urlencode,urlparse
 
@@ -111,16 +113,38 @@ def alias_locale(testo,registro):
                for r in registro for a in r.get("alias",[])
                if isinstance(a,str) and len(a.strip())>=5 and a.casefold() not in {"pro loco","il titolo","bar roma","villa eden","motus","nonzai"})
 
-def data_pubblicazione(valore):
+def istante_pubblicazione(valore):
     if not valore:
         return None
     try:
-        return parsedate_to_datetime(valore).date()
-    except (ValueError,TypeError,OverflowError):
+        return parsedate_to_datetime(valore)
+    except (ValueError, TypeError, OverflowError):
         try:
-            return datetime.fromisoformat(valore.replace("Z","+00:00")).date()
-        except (ValueError,TypeError,OverflowError):
+            return datetime.fromisoformat(valore.replace("Z", "+00:00"))
+        except (ValueError, TypeError, OverflowError):
             return None
+
+
+def data_pubblicazione(valore):
+    ts = istante_pubblicazione(valore)
+    return ts.date() if ts is not None else None
+
+
+def misura_ritardo(soup, url, ora, data_editore=""):
+    valori = []
+    if soup:
+        el = soup.select_one('meta[property="article:published_time"], [itemprop="datePublished"]')
+        if el:
+            valori.append(el.get("content") or el.get("datetime") or "")
+    valori.append(data_editore)
+    for valore in valori:
+        ts = istante_pubblicazione(valore)
+        if ts is None or ts.utcoffset() is None:
+            continue
+        delta = (ora - ts.astimezone(ZoneInfo("Europe/Rome"))).total_seconds() / 60
+        if 0 <= delta <= 180 * 1440:
+            return {sha256(url.encode()).hexdigest()[:16]: round(delta, 1)}
+    return {}
 
 def data_evento_documentata(testo,d):
     """Rifiuta 'ogni venerdì' o orari di apertura senza singola data esplicita."""
@@ -152,3 +176,49 @@ def titolo_locandina_compatibile(titolo,testo):
     def parole(s):
         return set(re.findall(r"[a-zà-ù]{4,}",str(s or "").casefold()))-stop
     return len(parole(titolo)&parole(testo))>=2
+
+
+def date_complete(testo):
+    """Date di calendario scritte per esteso o con anno, senza inferenze."""
+    mesi = "gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre".split()
+    pattern = (
+        rf"\b(?P<giorno>\d{{1,2}})\s+(?P<mese>{'|'.join(mesi)})\s+(?P<anno>20\d{{2}})\b"
+        r"|\b(?P<d>\d{1,2})(?P<sep>[./-])(?P<m>\d{1,2})(?P=sep)(?P<y>20\d{2}|\d{2})\b"
+        r"|\b(?P<iso>20\d{2}-\d{2}-\d{2})\b"
+    )
+    date = set()
+    for m in re.finditer(pattern, testo or "", re.I):
+        try:
+            if m["iso"]:
+                dt = datetime.fromisoformat(m["iso"])
+            elif m["anno"]:
+                dt = datetime(int(m["anno"]), mesi.index(m["mese"].casefold()) + 1, int(m["giorno"]))
+            else:
+                dt = datetime(int(m["y"]) + (2000 if len(m["y"]) == 2 else 0), int(m["m"]), int(m["d"]))
+        except ValueError:
+            continue
+        date.add(dt.date().isoformat())
+    return date
+
+
+def testo_prenotazione(testo):
+    """Conserva un recapito solo se il testo lo presenta per le prenotazioni."""
+    numero = re.search(
+        r"\b(?:info\s+e\s+(?:prenotazioni|prevendite)|prenotazioni?|prevendite|booking|whatsapp)"
+        r"\s*[:·.,–-]?\s*(?:(?:tel\.?|cell\.)\s*[:.]?\s*)?((?:\+39\s*)?(?:[0-9][ .-]?){8,12})\b",
+        testo or "", re.I,
+    )
+    if not numero:
+        return ""
+    valore = numero.group(1).strip()
+    cifra = re.sub(r"\D", "", valore)
+    return valore if 8 <= len(cifra.removeprefix("39") if valore.startswith("+39") else cifra) <= 11 else ""
+
+
+def orario_locandina(testo):
+    orari = set(re.findall(r"\b(?:ore|inizio|dalle)\s+(?:ore\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\b", testo or "", re.I))
+    valori = {(int(h), int(m)) for h, m in orari}
+    if len(valori) == 1:
+        h, m = valori.pop()
+        return f"{h:02d}:{m:02d}"
+    return ""

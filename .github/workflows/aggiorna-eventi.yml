@@ -2,11 +2,11 @@ name: Aggiorna Eventi Cerignola
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "8,38 * * * *"
   workflow_dispatch:
     inputs:
       forza_fonti:
-        description: 'Ignora temporaneamente le pause adattive delle fonti'
+        description: 'Ignora le pause per resa bassa; rispetta i limiti HTTP'
         type: boolean
         default: true
   push:
@@ -24,6 +24,7 @@ on:
       - "test_radar_natura.py"
       - "esperienze.json"
       - "stato_raccolta.py"
+      - "scripts/memoria_raccolta.py"
       - "fonti_movida.json"
       - "fonti_promoter.json"
       - "test_radar_apify.py"
@@ -36,6 +37,9 @@ on:
       - "test_festivita.py"
       - "ricorrenze.py"
       - "discovery_locale.py"
+      - "radar_territorio.py"
+      - "test_radar_territorio.py"
+      - "fonti_editori.py"
       - "apprendimento.py"
       - "test_apprendimento.py"
       - "test_discovery_locale.py"
@@ -91,19 +95,28 @@ jobs:
           key: fonti-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: fonti-v1-
 
+      - name: Controlla il checkpoint persistente
+        continue-on-error: true
+        timeout-minutes: 1
+        run: python scripts/memoria_raccolta.py ripristina
+
       - name: Pulisce report e salva copia precedente
         run: |
           rm -f report_copertura.json
           cp eventi.json backup-eventi.json
 
       - name: Verifica parser, categorie e indirizzi
-        run: python -m unittest discover -s . -p "test_*.py" -v
+        run: |
+          python -m unittest discover -s . -p "test_*.py" -q
+          python -m unittest discover -s tests -p "test_*.py" -q
 
       - name: Radar Apify con budget gratuito
         continue-on-error: true
         timeout-minutes: 3
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN || secrets.APIFY_API_TOKEN }}
+          APIFY_META_AUTORIZZATO: ${{ vars.APIFY_META_AUTORIZZATO }}
+          APIFY_GOOGLE_AUTORIZZATO: ${{ vars.APIFY_GOOGLE_AUTORIZZATO }}
         run: python radar_apify.py
 
       - name: Cerca nuovi eventi e aggiorna eventi.json
@@ -111,6 +124,7 @@ jobs:
           TELEGRAM_EVENT_BOT_TOKEN: ${{ secrets.TELEGRAM_EVENT_BOT_TOKEN }}
           TELEGRAM_EVENT_CHANNELS: ${{ secrets.TELEGRAM_EVENT_CHANNELS }}
           PYTHONUNBUFFERED: "1"
+          CSF_FEEDBACK_APPROVATI: "1"
           OMP_THREAD_LIMIT: "1"
           CSF_FORZA_FONTI: ${{ github.event_name == 'workflow_dispatch' && inputs.forza_fonti && '1' || '0' }}
         run: python aggiorna_eventi.py
@@ -177,6 +191,16 @@ jobs:
           print("### Apprendimento operativo")
           print(f"- Cicli di apprendimento: {appr.get('cicli', 0)}")
           print(f"- Copertura Cerignola prossimi 14 giorni: {appr.get('lacune14Giorni', {})}")
+          territorio = report.get("registroTerritoriale", {})
+          qualita = report.get("misureCiclo", {})
+          print("### Registro territoriale e qualità")
+          print(f"- Organizzatori osservati: {territorio.get('organizzatoriOsservati', 0)}")
+          print(f"- Feed rilevati: {territorio.get('feedEditori', 0)} (nuovi: {territorio.get('nuoviFeed', 0)})")
+          print(f"- Campione delle segnalazioni approvate: {territorio.get('feedbackApprovati', {})}")
+          print(f"- Duplicati evitati: {qualita.get('duplicatiEvitati', 0)}")
+          print(f"- Ritardo mediano delle schede con pubblicazione datata: {qualita.get('ritardoMedianoMinuti')} min, {qualita.get('campioniRitardo', 0)} campioni")
+          print(f"- Scarti per motivo: {qualita.get('scartiSchede', {})}")
+          print(f"- Anomalie rispetto alle ultime 24 ore: {', '.join(qualita.get('anomalie', [])) or 'nessuna'}")
           print("### Esito interrogazione fonti")
           print(f"- Fonti che hanno restituito eventi: {report.get('fontiConEventi', 0)}")
           print(f"- Fonti senza eventi: {len(report.get('fontiSenzaEventi', []))}")
@@ -208,6 +232,11 @@ jobs:
 
       - name: Verifica integrità SEO e aggiornamento archivio
         run: node tests/seo-integrity.cjs
+
+      - name: Salva il checkpoint giornaliero
+        continue-on-error: true
+        timeout-minutes: 1
+        run: python scripts/memoria_raccolta.py salva
 
       - name: Genera pagine HTML e sitemap SEO
         run: node genera_pagine_eventi.js

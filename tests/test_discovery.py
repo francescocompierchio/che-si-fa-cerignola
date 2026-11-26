@@ -866,16 +866,16 @@ class ProtezioneManualiERetryHttpTests(unittest.TestCase):
         self.assertEqual(automatici, [])
         self.assertEqual(scaduti, 1)
 
-    def test_sessione_http_ha_retry_su_rate_limit_e_errori_transitori(self):
+    def test_sessione_http_riprova_solo_errori_transitori(self):
         session = motore.crea_session_raccolta()
         try:
             adapter = session.get_adapter("https://")
             retry = adapter.max_retries
-            self.assertEqual(retry.total, 3)
-            self.assertIn(429, retry.status_forcelist)
-            self.assertIn(503, retry.status_forcelist)
+            self.assertEqual(retry.total, 1)
+            self.assertNotIn(429, retry.status_forcelist)
+            self.assertIn(502, retry.status_forcelist)
             self.assertIn("GET", retry.allowed_methods)
-            self.assertTrue(retry.respect_retry_after_header)
+            self.assertFalse(retry.respect_retry_after_header)
         finally:
             session.close()
 

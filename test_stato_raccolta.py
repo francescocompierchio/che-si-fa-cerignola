@@ -11,7 +11,7 @@ class StatoFontiTests(unittest.TestCase):
         self.assertEqual(s.pianifica(t,m,1001)[0],t)
         m=s.aggiorna(m, {"locale":{"stato":"HTTP 429"}}, 2000)
         self.assertEqual(s.pianifica(t,m,2001)[1],["locale"])
-        self.assertEqual(s.pianifica(t,m,2001,True)[0],t)
+        self.assertEqual(s.pianifica(t,m,2001,True)[1],["locale"])
         self.assertEqual(s.pianifica(t,m,5600)[0],t)
         m=s.aggiorna(m, {"locale":{"stato":"ok","eventiEstratti":2}}, 5600)
         self.assertEqual(m["fonti"]["locale"]["blocchiConsecutivi"],0)

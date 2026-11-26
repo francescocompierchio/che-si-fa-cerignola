@@ -137,18 +137,22 @@ def raccogli():
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
     if now - state.get("last", 0) < INTERVAL:
         return {"stato": "pausa programmata", "prossimoUnix": state["last"] + INTERVAL}
-    history = state.setdefault("profili", {})
-    choice = scegli(profili(), history, now)
     if not os.getenv("APIFY_TOKEN"):
         return {"stato": "secret APIFY_TOKEN assente nel workflow"}
-    if not choice:
-        return {"stato": "nessuna fonte dovuta"}
-    url, host = choice
-    actor = "acts/apify~" + ACTORS[host]
-    google = bool(history) and now - state.get("lastGoogle", 0) >= 7 * 86400
+    meta_consentita = os.getenv("APIFY_META_AUTORIZZATO") == "1"
+    google_consentito = os.getenv("APIFY_GOOGLE_AUTORIZZATO") == "1"
+    if not (meta_consentita or google_consentito):
+        return {"stato": "sospeso", "motivo": "autorizzazione della piattaforma non configurata"}
+    history = state.setdefault("profili", {})
+    choice = scegli(profili(), history, now) if meta_consentita else None
+    google = google_consentito and now - state.get("lastGoogle", 0) >= 7 * 86400
     if google:
-        actor = "acts/automatic~google-search-results-scraper"
-        url = "Google Cerignola"
+        actor, url, host = "acts/automatic~google-search-results-scraper", "Google Cerignola", ""
+    elif choice:
+        url, host = choice
+        actor = "acts/apify~" + ACTORS[host]
+    else:
+        return {"stato": "nessuna fonte dovuta"}
     with requests.Session() as auth:
         auth.headers["Authorization"] = "Bearer " + os.environ["APIFY_TOKEN"]
         verifica_budget(api(auth, "users/me")["data"]["plan"], api(auth, "users/me/limits")["data"])
@@ -176,8 +180,9 @@ def raccogli():
         report = {"profilo": url, "run": run["id"], "stato": run["status"],
                   "costoUsd": run.get("usageTotalUsd"), "tariffeFree": fees}
         if run["status"] != "SUCCEEDED":
-            history[url] = {"visite": history.get(url, {}).get("visite", 0) + 1, "at": now, "stato": "indeterminata", "validi": 0}
-            engine._scrivi_json_atomico(str(STATE), state)
+            if not google:
+                history[url] = {"visite": history.get(url, {}).get("visite", 0) + 1, "at": now, "stato": "indeterminata", "validi": 0}
+                engine._scrivi_json_atomico(str(STATE), state)
             return report
         rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=4, clean="true")
     if google:
@@ -185,7 +190,7 @@ def raccogli():
         engine._scrivi_json_atomico(str(OUTPUT), events)
         return dict(report, **stats, validi=len(events))
     events = []
-    posts = posters = 0
+    posts = posters = contraddizioni = 0
     errors = [r for r in rows if r.get("error") or r.get("errorDescription")]
     with engine.crea_session_raccolta() as public:
         for row in rows:
@@ -208,6 +213,11 @@ def raccogli():
                 for poster, ocr in engine.estrai_testo_locandine(public, html, max_immagini=1, singole=True):
                     posters += 1
                     candidates.extend(engine.eventi_da_locandina(ocr, poster, title, post))
+            date_caption = engine.discovery_locale.date_complete(caption)
+            date_ocr = {ev["dataInizio"] for ev in candidates}
+            if date_caption and date_ocr and date_caption != date_ocr:
+                contraddizioni += 1
+                continue
             if title and engine.discovery_locale.TEMI.search(caption):
                 candidates.extend(engine.eventi_da_locandina(caption, "", title, post))
             for ev in candidates:
@@ -218,7 +228,7 @@ def raccogli():
     history[url] = {"visite": history.get(url, {}).get("visite", 0) + 1, "at": now, "stato": status, "validi": len(events)}
     engine._scrivi_json_atomico(str(STATE), state)
     engine._scrivi_json_atomico(str(OUTPUT), events)
-    return dict(report, esitoFonte=status, post=posts, immaginiOCR=posters, validi=len(events))
+    return dict(report, esitoFonte=status, post=posts, immaginiOCR=posters, discordanzeData=contraddizioni, validi=len(events))
 
 
 if __name__ == "__main__":

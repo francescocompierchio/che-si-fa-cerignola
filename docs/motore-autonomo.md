@@ -1,0 +1,21 @@
+# Motore eventi autonomo
+
+## Baseline del 26 novembre 2026
+
+Il [run 45902685298](https://github.com/francescocompierchio/che-si-fa-cerignola/actions/runs/45902685298) ha misurato 96 record nell'archivio, 109 eventi nell'unione statica, 25 eventi di Cerignola, 2 serate di Cerignola nell'unione statica, zero novità, 54 locandine e 171,51 secondi di raccolta. Su 420 voci diagnostiche, 218 erano OK e 194 in pausa. Il browser ha mostrato 109 eventi e 25 con il filtro Cerignola. Nel rapporto Apify il secret risultava assente. Prima dei cambiamenti passavano 107 test alla radice, 102 nella suite `tests` e il controllo SEO.
+
+## Fasi implementate
+
+1. **Affidabilità.** Il parser conserva una scheda automatica in corso o futura con data, comune e sede già documentati quando la riconvalida è inconcludente. Gli stati espliciti Schema.org continuano a escludere i record automatici annullati o rinviati. Le schede imminenti vengono ricontrollate a rotazione. Le risposte HTTP 429 interrompono le richieste del gruppo nel ciclo corrente e attivano una pausa per dominio. Errori ripetuti e pagine rimosse attivano pause crescenti.
+2. **Memoria.** Il workflow parte ogni 30 minuti ai minuti 08 e 38. La cache conserva la memoria più recente fra due esecuzioni. Il ramo tecnico `stato-motore-eventi` custodisce un checkpoint giornaliero. Se il checkpoint è più recente della cache, il runner lo usa alla partenza. Il ramo contiene unicamente `fonti.json` con metriche, domini, feed pubblici e sedi già esposte. Le scritture Git sono fast-forward e i runner usano i permessi già previsti.
+3. **Fonti e territorio.** Le lacune di copertura alimentano fino a tre query aggiuntive tra movida, organizzatori ricorrenti e svago. Fino a due feed RSS o Atom dichiarati da editori configurati entrano a rotazione dopo il controllo delle istruzioni di accesso. I domini osservati dalle ricerche indicizzate e dagli eventi approvati entrano nella lista dei candidati. Le nuove query leggono schede originali solo su domini già ammessi.
+4. **Feedback editoriale.** Il motore campiona fino a 40 record del nodo pubblico degli eventi già approvati ogni sei ore. Usa solo i campi necessari per riconoscere date, comuni, locali e fonti. Memorizza statistiche aggregate, sedi pubbliche e domini, escludendo identificativi Firebase, note e contatti.
+5. **Locandine e misurazione.** L'OCR richiede una data esplicita univoca o confermata dal titolo. La raccolta acquisisce orari e recapiti espressamente indicati per prenotare. Con Schema.org acquisisce anche artisti e link di acquisto. Il report conta duplicati, scarti osservati, nuove fonti e copertura. Confronta i cicli con le ultime 24 ore disponibili e misura il ritardo solo quando la fonte originale fornisce orario e fuso.
+6. **Apify.** Il runner usa `APIFY_TOKEN` o `APIFY_API_TOKEN` dai secret già previsti. La configurazione distingue le autorizzazioni con `APIFY_META_AUTORIZZATO` e `APIFY_GOOGLE_AUTORIZZATO`, valore `1` solo per la piattaforma per cui esiste l'autorizzazione all'acquisizione automatica. Il preflight verifica il piano gratuito e il credito residuo prima di avviare un Actor compatibile con il tetto per esecuzione.
+
+## Collaudo e ripresa
+
+- Eseguire `python -m unittest discover -s . -p "test_*.py" -q`, `python -m unittest discover -s tests -p "test_*.py" -q` e `node tests/seo-integrity.cjs`. Il ripristino e la riscrittura idempotente del checkpoint sono stati collaudati con un remoto Git temporaneo.
+- La raccolta pubblica si verifica nella scheda [Actions](https://github.com/francescocompierchio/che-si-fa-cerignola/actions/workflows/aggiorna-eventi.yml). Ogni esecuzione conserva per 14 giorni il rapporto, il risultato del preflight Apify e `backup-eventi.json`.
+- Per un guasto di produzione confrontare il report e il backup con il commit pubblicato. Recuperare i singoli record validi dal backup o dalla cronologia Git con una PR. Per regredire il codice usare un revert della PR, mantenendo l'archivio dati indipendente dal ripristino.
+- Monitorare i primi cicli di produzione, il salvataggio sul ramo tecnico e il miglioramento della copertura nei giorni successivi. Per Apify servono un secret disponibile al runner e l'autorizzazione del fornitore. Per i nuovi domini candidati verificare le condizioni di acquisizione prima di aggiungere un connettore diretto.

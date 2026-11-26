@@ -267,3 +267,42 @@ def aggiorna(memoria,eventi,oggi,now):
     storico.append({"timestamp":now,"lacune":a["lacune14Giorni"],"totaleCerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi.isoformat() for e in eventi)})
     a["storico"]=storico[-336:]  # circa sette giorni a cadenza semioraria
     return a
+
+
+def qualita_ciclo(memoria, diagnostica, eventi, oggi, now, *, nuovi, duplicati, concordanti):
+    """Persiste misure osservate e confronta le ultime 24 ore disponibili."""
+    attivi = [e for e in eventi if e.get("dataFine", "") >= oggi.isoformat()]
+    esiti = Counter(d.get("stato", "n/d") for d in diagnostica.values())
+    scarti = Counter()
+    ritardi = {}
+    for dati in diagnostica.values():
+        scarti.update(dati.get("scartiSchede", {}))
+        for chiave, ritardo in dati.get("ritardoSchedeMinuti", {}).items():
+            ritardi[chiave] = min(ritardo, ritardi.get(chiave, ritardo))
+    by_city = Counter(e.get("citta") for e in attivi)
+    by_cat = Counter(e.get("categoria") for e in attivi)
+    valori_ritardo = sorted(ritardi.values())
+    n = len(valori_ritardo)
+    mediana_ritardo = round((valori_ritardo[n // 2] + valori_ritardo[(n - 1) // 2]) / 2, 1) if n else None
+    misure = {
+        "timestamp": now, "fontiAttive": esiti["ok"], "fontiInPausa": esiti["pausa"],
+        "eventiNuovi": nuovi, "duplicatiEvitati": duplicati,
+        "eventiCerignola": by_city["Cerignola"], "eventiMovida": by_cat["Locali & Serate"],
+        "concordanti": concordanti, "campioniRitardo": n, "ritardoMedianoMinuti": mediana_ritardo,
+    }
+    stato = memoria.setdefault("apprendimento", {})
+    precedente = stato.get("qualita", [])
+    ultimo_giorno = [c for c in precedente if now - c["timestamp"] <= 86400]
+    confronto = {}
+    for chiave in ("fontiAttive", "eventiNuovi", "eventiCerignola", "eventiMovida"):
+        if ultimo_giorno:
+            confronto[chiave] = round(sum(v[chiave] for v in ultimo_giorno) / len(ultimo_giorno), 2)
+    anomalie = [
+        chiave for chiave in ("fontiAttive", "eventiCerignola", "eventiMovida")
+        if len(ultimo_giorno) >= 6 and confronto[chiave] >= 4 and misure[chiave] < confronto[chiave] * 0.5
+    ]
+    stato["qualita"] = (precedente + [misure])[-336:]
+    return {
+        **misure, "scartiSchede": dict(scarti), "perComune": dict(by_city),
+        "perCategoria": dict(by_cat), "media24Ore": confronto, "anomalie": anomalie,
+    }
