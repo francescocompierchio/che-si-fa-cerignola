@@ -2,7 +2,9 @@
 (function(){
  if(typeof HTMLDialogElement==="undefined"||typeof HTMLDialogElement.prototype.showModal!=="function")return;
  const $=id=>document.getElementById(id), history=[], dialogs={}, maxResults=12;
- let active=null, gesture=null, trigger=null, generation=0, previousFocus=null;
+ let active=null, gesture=null, generation=0, previousFocus=null, keyboardInput=false, preview=null;
+ document.addEventListener("keydown",e=>{if(e.key==="Tab")keyboardInput=true;},true);
+ document.addEventListener("pointerdown",()=>{keyboardInput=false;},true);
  const events=()=>tuttiEventiAttivi.filter(e=>e.tipoContenuto!=="esperienza"&&e.dataFine>=oggi);
  const key=ev=>chiaveEvento(ev);
  const mk=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
@@ -18,7 +20,9 @@
   generation++;active=null;gesture=null;
   document.documentElement.classList.remove("csf-side-open");
   const focus=previousFocus;previousFocus=null;
-  focus?.focus?.({preventScroll:true});
+  d.style.removeProperty("--csf-enter-offset");
+  if(keyboardInput){focus?.focus?.({preventScroll:true});}
+  else {document.activeElement?.blur?.();}
  }
  function close(){if(active){const d=active;d.close();release(d);}}
  function showEvent(ev){close();reset();const card=[...$("events-container").querySelectorAll("details[data-event-key]")].find(n=>n.dataset.eventKey===key(ev));if(card){card.open=true;card.scrollIntoView({block:"center"});}else mostraToast("Evento non più disponibile");}
@@ -81,11 +85,13 @@
    for(const {ev,n} of rows.slice(0,maxResults)){const b=mk("button","");b.type="button";b.append(mk("strong",ev.titolo),mk("small",n+" aperture · "+ev.citta));b.onclick=()=>showEvent(ev);host.append(b);}
   }
  }
- function open(side,from){
+ function open(side,from,offset){
   if(active&&!active.open)release(active);
   if(active||busy())return;
   previousFocus=from||document.activeElement;active=dialogs[side];generation++;
   active.querySelector(".csf-side-results").replaceChildren();
+  if(Number.isFinite(offset)&&!matchMedia("(prefers-reduced-motion: reduce)").matches)active.style.setProperty("--csf-enter-offset",offset+"px");
+  else active.style.removeProperty("--csf-enter-offset");
   active.showModal();document.documentElement.classList.add("csf-side-open");active.querySelector(".csf-side-close").focus();
  }
  for(const side of ["left","right"]){
@@ -105,39 +111,63 @@
 
  for(const side of ["left","right"]){
   const area=mk("button","","csf-side-swipe");area.type="button";area.dataset.side=side;
-  const label=side==="left"?"Scopri":"Il mio spazio";
   area.setAttribute("aria-label",side==="left"?"Apri Scopri il territorio":"Apri Il tuo spazio");
   area.setAttribute("aria-haspopup","dialog");
-  area.append(mk("span",side==="left"?"› "+label:label+" ‹","csf-side-grip"));
+  const grip=mk("span",side==="left"?"›":"‹","csf-side-grip");grip.setAttribute("aria-hidden","true");area.append(grip);
+  area.title=side==="left"?"Scopri il territorio":"Il tuo spazio";
   area.addEventListener("click",()=>open(side,area));
   document.body.append(area);
  }
+ function clearPreview(){if(preview){preview.remove();preview=null;}}
+ function previewAt(side,distance){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  if(!preview){
+   preview=mk("div","","csf-side-dialog csf-side-preview");
+   preview.dataset.side=side;preview.setAttribute("open","");preview.setAttribute("aria-hidden","true");preview.inert=true;
+   // Una copia puramente visiva: niente ID duplicati, listener o azioni attive.
+   for(const child of dialogs[side].children){if(child.classList.contains("csf-side-results"))continue;preview.append(child.cloneNode(true));}
+   preview.querySelectorAll("[id]").forEach(n=>n.removeAttribute("id"));document.body.append(preview);
+  }
+  const width=preview.getBoundingClientRect().width,shown=Math.min(width,distance*2.2);
+  const offset=(side==="left"?-1:1)*(width-shown);
+  preview.style.transform="translateX("+offset+"px)";
+  return offset;
+ }
+ function abortGesture(){gesture=null;clearPreview();}
  document.addEventListener("touchstart",e=>{
-  if(e.touches.length!==1||innerWidth>900){gesture=null;return;}
+  keyboardInput=false;abortGesture();
+  if(e.touches.length!==1||innerWidth>900)return;
   if(active&&!active.open)release(active);
   const t=e.touches[0],x=t.clientX,y=t.clientY,w=document.documentElement.clientWidth;
   const strip=e.target.closest(".csf-side-swipe");
-  if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]")){gesture=null;return;}
+  if(!strip&&e.target.closest("input,textarea,select,button,a,summary,[contenteditable=true]"))return;
   const side=active?active.dataset.side:(!busy()&&(strip?.dataset.side||(x>=8&&x<=65?"left":x>=w-65&&x<=w-8?"right":null)));
   gesture=side?{side,x,y,closing:!!active,time:Date.now(),horizontal:false,strip}:null;
  },{passive:true});
  document.addEventListener("touchmove",e=>{
-  const g=gesture;if(!g||e.touches.length!==1)return;
+  const g=gesture;if(!g)return;if(e.touches.length!==1){abortGesture();return;}
   const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-  if(!g.horizontal&&Math.abs(dy)>18&&Math.abs(dy)>Math.abs(dx)){gesture=null;return;}
-  if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3)g.horizontal=true;
-  if(g.horizontal&&e.cancelable)e.preventDefault();
+  if(!g.horizontal&&Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx)){abortGesture();return;}
+  const inward=g.side==="left"?dx:-dx;
+  const directed=g.closing?-inward:inward;
+  if(directed>=6&&Math.abs(dx)>Math.abs(dy)*1.25)g.horizontal=true;
+  if(g.horizontal){
+   if(e.cancelable)e.preventDefault();
+   if(!g.closing)g.offset=previewAt(g.side,Math.max(0,inward));
+  }
  },{passive:false});
- document.addEventListener("touchcancel",()=>{gesture=null;},{passive:true});
+ document.addEventListener("touchcancel",abortGesture,{passive:true});
  document.addEventListener("touchend",e=>{
-  const g=gesture;gesture=null;if(!g||e.changedTouches.length!==1||Date.now()-g.time>1800)return;
+  const g=gesture;gesture=null;clearPreview();
+  if(!g||e.changedTouches.length!==1||Date.now()-g.time>2500)return;
   const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-  // Un tocco breve sulla linguetta non dipende dal click sintetico del browser.
-  if(!g.closing&&g.strip&&Math.abs(dx)<=12&&Math.abs(dy)<=12){if(e.cancelable)e.preventDefault();open(g.side,g.strip);return;}
-  if(Math.abs(dx)<36||Math.abs(dx)<Math.abs(dy)*1.3)return;
+  const inward=g.side==="left"?dx:-dx;
+  if(!g.closing&&g.strip&&!g.horizontal&&Math.abs(dx)<=7&&Math.abs(dy)<=7){if(e.cancelable)e.preventDefault();open(g.side,g.strip);return;}
+  if(Math.abs(dx)<20||Math.abs(dx)<Math.abs(dy)*1.25)return;
+  if(g.closing?inward>=0:inward<=0)return;
   if(e.cancelable)e.preventDefault();
-  if(g.closing){if(g.side==="left"?dx<0:dx>0)close();}
-  else if(g.side==="left"?dx>0:dx<0)open(g.side,g.strip);
+  if(g.closing)close();
+  else open(g.side,g.strip,g.offset);
  },{passive:false});
  // Solo aperture vere: la sessione non viene salvata o trasmessa.
  document.addEventListener("toggle",e=>{const el=e.target;if(el.matches?.("#events-container details[data-event-key]")&&el.open){const k=el.dataset.eventKey;const i=history.indexOf(k);if(i>=0)history.splice(i,1);history.unshift(k);history.length=Math.min(history.length,30);}},true);

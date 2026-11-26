@@ -37,7 +37,7 @@ const assert = require("node:assert/strict");
     assert.ok(await page.locator("#dock-home").evaluate(el=>el.classList.contains("active")));
     console.log("OK dock: contrasto, gradiente, rilievo, temi e navigazione mobile.");
     // Pannelli laterali: chiusi per default, accesso alternativo, swipe e funzioni reali.
-    const leftPanel=page.locator('.csf-side-dialog[data-side="left"]'),rightPanel=page.locator('.csf-side-dialog[data-side="right"]');
+    const leftPanel=page.locator('dialog.csf-side-dialog[data-side="left"]'),rightPanel=page.locator('dialog.csf-side-dialog[data-side="right"]');
     assert.equal(await leftPanel.isVisible(),false);assert.equal(await rightPanel.isVisible(),false);
     await page.locator("#csf-open-left").click();
     await leftPanel.waitFor({state:"visible"});
@@ -77,13 +77,27 @@ const assert = require("node:assert/strict");
       await tab.tap();await panel.waitFor({state:"visible"});
       await panel.getByRole("button",{name:"Chiudi pannello"}).click();
       await panel.waitFor({state:"hidden"});
+      assert.equal(await tab.evaluate(n=>document.activeElement===n),false,"Nessun focus touch residuo");
+      assert.equal(await tab.evaluate(n=>getComputedStyle(n).outlineStyle),"none");
+      assert.equal(await tab.evaluate(n=>n.querySelector(".csf-side-grip").getBoundingClientRect().width),12);
     }
     const areaL=await page.locator('.csf-side-swipe[data-side="left"]').boundingBox();
     const areaR=await page.locator('.csf-side-swipe[data-side="right"]').boundingBox();
     assert.ok(areaL&&areaR,"Fasce touch presenti sullo schermo");
-    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,45,2);await leftPanel.waitFor({state:"visible"});
+    // Verifica che il pannello inizi a seguire il dito PRIMA del rilascio.
+    const x=areaL.x+areaL.width/2,y=areaL.y+30;
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y}]});
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+12,y}]});
+    await page.locator(".csf-side-preview").waitFor({state:"visible"});
+    const p1=await page.locator(".csf-side-preview").evaluate(n=>n.getBoundingClientRect().right);
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+25,y}]});
+    const p2=await page.locator(".csf-side-preview").evaluate(n=>n.getBoundingClientRect().right);
+    assert.ok(p2>p1,"Anteprima segue il dito");
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    await leftPanel.waitFor({state:"visible"});
+    assert.equal(await page.locator(".csf-side-preview").count(),0);
     await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
-    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-45,2);await rightPanel.waitFor({state:"visible"});
+    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-25,2);await rightPanel.waitFor({state:"visible"});
     await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
     await realSwipe(areaL.x+areaL.width/2,areaL.y+30,3,100);assert.equal(await leftPanel.isVisible(),false);
     await cdp.detach();
