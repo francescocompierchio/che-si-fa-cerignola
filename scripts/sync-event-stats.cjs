@@ -16,7 +16,10 @@ const same=(a,b)=>JSON.stringify(canon(a))===JSON.stringify(canon(b));
   if(!existing?.rules||![undefined,false,"false"].includes(existing.rules[".write"]))throw Error("Regole superiori da verificare: nessuna modifica automatica");
   const actual=existing.rules.statisticheEventi;
   if(!same(actual,wanted)){
-   if(actual!==undefined||process.env.EVENT_STATS_ACTIVATE!=="true")throw Error("Regole statistiche non attive o differenti: nessuna modifica");
+   const legacy=JSON.parse(JSON.stringify(wanted));
+   delete legacy.$id.posterEnabled;
+   legacy.$id.$metric['.write']="$id.matches(/^[a-z0-9-]{1,180}$/) && ($metric == 'open' || $metric == 'share') && root.child('statisticheEventi').child($id).child('enabled').val() == true && newData.exists() && newData.hasChildren(['count','at']) && newData.child('count').isNumber() && newData.child('count').val() <= 1000000000 && newData.child('count').val() == (data.exists() ? data.child('count').val() + 1 : 1) && newData.child('at').val() == now && (!data.exists() || data.child('at').val() <= now - 2000)";
+   if((actual!==undefined&&!same(actual,legacy))||process.env.EVENT_STATS_ACTIVATE!=="true")throw Error("Regole statistiche non attive o differenti: nessuna modifica");
    await db.setRules(JSON.stringify({ ...existing,rules:{...existing.rules,statisticheEventi:wanted}}));
    const confirmed=await db.getRulesJSON();
    if(!same(confirmed?.rules?.statisticheEventi,wanted))throw Error("Regole non confermate");
@@ -25,10 +28,12 @@ const same=(a,b)=>JSON.stringify(canon(a))===JSON.stringify(canon(b));
   const match=fs.readFileSync("index.html","utf8").match(/const eventiEditoriali = (\[[\s\S]*?\]);/);
   if(!Array.isArray(automatic)||!match)throw Error("Archivio non valido");
   const manual=(await db.ref("eventiManuali").get()).val()||{};
-  const active=new Set([...automatic,...JSON.parse(match[1]),...Object.values(manual)].filter(e=>e&&typeof e.dataInizio==="string"&&String(e.dataFine||e.dataInizio)>=today).map(csfEventStatsKey).filter(Boolean));
+  const events=[...automatic,...JSON.parse(match[1]),...Object.values(manual)].filter(e=>e&&typeof e.dataInizio==="string"&&String(e.dataFine||e.dataInizio)>=today);
+  const active=new Set(events.map(csfEventStatsKey).filter(Boolean));
+  const posters=new Set(events.filter(e=>{try{return ["http:","https:"].includes(new URL(e.locandinaUrl).protocol);}catch(_){return false;}}).map(csfEventStatsKey).filter(Boolean));
   if(!active.size)throw Error("Archivio vuoto: nessuna disattivazione");
   const r=db.ref("statisticheEventi"),previous=(await r.get()).val()||{},updates={};
-  for(const id of active)if(previous[id]?.enabled!==true)updates[id+"/enabled"]=true;
+  for(const id of active){if(previous[id]?.enabled!==true)updates[id+"/enabled"]=true;if(posters.has(id)&&previous[id]?.posterEnabled!==true)updates[id+"/posterEnabled"]=true;else if(!posters.has(id)&&previous[id]?.posterEnabled===true)updates[id+"/posterEnabled"]=false;}
   for(const [id,value] of Object.entries(previous))if(value?.enabled===true&&!active.has(id))updates[id+"/enabled"]=false;
   if(Object.keys(updates).length)await r.update(updates);
   console.log("Eventi abilitati: "+active.size+"; modifiche registro: "+Object.keys(updates).length);

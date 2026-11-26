@@ -2,7 +2,7 @@ name: Attiva e verifica statistiche eventi
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/attiva-statistiche-eventi.yml']
+    paths: ['.github/workflows/attiva-statistiche-eventi.yml','event-stats.rules.json']
   workflow_dispatch:
 permissions:
   contents: read
