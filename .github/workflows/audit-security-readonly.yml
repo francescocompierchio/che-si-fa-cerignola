@@ -1,0 +1,22 @@
+name: Audit sicurezza Firebase sola lettura
+on:
+  push:
+    branches: ['audit/security-rules-readonly-20261126']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts firebase-admin@13.6.0
+      - name: Controlla regole senza modificare dati o permessi
+        env:
+          EVENT_STATS_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/audit-security-readonly.cjs
