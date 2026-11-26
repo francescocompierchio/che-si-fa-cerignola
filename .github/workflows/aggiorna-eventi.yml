@@ -115,6 +115,8 @@ jobs:
         timeout-minutes: 3
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN || secrets.APIFY_API_TOKEN }}
+          APIFY_META_AUTORIZZATO: ${{ vars.APIFY_META_AUTORIZZATO }}
+          APIFY_GOOGLE_AUTORIZZATO: ${{ vars.APIFY_GOOGLE_AUTORIZZATO }}
         run: python radar_apify.py
 
       - name: Cerca nuovi eventi e aggiorna eventi.json

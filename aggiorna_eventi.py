@@ -1135,6 +1135,31 @@ def estrai_costo_jsonld(evento, testo_pagina=None):
     return "Non specificato nella fonte"
 
 
+def dettagli_evento_strutturato(evento, url):
+    persone = evento.get("performer") or []
+    if not isinstance(persone, list):
+        persone = [persone]
+    artisti = []
+    for persona in persone[:12]:
+        nome = persona.get("name") if isinstance(persona, dict) else persona
+        if isinstance(nome, str):
+            nome = re.sub(r"\s+", " ", nome).strip()
+            if 2 <= len(nome) <= 80 and nome not in artisti:
+                artisti.append(nome)
+    offerte = evento.get("offers") or []
+    if not isinstance(offerte, list):
+        offerte = [offerte]
+    prenotazioni = ""
+    for offerta in offerte[:10]:
+        link = offerta.get("url") if isinstance(offerta, dict) else None
+        if isinstance(link, str) and link:
+            completo = urljoin(url, link)
+            if radar_territorio.host_pubblico(completo):
+                prenotazioni = completo
+                break
+    return {"artisti": artisti, "prenotazioniUrl": prenotazioni}
+
+
 def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     # Un articolo del febbraio 2026 non può documentare il Carnevale 2027.
     if (raw.get("fonteUrl") or "").rstrip("/") == "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova":
@@ -1287,9 +1312,22 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
             "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
         )
 
+    dettagli = {}
+    artisti = raw.get("artisti")
+    if isinstance(artisti, list):
+        verificati = [nome for nome in artisti[:12] if isinstance(nome, str) and 2 <= len(nome) <= 80]
+        if verificati:
+            dettagli["artisti"] = verificati
+    prenotazioni = raw.get("prenotazioniUrl")
+    if isinstance(prenotazioni, str) and len(prenotazioni) <= 400 and radar_territorio.host_pubblico(prenotazioni):
+        dettagli["prenotazioniUrl"] = prenotazioni
+    contatto = str(raw.get("contattoPrenotazioni") or "")
+    if contatto and discovery_locale.testo_prenotazione("Prenotazioni: " + contatto) == contatto:
+        dettagli["contattoPrenotazioni"] = contatto
     poster = str(raw.get("locandinaUrl") or "").strip()
     poster_ok = urlparse(poster).scheme in ("http", "https") and bool(urlparse(poster).hostname)
     return {
+        **dettagli,
         **({"locandinaUrl": poster} if poster_ok else {}),
         **({"raccoltaAutomatica": True} if raw.get("raccoltaAutomatica") is True else {}),
         "tipoContenuto": "evento",
@@ -1466,6 +1504,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             url_evento = page_url
 
         ev_ok = normalizza_e_valida_evento({
+            **dettagli_evento_strutturato(ev_ld, url_evento),
+            "contattoPrenotazioni": discovery_locale.testo_prenotazione(desc),
             "citta": localita or citta_default,
             "titolo": titolo,
             "dataInizio": d1,
@@ -1572,6 +1612,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             else f"{luogo}, {citta}"
         ),
         "costo": costo,
+        "contattoPrenotazioni": discovery_locale.testo_prenotazione(testo_visibile),
         "descrizione": descrizione or f"{titolo} presso {luogo} ({citta}).",
         "fonteUrl": page_url
     }
@@ -1747,11 +1788,22 @@ def eventi_da_locandina(testo,poster,titolo,url):
         return []
     if not discovery_locale.titolo_locandina_compatibile(titolo,testo):
         return []
+    date_locandina = discovery_locale.date_complete(testo)
+    if len(date_locandina) != 1:
+        confermate = date_locandina & discovery_locale.date_complete(titolo)
+        if len(confermate) != 1:
+            return []
+        date_locandina = confermate
     html="<html><body><h1>"+escape(titolo)+"</h1><main><p>"+escape(testo)+"</p></main></body></html>"
     out=[]
     for ev in analizza_pagina_evento(html,url,citta_default="",fonte_curata_eventi=False):
-        if ev["dataInizio"]==ev["dataFine"] and discovery_locale.data_evento_documentata(testo,ev["dataInizio"]) and _comune_nel_testo(testo)==ev["citta"]:
-            out.append(dict(ev,locandinaUrl=poster))
+        if ev["dataInizio"] == ev["dataFine"] and ev["dataInizio"] in date_locandina and _comune_nel_testo(testo) == ev["citta"]:
+            if poster:
+                ev["locandinaUrl"] = poster
+            orario = discovery_locale.orario_locandina(testo)
+            if orario and f"Ore {orario}" not in ev["dataTesto"]:
+                ev["dataTesto"] += f" · Ore {orario}"
+            out.append(ev)
     return out
 
 
@@ -3411,7 +3463,8 @@ def esegui_aggiornamento():
                       + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
                       + apprendimento.esplora_candidati(memoria,oggi_stagionale)
                       + radar_territorio.ricerche(memoria, copertura_iniziale + approvati, oggi_stagionale, priorita_km, comuni)
-                      + fonti_editori.scegli(memoria, now, set(DOMINI_AUTO)))
+                      + fonti_editori.scegli(memoria, now, set(DOMINI_AUTO),
+                                           (f["url"] for _, f in compiti if f.get("feed_editore"))))
     compiti += [(raccogli_da_feed_social, fonte) for fonte in fonti_adattive]
     for _, fonte in compiti:
         # Mantiene i filtri di estrazione originali: focus_serate è solo priorità operativa.
@@ -3422,9 +3475,16 @@ def esegui_aggiornamento():
     compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1", priorita_km)
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
-    for _, fonte in compiti:
+    for raccoglitore, fonte in compiti:
+        tipologia = "calendario pubblico"
+        if raccoglitore == raccogli_da_feed_social:
+            tipologia = "feed editore" if fonte.get("feed_editore") else "ricerca indicizzata"
+        elif raccoglitore == esplora_lineup_atlas:
+            tipologia = "API pubblica"
+        comune = fonte.get("comune_radar") or fonte.get("comune_capodanno") or fonte.get("citta_default") or ""
         registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte),
-                                  focus_serate=stato_raccolta.fonte_serale(fonte), dominio=stato_raccolta.dominio(fonte))
+                                  focus_serate=stato_raccolta.fonte_serale(fonte), dominio=stato_raccolta.dominio(fonte),
+                                  tipologia=tipologia, comuneFonte=comune)
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
@@ -3502,7 +3562,11 @@ def esegui_aggiornamento():
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
     copertura_visibile=apprendimento.copertura_unita(lista_finale,editoriali_statici,sono_duplicati)
     stato_apprendimento=apprendimento.aggiorna(memoria,copertura_visibile,oggi_stagionale,now)
-    domini_candidati=apprendimento.candidati_fonti(memoria,STATISTICHE_FONTI,set(DOMINI_AUTO),now)
+    scoperta = dict(STATISTICHE_FONTI)
+    host_approvati = sorted({radar_territorio.host_pubblico(e.get("fonteUrl")) for e in approvati} - {""})
+    if host_approvati:
+        scoperta["Appuntamenti approvati"] = {"stato": "ok", "dominiCandidati": host_approvati}
+    domini_candidati=apprendimento.candidati_fonti(memoria,scoperta,set(DOMINI_AUTO),now)
     nuovi_feed = fonti_editori.registrati(memoria, STATISTICHE_FONTI, now)
     territorio = radar_territorio.aggiorna_registro(memoria, copertura_visibile, approvati, oggi_stagionale, now)
     fasce_apprese=sum(bool(d.get("fasce")) for d in memoria.get("fonti",{}).values())

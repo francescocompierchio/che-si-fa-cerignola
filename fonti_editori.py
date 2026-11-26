@@ -55,12 +55,14 @@ def registrati(memoria, diagnostica, now):
     return sum(entry["scopertoAl"] == now for _, entry in vivi)
 
 
-def scegli(memoria, now, domini):
+def scegli(memoria, now, domini, url_noti=()):
     fonti = memoria.get("fonti", {})
+    noti = {(radar_territorio.host_pubblico(u), urlsplit(u).path.rstrip("/")) for u in url_noti}
     dovuti = []
     for url, entry in memoria.get("feedEditori", {}).items():
         host = radar_territorio.host_pubblico(url)
-        if host not in domini or not indirizzo_feed(url, url):
+        if (host not in domini or not indirizzo_feed(url, url)
+            or (host, urlsplit(url).path.rstrip("/")) in noti):
             continue
         nome = "Feed editore " + host + " " + sha256(url.encode()).hexdigest()[:8]
         dati = fonti.get(nome, {})

@@ -79,3 +79,19 @@ class RadarTerritorioTests(unittest.TestCase):
             session, "https://editore.it/agenda/prova", {"editore.it"}
         ))
         self.assertEqual(session.get.call_args.args[0], "https://editore.it/robots.txt")
+
+    def test_tempo_pubblicazione_chiede_una_fonte_con_orario_e_fuso(self):
+        from datetime import datetime, timezone
+        from discovery_locale import misura_ritardo
+        sito = "https://editore.it/agenda/dj"
+        ora = datetime(2026, 11, 26, 23, tzinfo=timezone.utc)
+        self.assertEqual(misura_ritardo(None, sito, ora, "2026-11-26"), {})
+        self.assertEqual(list(misura_ritardo(None, sito, ora, "2026-11-26T22:30:00Z").values()), [30])
+
+    def test_fonti_con_dati_contraddittori_e_contatti_espliciti(self):
+        from discovery_locale import date_complete, orario_locandina, testo_prenotazione
+        self.assertEqual(date_complete("2026-11-26 e 27 novembre 2026"), {"2026-11-26", "2026-11-27"})
+        self.assertEqual(orario_locandina("Ingresso dalle 21:30"), "21:30")
+        self.assertEqual(orario_locandina("Apertura ore 21:00, inizio 23:00"), "")
+        self.assertEqual(testo_prenotazione("Prenotazioni: +39 320 000 0000"), "+39 320 000 0000")
+        self.assertEqual(testo_prenotazione("Info generiche +39 320 000 0000"), "")

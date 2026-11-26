@@ -81,6 +81,8 @@ def aggiorna(memoria, diagnostica, now):
         fonti[nome] = {"fasce":apprendimento.profilo_temporale(prima,dati,now),"valoreAppreso":appreso,"novitaUtili":dati.get("novitaUtili",0),"ultimoTentativo": now, "ultimoEsito": dati.get("stato", "n/d"),
                        "blocchiConsecutivi": serie, "erroriConsecutivi": errori, "cicliVuoti": vuoti,
                        "successi": prima.get("successi", 0) + (stato == "ok"),
+                       "dominio": dati.get("dominio", ""), "tipologia": dati.get("tipologia", ""),
+                       "comune": dati.get("comuneFonte", ""),
                        "totaleEventiUtili": prima.get("totaleEventiUtili", 0) + dati.get("eventiUtili", 0),
                        "totaleNovita": prima.get("totaleNovita", 0) + dati.get("novitaUtili", 0),
                        "produttivita": media, "prossimoTentativo": now + pausa if pausa else 0,

@@ -275,7 +275,7 @@ def qualita_ciclo(memoria, diagnostica, eventi, oggi, now, *, nuovi, duplicati, 
     esiti = Counter(d.get("stato", "n/d") for d in diagnostica.values())
     scarti = Counter()
     ritardi = {}
-    for nome, dati in diagnostica.items():
+    for dati in diagnostica.values():
         scarti.update(dati.get("scartiSchede", {}))
         for chiave, ritardo in dati.get("ritardoSchedeMinuti", {}).items():
             ritardi[chiave] = min(ritardo, ritardi.get(chiave, ritardo))

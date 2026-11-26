@@ -176,3 +176,49 @@ def titolo_locandina_compatibile(titolo,testo):
     def parole(s):
         return set(re.findall(r"[a-zà-ù]{4,}",str(s or "").casefold()))-stop
     return len(parole(titolo)&parole(testo))>=2
+
+
+def date_complete(testo):
+    """Date di calendario scritte per esteso o con anno, senza inferenze."""
+    mesi = "gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre".split()
+    pattern = (
+        rf"\b(?P<giorno>\d{{1,2}})\s+(?P<mese>{'|'.join(mesi)})\s+(?P<anno>20\d{{2}})\b"
+        r"|\b(?P<d>\d{1,2})(?P<sep>[./-])(?P<m>\d{1,2})(?P=sep)(?P<y>20\d{2}|\d{2})\b"
+        r"|\b(?P<iso>20\d{2}-\d{2}-\d{2})\b"
+    )
+    date = set()
+    for m in re.finditer(pattern, testo or "", re.I):
+        try:
+            if m["iso"]:
+                dt = datetime.fromisoformat(m["iso"])
+            elif m["anno"]:
+                dt = datetime(int(m["anno"]), mesi.index(m["mese"].casefold()) + 1, int(m["giorno"]))
+            else:
+                dt = datetime(int(m["y"]) + (2000 if len(m["y"]) == 2 else 0), int(m["m"]), int(m["d"]))
+        except ValueError:
+            continue
+        date.add(dt.date().isoformat())
+    return date
+
+
+def testo_prenotazione(testo):
+    """Conserva un recapito solo se il testo lo presenta per le prenotazioni."""
+    numero = re.search(
+        r"\b(?:info\s+e\s+(?:prenotazioni|prevendite)|prenotazioni?|prevendite|booking|whatsapp)"
+        r"\s*[:·.,–-]?\s*(?:(?:tel\.?|cell\.)\s*[:.]?\s*)?((?:\+39\s*)?(?:[0-9][ .-]?){8,12})\b",
+        testo or "", re.I,
+    )
+    if not numero:
+        return ""
+    valore = numero.group(1).strip()
+    cifra = re.sub(r"\D", "", valore)
+    return valore if 8 <= len(cifra.removeprefix("39") if valore.startswith("+39") else cifra) <= 11 else ""
+
+
+def orario_locandina(testo):
+    orari = set(re.findall(r"\b(?:ore|inizio|dalle)\s+(?:ore\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\b", testo or "", re.I))
+    valori = {(int(h), int(m)) for h, m in orari}
+    if len(valori) == 1:
+        h, m = valori.pop()
+        return f"{h:02d}:{m:02d}"
+    return ""
