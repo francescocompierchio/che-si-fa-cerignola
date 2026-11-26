@@ -31,7 +31,7 @@ const assert=require("node:assert/strict");
         await p.evaluate(()=>{window.__oldAudio=document.getElementById("csf-music-audio");});
         await button.tap();
         await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="playing",null,{timeout:25000});
-        assert.ok(await p.evaluate(()=>window.__oldAudio!==document.getElementById("csf-music-audio")),"Lettore ricreato al riavvio esplicito");
+        assert.ok(await p.evaluate(()=>window.__oldAudio===document.getElementById("csf-music-audio")),"Lettore conservato quando non ci sono errori");
         assert.ok(await p.evaluate(()=>window.__audioSessionCalls.join(",").includes("auto,playback")),"Categoria audio riapplicata");
         await button.tap();
         await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="off");
