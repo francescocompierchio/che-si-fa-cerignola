@@ -27,6 +27,15 @@ const assert=require("node:assert/strict");
       await button.tap();
       await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="off");
       assert.equal(await p.evaluate(()=>localStorage.getItem("csf_music_v1")),"off");
+      if(name.startsWith("iPhone")){
+        await p.evaluate(()=>{window.__oldAudio=document.getElementById("csf-music-audio");});
+        await button.tap();
+        await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="playing",null,{timeout:25000});
+        assert.ok(await p.evaluate(()=>window.__oldAudio===document.getElementById("csf-music-audio")),"Lettore conservato quando non ci sono errori");
+        assert.ok(await p.evaluate(()=>window.__audioSessionCalls.join(",").includes("auto,playback")),"Categoria audio riapplicata");
+        await button.tap();
+        await p.waitForFunction(()=>document.querySelector("#csf-music-toggle").dataset.musicState==="off");
+      }
       await p.reload();
       assert.equal(await button.getAttribute("aria-pressed"),"false");
       console.log("OK "+name+": avvio con gesto, riproduzione, stop, preferenza persistente");

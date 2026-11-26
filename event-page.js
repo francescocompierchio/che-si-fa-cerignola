@@ -190,11 +190,11 @@
     return out;
   }
   function running(){return Boolean(enabled&&!document.hidden&&(nativeAudio?mediaPlaying&&media&&!media.paused:ctx?.state==="running"&&source));}
-  function sessionePlayback(){
+  function sessionePlayback(reset=false){
     // Safari iOS: esplicita la categoria media, non ambient, prima del gesto play.
     // Il browser decide comunque volume, routing e interruzioni.
     if(!nativeAudio)return;
-    try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(_){}
+    try{const session=navigator.audioSession;if(session){if(reset)session.type="auto";session.type="playback";}}catch(_){}
   }
   function ensureMedia(){
     if(media)return media;
@@ -203,20 +203,24 @@
     media.preload="none";media.hidden=true;media.loop=false;media.autoplay=false;
     media.setAttribute("playsinline","");
     media.src=musicUrl;
+    media.muted=false;
+    // La categoria va richiesta nuovamente dopo un’interruzione del processo audio iOS.
+    const element=media;
     media.addEventListener("playing",()=>{
+      if(media!==element)return;
       if(!enabled||document.hidden){media.pause();return;}
       mediaPlaying=true;mediaError=false;render();
     });
-    for(const ev of ["pause","waiting","stalled"])media.addEventListener(ev,()=>{mediaPlaying=false;render();});
-    media.addEventListener("ended",()=>{mediaPlaying=false;finished=true;render();});
-    media.addEventListener("error",()=>{mediaPlaying=false;mediaPending=false;mediaError=true;render();});
+    for(const ev of ["pause","waiting","stalled"])media.addEventListener(ev,()=>{if(media!==element)return;mediaPlaying=false;render();});
+    media.addEventListener("ended",()=>{if(media!==element)return;mediaPlaying=false;finished=true;render();});
+    media.addEventListener("error",()=>{if(media!==element)return;mediaPlaying=false;mediaPending=false;mediaError=true;render();});
     document.body.append(media);
     return media;
   }
   function playNative(){
     const a=ensureMedia();
     if(mediaPlaying||mediaPending)return;
-    sessionePlayback();
+    sessionePlayback(true);
     if(a.error){mediaError=false;a.load();}
     if(a.ended)a.currentTime=0;
     const attempt=++mediaAttempt;
@@ -230,9 +234,9 @@
         render();
       },()=>{
         if(attempt!==mediaAttempt)return;
-        mediaPending=false;mediaPlaying=false;render();
+        mediaPending=false;mediaPlaying=false;mediaError=true;render();
       });
-    }catch(_){mediaPending=false;mediaPlaying=false;render();}
+    }catch(_){mediaPending=false;mediaPlaying=false;mediaError=true;render();}
     render();
   }
   function render(){
@@ -273,14 +277,22 @@
     }catch(_){render();}
   }
   function pause(){
-    if(nativeAudio){++mediaAttempt;mediaPending=false;mediaPlaying=false;media?.pause();render();return;}
+    if(nativeAudio){++mediaAttempt;mediaPending=false;mediaPlaying=false;media?.pause();try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(_){}render();return;}
     if(ctx?.state==="running")ctx.suspend().catch(()=>{});
     render();
   }
   function save(){try{localStorage.setItem(key,enabled?"on":"off");}catch(_){}}
+  function ricreaMedia(){
+    if(!nativeAudio||!media)return;
+    const old=media,position=old.ended?0:old.currentTime;
+    ++mediaAttempt;mediaPending=false;mediaPlaying=false;mediaError=false;
+    old.pause();old.remove();media=null;
+    const next=ensureMedia();
+    if(Number.isFinite(position)&&position>0)next.addEventListener("loadedmetadata",()=>{try{next.currentTime=Math.min(position,next.duration||position);}catch(_){}},{once:true});
+  }
   function toggle(){
     if(running()||mediaPending||(nativeAudio&&media&&!media.paused&&!media.ended)){enabled=false;save();pause();}
-    else{finished=false;enabled=true;save();play();}
+    else{if(nativeAudio&&mediaError)ricreaMedia();finished=false;enabled=true;save();play();}
     render();
   }
   function init(){
