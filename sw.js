@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v65";
+const CACHE_NAME = "chesifa-shell-v66";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -7,13 +7,14 @@ const SHELL_FILES = [
   new URL("event-tools.js", self.registration.scope).href,
   new URL("event-tools.js?v=43", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
-  new URL("metrics.js?v=33", self.registration.scope).href,
+  new URL("metrics.js?v=34", self.registration.scope).href,
   new URL("public-views.js", self.registration.scope).href,
   new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,
-  new URL("event-page.js?v=65", self.registration.scope).href,
+  new URL("event-page.js?v=66", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
   new URL("app-extras.js?v=2", self.registration.scope).href,
+  new URL("side-panels.js?v=1", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 
