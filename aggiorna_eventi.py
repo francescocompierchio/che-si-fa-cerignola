@@ -3595,7 +3595,7 @@ def esegui_aggiornamento():
         with open("apify-eventi.json", encoding="utf-8") as file_apify:
             eventi_apify = json.load(file_apify)
         nuovi_raccolti.extend(eventi_apify)
-        risultati_per_fonte["Apify social pubblici"] = eventi_apify
+        risultati_per_fonte["Apify calendario pubblico Cerignola"] = eventi_apify
     meta_report = {"stato": "non_configurato"}
     if os.path.isfile("meta-rapporto.json"):
         with open("meta-rapporto.json", encoding="utf-8") as file_rapporto:
