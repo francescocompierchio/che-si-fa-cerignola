@@ -559,6 +559,14 @@ def risolvi_comune_50km(testo_o_ev):
                 indirizzo,
                 flags=re.I,
             )
+        # Un segmento con il solo comune e un eventuale CAP o sigla
+        # provinciale è più informativo di un comune citato nel nome di una via.
+        for segmento in reversed(indirizzo.split(",")):
+            localita = re.sub(r"^\d{5}\s+", "", segmento.strip())
+            localita = re.sub(r"\s+(?:\([A-Z]{2,3}\)|FG|BT|BAT|BA|PZ|AV)$", "", localita, flags=re.I)
+            comune = COMUNI_50KM.get(localita.casefold())
+            if comune:
+                return comune
         for testo in (indirizzo, testo_o_ev.get("luogo"), testo_o_ev.get("titolo"), testo_o_ev.get("descrizione")):
             comune = _comune_nel_testo(testo)
             if comune:
@@ -1324,10 +1332,14 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
 
     costo = str(raw.get("costo") or "").strip() or "Non specificato nella fonte"
     desc_finale = rimuovi_riferimenti_pubblicazione(descrizione) if descrizione else ""
-    if len(desc_finale) < 15:
+    indicazione_fonte = "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+    citta_precedente = raw.get("citta")
+    luogo_precedente = raw_pulito["luogo"]
+    descrizione_generata = f"{titolo} presso {luogo_precedente} ({citta_precedente}). {indicazione_fonte}"[:220]
+    if len(desc_finale) < 15 or (citta_precedente != citta and descrizione == descrizione_generata):
         desc_finale = (
             f"{titolo} presso {luogo} ({citta}). "
-            "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+            + indicazione_fonte
         )
 
     dettagli = {}
