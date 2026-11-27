@@ -37,7 +37,7 @@ const assert = require("node:assert/strict");
     await page.locator("#quick-nota").evaluate(el=>el.parentElement.open=true);
     await page.locator("#quick-nota").fill("Nota senza fonte");
     assert.ok(await page.locator("#quick-invia").isDisabled());
-    assert.equal(await page.evaluate(text=>CsfQuick.payload(text,"","",new Date().toISOString()),text),null);
+    assert.equal(await page.evaluate(({text,date})=>CsfQuick.payload(text,"","",new Date().toISOString(),{title:"DJ Set",venue:"Sala",city:"Cerignola",date,time:"22:30"}),{text,date}),null);
     assert.equal(await page.evaluate(()=>window.segnalazioniTest.length),0);
     await page.locator("#quick-nota").fill("");
     await page.locator("#quick-link").fill(source);
