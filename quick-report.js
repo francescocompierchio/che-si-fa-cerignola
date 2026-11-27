@@ -34,11 +34,13 @@
   return out;
  }
  async function compress(file){
-  if(!file||!TYPES.includes(file.type)||file.size<=0||file.size>MAX_FILE)throw Error("file");
+  if(!file||file.size<=0)throw Error("empty-image");
+  if(file.size>MAX_FILE)throw Error("image-size");
+  if(!TYPES.includes(file.type))throw Error("image-format");
   const url=URL.createObjectURL(file);
   let img;
   try{
-   img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=url;});
+   img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(Error("image-decode"));i.src=url;});
    const w=img.naturalWidth,h=img.naturalHeight;
    if(!w||!h||w*h>64000000)throw Error("pixels");
    const canvas=document.createElement("canvas");
@@ -50,5 +52,32 @@
    throw Error("dimensione");
   }finally{URL.revokeObjectURL(url);}
  }
- root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,MAX_DATA,MAX_FILE};
+ function imageError(err){
+  return ({
+   "empty-image":"Il file è vuoto. Seleziona un altro screenshot o la locandina originale.",
+   "image-size":"La foto supera 32 MB. Prova un altro screenshot o incolla il link diretto all’annuncio.",
+   "image-format":"Formato non supportato. Usa uno screenshot JPG, PNG o WebP oppure il link diretto.",
+   "image-decode":"L’immagine non è leggibile dal dispositivo. Seleziona nuovamente l’originale o usa un altro screenshot.",
+   "pixels":"La risoluzione supera il limite di sicurezza (64 megapixel) oppure l’immagine è priva di dimensioni valide. Usa uno screenshot normale o un link diretto.",
+   "dimensione":"Non è stato possibile comprimere la foto entro il limite di invio. Prova un’altra immagine o usa il link diretto."
+  })[err?.message]||"Il telefono non è riuscito a preparare la foto. Riprova dopo aver chiuso altre app o usa il link diretto.";
+ }
+ function sendError(err,online=true){
+  if(!online)return "Connessione Internet assente. Riattiva Wi-Fi o dati mobili e riprova: i dati inseriti sono ancora qui.";
+  const code=String(err?.code||"").toLowerCase().replace(/^database\//,"").replace(/_/g,"-");
+  if(["permission-denied","unauthorized","auth/permission-denied"].includes(code))return "Il servizio ha rifiutato l’invio (autorizzazione o regole di accettazione). Se i dati sono corretti, usa WhatsApp oppure riprova più tardi.";
+  if(["network-error","disconnected","unavailable","network-request-failed"].includes(code))return "Connessione al servizio interrotta o non disponibile. Controlla Internet e riprova; i dati restano nel modulo.";
+  if(["quota-exceeded","resource-exhausted","limit-exceeded"].includes(code))return "Limite del servizio raggiunto. Riprova più tardi oppure usa WhatsApp.";
+  if(["invalid-argument","invalid-data","validation-failed"].includes(code))return "Il servizio segnala dati non validi. Controlla i campi e il formato della foto o del link; in alternativa usa WhatsApp.";
+  return "Il servizio non ha confermato l’invio e non ha fornito un motivo preciso. I dati sono ancora qui: riprova oppure usa WhatsApp.";
+ }
+ function evidenceError(input,image){
+  if(safeImage(image))return "";
+  const value=String(input||"").trim(),source=publicUrl(value);
+  if(!value)return "Manca la prova dell’evento. Scegli uno screenshot o incolla il link diretto all’annuncio.";
+  if(!source)return "Il link non è valido o non è un annuncio diretto. Copia il link HTTPS del singolo post oppure allega uno screenshot.";
+  if(requiresScreenshot(source))return "Il link della Storia o di condivisione potrebbe scadere o richiedere accesso. Allega anche uno screenshot.";
+  return "";
+ }
+ root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,imageError,sendError,evidenceError,MAX_DATA,MAX_FILE};
 })(typeof window!=="undefined"?window:globalThis);
