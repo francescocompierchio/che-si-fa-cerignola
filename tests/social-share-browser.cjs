@@ -34,10 +34,10 @@ const assert = require("node:assert/strict");
     const date = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
     const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
-    for(const invalid of ["Serata di prova a Cerignola", "https://www.instagram.com/locale/", "https://example.org/", "https://www.instagram.com/stories/locale/123456789/"]){
+    for(const invalid of ["Serata di prova a Cerignola", "https://www.instagram.com/locale/", "https://example.org/", "https://www.instagram.com/share/reel/AbCd1234/"]){
       await page.locator("#quick-link").fill(invalid);
       await page.locator("#quick-invia").click();
-      assert.match(await page.locator("#quick-esito").textContent(),/link non è valido|Allega anche uno screenshot/);
+      assert.match(await page.locator("#quick-esito").textContent(),/link non è valido|link di condivisione non identifica/);
       assert.equal(await page.evaluate(v=>CsfQuick.payload(v,"nota","","2026-11-27"),invalid),null);
     }
     await page.locator("#quick-link").fill(source);
@@ -65,6 +65,16 @@ const assert = require("node:assert/strict");
     assert.ok(second.screenshot.length<=240000);
     assert.equal(second.fonteUrl,"");
     assert.ok(!second.dataInizio&&!second.citta);
+    // Una Storia diretta deve entrare nella coda privata senza foto.
+    const story="https://www.instagram.com/stories/locale/123456789/?igsh=tracking";
+    await page.locator("#quick-link").fill(story);
+    assert.match(await page.locator("#quick-link-help").textContent(),/senza foto/);
+    await page.locator("#quick-invia").click();
+    await page.waitForFunction(()=>window.segnalazioniTest.length===3);
+    const storyItem=await page.evaluate(()=>window.segnalazioniTest[2]);
+    assert.equal(storyItem.fonteUrl,"https://www.instagram.com/stories/locale/123456789/");
+    assert.ok(!storyItem.screenshot&&!storyItem.dataInizio&&!storyItem.citta);
+    assert.match(await page.locator("#quick-esito").textContent(),/Link alla Storia ricevuto/);
     await Promise.all([
       page.waitForNavigation(),
       page.evaluate(async ({source,text}) => {

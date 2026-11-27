@@ -659,7 +659,7 @@
 
   <!-- Firebase SDK -->
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=3"></script>
+  <script src="quick-report.js?v=4"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -952,6 +952,7 @@
       const source=CsfQuick.publicUrl(seg.fonteUrl);
       if(source){const a=document.createElement("a");a.href=source;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Apri annuncio originale";a.className="btn btn-sm";div.append(a);}
       const image=CsfQuick.safeImage(seg.screenshot)?seg.screenshot:"";
+      if(CsfQuick.isDirectStory(source)&&!image){const note=document.createElement("p");note.className="item-desc";note.textContent="Storia Instagram senza screenshot: verifica appena possibile. Il link potrebbe scadere o richiedere accesso. Non pubblicare se i dati dell’evento non sono verificabili.";div.append(note);}
       if(image){
         const img=document.createElement("img");img.src=image;img.alt="Screenshot ricevuto, non pubblicato";img.style.cssText="display:block;max-width:100%;max-height:440px;object-fit:contain;margin:12px 0;border-radius:8px";img.loading="lazy";div.append(img);
         const a=document.createElement("a");a.href=image;a.download="segnalazione.jpg";a.textContent="Scarica screenshot";a.className="btn btn-sm";div.append(a);

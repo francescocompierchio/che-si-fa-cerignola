@@ -20,14 +20,17 @@
  }
  function requiresScreenshot(source){
   try{const u=new URL(source),host=u.hostname.replace(/^(?:www\.|m\.|web\.)/,"");
-    return (host==="instagram.com"&&/^\/(?:stories|share)\//i.test(u.pathname))||(host==="facebook.com"&&/^\/(?:stories|share)\//i.test(u.pathname))||host==="fb.watch";
+    return (host==="instagram.com"&&/^\/share\//i.test(u.pathname))||(host==="facebook.com"&&/^\/(?:stories|share)\//i.test(u.pathname))||host==="fb.watch";
   }catch(_){return false;}
+ }
+ function isDirectStory(source){
+  try{const u=new URL(source);return u.hostname==="www.instagram.com"&&/^\/stories\/[\w.]{1,30}\/\d{5,24}\/?$/.test(u.pathname);}catch(_){return false;}
  }
  function safeImage(v){return typeof v==="string"&&v.length<=MAX_DATA&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(v);}
  function payload(input,note,image,stamp){
   const n=String(note||"").trim().slice(0,500);
   const source=publicUrl(input);
-  // Stories can expire or require authentication. Preserve the visual evidence.
+  // Direct Stories can be submitted for review; ambiguous share links still require a screenshot.
   if(!safeImage(image)&&(!source||requiresScreenshot(source)))return null;
   const out={tipoSegnalazione:"Segnalazione rapida",titolo:"",fonteUrl:source,descrizione:"",notaRapida:n,inviatoIl:stamp};
   if(safeImage(image))out.screenshot=image;
@@ -76,8 +79,8 @@
   const value=String(input||"").trim(),source=publicUrl(value);
   if(!value)return "Manca la prova dell’evento. Scegli uno screenshot o incolla il link diretto all’annuncio.";
   if(!source)return "Il link non è valido o non è un annuncio diretto. Copia il link HTTPS del singolo post oppure allega uno screenshot.";
-  if(requiresScreenshot(source))return "Il link della Storia o di condivisione potrebbe scadere o richiedere accesso. Allega anche uno screenshot.";
+  if(requiresScreenshot(source))return "Il link di condivisione non identifica direttamente l’annuncio. Copia il link diretto oppure allega uno screenshot.";
   return "";
  }
- root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,imageError,sendError,evidenceError,MAX_DATA,MAX_FILE};
+ root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,isDirectStory,imageError,sendError,evidenceError,MAX_DATA,MAX_FILE};
 })(typeof window!=="undefined"?window:globalThis);
