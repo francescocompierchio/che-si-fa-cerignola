@@ -3409,6 +3409,14 @@ html.csf-side-open{overflow:hidden}
         return true;
       });
 
+      // Un titolo esatto non deve essere confuso con parole isolate in altre schede.
+      // Le domande in linguaggio naturale e i filtri espliciti mantengono il comportamento precedente.
+      if(queryRicerca.trim()&&!intento.modo&&!intento.tipo){
+        const normalizzaTitolo=v=>normalizzaRicerca(v).replace(/[^a-z0-9]+/g," ").trim();
+        const q=normalizzaTitolo(queryRicerca);
+        const esatti=q?filtrati.filter(ev=>normalizzaTitolo(ev.titolo)===q&&(!dataSelezionata||CsfEventTools.overlaps(ev,dataSelezionata,fineDataSelezionata||dataSelezionata))):[];
+        if(esatti.length)filtrati=esatti;
+      }
       renderAgendaRapida(filtrati);
       if (dataSelezionata) {
         const [nyStart,nyEnd]=dateCapodanno();
