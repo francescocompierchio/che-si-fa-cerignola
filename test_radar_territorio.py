@@ -1,9 +1,11 @@
+from collections import Counter
 from datetime import date
 import json
 import unittest
 from unittest.mock import MagicMock, Mock
 
 from bs4 import BeautifulSoup
+import apprendimento
 import fonti_editori
 import radar_territorio as radar
 
@@ -41,10 +43,65 @@ class RadarTerritorioTests(unittest.TestCase):
         organizzatore = next(iter(stato["organizzatori"].values()))
         self.assertEqual(organizzatore["categorie"], {"Locali & Serate": 2})
         self.assertTrue(organizzatore["domini"]["esempio.it"]["presenteInEventoApprovato"])
-        ricerche = radar.ricerche(memoria, [], oggi, lambda c: 0 if c == "Cerignola" else 1, set(radar.COMUNI_MOVIDA))
-        self.assertEqual(len(ricerche), 3)
+        fasce = {"Cerignola": 0, "Canosa di Puglia": 1, "Foggia": 2}
+        ricerche = radar.ricerche(memoria, [], oggi, fasce.get, set(fasce))
+        self.assertEqual(Counter(f["fascia_copertura"] for f in ricerche), {0: 3, 1: 2, 2: 1})
+        self.assertEqual(len({f["url"] for f in ricerche}), 6)
+        self.assertEqual(sum(f["focus_serate"] and f["solo_cerignola"] for f in ricerche), 2)
         self.assertTrue(any(r["nome"] == "Ricerca locale Cerignola / Caffè Esempio" for r in ricerche))
         self.assertTrue(all(r["origini_note"] for r in ricerche))
+
+    def test_stesse_categorie_in_tutte_le_fasce_con_memoria_dei_tentativi(self):
+        fasce = {"Cerignola": 0, "Stornara": 1, "Canosa di Puglia": 1, "Trani": 2, "Foggia": 2}
+        memoria = {"apprendimento": {}}
+        oggi = date(2026, 11, 26)
+        viste = set()
+        comuni_visitati = set()
+        for ciclo in range(21):
+            memoria["apprendimento"]["cicli"] = ciclo
+            fonti = radar.ricerche(memoria, [], oggi, fasce.get, set(fasce))
+            prima = fonti[0]
+            esiti = {f["nome"]: {"stato": "ok", "eventiEstratti": 0} for f in fonti}
+            if ciclo == 0:
+                esiti = {prima["nome"]: {"stato": "pausa"}}
+            report = radar.registra_ricerche(memoria, fonti, esiti, ciclo + 1)
+            if ciclo == 0:
+                self.assertEqual(report[0]["esito"], "pausa")
+                self.assertEqual(memoria["territorio"]["ultimeRicerche"], {})
+                continue
+            viste.update((f["fascia_copertura"], f["categoria_cercata"]) for f in fonti)
+            comuni_visitati.update(f["comune_radar"] for f in fonti if f["focus_serate"])
+        self.assertEqual(viste, {(fascia, categoria) for fascia in range(3) for categoria in apprendimento.AREE})
+        self.assertEqual(comuni_visitati, set(fasce))
+
+    def test_lacune_e_riscontri_usano_comune_e_intervallo(self):
+        fasce = {"Cerignola": 0, "Stornara": 1, "Foggia": 2}
+        oggi = date(2026, 11, 26)
+        evento = {"titolo": "Concerto al teatro", "citta": "Foggia", "categoria": "Musica & Concerti",
+                  "dataInizio": "2026-11-27", "dataFine": "2026-11-27"}
+        replica = dict(evento, dataInizio="2026-11-28", dataFine="2026-11-28")
+        confronta = lambda x, y: x["titolo"] == y["titolo"]
+        report = radar.misura_fasce([evento, replica], [evento, evento], [evento, replica],
+                                  oggi, set(fasce), fasce.get, confronta)
+        self.assertTrue(all(set(d["categorie"]) == set(apprendimento.AREE) for d in report.values()))
+        musica = report[radar.FASCE[2]]["categorie"]["Musica & Concerti"]
+        self.assertEqual(musica, {"visibili": 2, "automatici": 1, "riferimenti": 2,
+                                  "conRiscontroAutomatico": 1, "senzaRiscontroAutomatico": 1})
+        memoria = {"apprendimento": {"cicli": 2}, "territorio": {"ultimaVerificaCopertura": {"fasce": report}}}
+        piano = radar.ricerche(memoria, [evento, replica], oggi, fasce.get, set(fasce))
+        self.assertEqual(piano[-1]["categoria_cercata"], "Musica & Concerti")
+
+    def test_ricontrolli_imminenti_riservano_posti_e_recuperano_quelli_liberi(self):
+        oggi, domani = "2026-11-26", "2026-11-27"
+        schede = [(f, oggi, f"{f}/oggi/{i}") for f in (0, 2) for i in range(10)]
+        schede.extend((f, domani, f"{f}/domani/{i}") for f in (0, 2) for i in range(10))
+        schede.append((1, domani, "1/domani/0"))
+        scelti = radar.scegli_schede_imminenti(schede, 10, 2)
+        self.assertEqual(len(scelti), 10)
+        self.assertLessEqual(5, sum(f == 0 for f, _ in scelti))
+        self.assertLessEqual(2, sum(f == 2 for f, _ in scelti))
+        self.assertEqual([url for f, url in scelti if "/domani/" in url], ["1/domani/0"])
+        self.assertNotEqual(scelti, radar.scegli_schede_imminenti(schede, 10, 3))
 
     def test_feed_autoscoperti_richiedono_origine_configurata(self):
         soup = BeautifulSoup(

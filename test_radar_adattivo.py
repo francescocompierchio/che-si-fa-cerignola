@@ -3,6 +3,7 @@ import unittest
 from datetime import date
 from urllib.parse import urlparse, parse_qs
 import apprendimento as a
+import radar_territorio
 
 class RadarAdattivoTest(unittest.TestCase):
     def test_finestra_weekend(self):
@@ -30,12 +31,12 @@ class RadarAdattivoTest(unittest.TestCase):
         self.assertEqual(a.fonti_adattive_weekend({},eventi,date(2026,11,27)),[])
 
     def test_budget_ordinario_preservato(self):
-        oggi=date(2026,11,27)
-        base=a.fonti({},[],oggi)
-        radar=a.fonti_adattive_weekend({},[],oggi)
-        self.assertEqual(len(base),3)
-        self.assertEqual(len(radar),3)
-        self.assertTrue(all(f["solo_cerignola"] for f in base))
+        oggi = date(2026, 11, 27)
+        fasce = {"Cerignola": 0, "Canosa di Puglia": 1, "Foggia": 2}
+        base = radar_territorio.ricerche({}, [], oggi, fasce.get, set(fasce))
+        weekend = a.fonti_adattive_weekend({}, [], oggi)
+        self.assertEqual(len(base + weekend), 9)
+        self.assertEqual(sum(f["solo_cerignola"] for f in base), 3)
 
     def test_esplorazione_solo_scoperta(self):
         m={"apprendimento":{"dominiCandidati":{"example.com":{"osservazioni":2},"unconfirmed.com":{"osservazioni":1},"host.local":{"osservazioni":9}}}}
