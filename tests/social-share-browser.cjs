@@ -175,8 +175,15 @@ const assert = require("node:assert/strict");
     assert.ok(await page.locator("#seg-contatto").isVisible());
     assert.ok(await page.locator("#seg-dati-riepilogo").isVisible());
     await page.locator("#seg-dati-toggle").click();
-    if(await page.locator("#seg-titolo").isHidden())await page.locator("#seg-dati-toggle").click();
     assert.ok(await page.locator("#seg-titolo").isVisible());
+    assert.ok(await page.locator("#seg-poster-preview").isVisible());
+    await page.locator("#seg-contatto").fill("@locale_collaudo");
+    await page.locator("#seg-autorizzato").check();
+    await page.locator("#btn-invia-segnalazione").click();
+    await page.waitForFunction(()=>window.segnalazioniTest.length===2);
+    const professional=await page.evaluate(()=>window.segnalazioniTest[1]);
+    assert.equal(professional.contatto,"@locale_collaudo");
+    assert.match(professional.locandinaUrl,/^data:image\/jpeg;base64,/);
     assert.deepEqual(errors, []);
     console.log("OK segnalazioni complete: OCR, dati mancanti, link non leggibile rifiutato, immagine allegata, link strutturato simulato, share target e anteprima admin.");
   } finally {

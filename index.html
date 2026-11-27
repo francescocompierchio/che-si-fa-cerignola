@@ -1496,7 +1496,7 @@ html.csf-side-open{overflow:hidden}
         <div class="m-field" id="seg-poster-tools">
           <label class="btn btn-map seg-full" for="seg-poster-file">📷 Carica locandina e compila automaticamente</label>
           <p class="seg-intro">Scegli una foto JPG/PNG/WebP (fino a 32 MB): lettura e compressione automatiche sul dispositivo. La locandina compressa sarà allegata alla richiesta; controlla i dati e il contatto prima di inviare.</p>
-          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" style="position:absolute;width:1px;height:1px;opacity:0" />
+          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" style="position:absolute;width:1px;height:1px;opacity:0" /><img id="seg-poster-preview" alt="Locandina allegata" hidden style="display:block;max-height:120px;max-width:100%;object-fit:contain;margin:8px auto;border-radius:9px" />
           <button type="button" class="seg-link" id="seg-poster-read" hidden>Rileggi locandina</button>
           <p id="seg-poster-status" role="status" aria-live="polite"></p>
           <textarea id="seg-poster-text" aria-label="Testo estratto dalla locandina" hidden></textarea>
@@ -3059,7 +3059,7 @@ html.csf-side-open{overflow:hidden}
 
     let ocrInCorso=false;
     let modalitaSocial=false;
-    let posterCondiviso=null,posterProfessionale="";
+    let posterCondiviso=null,posterProfessionale="",posterAutoValues={};
     const segFonte=document.getElementById("seg-fonte");
     const segContatto=document.getElementById("seg-contatto");
     const segCitta=document.getElementById("seg-citta");
@@ -3074,7 +3074,7 @@ html.csf-side-open{overflow:hidden}
     const segEssential=["seg-titolo","seg-luogo","seg-citta","seg-data","seg-ora"];
     function segShowFields(mode){
       const ids=segEssential.filter(id=>!document.getElementById(id).value.trim()||(id==="seg-data"&&segDataInput.value<oggi));
-      segDatiBox.hidden=mode==="closed";
+      segDatiBox.dataset.mode=mode;segDatiBox.hidden=mode==="closed";
       for(const id of segEssential){const el=document.getElementById(id);el.closest(".m-field").hidden=mode==="missing"&&!ids.includes(id);}
       segDatiToggle.setAttribute("aria-expanded",String(!segDatiBox.hidden));
       segDatiToggle.textContent=mode==="all"?"Riduci i campi":mode==="closed"&&!posterProfessionale?"Non ho una locandina · inserisci i dati":"Controlla o modifica tutti i dati";
@@ -3082,7 +3082,7 @@ html.csf-side-open{overflow:hidden}
       segRiepilogo.hidden=!vals.length||mode==="all";
       segRiepilogo.textContent=vals.length?"Dati rilevati: "+vals.join(" · ")+(ids.length?" — completa quelli mancanti.":" — verifica prima di inviare."):"";
     }
-    segDatiToggle.addEventListener("click",()=>segShowFields(segDatiToggle.getAttribute("aria-expanded")==="true"?"closed":"all"));
+    segDatiToggle.addEventListener("click",()=>segShowFields(segDatiBox.dataset.mode==="all"?(posterProfessionale?"missing":"closed"):"all"));
     function caricaOCR(){
       if(window.Tesseract)return Promise.resolve(window.Tesseract);
       return new Promise((resolve,reject)=>{
@@ -3101,29 +3101,30 @@ html.csf-side-open{overflow:hidden}
       posterStatus.textContent="Preparazione lettura. Al primo utilizzo vengono scaricati i componenti OCR.";
       let worker=null;
       try{
-        posterProfessionale=await CsfQuick.compress(file);
+        posterProfessionale=await CsfQuick.compress(file);const preview=document.getElementById("seg-poster-preview");preview.src=posterProfessionale;preview.hidden=false;
         const engine=await caricaOCR();
         worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js",logger:m=>{if(m.status==="recognizing text")posterStatus.textContent="Lettura testo: "+Math.round(m.progress*100)+"%";}});
         const result=await worker.recognize(posterProfessionale);
         posterText.value=String(result.data.text||"").trim().slice(0,10000);
         posterText.hidden=true;posterApply.hidden=true;
-        if(posterText.value)applicaDatiSegnalazione(posterText.value,posterStatus);else posterStatus.textContent="Locandina allegata. Nessun testo riconosciuto: completa i dati manualmente.";
+        if(posterText.value){applicaDatiSegnalazione(posterText.value,posterStatus);posterStatus.textContent="Locandina allegata. Controlla il riepilogo e completa soltanto ciò che manca.";}else posterStatus.textContent="Locandina allegata. Nessun testo riconosciuto: completa i dati manualmente.";
       }catch(error){posterStatus.textContent=posterProfessionale?"Locandina allegata; lettura non disponibile. Completa i dati manualmente.":"Foto non allegata: "+CsfQuick.imageError(error)+" Puoi scegliere un’altra foto."; }
       finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;posterFileInput.disabled=false;posterRead.hidden=!posterProfessionale;segShowFields("missing");}
     });
-    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;posterProfessionale="";if(posterFileInput.files.length)posterRead.click();});
+    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;posterProfessionale="";document.getElementById("seg-poster-preview").hidden=true;document.getElementById("seg-poster-preview").removeAttribute("src");for(const [id,value] of Object.entries(posterAutoValues)){const field=document.getElementById(id);if(field.value===value)field.value="";}posterAutoValues={};if(posterFileInput.files.length)posterRead.click();else segShowFields("all");});
     function applicaDatiSegnalazione(testo,stato){
       const result=CsfExtras.parsePoster(testo);
+      const recognised=CsfQuick.draft(testo,oggi,quickCities);
       const campi=[
         ["seg-titolo",result.title],["seg-luogo",result.venue],
-        ["seg-citta",result.city],["seg-ora",result.time],["seg-costo",result.price],
+        ["seg-citta",recognised.citta||result.city],["seg-ora",result.time],["seg-costo",result.price],
         ["seg-descrizione",result.text.slice(0,1000)]
       ];
       for(const [id,valore] of campi){
         const campo=document.getElementById(id);
-        if(valore&&!campo.value.trim())campo.value=valore;
+        if(valore&&!campo.value.trim()){campo.value=valore;posterAutoValues[id]=valore;}
       }
-      if(result.date&&result.date>=oggi&&!segDataInput.value)segDataInput.value=result.date;
+      if(result.date&&result.date>=oggi&&!segDataInput.value){segDataInput.value=result.date;posterAutoValues["seg-data"]=result.date;}
       segShowFields("missing");
       stato.hidden=false;
       stato.textContent=result.ambiguousDate||result.ambiguousTime
@@ -3385,7 +3386,7 @@ html.csf-side-open{overflow:hidden}
       if(segCitta.value.trim()&&!validQuickCity(segCitta.value.trim()))add("seg-citta","Comune","Indica un comune entro 50 km da Cerignola.");
       for(const id of ["seg-fonte","seg-locandina"]){const f=document.getElementById(id);if(!f.closest("[hidden]")&&f.value.trim()&&!isSafeHttpUrl(f.value.trim())){if(id==="seg-locandina")document.getElementById("seg-altri-dati").open=true;add(id,id==="seg-fonte"?"Link annuncio":"Link locandina","Incolla un indirizzo HTTP o HTTPS valido oppure lascia il campo vuoto.");}}
       if(!document.getElementById("seg-autorizzato").checked)add("seg-autorizzato","Dichiarazione","Spunta la dichiarazione di autorizzazione prima di inviare.");
-      if(problems.length){segShowFields("all");reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
+      if(problems.length){segShowFields("all");for(const f of segForm.querySelectorAll("[aria-invalid=true]")){const detail=f.closest("details");if(detail)detail.open=true;}reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
       const fonteVal=modalitaSocial?CsfExtras.socialUrl(segFonte.value):segFonte.value.trim();
       if(modalitaSocial&&!fonteVal){reportMessage(segEsito,"Il link non identifica un annuncio pubblico. Copia il link diretto al post.",true);return;}
       if(ocrInCorso){reportMessage(segEsito,"La lettura della locandina è ancora in corso. Attendi che termini, verifica i dati e riprova.",true);return;}
@@ -3439,7 +3440,7 @@ html.csf-side-open{overflow:hidden}
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
         try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
         reportMessage(segEsito,"");
-        e.target.reset();posterCondiviso=null;posterProfessionale="";segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
+        e.target.reset();posterCondiviso=null;posterProfessionale="";posterAutoValues={};posterRead.hidden=true;document.getElementById("seg-poster-preview").hidden=true;document.getElementById("seg-poster-preview").removeAttribute("src");segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         segShowFields("closed");
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
