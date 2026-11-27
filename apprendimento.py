@@ -1,6 +1,6 @@
 """Apprendimento operativo deterministico: feedback da risultati verificati.
 Non modifica codice, credenziali, grafica o criteri di validazione."""
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from urllib.parse import urlencode,urlparse
@@ -196,6 +196,10 @@ def misura(risultati,precedenti,pubblicati,duplicati):
     """Premia novità finite realmente in archivio, non il numero grezzo di estrazioni.
     Più fonti possono confermare un evento; ogni fonte riceve al massimo un credito
     per lo stesso record pubblicato. Non è una stima di accuratezza statistica."""
+    per_date = defaultdict(list)
+    for indice, evento in enumerate(pubblicati):
+        per_date[evento.get("dataInizio"), evento.get("dataFine")].append((indice, evento))
+    novita_pubblicate = {}
     out={}
     for nome,eventi in risultati.items():
         validi=set()
@@ -204,11 +208,13 @@ def misura(risultati,precedenti,pubblicati,duplicati):
         serate=set()
         serate_territorio=set()
         for e in eventi:
-            for i,f in enumerate(pubblicati):
-                if not duplicati(e,f) or e.get("dataInizio")!=f.get("dataInizio") or e.get("dataFine")!=f.get("dataFine"):
+            for i, f in per_date.get((e.get("dataInizio"), e.get("dataFine")), ()):
+                if not duplicati(e, f):
                     continue
                 validi.add(i)
-                if not any(duplicati(f,p) for p in precedenti):
+                if i not in novita_pubblicate:
+                    novita_pubblicate[i] = not any(duplicati(f, p) for p in precedenti)
+                if novita_pubblicate[i]:
                     nuovi.add(i)
                     if f.get("categoria")=="Locali & Serate":
                         serate_territorio.add(i)
