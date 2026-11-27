@@ -659,7 +659,7 @@
 
   <!-- Firebase SDK -->
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=2"></script>
+  <script src="quick-report.js?v=3"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -946,8 +946,8 @@
 
     function renderRapida(box,id,seg){
       const div=document.createElement("div");div.className="item-card";
-      const title=document.createElement("p");title.className="item-title";title.textContent="Segnalazione rapida · da verificare";
-      const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
+      const title=document.createElement("p");title.className="item-title";title.textContent="Segnalazione rapida · da verificare"+(seg.titolo?" — "+seg.titolo:"");
+      const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[[seg.luogo,seg.citta,seg.dataInizio,seg.dataTesto].filter(Boolean).join(" · "),seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
       div.append(title,desc);
       const source=CsfQuick.publicUrl(seg.fonteUrl);
       if(source){const a=document.createElement("a");a.href=source;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Apri annuncio originale";a.className="btn btn-sm";div.append(a);}
@@ -960,7 +960,7 @@
       const edit=document.createElement("button");edit.type="button";edit.className="btn btn-primary btn-sm";edit.textContent=image?"Leggi screenshot e rivedi":"Rivedi e pubblica";
       edit.onclick=async()=>{
         const parsed=CsfExtras.parsePoster(typeof seg.descrizione==="string"?seg.descrizione:"");
-        const draft={tipoSegnalazione:"Segnalazione rapida",titolo:parsed.title,citta:parsed.city,luogo:parsed.venue,dataInizio:parsed.date,dataFine:parsed.date,dataTesto:parsed.time,costo:parsed.price,fonteUrl:source,descrizione:parsed.text.slice(0,1000)};
+        const draft={tipoSegnalazione:"Segnalazione rapida",titolo:seg.titolo||parsed.title,citta:seg.citta||parsed.city,luogo:seg.luogo||parsed.venue,dataInizio:seg.dataInizio||parsed.date,dataFine:seg.dataFine||parsed.date,dataTesto:seg.dataTesto||parsed.time,costo:parsed.price,fonteUrl:source,descrizione:parsed.text.slice(0,1000)};
         caricaEventoNelForm("",draft,id);attivaTab("tab-eventi");
         if(!image)return;
         const stillEditing=()=>document.getElementById("ev-from-segnalazione-id").value===id;
@@ -1042,7 +1042,7 @@
         const editId = document.getElementById("ev-edit-id").value;
         const fromSegId = document.getElementById("ev-from-segnalazione-id").value;
         const rapida=cacheSegnalazioni[fromSegId]?.tipoSegnalazione==="Segnalazione rapida";
-        if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
+        if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine","ev-data-testo"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
         const cittaVal = document.getElementById("ev-citta").value.trim() || "Cerignola";
         const luogoVal = document.getElementById("ev-luogo").value.trim();
         const indVal = document.getElementById("ev-indirizzo").value.trim();
