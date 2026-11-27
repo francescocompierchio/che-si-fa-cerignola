@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=2"></script>
+  <script src="quick-report.js?v=3"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -856,6 +856,10 @@
     #seg-rapida .quick-photo:focus-within{outline:2px solid var(--accent);outline-offset:2px}
     #seg-rapida .quick-photo input{position:absolute;width:1px;height:1px;opacity:0}
     #seg-rapida .quick-preview{max-height:140px;max-width:100%;object-fit:contain;display:block;margin:8px auto;border-radius:9px}
+    #modal-segnala .report-result:not([hidden]),#modal-segnala .report-error{white-space:pre-line;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:.85rem;line-height:1.45;overflow-wrap:anywhere;margin:8px 0}
+    #modal-segnala .report-error{border-color:#b85a40;color:var(--text);background:var(--card)}
+    #modal-segnala [aria-invalid="true"]{outline:2px solid #b85a40;outline-offset:1px}
+    #modal-segnala .report-field-error{display:block;color:var(--text);font-size:.77rem;line-height:1.4;margin-top:4px}
     #seg-rapida .quick-status{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere;line-height:1.4;margin:8px 0}
     #seg-rapida .quick-note{font-size:.75rem;color:var(--muted);line-height:1.45;margin:10px 0}
     #seg-rapida .quick-share-help{font-size:.78rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
@@ -1465,12 +1469,12 @@ html.csf-side-open{overflow:hidden}
         </div>
         <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
         <p class="quick-note">Invia solo annunci pubblici senza dati privati. Le immagini fino a 32 MB vengono ridimensionate e compresse automaticamente sul telefono. Le segnalazioni senza foto o link diretto non sono accettate.</p>
-        <button type="submit" class="btn btn-map seg-full" id="quick-invia" disabled>Invia segnalazione</button>
+        <button type="submit" class="btn btn-map seg-full" id="quick-invia">Invia segnalazione</button>
         <p id="quick-esito" class="quick-status" role="status" aria-live="polite"></p>
         <button type="button" class="seg-link" id="quick-wa" hidden>Invia invece via WhatsApp</button>
         <p class="quick-share-help">Su Android, se Che Si Fa è installata e compare tra le app di condivisione, puoi usare Condividi direttamente da Instagram. Altrimenti usa lo screenshot.</p>
       </form>
-      <form id="form-segnalazione-pubblica" hidden>
+      <form id="form-segnalazione-pubblica" novalidate hidden>
         <button type="button" class="seg-link" id="seg-indietro">‹ Cambia modalità</button>
         <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
         <div class="m-field">
@@ -1556,6 +1560,7 @@ html.csf-side-open{overflow:hidden}
           </div>
         </details>
         <label class="seg-dichiarazione"><input type="checkbox" id="seg-autorizzato" required /> <span id="seg-autorizzato-testo">Dichiaro di essere il gestore o un organizzatore autorizzato.</span></label>
+        <p id="seg-invio-esito" class="report-result" role="status" aria-live="polite" hidden></p>
         <button type="submit" class="btn btn-map seg-full" id="btn-invia-segnalazione">Invia evento gratis</button>
         <button type="button" class="btn btn-wa seg-full" id="btn-segnala-wa-diretto" style="margin-top:8px;">Invia locandina via WhatsApp</button>
         <p class="seg-intro" style="margin-top:5px;">Puoi inviare direttamente la foto allegandola nella conversazione WhatsApp, senza compilare tutto il modulo.</p>
@@ -1643,7 +1648,7 @@ html.csf-side-open{overflow:hidden}
     }
 
     function apriSegnalazioneWhatsApp() {
-      if(!document.getElementById("seg-autorizzato")?.checked){mostraToast("Conferma di essere autorizzato a proporre l’evento.");return;}
+      if(!document.getElementById("seg-autorizzato")?.checked){reportMessage(segEsito,"Manca la dichiarazione di autorizzazione. Spunta la casella prima di inviare via WhatsApp.",true);return;}
       const campo=id=>document.getElementById(id)?.value.trim()||"";
       const testoSegnalazione=encodeURIComponent([
         modalitaSocial ? "Ciao, vorrei segnalare questo annuncio pubblico a Che Si Fa Cerignola:" : "Ciao, sono un gestore o organizzatore autorizzato e vorrei pubblicare il mio evento su Che Si Fa Cerignola:",
@@ -3132,20 +3137,38 @@ html.csf-side-open{overflow:hidden}
     const quickSend=document.getElementById("quick-invia");
     const quickRemove=document.getElementById("quick-remove");
     const quickWA=document.getElementById("quick-wa");
+    const segEsito=document.getElementById("seg-invio-esito");
+    function reportMessage(el,message,error=false){
+      el.hidden=!message;el.textContent=message;
+      el.classList.toggle("report-error",error);
+      if(error&&message)el.scrollIntoView({block:"nearest"});
+    }
+    function clearFieldError(field){
+      field.removeAttribute("aria-invalid");
+      const note=document.getElementById(field.id+"-report-error");
+      if(note){const ids=(field.getAttribute("aria-describedby")||"").split(/\s+/).filter(x=>x&&x!==note.id);if(ids.length)field.setAttribute("aria-describedby",ids.join(" "));else field.removeAttribute("aria-describedby");note.remove();}
+    }
+    function fieldError(field,message){
+      clearFieldError(field);field.setAttribute("aria-invalid","true");
+      const note=document.createElement("small");note.id=field.id+"-report-error";note.className="report-field-error";note.textContent=message;
+      field.insertAdjacentElement("afterend",note);
+      field.setAttribute("aria-describedby",[field.getAttribute("aria-describedby"),note.id].filter(Boolean).join(" "));
+    }
+    for(const field of segForm.querySelectorAll("input,textarea,select")){field.addEventListener("input",()=>clearFieldError(field));field.addEventListener("change",()=>clearFieldError(field));}
     let quickImage="",quickBusy=false,quickSending=false,quickSequence=0;
     function quickUpdate(){
       const source=CsfQuick.publicUrl(quickInput.value);
       const valid=!!quickImage||!!(source&&!CsfQuick.requiresScreenshot(source));
       const help=document.getElementById("quick-link-help");
       help.textContent=source&&CsfQuick.requiresScreenshot(source)?"Questo link potrebbe scadere o richiedere accesso: aggiungi lo screenshot.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Per le Storie e i link di condivisione non diretti, allega anche lo screenshot.";
-      quickSend.disabled=quickBusy||quickSending||!valid;
+      quickSend.disabled=quickBusy||quickSending;
     }
     function quickClearPhoto(){
       quickSequence++;quickBusy=false;quickImage="";quickFile.value="";
-      quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;quickPhotoStatus.textContent="";quickUpdate();
+      quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;reportMessage(quickPhotoStatus,"");quickUpdate();
     }
     function quickReset(){
-      quickForm.reset();quickClearPhoto();quickStatus.textContent="";quickWA.hidden=true;
+      quickForm.reset();quickClearPhoto();reportMessage(quickStatus,"");quickWA.hidden=true;
     }
     function apriRapida(){
       segForm.hidden=true;segScelta.hidden=true;quickForm.hidden=false;
@@ -3159,12 +3182,12 @@ html.csf-side-open{overflow:hidden}
         if(seq!==quickSequence)return;
         quickImage=data;quickPreview.src=data;quickPreview.hidden=false;quickRemove.hidden=false;
         quickPhotoStatus.textContent="Foto pronta per l’invio.";
-      }catch(_){if(seq===quickSequence){quickPhotoStatus.textContent="Foto non leggibile o troppo grande. Scegli un JPG, PNG o WebP fino a 32 MB.";quickFile.value="";}}
+      }catch(err){if(seq===quickSequence){reportMessage(quickPhotoStatus,CsfQuick.imageError(err),true);quickFile.value="";}}
       finally{if(seq===quickSequence){quickBusy=false;quickUpdate();}}
     }
     quickFile.addEventListener("change",()=>quickLoadPhoto(quickFile.files[0]));
     quickRemove.addEventListener("click",quickClearPhoto);
-    quickInput.addEventListener("input",quickUpdate);
+    quickInput.addEventListener("input",()=>{clearFieldError(quickInput);if(!quickSending)reportMessage(quickStatus,"");quickUpdate();});
     document.getElementById("quick-indietro").addEventListener("click",()=>{
       quickForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;
     });
@@ -3175,15 +3198,17 @@ html.csf-side-open{overflow:hidden}
     quickForm.addEventListener("submit",async e=>{
       e.preventDefault();if(quickBusy||quickSending||quickForm.hidden)return;
       const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString());
-      if(!item){quickStatus.textContent="Aggiungi una foto o un link diretto valido. Per le Storie serve anche lo screenshot.";return;}
-      if(!dbGlobal){quickStatus.textContent="Invio non disponibile. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;return;}
-      quickSending=true;quickUpdate();quickStatus.textContent="Invio in corso…";quickWA.hidden=true;
+      if(!item){reportMessage(quickStatus,CsfQuick.evidenceError(quickInput.value,quickImage),true);return;}
+      if(navigator.onLine===false){reportMessage(quickStatus,CsfQuick.sendError(null,false),true);return;}
+      if(!dbGlobal){reportMessage(quickStatus,"Il servizio di invio non è disponibile o non si è caricato. Controlla Internet e riprova, oppure usa WhatsApp e allega lì la foto.",true);quickWA.hidden=false;return;}
+      quickSending=true;quickUpdate();reportMessage(quickStatus,"Invio in corso…");quickWA.hidden=true;
+      const timer=setTimeout(()=>reportMessage(quickStatus,"Il servizio non ha ancora confermato la ricezione. Controlla Internet e lascia aperta questa pagina: non inviare di nuovo per evitare duplicati."),12000);
       try{
         await dbGlobal.ref("segnalazioniDaApprovare").push(item);
-        window.CsfMetrics?.action?.("csf_report_sent");
-        quickReset();quickStatus.textContent="Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.";
-      }catch(_){quickStatus.textContent="Invio non riuscito. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;}
-      finally{quickSending=false;quickUpdate();}
+        try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
+        quickReset();reportMessage(quickStatus,"Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.");
+      }catch(err){reportMessage(quickStatus,CsfQuick.sendError(err,navigator.onLine!==false)+" Se usi WhatsApp, allega lì la foto.",true);quickWA.hidden=false;}
+      finally{clearTimeout(timer);quickSending=false;quickUpdate();}
     });
     function apriModuloSegnalazione(social){
       if(social!==modalitaSocial){
@@ -3272,13 +3297,24 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("form-segnalazione-pubblica").addEventListener("submit", async e => {
       e.preventDefault();
-      if(segForm.hidden||!document.getElementById("seg-autorizzato").checked){mostraToast("Conferma la dichiarazione prima di inviare.");return;}
+      if(segForm.hidden||document.getElementById("btn-invia-segnalazione").disabled)return;
+      reportMessage(segEsito,"");
+      const problems=[];
+      for(const field of segForm.querySelectorAll("input,textarea,select"))clearFieldError(field);
+      const requiredFields=[["seg-titolo","Nome dell’evento","Inserisci il nome dell’evento."],["seg-luogo","Locale e indirizzo","Indica il locale e l’indirizzo."],["seg-citta","Comune","Scrivi il comune in cui si svolge l’evento."],["seg-data","Data","Seleziona la data dell’evento."],["seg-ora","Orario","Inserisci l’orario, ad esempio 22:30."]];
+      if(!modalitaSocial)requiredFields.push(["seg-contatto","Contatto","Inserisci il profilo Instagram o il numero WhatsApp del locale."]);
+      const add=(id,label,msg)=>{const f=document.getElementById(id);fieldError(f,msg);problems.push(label+": "+msg);};
+      for(const [id,label,msg] of requiredFields)if(!document.getElementById(id).value.trim())add(id,label,msg);
+      if(segDataInput.value&&segDataInput.value<oggi)add("seg-data","Data","La data è già trascorsa. Scegli oggi o una data futura.");
+      for(const id of ["seg-fonte","seg-locandina"]){const f=document.getElementById(id);if(!f.closest("[hidden]")&&f.value.trim()&&!isSafeHttpUrl(f.value.trim())){if(id==="seg-locandina")document.getElementById("seg-altri-dati").open=true;add(id,id==="seg-fonte"?"Link annuncio":"Link locandina","Incolla un indirizzo HTTP o HTTPS valido oppure lascia il campo vuoto.");}}
+      if(!document.getElementById("seg-autorizzato").checked)add("seg-autorizzato","Dichiarazione","Spunta la dichiarazione di autorizzazione prima di inviare.");
+      if(problems.length){reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
       const fonteVal=modalitaSocial?CsfExtras.socialUrl(segFonte.value):segFonte.value.trim();
-      if(modalitaSocial&&!fonteVal){mostraToast("Inserisci il link pubblico al post o alla Storia.");segFonte.focus();return;}
-      if(ocrInCorso){posterStatus.textContent="Lettura in corso. Riprova quando termina.";return;}
+      if(modalitaSocial&&!fonteVal){reportMessage(segEsito,"Il link non identifica un annuncio pubblico. Copia il link diretto al post.",true);return;}
+      if(ocrInCorso){reportMessage(segEsito,"La lettura della locandina è ancora in corso. Attendi che termini, verifica i dati e riprova.",true);return;}
+      if(navigator.onLine===false){reportMessage(segEsito,CsfQuick.sendError(null,false),true);return;}
       if (!dbGlobal) {
-        if(modalitaSocial)mostraToast("Invio al momento indisponibile. Riprova o usa il pulsante WhatsApp.");
-        else apriSegnalazioneWhatsApp();
+        reportMessage(segEsito,"Il servizio di invio non si è caricato. Controlla Internet e riprova oppure usa il pulsante WhatsApp.",true);
         return;
       }
 
@@ -3293,9 +3329,6 @@ html.csf-side-open{overflow:hidden}
       const luogoVal = document.getElementById("seg-luogo").value.trim();
       const cittaVal = segCitta.value.trim() || (modalitaSocial?"":"Cerignola");
 
-      if (dataScelta < oggi || !luogoVal || !cittaVal || !document.getElementById("seg-titolo").value.trim() || (!modalitaSocial&&!segContatto.value.trim()) || !oraScelta) {
-        alert("Controlla titolo, locale, comune, data, orario e contatto."); btn.disabled=false;btn.textContent="Invia evento gratis";return;
-      }
       const dataTestoFinale = isLuogoFisso
         ? (oraScelta || "Sempre visitabile")
         : (oraScelta ? `${dataScelta} · ${oraScelta}` : dataScelta);
@@ -3319,21 +3352,25 @@ html.csf-side-open{overflow:hidden}
       };
 
       if(modalitaSocial&&tuttiEventiAttivi.some(ev=>sonoEventiDuplicatiClient(ev,segnalazione))){
-        mostraToast("Questo evento è già nell’agenda.");
+        reportMessage(segEsito,"Questo evento è già nell’agenda. Non occorre inviarlo di nuovo; usa WhatsApp se devi comunicare una modifica.",true);
         btn.disabled=false;btn.textContent="Invia evento gratis";
         return;
       }
+      reportMessage(segEsito,"Invio in corso…");
+      const timer=setTimeout(()=>reportMessage(segEsito,"Il servizio non ha ancora confermato la ricezione. Controlla Internet e lascia aperta questa pagina; non inviare di nuovo per evitare duplicati."),12000);
       try {
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
-        window.CsfMetrics?.action?.("csf_report_sent");
+        try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
+        reportMessage(segEsito,"");
         e.target.reset();posterCondiviso=null;segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
         alert("Richiesta ricevuta! L’evento sarà pubblicato gratuitamente dopo verifica.");
       } catch (err) {
-        alert("Errore durante l'invio. Puoi comunque inviarla su WhatsApp.");
+        reportMessage(segEsito,CsfQuick.sendError(err,navigator.onLine!==false),true);
       } finally {
+        clearTimeout(timer);
         btn.disabled = false;
         btn.textContent = "Invia evento gratis";
       }

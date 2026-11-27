@@ -16,7 +16,7 @@ const assert = require("node:assert/strict");
           ref: path => ({
             on() {},
             push: async value => {
-              if (path === "segnalazioniDaApprovare") window.segnalazioniTest.push(value);
+              if (path === "segnalazioniDaApprovare") {if(window.testSendError)throw Object.assign(Error("sensitive test detail"),{code:window.testSendError});window.segnalazioniTest.push(value);}
             }
           })
         })
@@ -29,17 +29,26 @@ const assert = require("node:assert/strict");
     await page.locator("#seg-social").click();
     assert.ok(await page.locator("#seg-rapida").isVisible());
     assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
-    assert.ok(await page.locator("#quick-invia").isDisabled());
+    await page.locator("#quick-invia").click();
+    assert.match(await page.locator("#quick-esito").textContent(),/Manca la prova/);
     const date = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
     const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
     for(const invalid of ["Serata di prova a Cerignola", "https://www.instagram.com/locale/", "https://example.org/", "https://www.instagram.com/stories/locale/123456789/"]){
       await page.locator("#quick-link").fill(invalid);
-      assert.ok(await page.locator("#quick-invia").isDisabled(),invalid);
+      await page.locator("#quick-invia").click();
+      assert.match(await page.locator("#quick-esito").textContent(),/link non è valido|Allega anche uno screenshot/);
       assert.equal(await page.evaluate(v=>CsfQuick.payload(v,"nota","","2026-11-27"),invalid),null);
     }
     await page.locator("#quick-link").fill(source);
     assert.equal(await page.evaluate(source=>CsfQuick.publicUrl(source),source),"https://www.instagram.com/reel/AbCd1234/");
+    await page.evaluate(()=>window.testSendError="PERMISSION_DENIED");
+    await page.locator("#quick-invia").click();
+    await page.waitForFunction(()=>document.querySelector("#quick-esito").textContent.includes("rifiutato"));
+    assert.equal(await page.locator("#quick-link").inputValue(),source);
+    assert.ok(!((await page.locator("#quick-esito").textContent()).includes("sensitive test detail")));
+    assert.ok(await page.locator("#quick-wa").isVisible());
+    await page.evaluate(()=>window.testSendError="");
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>window.segnalazioniTest.length===1);
     let first=await page.evaluate(()=>window.segnalazioniTest[0]);
