@@ -113,6 +113,50 @@ def api(session, path, body=None, **params):
     return r.json()
 
 
+def diagnosi_calendario(session, run):
+    """Riporta solo indicatori fissi dai log privati di Apify."""
+    diagnostica = {"ultimoStatoActor": run["status"]}
+    if run["status"] != "FAILED":
+        return diagnostica
+    run_id = run.get("id", "")
+    if not re.fullmatch(r"[a-zA-Z0-9]{8,32}", run_id):
+        return diagnostica
+    with session.get("https://api.apify.com/v2/logs/" + run_id, timeout=(4, 10),
+                     allow_redirects=False, stream=True) as response:
+        if response.status_code != 200:
+            return dict(diagnostica, logActorHttp=response.status_code)
+        raw = bytearray()
+        for chunk in response.iter_content(4096):
+            raw.extend(chunk)
+            if len(raw) >= 96 * 1024:
+                break
+    testo = str(run.get("statusMessage") or "") + "\n" + raw.decode("utf-8", errors="replace")
+    segnali = {
+        "accesso_negato": r"(?:HTTP|status(?: code)?)[^\n\d]{0,8}(?:401|403|429)\b|captcha|access denied|forbidden|blocked by robots",
+        "input_non_valido": r"invalid input|input validation|schema validation|must NOT have additional properties|input schema|ArgumentError",
+        "avvio_o_dipendenza": r"ModuleNotFoundError|ERR_MODULE_NOT_FOUND|Cannot find module|ImportError|No module named|SyntaxError|FileNotFoundError|Cannot find package|ENOENT|exec format error",
+        "configurazione_crawler": r"unknown propert|does not allow|unexpected (?:key|property)|Expected value|TypeError|ReferenceError",
+        "timeout_o_memoria": r"timed out|TimeoutError|out of memory|OOMKilled|memory limit",
+        "pagina_richiesta": r"\bCheerioCrawler\b|\bHttpCrawler\b|(?:fetch|loaded|received)\s+(?:page\s+)?https?://comune\.cerignola\.fg\.it",
+    }
+    diagnostica["segnaliActor"] = [nome for nome, regex in segnali.items() if re.search(regex, testo, re.I)]
+    # Nomi standard di eccezioni, senza testo degli errori o porzioni di URL.
+    diagnostica["classiErroreActor"] = sorted(set(re.findall(
+        r"\b(?:TypeError|ReferenceError|SyntaxError|RangeError|ModuleNotFoundError|ImportError|FileNotFoundError|ArgumentError|TimeoutError|ERR_MODULE_NOT_FOUND|ERR_INVALID_ARG_TYPE|ERR_REQUIRE_ESM|ERR_PACKAGE_PATH_NOT_EXPORTED|ENOENT|EACCES)\b", testo)))[:10]
+    return diagnostica
+
+
+def diagnosi_ultimo_calendario(token, ultima):
+    with requests.Session() as auth:
+        auth.headers["Authorization"] = "Bearer " + token
+        risultato = api(auth, ATTORE_CALENDARI + "/runs", limit=8, desc="true")["data"]["items"]
+        for run in risultato:
+            avvio = run.get("startedAt") or ""
+            if avvio and abs(datetime.fromisoformat(avvio.replace("Z", "+00:00")).timestamp() - ultima) < 180:
+                return diagnosi_calendario(auth, run)
+    return {"ultimoStatoActor": "non_rintracciato"}
+
+
 def leggi_righe_calendario(rows, engine):
     """Accetta solo risposte HTML leggibili e schede del calendario concordanti con l'URL richiesto."""
     eventi = []
@@ -157,7 +201,14 @@ def raccogli_calendario():
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
     ultima = state.get("ultimoCalendario", 0)
     if now - ultima < INTERVALLO_CALENDARI:
-        return {"stato": "pausa programmata", "prossimoUnix": ultima + INTERVALLO_CALENDARI}
+        report = {"stato": "pausa programmata", "prossimoUnix": ultima + INTERVALLO_CALENDARI}
+        if "diagnosiCalendario" not in state:
+            try:
+                state["diagnosiCalendario"] = diagnosi_ultimo_calendario(token, ultima)
+                engine._scrivi_json_atomico(str(STATE), state)
+            except (requests.RequestException, Pausa, TypeError, ValueError, KeyError):
+                return dict(report, ultimoStatoActor="diagnosi_indisponibile")
+        return dict(report, **state["diagnosiCalendario"])
 
     with requests.Session() as pubblico:
         policy = engine.fonti_editori.robots(pubblico, AGENDA_CERIGNOLA)
@@ -180,6 +231,7 @@ def raccogli_calendario():
             "proxyConfiguration": {"useApifyProxy": False},
         }
         state["ultimoCalendario"] = now
+        state.pop("diagnosiCalendario", None)
         STATE.parent.mkdir(exist_ok=True)
         engine._scrivi_json_atomico(str(STATE), state)
         run = api(auth, ATTORE_CALENDARI + "/runs", body, maxTotalChargeUsd=TETTO_CALENDARI,
@@ -192,6 +244,13 @@ def raccogli_calendario():
         report = {"fonte": AGENDA_CERIGNOLA, "stato": run["status"], "pianoGratuitoVerificato": True,
                   "tettoUsd": TETTO_CALENDARI, "costoUsd": run.get("usageTotalUsd"),
                   "eventiAddebitati": {"page-crawled": run.get("chargedEventCounts", {}).get("page-crawled", 0)}}
+        try:
+            diagnosi = diagnosi_calendario(auth, run)
+            state["diagnosiCalendario"] = diagnosi
+            engine._scrivi_json_atomico(str(STATE), state)
+            report.update(diagnosi)
+        except requests.RequestException:
+            pass
         if run["status"] != "SUCCEEDED":
             return report
         rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=MASSIMO_PAGINE_CALENDARI,

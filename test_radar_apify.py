@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import radar_apify as radar
 
@@ -116,3 +116,14 @@ class TestRadar(unittest.TestCase):
         self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1})
         self.assertEqual(eventi, [{"citta":"Cerignola","descrizione":"Serata · Fonte: Comune di Cerignola"}])
         self.assertEqual(engine.analizza_pagina_evento.call_count, 1)
+
+    def test_diagnosi_actor_non_pubblica_il_log(self):
+        session = MagicMock()
+        response = session.get.return_value.__enter__.return_value
+        response.status_code = 200
+        response.iter_content.return_value = [b"Error: Cannot find module 'dato-riservato'\nERR_MODULE_NOT_FOUND"]
+        report = radar.diagnosi_calendario(session, {"status":"FAILED", "id":"RunFixture123"})
+        self.assertEqual(report["segnaliActor"], ["avvio_o_dipendenza"])
+        self.assertEqual(report["classiErroreActor"], ["ERR_MODULE_NOT_FOUND"])
+        self.assertNotIn("dato-riservato", str(report))
+        self.assertFalse(session.get.call_args.kwargs["allow_redirects"])
