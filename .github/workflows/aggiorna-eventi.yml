@@ -112,13 +112,7 @@ jobs:
           python -m unittest discover -s . -p "test_*.py" -q
           python -m unittest discover -s tests -p "test_*.py" -q
 
-      - name: Radar Apify con budget gratuito
-        continue-on-error: true
-        timeout-minutes: 3
-        env:
-          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN || secrets.APIFY_API_TOKEN }}
-          APIFY_META_AUTORIZZATO: ${{ vars.APIFY_META_AUTORIZZATO }}
-          APIFY_GOOGLE_AUTORIZZATO: ${{ vars.APIFY_GOOGLE_AUTORIZZATO }}
+      - name: Registra il budget zero Apify
         run: python radar_apify.py
 
       - name: Radar ufficiale Meta per profili e pagine autorizzati

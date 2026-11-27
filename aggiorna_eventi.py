@@ -39,6 +39,7 @@ HEADERS = {
 
 DOMINI_AUTO = (
     "comune.trinitapoli.bt.it", "sagradelcarciofotrinitapoli.it", "eventivicino.it", "ilborghista.it", "lovojo.it",
+    "comune.stornara.fg.it", "comune.canosa.bt.it",
     "visitmonticchio.it", "caifoggia.it", "parcoofanto.it", "dauniatur.it", "csvfoggia.it", "oasilagosalso.it", "parcoaltamurgia.it", "pugliarte.it", "coopcommargherita.wixsite.com",
     "canosaweb.it", "minervinoviva.it", "volontariperminervino.it", "andiamoinpuglia.it",
     "news.google.com", "iltaccodibacco.it", "viaggiareinpuglia.it",
@@ -83,6 +84,8 @@ FONTI_PORTALI = [
     {"nome":"Lucera.it eventi Cerignola","url":"https://www.lucera.it/eventi/","dominio":"lucera.it","citta_default":"","curata": False,"max_schede":10,"notizie_locali": True,"prefisso_schede":"/eventi/"},
     {"nome":"CanosaWeb eventi locali","url":"https://canosaweb.it/eventi/","dominio":"canosaweb.it","citta_default":"Canosa di Puglia","curata":False,"notizie_locali":True,"prefisso_schede":"/notizie/","max_schede":12},
     {"nome":"Comune Cerignola agenda ufficiale","url":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata":True,"prefisso_schede":"/vivere-il-comune/eventi/","max_schede":20},
+    {"nome":"Comune Stornara agenda pubblica","url":"https://comune.stornara.fg.it/it/events","dominio":"comune.stornara.fg.it","citta_default":"Stornara","curata":False,"prefisso_schede":"/it/events/","robots_obbligatorio":True,"max_schede":6},
+    {"nome":"Comune Canosa agenda pubblica","url":"https://www.comune.canosa.bt.it/it/eventi","dominio":"comune.canosa.bt.it","citta_default":"Canosa di Puglia","curata":False,"prefisso_schede":"/it/eventi/","robots_obbligatorio":True,"max_schede":6},
     {"nome":"Volontari per Minervino - iniziative","url":"https://volontariperminervino.it/","dominio":"volontariperminervino.it","citta_default":"Minervino Murge","curata":False,"notizie_locali":True,"max_schede":8},
     {"nome":"Tacco di Bacco concerti Barletta","url":"https://iltaccodibacco.it/barletta/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
     {"nome":"Tacco di Bacco concerti Bisceglie","url":"https://iltaccodibacco.it/bisceglie/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
@@ -100,6 +103,7 @@ FONTI_PORTALI = [
     {"nome":"Xceed Barletta","url":"https://xceed.me/it/barletta/events","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
     {"nome":"Xceed Trani","url":"https://xceed.me/it/trani/events","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Xceed Atrio22","url":"https://xceed.me/it/barletta/venue/atrio22","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
+    {"nome":"Xceed Luma Club Barletta","url":"https://xceed.me/it/organizer/luma-club","dominio":"xceed.me","citta_default":"Barletta","curata":True,"nightlife":True,"xceed":True,"prefisso_schede":"/it/barletta/event/","robots_obbligatorio":True,"max_schede":8},
     {"nome":"Xceed Aphelion Club","url":"https://xceed.me/it/trani/venue/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Xceed Baia Nha","url":"https://xceed.me/it/trani/venue/baia-nha","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Tacco di Bacco Nightlife Cerignola","url":"https://iltaccodibacco.it/cerignola/nightlife/","dominio":"iltaccodibacco.it","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/puglia/eventi/","max_schede":14},
@@ -127,6 +131,7 @@ FONTI_PORTALI = [
     {"nome": "Tacco di Bacco BAT", "url": "https://iltaccodibacco.it/barletta/", "dominio": "iltaccodibacco.it", "citta_default": "", "curata": True},
     {"nome": "Tacco di Bacco Foggia", "url": "https://iltaccodibacco.it/foggia/", "dominio": "iltaccodibacco.it", "citta_default": "", "curata": True},
     {"nome": "BuzzEventMap Cerignola", "url": "https://buzzeventmap.com/eventi/foggia/cerignola", "dominio": "buzzeventmap.com", "citta_default": "Cerignola", "curata": True},
+    {"nome":"BuzzEventMap Trinitapoli e Reali Siti","url":"https://buzzeventmap.com/eventi/barletta-andria-trani/trinitapoli","dominio":"buzzeventmap.com","citta_default":"","curata":False,"prefisso_schede":"/event/","robots_obbligatorio":True,"max_schede":8},
     {"nome": "PaesiOnline Cerignola", "url": "https://www.paesionline.it/italia/eventi-cerignola", "dominio": "paesionline.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "2D2Web Sagre Feste Cerignola", "url": "https://www.2d2web.com/sagre-feste/cerignola", "dominio": "2d2web.com", "citta_default": "Cerignola", "curata": True},
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
@@ -2950,9 +2955,15 @@ def raccogli_da_portale_generico(session, fonte):
     dominio = fonte["dominio"]
     c_def = fonte.get("citta_default", "")
     curata = fonte.get("curata", True)
+    host_ammessi = {dominio.removeprefix("www.")} if fonte.get("robots_obbligatorio") else set()
 
     try:
-        r = session.get(url, timeout=(6, 10))
+        r = (fonti_editori.scheda_da_origini_note(session, url, host_ammessi)
+             if host_ammessi else session.get(url, timeout=(6, 10)))
+        if r is None:
+            registra_statistica_fonte(nome, stato="robots non consente o non verificabile",
+                                      linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
+            return []
         if r.status_code != 200:
             registra_statistica_fonte(
                 nome, stato=f"HTTP {r.status_code}", linkCandidati=0,
@@ -3053,8 +3064,9 @@ def raccogli_da_portale_generico(session, fonte):
             links.sort(key=data_scheda_ticketsms)
         for link in links[:int(fonte.get("max_schede", 12))]:
             try:
-                rp = session.get(link, timeout=(4, 7))
-                if rp.status_code != 200:
+                rp = (fonti_editori.scheda_da_origini_note(session, link, host_ammessi)
+                      if host_ammessi else session.get(link, timeout=(4, 7)))
+                if rp is None or rp.status_code != 200:
                     continue
                 scaricate += 1
                 rp.encoding = rp.apparent_encoding or "utf-8"
@@ -3603,12 +3615,6 @@ def esegui_aggiornamento():
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
-    eventi_apify = []
-    if os.path.isfile("apify-eventi.json"):
-        with open("apify-eventi.json", encoding="utf-8") as file_apify:
-            eventi_apify = json.load(file_apify)
-        nuovi_raccolti.extend(eventi_apify)
-        risultati_per_fonte["Apify calendario pubblico Cerignola"] = eventi_apify
     meta_report = {"stato": "non_configurato"}
     if os.path.isfile("meta-rapporto.json"):
         with open("meta-rapporto.json", encoding="utf-8") as file_rapporto:
@@ -3717,11 +3723,8 @@ def esegui_aggiornamento():
         "scartatiInformativiComunali": scartati_informativi_comunali,
         "meta": meta_report,
         "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
-        "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
-                           if any(sono_duplicati(e, f) for f in lista_finale)],
-        "apifyNuovi": [e["fonteUrl"] for e in eventi_apify
-                       if any(sono_duplicati(e, f) for f in lista_finale)
-                       and not any(sono_duplicati(e, p) for p in manuali_admin + precedenti_auto + editoriali_statici)],
+        "apifyIntegrati": [],
+        "apifyNuovi": [],
         "concordanzeFonti": concordanze,
         "eventiConcordanti": len(concordanze),
         "locandineInArchivio": sum(bool(e.get("locandinaUrl")) for e in lista_finale),
