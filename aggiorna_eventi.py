@@ -297,6 +297,16 @@ PAROLE_SCARTO = [
 
 REGEX_SCARTO = re.compile(r"\b(?:" + "|".join(re.escape(w) for w in PAROLE_SCARTO) + r")\b", re.I)
 
+
+def evento_informativo_comunale(titolo, url):
+    if not _host_appartiene(url, "comune.cerignola.fg.it") or not urlparse(url).path.startswith("/vivere-il-comune/eventi/"):
+        return False
+    return bool(re.match(
+        r"\s*(?:workshop\b.*\b(?:disinformazione|fake news|finanza)\b|"
+        r"(?:giornata|incontro)\s+informativ[oa]\b|laboratorio\s+di\s+europrogettazione\b)",
+        titolo, re.I,
+    ))
+
 ESCLUSIONI_PATH_VIVA = (
     "/cronaca/", "/politica/", "/sport/", "/necrologi/", "/meteo/",
     "/farmacie/", "/oroscopo/", "/redazione/", "/contatti/", "/pubblicita/",
@@ -1253,7 +1263,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
             return None
 
     testo_check = f"{titolo} {descrizione} {luogo}"
-    if REGEX_SCARTO.search(testo_check):
+    if REGEX_SCARTO.search(testo_check) or evento_informativo_comunale(titolo, url):
         return None
     if not fonte_curata_eventi and not REGEX_TEMA_COERENTE.search(testo_check):
         return None
@@ -3498,6 +3508,9 @@ def esegui_aggiornamento():
     telegram_state, telegram_report = telegram_eventi.collect(oggi_dt().date(), lambda raw: normalizza_e_valida_evento(raw, fonte_curata_eventi=False))
     manuali_admin = [e for e in manuali_admin if not e.get("telegramImportato")]
     precedenti_auto = [e for e in precedenti_auto if not e.get("telegramImportato")]
+    automatici_iniziali = len(precedenti_auto)
+    precedenti_auto = [e for e in precedenti_auto if not evento_informativo_comunale(e.get("titolo", ""), e.get("fonteUrl", ""))]
+    scartati_informativi_comunali = automatici_iniziali - len(precedenti_auto)
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
     editoriali_statici=apprendimento.editoriali()
@@ -3701,6 +3714,7 @@ def esegui_aggiornamento():
     _scrivi_json_atomico(percorso_stato,memoria)
     report = {
         "misureCiclo": qualita,
+        "scartatiInformativiComunali": scartati_informativi_comunali,
         "meta": meta_report,
         "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
         "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
