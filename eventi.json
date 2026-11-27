@@ -1,20 +1,5 @@
 [
   {
-    "locandinaUrl": "https://api-gw.ect.regione.puglia.it/t/turismo.puglia.local/vip-api/1.0.0/immagine/preview/30492",
-    "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Musica & Concerti",
-    "titolo": "Apulia Suona : Emozioni In Musica Contemporary Sound 2026",
-    "dataTesto": "Dal 08 Nov al 29 Nov 2026",
-    "dataInizio": "2026-11-08",
-    "dataFine": "2026-11-29",
-    "luogo": "AUDITORIUM GOS",
-    "indirizzoMappa": "AUDITORIUM GOS, VIALE MARCONI, 41/49, 76121, Barletta, BT",
-    "costo": "Ingresso gratuito",
-    "descrizione": "APULIA SUONA: CONCERTO MUSICALE A BARLETTA",
-    "fonteUrl": "https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788"
-  },
-  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337004_20261118_082336.jpg",
     "tipoContenuto": "evento",
     "citta": "Foggia",
@@ -251,21 +236,6 @@
     "costo": "15€",
     "descrizione": "🎶 SUR 🎶 Tra bolero, flamenco, canción latinoamericana, folklore e improvvisazione Dal calore del bolero all'energia del flamenco, passando per la canción latinoamericana e le sonorità della tradizione popolare, SUR è un",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/326867.html"
-  },
-  {
-    "locandinaUrl": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1077790911672868",
-    "tipoContenuto": "evento",
-    "citta": "Andria",
-    "categoria": "Musica & Concerti",
-    "titolo": "Bus Concerto Cremonini Bologna 27 e 28 Novembre 2026 Partenze dalla Puglia",
-    "dataTesto": "Sab 28 Nov 2026 · Ore 11:00",
-    "dataInizio": "2026-11-28",
-    "dataFine": "2026-11-28",
-    "luogo": "1 persona parteciperà · Via Ferrucci 45, 76123 Andria, Italy",
-    "indirizzoMappa": "1 persona parteciperà · Via Ferrucci 45, 76123 Andria, Italy, Via Ferrucci 45, 76123, Andria, BT",
-    "costo": "Gratuito",
-    "descrizione": "Organizziamo trasporto in bus per 2 date dei concerti evento di Cremonini a Bologna. Costo € 80 a persona. Info cel 3334856730 partenze: da Andria, Barletta, Bisceglie, Trani, Canosa di Puglia, Cerignola, Foggia.",
-    "fonteUrl": "https://buzzeventmap.com/event/d7273fb9-788d-430a-9c71-0bfa9056a687"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/classic-saturday-habibi-with-olive-f-sabato-28-novemvre-2026-barletta-xceed-square-6578.jpg?w=1920&h=1080&ar=16:9&fm=auto",

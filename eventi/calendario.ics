@@ -544,25 +544,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:barletta-2026-11-08-apulia-suona-emozioni-in-musica-contemporary-sound-
- 2026@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261108
-DTEND;VALUE=DATE:20261130
-SUMMARY:Apulia Suona : Emozioni In Musica Contemporary Sound 2026 – Barle
- tta
-LOCATION:AUDITORIUM GOS\, VIALE MARCONI\, 41/49\, 76121\, Barletta\, BT
-DESCRIPTION:Dal 08 Nov al 29 Nov 2026\nAPULIA SUONA: CONCERTO MUSICALE A BA
- RLETTA\nAccesso: Ingresso gratuito\nVerifica variazioni\, orari e fonte ne
- lla scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/ev
- enti/barletta-2026-11-08-apulia-suona-emozioni-in-musica-contemporary-soun
- d-2026.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
- tta-2026-11-08-apulia-suona-emozioni-in-musica-contemporary-sound-2026.htm
- l
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:foggia-2026-11-24-foggia-festival-sport-story-il-pallone-e-uguale-per-t
  utti@chesifacerignola
 DTSTAMP:20261127T000000Z
@@ -991,28 +972,6 @@ DESCRIPTION:Sab 28 Nov 2026\n🎶 SUR 🎶 Tra bolero\, flamenco\, canción
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
  glie-2026-11-28-bisceglie-sur-tra-bolero-flamenco-cancion-latinoamericana-
  folklore-e-improvvis.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:andria-2026-11-28-bus-concerto-cremonini-bologna-27-e-28-novembre-2026-
- partenze-dalla-puglia@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261128
-DTEND;VALUE=DATE:20261129
-SUMMARY:Bus Concerto Cremonini Bologna 27 e 28 Novembre 2026 Partenze dalla
-  Puglia – Andria
-LOCATION:1 persona parteciperà · Via Ferrucci 45\, 76123 Andria\, Italy\,
-  Via Ferrucci 45\, 76123\, Andria\, BT
-DESCRIPTION:Sab 28 Nov 2026 · Ore 11:00\nOrganizziamo trasporto in bus per
-  2 date dei concerti evento di Cremonini a Bologna. Costo € 80 a persona
- . Info cel 3334856730 partenze: da Andria\, Barletta\, Bisceglie\, Trani\,
-  Canosa di Puglia\, Cerignola\, Foggia.\nAccesso: Gratuito\nVerifica varia
- zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
- o/che-si-fa-cerignola/eventi/andria-2026-11-28-bus-concerto-cremonini-bolo
- gna-27-e-28-novembre-2026-partenze-dalla-puglia.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
- a-2026-11-28-bus-concerto-cremonini-bologna-27-e-28-novembre-2026-partenze
- -dalla-puglia.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
