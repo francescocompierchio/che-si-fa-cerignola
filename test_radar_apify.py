@@ -77,9 +77,9 @@ class TestRadar(unittest.TestCase):
         pricing = {"actorPermissionLevel":"LIMITED_PERMISSIONS", "pricingInfos":[{
             "startedAt":"2020-01-01T00:00:00Z", "pricingModel":"PAY_PER_EVENT",
             "minimalMaxTotalChargeUsd":None,
-            "pricingPerEvent":{"actorChargeEvents":{"page-crawled":{"eventPriceUsd":0.0012}}},
+            "pricingPerEvent":{"actorChargeEvents":{"http-page-extracted":{"eventPriceUsd":0.002}}},
         }]}
-        run = {"status":"SUCCEEDED", "defaultDatasetId":"test", "usageTotalUsd":0.0012}
+        run = {"status":"SUCCEEDED", "defaultDatasetId":"test", "usageTotalUsd":0.002}
         policy = Mock()
         policy.can_fetch.return_value = True
         with TemporaryDirectory() as folder, patch.dict("os.environ", {"APIFY_TOKEN":"fixture"}), patch.object(
@@ -94,11 +94,11 @@ class TestRadar(unittest.TestCase):
             self.assertEqual(api.call_count, 5)
             _, path, payload = api.call_args_list[3].args
             self.assertEqual(path, radar.ATTORE_CALENDARI + "/runs")
-            self.assertEqual(payload["startUrls"], [{"url":radar.AGENDA_CERIGNOLA}])
-            self.assertEqual(payload["renderJavaScript"], "never")
-            self.assertEqual(payload["proxyConfiguration"], {"useApifyProxy":False})
-            self.assertEqual(payload["maxRequestRetries"], 0)
-            self.assertTrue(payload["respectRobotsTxtFile"])
+            self.assertEqual(payload["sources"], [{"url":radar.AGENDA_CERIGNOLA, "scope":"page",
+                                                   "rightsBasis":"licensed", "rightsReference":radar.LICENZA_CERIGNOLA}])
+            self.assertEqual(payload["renderingMode"], "http")
+            self.assertEqual(payload["maxPages"], 1)
+            self.assertEqual(payload["maxDepth"], 0)
             self.assertEqual(api.call_args_list[3].kwargs["maxTotalChargeUsd"], 0.01)
 
     def test_calendario_scarta_pagine_non_pertinenti_e_reindirizzate(self):
@@ -116,6 +116,21 @@ class TestRadar(unittest.TestCase):
         self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1})
         self.assertEqual(eventi, [{"citta":"Cerignola","descrizione":"Serata · Fonte: Comune di Cerignola"}])
         self.assertEqual(engine.analizza_pagina_evento.call_count, 1)
+
+    def test_indice_apify_verifica_le_schede_dirette_solo_sul_comune(self):
+        engine = Mock()
+        session = Mock()
+        url = radar.AGENDA_CERIGNOLA + "festa-di-prova/"
+        response = engine.fonti_editori.scheda_da_origini_note.return_value
+        response.headers = {"Content-Type":"text/html; charset=UTF-8"}
+        response.url, response.status_code = url, 200
+        response.text = "<main>Evento comunale con descrizione, data e luogo.</main>"
+        engine.analizza_pagina_evento.return_value = []
+        rows = [{"record_type":"PAGE", "status":"SUCCESS", "source_url":radar.AGENDA_CERIGNOLA,
+                 "markdown":f"[Festa]({url}) [Riferimento]({url}) [Altro](https://example.org/evento)"}]
+        _, metrics = radar.leggi_indice_apify(rows, engine, session)
+        self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1,"schedeCandidate":1})
+        engine.fonti_editori.scheda_da_origini_note.assert_called_once_with(session, url, {"comune.cerignola.fg.it"})
 
     def test_diagnosi_actor_non_pubblica_il_log(self):
         session = MagicMock()
