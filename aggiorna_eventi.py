@@ -1413,37 +1413,31 @@ def ricontrolla_eventi_imminenti(eventi, massimo=10):
     visti = set()
     for ev in sorted(eventi, key=lambda e: (priorita_km(e.get("citta", "")), e.get("dataInizio", ""))):
         url = ev.get("fonteUrl", "")
-        if not (oggi <= ev.get("dataInizio", "") <= limite) or not _fonte_appartiene_a_raccolta_automatica(url):
+        citta = ev.get("citta", "")
+        giorno = ev.get("dataInizio", "")
+        if citta not in COMUNI_50KM.values() or not (oggi <= giorno <= limite) or not _fonte_appartiene_a_raccolta_automatica(url):
             continue
         if url in visti or _host_appartiene(url, "news.google.com") or _host_appartiene(url, "instagram.com") or _host_appartiene(url, "facebook.com"):
             continue
         visti.add(url)
-        candidati.append((ev.get("citta") == "Cerignola", url))
-    slot = int(time.time() // 1800)
-
-    def ruota(urls, budget):
-        if not urls or budget <= 0:
-            return []
-        partenza = (slot * budget) % len(urls)
-        return (urls[partenza:] + urls[:partenza])[:budget]
-
-    locali = [url for locale, url in candidati if locale]
-    altri = [url for locale, url in candidati if not locale]
-    base = max((massimo + 1) // 2, massimo - len(altri))
-    scelti = ruota(locali, base)
-    scelti += ruota(altri, massimo - len(scelti))
+        candidati.append((priorita_km(citta), giorno, url))
+    scelti = radar_territorio.scegli_schede_imminenti(candidati, massimo, int(time.time() // 1800))
+    per_fascia = {nome: {"selezionate": 0, "lette": 0} for nome in radar_territorio.FASCE}
     letti = 0
     with requests.Session() as session:
         session.headers.update(HEADERS)
-        for url in scelti:
+        for fascia, url in scelti:
+            dati_fascia = per_fascia[radar_territorio.FASCE[fascia]]
+            dati_fascia["selezionate"] += 1
             try:
                 r = session.get(url, timeout=(3, 5), allow_redirects=False)
                 if r.status_code == 200 and "html" in r.headers.get("Content-Type", "text/html").lower():
                     registra_stati_negativi(r.text, url)
                     letti += 1
+                    dati_fascia["lette"] += 1
             except requests.RequestException:
                 pass
-    return {"schedeSelezionate": len(scelti), "schedeLette": letti}
+    return {"schedeSelezionate": len(scelti), "schedeLette": letti, "perFascia": per_fascia}
 
 
 def immagine_evento_strutturata(evento, url):
@@ -3592,11 +3586,11 @@ def esegui_aggiornamento():
                 not any(sono_duplicati(e, x) for x in precedenti_auto) for e in approvati
             ))
     radar_territorio.aggiorna_registro(memoria, copertura_iniziale, approvati, oggi_stagionale, now)
-    # Budget separati: 3 ricerche locali ordinarie, al massimo 3 radar e 1 esplorazione.
-    fonti_adattive = (apprendimento.fonti(memoria,copertura_iniziale,oggi_stagionale)
+    copertura_ricerca = apprendimento.copertura_unita(copertura_iniziale, approvati, sono_duplicati)
+    ricerche_territoriali = radar_territorio.ricerche(memoria, copertura_ricerca, oggi_stagionale, priorita_km, comuni)
+    fonti_adattive = (ricerche_territoriali
                       + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
                       + apprendimento.esplora_candidati(memoria,oggi_stagionale)
-                      + radar_territorio.ricerche(memoria, copertura_iniziale + approvati, oggi_stagionale, priorita_km, comuni)
                       + fonti_editori.scegli(memoria, now, set(DOMINI_AUTO),
                                            (f["url"] for _, f in compiti if f.get("feed_editore"))))
     compiti += [(raccogli_da_feed_social, fonte) for fonte in fonti_adattive]
@@ -3714,6 +3708,12 @@ def esegui_aggiornamento():
     domini_candidati=apprendimento.candidati_fonti(memoria,scoperta,set(DOMINI_AUTO),now)
     nuovi_feed = fonti_editori.registrati(memoria, STATISTICHE_FONTI, now)
     territorio = radar_territorio.aggiorna_registro(memoria, copertura_visibile, approvati, oggi_stagionale, now)
+    piano_territoriale = radar_territorio.registra_ricerche(memoria, ricerche_territoriali, STATISTICHE_FONTI, now)
+    riferimenti = apprendimento.copertura_unita(manuali_admin + approvati, editoriali_statici, sono_duplicati)
+    visibili_con_approvati = apprendimento.copertura_unita(copertura_visibile, approvati, sono_duplicati)
+    fasce = radar_territorio.misura_fasce(visibili_con_approvati, nuovi_unici + precedenti_auto, riferimenti,
+                                        oggi_stagionale, comuni, priorita_km, sono_duplicati)
+    territorio["ultimaVerificaCopertura"] = {"timestamp": now, "fasce": fasce}
     fasce_apprese=sum(bool(d.get("fasce")) for d in memoria.get("fonti",{}).values())
     os.makedirs(".csf-state",exist_ok=True)
 
@@ -3727,6 +3727,11 @@ def esegui_aggiornamento():
     _scrivi_json_atomico(percorso_stato,memoria)
     report = {
         "misureCiclo": qualita,
+        "coperturaPerFascia": {
+            "orizzonteGiorni": 14, "fasce": fasce, "ricerche": piano_territoriale,
+            "approvatiFirebaseInclusi": len(approvati),
+            "campioneFirebaseRiletto": feedback.get("ultimoTentativo") == now and feedback.get("esito") == "ok",
+        },
         "scartatiInformativiComunali": scartati_informativi_comunali,
         "scartatiTrasportiPerSpettacoli": scartati_trasporti,
         "meta": meta_report,

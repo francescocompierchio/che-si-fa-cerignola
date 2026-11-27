@@ -10,11 +10,13 @@ from pathlib import Path
 from math import log, sqrt
 
 AREE = {
-    "Locali & Serate": ('("dj set" OR karaoke OR apericena)', '("serata latina" OR party OR "dinner show" OR "cena spettacolo" OR showman)', '("musica dal vivo" OR "live music" OR brunch)'),
+    "Locali & Serate": ('("dj set" OR discoteca OR karaoke OR apericena)', '("serata latina" OR party OR "dinner show" OR "cena spettacolo" OR "festa aperta al pubblico")', '("musica dal vivo" OR "live music" OR "aperitivo musicale" OR "serata a tema")'),
     "Musica & Concerti": ('(concerto OR "musica live" OR "cover band")', '(concerto OR "live music" OR festival)'),
-    "Sagre & Food": ('(sagra OR degustazione OR "cena a tema")', '(cenone OR menu OR "cena evento")'),
-    "Famiglie & Bambini": ('(bambini OR "laboratorio creativo" OR animazione)', '(mercatini OR "fattoria didattica" OR spettacolo)'),
+    "Sagre & Food": ('(sagra OR mercatino OR "street food" OR degustazione)', '(cenone OR "pranzo festivo" OR "cena a tema")'),
+    "Famiglie & Bambini": ('(bambini OR "laboratorio creativo" OR animazione)', '("fattoria didattica" OR "spettacolo per famiglie" OR "evento per bambini")'),
     "Natura & Escursioni": ('(escursione OR trekking OR "visita guidata")', '(passeggiata OR "attività all’aperto" OR "family day")'),
+    "Teatro & Spettacoli": ('(spettacolo OR teatro OR cabaret)', '("spettacolo serale" OR "teatro comico" OR musical)'),
+    "Attività diurne": ('("visita guidata" OR "attività ricreative" OR "workshop creativo")', '("giochi di società" OR "laboratorio creativo" OR "esperienza diurna")'),
 }
 
 def lacune(eventi,oggi):
@@ -43,14 +45,14 @@ def copertura_unita(archivio,editoriali,duplicati):
             out.append(e)
     return out
 
-def variante(memoria,area,cont):
+def variante(memoria,area,cont,prefisso="Apprendimento Cerignola - "):
     """Bilancia esplorazione periodica e rendimento osservato; mai solo volume."""
     varianti=AREE[area]
     n=len(varianti)
     if cont%3==0:
         return (cont//3)%n
     fonti=memoria.get("fonti",{})
-    dati=[fonti.get(f"Apprendimento Cerignola - {area} {i+1}",{}) for i in range(n)]
+    dati=[fonti.get(f"{prefisso}{area} {i+1}",{}) for i in range(n)]
     totale=sum(max(0,int(x.get("tentativi",0))) for x in dati)
     def valore(i):
         x=dati[i]
@@ -85,7 +87,9 @@ def profilo_temporale(prima,dati,now):
     b=profilo.setdefault(k,{"prove":0,"novita":0.0})
     # Media esponenziale con numerosità limitata, per adattarsi ai cambiamenti.
     b["prove"]=min(100,int(b.get("prove",0))+1)
-    b["novita"]=round(0.85*float(b.get("novita",0))+0.15*min(10,int(dati.get("novitaCerignola",0))+int(dati.get("nuoveSerateCerignola",0))),3)
+    nuove = int(dati.get("novitaUtili", dati.get("novitaCerignola", 0)))
+    serate = int(dati.get("nuoveSerate", dati.get("nuoveSerateCerignola", 0)))
+    b["novita"]=round(0.85*float(b.get("novita",0))+0.15*min(10,nuove+serate),3)
     return profilo
 
 def bonus_temporale(dati,now):
@@ -187,24 +191,6 @@ def esplora_candidati(memoria, oggi):
     host=candidati[cont%len(candidati)]
     q=f'site:{host} (Cerignola OR Foggia OR Barletta OR Trani OR Manfredonia OR Bisceglie) ("dj set" OR karaoke OR "dinner show" OR discoteca) when:21d'
     return [{"nome":"Esplorazione candidata "+host,"url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"focus_serate":True,"nightlife":True,"solo_scoperta":True,"max_schede_rss":2}]
-
-def fonti(memoria,eventi,oggi):
-    """Tre esplorazioni a ciclo: due movida e una per le altre aree a rotazione.
-    Query nuove non equivalgono a eventi: valgono sempre le verifiche esistenti."""
-    cont=memoria.get("apprendimento",{}).get("cicli",0)
-    carenze=lacune(eventi,oggi)
-    movida="Locali & Serate"
-    altre=sorted((a for a in AREE if a!=movida),key=lambda a:(carenze[a],a))
-    primo=variante(memoria,movida,cont)
-    # Due famiglie di query distinte per la movida, a budget invariato.
-    secondo=(primo+1+(cont%2))%len(AREE[movida])
-    area=altre[cont%len(altre)]
-    scelte=[(movida,primo),(movida,secondo),(area,variante(memoria,area,cont))]
-    out=[]
-    for area,indice in scelte:
-        q=f'Cerignola {AREE[area][indice]} when:30d'
-        out.append({"nome":f"Apprendimento Cerignola - {area} {indice+1}","url":"https://news.google.com/rss/search?"+urlencode({"q":q,"hl":"it","gl":"IT","ceid":"IT:it"}),"solo_cerignola":True,"prioritaria":True,"focus_serate":area==movida,"max_schede_rss":3})
-    return out
 
 def misura(risultati,precedenti,pubblicati,duplicati):
     """Premia novità finite realmente in archivio, non il numero grezzo di estrazioni.

@@ -8,27 +8,13 @@ import re
 
 import requests
 
+import apprendimento
+
 ENDPOINT_APPROVATI = "https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app/eventiManuali.json"
 CAMPIONI_FIREBASE = 40
 MAX_FIREBASE_BYTES = 96 * 1024
-COMUNI_MOVIDA = (
-    "Cerignola", "Stornara", "Stornarella", "Orta Nova", "San Ferdinando di Puglia",
-    "Canosa di Puglia", "Trinitapoli", "Margherita di Savoia", "Foggia",
-    "Barletta", "Trani", "Andria", "Manfredonia", "Bisceglie",
-)
-FORMATI = (
-    '("dj set" OR discoteca OR "opening party")',
-    '("cena spettacolo" OR "dinner show" OR apericena OR karaoke)',
-    '("musica dal vivo" OR "serata latina" OR "live music")',
-    '("festa con ingresso" OR "festa aperta al pubblico" OR "serata a tema")',
-)
-FORMATI_GIORNO = (
-    '(mercatino OR sagra OR "street food" OR degustazione)',
-    '(trekking OR "escursione guidata" OR passeggiata)',
-    '("laboratorio per bambini" OR "fattoria didattica" OR "attività per famiglie")',
-    '("visita guidata" OR "attività ricreative" OR "workshop creativo")',
-    '(concerto OR spettacolo OR cabaret)',
-)
+MOVIDA = "Locali & Serate"
+FASCE = ("Cerignola", "Entro 25 km", "Tra 25 e 50 km")
 
 
 def leggi_approvati(valida, oggi, session=requests):
@@ -139,39 +125,137 @@ def query(nome, termini, comune, *, movida=False):
     }
 
 
-def ricerche(memoria, eventi, oggi, priorita_km, comuni):
-    """Tre slot limitati guidati dalla copertura e dal rendimento storico."""
-    stato = memoria.get("territorio", {})
-    registro = stato.get("organizzatori", {})
-    ciclo = memoria.get("apprendimento", {}).get("cicli", 0)
+def eventi_nella_finestra(eventi, oggi, comuni):
+    inizio = oggi.isoformat()
     fine = (oggi + timedelta(days=14)).isoformat()
-    copertura = Counter(
-        (ev.get("citta"), ev.get("categoria")) for ev in eventi
-        if ev.get("dataInizio", "") <= fine and ev.get("dataFine", "") >= oggi.isoformat()
-    )
-    movida = "Locali & Serate"
-    parole = FORMATI[ciclo % len(FORMATI)]
-    # Alterna la prima cintura e i comuni principali, mantenendo la ricerca locale dedicata.
-    distanza = 1 if ciclo % 3 != 2 else 2
-    zona = [c for c in COMUNI_MOVIDA if c != "Cerignola" and priorita_km(c) == distanza]
-    territori = zona or list(COMUNI_MOVIDA[1:])
-    carente = min(territori, key=lambda c: (copertura[c, movida], (territori.index(c) - ciclo) % len(territori)))
-    ricerche = [query(f"Movida territoriale {carente} {ciclo % len(FORMATI) + 1}", f'"{carente}" {parole}', carente, movida=True)]
-    organizzatori = [v for v in registro.values() if v["categorie"].get(movida, 0) >= 2
-                     or any(f.get("presenteInEventoApprovato") for f in v["domini"].values())]
-    if organizzatori:
-        vicini = [v for v in organizzatori if v["citta"] == "Cerignola"] or organizzatori
-        scelto = vicini[ciclo % len(vicini)]
-        luogo, citta = scelto["luogo"], scelto["citta"]
-        ricerche.append(query(f"Ricerca locale {citta} / {luogo}", f'"{citta}" "{luogo}" {parole}', citta, movida=True))
-    categorie = ("Sagre & Food", "Natura & Escursioni", "Famiglie & Bambini", "Attività diurne", "Teatro & Spettacoli")
-    # Ruota anche i comuni minori del bacino e usa categorie con poca copertura.
-    candidati = sorted(c for c in comuni if priorita_km(c) == distanza)
-    if candidati:
-        comune = candidati[(ciclo // 2) % len(candidati)]
-        indice = min(range(len(categorie)), key=lambda i: (copertura[comune, categorie[i]], (i - ciclo) % len(categorie)))
-        ricerche.append(query(f"Svago territoriale {comune} {categorie[indice]}", f'"{comune}" {FORMATI_GIORNO[indice]}', comune))
-    return ricerche
+    return [
+        e for e in eventi if e.get("citta") in comuni and e.get("categoria") in apprendimento.AREE
+        and inizio <= (e.get("dataFine") or e.get("dataInizio") or "")
+        and "" < (e.get("dataInizio") or "") <= fine
+    ]
+
+
+def ricerche(memoria, eventi, oggi, priorita_km, comuni):
+    """Uguali categorie e regole di ricerca, con un massimo di 3, 2, 1 query."""
+    territorio = memoria.get("territorio", {})
+    ultimo = territorio.get("ultimeRicerche", {})
+    verifica = territorio.get("ultimaVerificaCopertura", {})
+    fasce_precedenti = verifica.get("fasce", {})
+    ciclo = int(memoria.get("apprendimento", {}).get("cicli", 0))
+    copertura = Counter((e["citta"], e["categoria"]) for e in eventi_nella_finestra(eventi, oggi, comuni))
+    altre = [categoria for categoria in apprendimento.AREE if categoria != MOVIDA]
+    comuni_per_fascia = {i: sorted(c for c in comuni if priorita_km(c) == i) for i in range(len(FASCE))}
+    slot = [(0, MOVIDA), (0, MOVIDA), (0, None), (1, MOVIDA), (1, None),
+            (2, None if ciclo % 3 == 2 else MOVIDA)]
+    fonti = []
+    for fascia, categoria in slot:
+        localita = comuni_per_fascia[fascia]
+        if not localita:
+            continue
+        if categoria is None:
+            riscontri = fasce_precedenti.get(FASCE[fascia], {}).get("categorie", {})
+            def priorita_categoria(area):
+                ultima = max(ultimo.get(c, {}).get(area, 0) for c in localita)
+                mancanti = riscontri.get(area, {}).get("senzaRiscontroAutomatico", 0)
+                return (ultima, -mancanti, sum(copertura[c, area] for c in localita),
+                        (altre.index(area) - ciclo) % len(altre))
+            categoria = min(altre, key=priorita_categoria)
+        comune = min(localita, key=lambda c: (ultimo.get(c, {}).get(categoria, 0),
+                                             copertura[c, categoria], (localita.index(c) - ciclo) % len(localita)))
+        prefisso = f"Apprendimento {comune} - "
+        variante = apprendimento.variante(memoria, categoria, ciclo, prefisso)
+        termini = apprendimento.AREE[categoria][variante]
+        nome = f"{prefisso}{categoria} {variante + 1}"
+        if any(f["nome"] == nome for f in fonti):
+            # Il secondo slot di Cerignola cerca anche le sedi ricorrenti o approvate.
+            luoghi = sorted({v["luogo"] for v in territorio.get("organizzatori", {}).values()
+                            if v["citta"] == comune and (v["categorie"].get(MOVIDA, 0) >= 2
+                            or any(d.get("presenteInEventoApprovato") for d in v["domini"].values()))})
+            if luoghi:
+                luogo = luoghi[ciclo % len(luoghi)]
+                nome = f"Ricerca locale {comune} / {luogo}"
+                termini = f'"{luogo}" {termini}'
+            else:
+                variante = (variante + 1 + ciclo % 2) % len(apprendimento.AREE[categoria])
+                nome = f"{prefisso}{categoria} {variante + 1}"
+                termini = apprendimento.AREE[categoria][variante]
+        fonte = query(nome, f'"{comune}" {termini}', comune, movida=categoria == MOVIDA)
+        fonti.append(dict(fonte, fascia_copertura=fascia, categoria_cercata=categoria))
+    return fonti
+
+
+def registra_ricerche(memoria, fonti, diagnostica, ora):
+    ultimo = memoria.setdefault("territorio", {}).setdefault("ultimeRicerche", {})
+    risultati = []
+    for fonte in fonti:
+        comune, categoria = fonte["comune_radar"], fonte["categoria_cercata"]
+        dati = diagnostica.get(fonte["nome"], {})
+        esito = dati.get("stato", "non_eseguita")
+        if esito not in ("pausa", "non_eseguita"):
+            ultimo.setdefault(comune, {})[categoria] = ora
+        risultati.append({"fascia": FASCE[fonte["fascia_copertura"]], "comune": comune,
+                          "categoria": categoria, "fonte": fonte["nome"], "esito": esito,
+                          "eventiEstratti": dati.get("eventiEstratti", 0)})
+    return risultati
+
+
+def misura_fasce(visibili, automatici, riferimenti, oggi, comuni, priorita_km, duplicati):
+    """Confronta il campione di riferimento con le schede automatiche dei prossimi 14 giorni."""
+    out = {
+        nome: {
+            "comuni": sum(priorita_km(c) == i for c in comuni),
+            "categorie": {
+                area: {"visibili": 0, "automatici": 0, "riferimenti": 0,
+                       "conRiscontroAutomatico": 0, "senzaRiscontroAutomatico": 0}
+                for area in apprendimento.AREE
+            },
+        }
+        for i, nome in enumerate(FASCE)
+    }
+
+    def cella(ev):
+        return out[FASCE[priorita_km(ev["citta"])]]["categorie"][ev["categoria"]]
+
+    def intervallo(ev):
+        inizio = ev["dataInizio"]
+        return ev["citta"], inizio, ev.get("dataFine") or inizio
+
+    for ev in eventi_nella_finestra(visibili, oggi, comuni):
+        cella(ev)["visibili"] += 1
+    indice = {}
+    for ev in eventi_nella_finestra(automatici, oggi, comuni):
+        schede = indice.setdefault(intervallo(ev), [])
+        if not any(duplicati(ev, e) for e in schede):
+            schede.append(ev)
+            cella(ev)["automatici"] += 1
+    for ev in eventi_nella_finestra(riferimenti, oggi, comuni):
+        info = cella(ev)
+        info["riferimenti"] += 1
+        schede = indice.get(intervallo(ev), ())
+        campo = "conRiscontroAutomatico" if any(duplicati(ev, e) for e in schede) else "senzaRiscontroAutomatico"
+        info[campo] += 1
+    return out
+
+
+def scegli_schede_imminenti(candidati, massimo, slot):
+    """Candidati come (fascia, data, URL), con rotazione fra schede dello stesso giorno."""
+    per_fascia = {i: [] for i in range(len(FASCE))}
+    for fascia, giorno, url in sorted(set(candidati)):
+        per_fascia[fascia].append((giorno, url))
+    ordinati = {}
+    for fascia, schede in per_fascia.items():
+        per_giorno = {}
+        for giorno, url in schede:
+            per_giorno.setdefault(giorno, []).append(url)
+        ordinati[fascia] = []
+        for giorno, urls in per_giorno.items():
+            inizio = slot % len(urls)
+            ordinati[fascia].extend((giorno, url) for url in urls[inizio:] + urls[:inizio])
+    quote = Counter((0, 1, 0, 2, 0, 1, 0, 2, 0, 1)[i % 10] for i in range(massimo))
+    scelti = [(fascia, url) for fascia, schede in ordinati.items() for _, url in schede[:quote[fascia]]]
+    eccedenza = [(giorno, fascia, url) for fascia, schede in ordinati.items() for giorno, url in schede[quote[fascia]:]]
+    scelti.extend((fascia, url) for _, fascia, url in sorted(eccedenza, key=lambda x: x[:2])[:massimo - len(scelti)])
+    return scelti
 
 
 def leggi_evento_editoriale(record, comuni, oggi):
