@@ -34,6 +34,7 @@ const assert = require("node:assert/strict");
     const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
     await page.locator("#quick-link").fill(source);
+    assert.equal(await page.evaluate(source=>CsfQuick.publicUrl(source),source),"https://www.instagram.com/reel/AbCd1234/");
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>window.segnalazioniTest.length===1);
     let first=await page.evaluate(()=>window.segnalazioniTest[0]);
@@ -90,6 +91,24 @@ const assert = require("node:assert/strict");
     assert.ok(sent.screenshot.startsWith("data:image/jpeg;base64,"));
     assert.ok(!sent.dataInizio&&!sent.citta);
     assert.ok(!JSON.stringify(sent).includes("prova.png"));
+    // Verifica il pannello admin con una bozza privata simulata: mai approvazione istantanea.
+    const adm=await browser.newPage({serviceWorkers:"block"});
+    adm.on("pageerror",e=>errors.push(e.message));
+    await adm.addInitScript(record=>{
+      window.firebase={initializeApp(){},auth:()=>({currentUser:{getIdToken:async()=>""},onAuthStateChanged:cb=>cb({uid:"test"}),signOut:async()=>{}}),database:()=>({ref:path=>({on:(event,cb)=>cb({val:()=>path==="segnalazioniDaApprovare"?{"rapida-test":record}:null,numChildren:()=>0})})})};
+    },first);
+    await adm.route("**/*",route=>route.request().url().startsWith("http://127.0.0.1:8765/")?route.continue():route.abort());
+    await adm.goto("http://127.0.0.1:8765/admin.html");
+    const card=adm.locator("#lista-segnalazioni .item-card").first();
+    await card.waitFor({state:"visible"});
+    assert.match(await card.textContent(),/Segnalazione rapida · da verificare/);
+    assert.equal(await card.getByRole("button",{name:"Approva subito"}).count(),0);
+    await card.getByRole("button",{name:"Rivedi e pubblica"}).click();
+    assert.equal(await adm.locator("#ev-citta").inputValue(),"");
+    assert.equal(await adm.locator("#ev-data-inizio").inputValue(),"");
+    assert.equal(await adm.locator("#ev-titolo").inputValue(),"");
+    assert.equal(await adm.locator("#ev-fonte").inputValue(),first.fonteUrl);
+    await adm.close();
     assert.deepEqual(errors, []);
     console.log("OK segnalazioni rapide: link solo, screenshot solo, share target con foto, bozza consumata e invio esplicito.");
   } finally {

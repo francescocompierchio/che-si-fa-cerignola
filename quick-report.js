@@ -3,11 +3,13 @@
  const MAX_DATA=240000, TYPES=["image/jpeg","image/png","image/webp"];
  function publicUrl(value){
   const v=String(value||"").trim();
-  const social=root.CsfExtras?.socialUrl?.(v);
+  const parser=typeof CsfExtras!=="undefined"?CsfExtras:root.CsfExtras;
+  const social=parser?.socialUrl?.(v);
   if(social)return social;
   try{
    const u=new URL(v);
    if(u.protocol!=="https:"||u.username||u.password||u.port||u.href.length>1800||!/^[a-z0-9.-]+\.[a-z]{2,63}$/i.test(u.hostname)||/\.(?:local|internal|localhost)$/i.test(u.hostname))return "";
+   if(/^(?:www\.|m\.)?instagram\.com$/i.test(u.hostname)&&/^\/share\/(?:(?:reel|p)\/)?[\w-]{3,80}\/?$/.test(u.pathname))return "https://www.instagram.com"+u.pathname;
    if(/(?:^|\.)(?:instagram\.com|facebook\.com|fb\.watch|t\.me)$/i.test(u.hostname))return "";
    u.hash="";return u.href;
   }catch(_){return "";}
