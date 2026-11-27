@@ -87,6 +87,10 @@
     }
 
     * { box-sizing: border-box; }
+    html, body { overscroll-behavior-y: none; }
+    #modal-segnala { overflow: hidden; overscroll-behavior: none; }
+    html:has(#modal-segnala.open) body { overflow: hidden; }
+    #modal-segnala .modal-box { overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; -webkit-overflow-scrolling: touch; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -843,7 +847,7 @@
       margin-bottom: 10px;
     }
 
-    #modal-segnala .modal-box { box-sizing:border-box; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); margin:auto; overscroll-behavior:contain; }
+    #modal-segnala .modal-box { box-sizing:border-box; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); margin:auto; overscroll-behavior:none; }
     #modal-segnala .modal-head { position:sticky; top:-18px; background:var(--card); z-index:2; padding:8px 0; }
     #modal-segnala .modal-close { min-height:44px; min-width:44px; }
     #modal-segnala .seg-intro { font-size:.83rem; color:var(--muted); line-height:1.4; margin:0 0 8px; }
@@ -1450,14 +1454,15 @@ html.csf-side-open{overflow:hidden}
       <div id="seg-scelta">
         <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Invio gratuito, pubblicazione dopo verifica.</p>
         <button type="button" class="btn btn-map seg-full" id="seg-gestore">Pubblica il mio evento</button>
-        <p class="seg-choice-note">Per gestori e organizzatori autorizzati. Richiesta promozionale oggi gratuita: carica la locandina o compila i dati.</p>
+        <p class="seg-choice-note">Sei il gestore o organizzi l’evento? Usa questa modalità per chiedere visibilità promozionale e fornire il contatto ufficiale. Basta la locandina e la conferma dei dati. Oggi è gratuita.</p>
         <button type="button" class="btn btn-soft seg-full" id="seg-social">Segnala un evento in pochi secondi</button>
-        <p class="seg-choice-note">Per chi ha scoperto un evento pubblico. Segnalazione editoriale gratuita, senza priorità o garanzia di pubblicazione.</p>
+        <p class="seg-choice-note">Solo per chi segnala spontaneamente eventi altrui: nessun diritto alla pubblicazione, priorità, promozione o gestione dell’evento. Le richieste commerciali vanno nella prima modalità.</p>
+        <p class="seg-intro">L’amministratore verifica eventuali usi commerciali impropri e decide liberamente quali eventi mettere in evidenza. La promozione professionale potrà diventare a pagamento; la segnalazione spontanea resterà gratuita.</p>
         <div class="seg-other"><button type="button" class="seg-link" id="seg-community">Parlane nella Community</button></div>
       </div>
       <form id="seg-rapida" hidden>
         <button type="button" class="seg-link" id="quick-indietro">‹ Indietro</button>
-        <p class="seg-intro">Hai visto un evento? Invia la locandina, uno screenshot oppure il link diretto all’annuncio pubblico. Se organizzi l’evento, usa la modalità gestore. La segnalazione non dà diritto a promozione o pubblicazione.</p>
+        <p class="seg-intro">Hai visto un evento? Invia la locandina, uno screenshot oppure il link diretto all’annuncio pubblico. Non usare questa modalità per promuovere un evento che organizzi o rappresenti. Non dà diritto a pubblicazione, promozione o priorità; l’amministratore può comunque scegliere eventi meritevoli.</p>
         <label class="quick-photo"><input type="file" id="quick-foto" accept="image/jpeg,image/png,image/webp" />📷 Scegli screenshot o locandina</label>
         <img id="quick-preview" class="quick-preview" alt="Anteprima dello screenshot scelto" hidden />
         <button type="button" class="seg-link" id="quick-remove" hidden>Rimuovi foto</button>
@@ -1478,25 +1483,27 @@ html.csf-side-open{overflow:hidden}
       <form id="form-segnalazione-pubblica" novalidate hidden>
         <button type="button" class="seg-link" id="seg-indietro">‹ Cambia modalità</button>
         <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
-        <div class="m-field">
+        <details class="m-field"><summary>Link all’annuncio (facoltativo)</summary>
           <label for="seg-fonte" id="seg-fonte-label">Link del post o del sito</label>
           <input type="url" id="seg-fonte" maxlength="1800" placeholder="https://www.instagram.com/..." />
-        </div>
+        </details>
         <details class="m-field" id="seg-social-testo" hidden>
           <summary>Compila dal testo del post</summary>
           <textarea id="seg-social-incolla" maxlength="10000" aria-label="Testo del post" placeholder="Incolla la descrizione dell’annuncio"></textarea>
           <button type="button" class="btn btn-soft" id="seg-social-applica">Usa i dati del testo</button>
         </details>
         <p id="seg-social-stato" role="status" aria-live="polite" hidden></p>
-        <details class="m-field" id="seg-poster-tools">
-          <summary>Hai una locandina? Compila dalla foto</summary>
+        <div class="m-field" id="seg-poster-tools">
+          <label class="btn btn-map seg-full" for="seg-poster-file">📷 Carica locandina e compila automaticamente</label>
           <p class="seg-intro">Scegli una foto JPG/PNG/WebP (fino a 32 MB): lettura e compressione automatiche sul dispositivo. La locandina compressa sarà allegata alla richiesta; controlla i dati e il contatto prima di inviare.</p>
-          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" />
-          <button type="button" class="btn btn-soft" id="seg-poster-read">Leggi locandina</button>
+          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" style="position:absolute;width:1px;height:1px;opacity:0" />
+          <button type="button" class="seg-link" id="seg-poster-read" hidden>Rileggi locandina</button>
           <p id="seg-poster-status" role="status" aria-live="polite"></p>
           <textarea id="seg-poster-text" aria-label="Testo estratto dalla locandina" hidden></textarea>
           <button type="button" class="btn btn-soft" id="seg-poster-apply" hidden>Usa testo e dati riconosciuti</button>
-        </details>
+        </div>
+        <p id="seg-dati-riepilogo" class="seg-intro" role="status" hidden></p>
+        <button type="button" class="seg-link" id="seg-dati-toggle" aria-expanded="false">Non ho una locandina · inserisci i dati</button>
         <select id="seg-tipo" hidden aria-hidden="true" tabindex="-1">
           <option value="Evento / Serata">Evento / Serata</option>
           <option value="Attività serale">Attività serale</option>
@@ -1504,6 +1511,7 @@ html.csf-side-open{overflow:hidden}
           <option value="Escursione / Esperienza">Escursione / Esperienza</option>
           <option value="Attività diurna">Attività diurna</option>
         </select>
+        <div id="seg-dati-evento" hidden>
         <div class="m-field">
           <label for="seg-titolo" id="lbl-seg-titolo">Nome dell'evento *</label>
           <input type="text" id="seg-titolo" required maxlength="150" placeholder="Es. Sabato con DJ Set" />
@@ -1514,7 +1522,7 @@ html.csf-side-open{overflow:hidden}
         </div>
         <div class="m-field">
           <label for="seg-citta">Comune *</label>
-          <input type="text" id="seg-citta" required maxlength="80" value="Cerignola" />
+          <input type="text" id="seg-citta" required maxlength="80" placeholder="Es. Cerignola" />
         </div>
         <div class="m-row">
           <div class="m-field">
@@ -1525,6 +1533,7 @@ html.csf-side-open{overflow:hidden}
             <label for="seg-ora" id="lbl-seg-ora">Orario *</label>
             <input type="text" id="seg-ora" required maxlength="40" placeholder="Es. 22:30" />
           </div>
+        </div>
         </div>
         <div class="m-field" id="seg-contatto-wrap">
           <label for="seg-contatto">Instagram o WhatsApp del locale *</label>
@@ -3061,6 +3070,19 @@ html.csf-side-open{overflow:hidden}
     const posterStatus=document.getElementById("seg-poster-status");
     const posterText=document.getElementById("seg-poster-text");
     const posterApply=document.getElementById("seg-poster-apply");
+    const segDatiBox=document.getElementById("seg-dati-evento"),segDatiToggle=document.getElementById("seg-dati-toggle"),segRiepilogo=document.getElementById("seg-dati-riepilogo");
+    const segEssential=["seg-titolo","seg-luogo","seg-citta","seg-data","seg-ora"];
+    function segShowFields(mode){
+      const ids=segEssential.filter(id=>!document.getElementById(id).value.trim()||(id==="seg-data"&&segDataInput.value<oggi));
+      segDatiBox.hidden=mode==="closed";
+      for(const id of segEssential){const el=document.getElementById(id);el.closest(".m-field").hidden=mode==="missing"&&!ids.includes(id);}
+      segDatiToggle.setAttribute("aria-expanded",String(!segDatiBox.hidden));
+      segDatiToggle.textContent=mode==="all"?"Riduci i campi":mode==="closed"&&!posterProfessionale?"Non ho una locandina · inserisci i dati":"Controlla o modifica tutti i dati";
+      const vals=segEssential.map(id=>document.getElementById(id).value.trim()).filter(Boolean);
+      segRiepilogo.hidden=!vals.length||mode==="all";
+      segRiepilogo.textContent=vals.length?"Dati rilevati: "+vals.join(" · ")+(ids.length?" — completa quelli mancanti.":" — verifica prima di inviare."):"";
+    }
+    segDatiToggle.addEventListener("click",()=>segShowFields(segDatiToggle.getAttribute("aria-expanded")==="true"?"closed":"all"));
     function caricaOCR(){
       if(window.Tesseract)return Promise.resolve(window.Tesseract);
       return new Promise((resolve,reject)=>{
@@ -3084,10 +3106,10 @@ html.csf-side-open{overflow:hidden}
         worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js",logger:m=>{if(m.status==="recognizing text")posterStatus.textContent="Lettura testo: "+Math.round(m.progress*100)+"%";}});
         const result=await worker.recognize(posterProfessionale);
         posterText.value=String(result.data.text||"").trim().slice(0,10000);
-        posterText.hidden=!posterText.value;posterApply.hidden=!posterText.value;
+        posterText.hidden=true;posterApply.hidden=true;
         if(posterText.value)applicaDatiSegnalazione(posterText.value,posterStatus);else posterStatus.textContent="Locandina allegata. Nessun testo riconosciuto: completa i dati manualmente.";
       }catch(error){posterStatus.textContent=posterProfessionale?"Locandina allegata; lettura non disponibile. Completa i dati manualmente.":"Foto non allegata: "+CsfQuick.imageError(error)+" Puoi scegliere un’altra foto."; }
-      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;posterFileInput.disabled=false;}
+      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;posterFileInput.disabled=false;posterRead.hidden=!posterProfessionale;segShowFields("missing");}
     });
     posterFileInput.addEventListener("change",()=>{posterCondiviso=null;posterProfessionale="";if(posterFileInput.files.length)posterRead.click();});
     function applicaDatiSegnalazione(testo,stato){
@@ -3099,9 +3121,10 @@ html.csf-side-open{overflow:hidden}
       ];
       for(const [id,valore] of campi){
         const campo=document.getElementById(id);
-        if(valore&&(!campo.value.trim()||(id==="seg-citta"&&!modalitaSocial&&campo.value==="Cerignola")))campo.value=valore;
+        if(valore&&!campo.value.trim())campo.value=valore;
       }
-      if(result.date&&result.date>=oggi&&(!segDataInput.value||(!modalitaSocial&&segDataInput.value===oggi)))segDataInput.value=result.date;
+      if(result.date&&result.date>=oggi&&!segDataInput.value)segDataInput.value=result.date;
+      segShowFields("missing");
       stato.hidden=false;
       stato.textContent=result.ambiguousDate||result.ambiguousTime
         ?"Il testo contiene più date o orari. Scegli quelli dell’evento e verifica i dati prima di inviare."
@@ -3268,8 +3291,7 @@ html.csf-side-open{overflow:hidden}
       if(social!==modalitaSocial){
         if(social&&segDataInput.value===oggi)segDataInput.value="";
         if(social&&segCitta.value==="Cerignola")segCitta.value="";
-        if(!social&&!segDataInput.value)segDataInput.value=oggi;
-        if(!social&&!segCitta.value)segCitta.value="Cerignola";
+
       }
       modalitaSocial=social;
       quickForm.hidden=true;segScelta.hidden=true;segForm.hidden=false;
@@ -3285,7 +3307,8 @@ html.csf-side-open{overflow:hidden}
       document.getElementById("seg-autorizzato").checked=false;
       document.getElementById("seg-istruzioni").textContent=social
         ?"Incolla il link all’annuncio. Puoi ricavare i dati dal testo o dalla locandina. La segnalazione sarà verificata prima della pubblicazione."
-        :"Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.";
+        :"Carica la locandina, conferma i dati riconosciuti e inserisci il contatto ufficiale. Ti chiediamo solo ciò che manca.";
+      segShowFields(posterProfessionale?"missing":"closed");
       modalSegnala.querySelector(".modal-box").scrollTop=0;
       document.getElementById("seg-indietro").focus({preventScroll:true});
     }
@@ -3330,7 +3353,6 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
       window.CsfMetrics?.action?.("csf_report_open");
-      if (!modalitaSocial&&!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
       segScelta.hidden=false;segForm.hidden=true;quickForm.hidden=true;
       document.getElementById("seg-autorizzato").checked=false;
@@ -3360,9 +3382,10 @@ html.csf-side-open{overflow:hidden}
       const add=(id,label,msg)=>{const f=document.getElementById(id);fieldError(f,msg);problems.push(label+": "+msg);};
       for(const [id,label,msg] of requiredFields)if(!document.getElementById(id).value.trim())add(id,label,msg);
       if(segDataInput.value&&segDataInput.value<oggi)add("seg-data","Data","La data è già trascorsa. Scegli oggi o una data futura.");
+      if(segCitta.value.trim()&&!validQuickCity(segCitta.value.trim()))add("seg-citta","Comune","Indica un comune entro 50 km da Cerignola.");
       for(const id of ["seg-fonte","seg-locandina"]){const f=document.getElementById(id);if(!f.closest("[hidden]")&&f.value.trim()&&!isSafeHttpUrl(f.value.trim())){if(id==="seg-locandina")document.getElementById("seg-altri-dati").open=true;add(id,id==="seg-fonte"?"Link annuncio":"Link locandina","Incolla un indirizzo HTTP o HTTPS valido oppure lascia il campo vuoto.");}}
       if(!document.getElementById("seg-autorizzato").checked)add("seg-autorizzato","Dichiarazione","Spunta la dichiarazione di autorizzazione prima di inviare.");
-      if(problems.length){reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
+      if(problems.length){segShowFields("all");reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
       const fonteVal=modalitaSocial?CsfExtras.socialUrl(segFonte.value):segFonte.value.trim();
       if(modalitaSocial&&!fonteVal){reportMessage(segEsito,"Il link non identifica un annuncio pubblico. Copia il link diretto al post.",true);return;}
       if(ocrInCorso){reportMessage(segEsito,"La lettura della locandina è ancora in corso. Attendi che termini, verifica i dati e riprova.",true);return;}
@@ -3417,7 +3440,7 @@ html.csf-side-open{overflow:hidden}
         try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
         reportMessage(segEsito,"");
         e.target.reset();posterCondiviso=null;posterProfessionale="";segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
-        document.getElementById("seg-citta").value = "Cerignola";
+        segShowFields("closed");
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
         alert("Richiesta professionale ricevuta gratuitamente. Pubblicazione e promozione sono soggette a verifica.");

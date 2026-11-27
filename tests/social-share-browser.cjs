@@ -164,6 +164,19 @@ const assert = require("node:assert/strict");
     await featured.check();assert.ok(await featured.isChecked());
     assert.equal(await adm.locator("#ev-fonte").inputValue(),first.fonteUrl);
     await adm.close();
+    // Il gestore vede prima il caricamento foto e poi soltanto i dati mancanti.
+    await page.locator("#quick-indietro").click();
+    await page.locator("#seg-gestore").click();
+    assert.ok(await page.locator("#seg-dati-evento").isHidden());
+    await page.evaluate(v=>window.testOCR=v,text);
+    await page.locator("#seg-poster-file").setInputFiles(photo);
+    await page.waitForFunction(()=>!document.querySelector("#seg-poster-file").disabled&&document.querySelector("#seg-dati-riepilogo").textContent.includes("DJ Set"));
+    assert.ok(await page.locator("#seg-titolo").isHidden());
+    assert.ok(await page.locator("#seg-contatto").isVisible());
+    assert.ok(await page.locator("#seg-dati-riepilogo").isVisible());
+    await page.locator("#seg-dati-toggle").click();
+    if(await page.locator("#seg-titolo").isHidden())await page.locator("#seg-dati-toggle").click();
+    assert.ok(await page.locator("#seg-titolo").isVisible());
     assert.deepEqual(errors, []);
     console.log("OK segnalazioni complete: OCR, dati mancanti, link non leggibile rifiutato, immagine allegata, link strutturato simulato, share target e anteprima admin.");
   } finally {
