@@ -588,7 +588,7 @@
 
             <div class="check-row">
               <input type="checkbox" id="ev-in-evidenza" checked />
-              <label for="ev-in-evidenza">★ Metti IN EVIDENZA in cima all'app</label>
+              <label for="ev-in-evidenza">★ Metti IN EVIDENZA in cima all'app (scelta amministratore)</label>
             </div>
 
             <div class="item-actions">
@@ -823,7 +823,7 @@
     }
     function notaCanale(seg,id){
       const s=segnaliSegnalazione(seg,id),note=document.createElement("p");note.className="item-meta";
-      const msgs=[s.channel==="editoriale"?"Editoriale · senza promozione":"Professionale dichiarato · identità da verificare"];
+      const msgs=[s.channel==="editoriale"?"Editoriale · ordinario, promuovibile solo per scelta admin":"Professionale dichiarato · identità da verificare"];
       if(s.duplicatePublished)msgs.push("Evento già presente tra i manuali: controlla prima di pubblicare.");
       if(s.duplicatePending)msgs.push("Possibile duplicato in coda.");
       if(s.recurring)msgs.push("Locale ricorrente: "+s.relatedDates+" altre date. Verifica eventuale uso commerciale; non è una prova.");
@@ -1038,7 +1038,7 @@
       document.getElementById("ev-fonte").value = ev.fonteUrl || "";
       mostraPosterAllegato(ev.locandinaUrl);document.getElementById("ev-locandina").value = posterAllegato?"":ev.locandinaUrl || "";
       const evidenza=document.getElementById("ev-in-evidenza");
-      evidenza.disabled=!!fromSegnalazioneId&&CsfQuick.channel(cacheSegnalazioni[fromSegnalazioneId]||ev)==="editoriale";
+      evidenza.disabled=false;
       evidenza.checked=fromSegnalazioneId?false:ev.inEvidenza!==false;
 
       document.getElementById("form-evento-title").textContent = editId ? "Modifica Contenuto" : "Approva Segnalazione";
@@ -1091,7 +1091,7 @@
           costo: document.getElementById("ev-costo").value.trim(),
           fonteUrl: document.getElementById("ev-fonte").value.trim(),
           locandinaUrl: document.getElementById("ev-locandina").value.trim()||posterAllegato,
-          inEvidenza: (!fromSegId||CsfQuick.channel(segOrigine)==="professionale-dichiarato") && document.getElementById("ev-in-evidenza").checked
+          inEvidenza: document.getElementById("ev-in-evidenza").checked
         };
 
         if (editId) {
