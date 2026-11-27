@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=3"></script>
+  <script src="quick-report.js?v=4"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -1465,7 +1465,7 @@ html.csf-side-open{overflow:hidden}
         <div class="m-field">
           <label for="quick-link">Oppure incolla il link diretto all’annuncio</label>
           <input id="quick-link" type="text" inputmode="url" autocomplete="off" maxlength="1800" placeholder="https://www.instagram.com/p/…" />
-          <p class="quick-share-help" id="quick-link-help" role="status">Per le Storie e i link di condivisione non diretti, allega anche lo screenshot.</p>
+          <p class="quick-share-help" id="quick-link-help" role="status">Le Storie possono scadere: lo screenshot è consigliato, non obbligatorio per un link diretto.</p>
         </div>
         <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
         <p class="quick-note">Invia solo annunci pubblici senza dati privati. Le immagini fino a 32 MB vengono ridimensionate e compresse automaticamente sul telefono. Le segnalazioni senza foto o link diretto non sono accettate.</p>
@@ -3158,9 +3158,8 @@ html.csf-side-open{overflow:hidden}
     let quickImage="",quickBusy=false,quickSending=false,quickSequence=0;
     function quickUpdate(){
       const source=CsfQuick.publicUrl(quickInput.value);
-      const valid=!!quickImage||!!(source&&!CsfQuick.requiresScreenshot(source));
       const help=document.getElementById("quick-link-help");
-      help.textContent=source&&CsfQuick.requiresScreenshot(source)?"Questo link potrebbe scadere o richiedere accesso: aggiungi lo screenshot.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Per le Storie e i link di condivisione non diretti, allega anche lo screenshot.";
+      help.textContent=source&&CsfQuick.requiresScreenshot(source)?"Link di condivisione non diretto: copia il link dell’annuncio o aggiungi uno screenshot.":source&&CsfQuick.isDirectStory(source)?"Puoi inviare questo link senza foto. La Storia può scadere o richiedere accesso: uno screenshot è consigliato.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Le Storie possono scadere: lo screenshot è consigliato, non obbligatorio per un link diretto.";
       quickSend.disabled=quickBusy||quickSending;
     }
     function quickClearPhoto(){
@@ -3206,7 +3205,7 @@ html.csf-side-open{overflow:hidden}
       try{
         await dbGlobal.ref("segnalazioniDaApprovare").push(item);
         try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
-        quickReset();reportMessage(quickStatus,"Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.");
+        quickReset();reportMessage(quickStatus,CsfQuick.isDirectStory(item.fonteUrl)&&!item.screenshot?"Link alla Storia ricevuto! Sarà verificato prima della pubblicazione. Se la Storia non sarà più accessibile, l’evento non potrà essere confermato dal solo link.":"Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.");
       }catch(err){reportMessage(quickStatus,CsfQuick.sendError(err,navigator.onLine!==false)+" Se usi WhatsApp, allega lì la foto.",true);quickWA.hidden=false;}
       finally{clearTimeout(timer);quickSending=false;quickUpdate();}
     });
