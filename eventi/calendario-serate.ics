@@ -235,8 +235,8 @@ DTSTAMP:20261127T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Golden – Opening Party at Vyon Club – Bisceglie
-LOCATION:Idol Club\, Bisceglie
-DESCRIPTION:Sab 28 Nov 2026 · Ore 22:00\nApertura del format Golden: consu
+LOCATION:Idol Club\, Via Copenaghen 2\, Bisceglie
+DESCRIPTION:Sab 28 Nov 2026 · Ore 23:00\nApertura del format Golden: consu
  lta la biglietteria per disponibilità\, prezzo e condizioni.\nAccesso: Ve
  rifica con organizzatore\nVerifica variazioni\, orari e fonte nella scheda
  .\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
@@ -369,27 +369,6 @@ DESCRIPTION:Sab 28 Nov 2026\nALAMAR SYMPHONIC CONCERT Un viaggio musicale a
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
  glie-2026-11-28-bisceglie-alamar-symphonic-concert-ana-carla-maza-l-orches
  tra-ico-della-magna-gre.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:bisceglie-2026-11-28-bisceglie-around-us-con-salome-le-chat-skizzo-inno
- cent-soul-e-white-soxx@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261128
-DTEND;VALUE=DATE:20261129
-SUMMARY:Bisceglie | Around Us con Salomé Le Chat\, Skizzo\, Innocent Soul 
- e White Soxx – Bisceglie
-LOCATION:Divinae Follie\, Viale Ponte Lama\, 3\, Bisceglie
-DESCRIPTION:Sab 28 Nov 2026 · Ore 23:00\nSabato 28 novembre 2026\, al Divi
- ne di Bisceglie\, si terrà il party “Around Us”\, evento musicale con
-  la partecipazione dell’ospite internazionale Salomé Le Chat. Per l’o
- ccasione\, il club si trasformerà anche in uno spazio\nAccesso: A pagamen
- to\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://francescoco
- mpierchio.github.io/che-si-fa-cerignola/eventi/bisceglie-2026-11-28-bisceg
- lie-around-us-con-salome-le-chat-skizzo-innocent-soul-e-white-soxx.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
- glie-2026-11-28-bisceglie-around-us-con-salome-le-chat-skizzo-innocent-sou
- l-e-white-soxx.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
