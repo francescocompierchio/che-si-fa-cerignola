@@ -84,22 +84,6 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:cerignola-2026-11-27-workshop-disinformazione-e-fake-news@chesifacerign
- ola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Workshop: Disinformazione e Fake news – Cerignola
-LOCATION:Biblioteca\, Cerignola
-DESCRIPTION:Ven 27 Nov 2026\ndal 27 Novembre 2026 alle 09:30 al 27 Novembre
-  2026 alle 12:00\nAccesso: Gratuito\nVerifica variazioni\, orari e fonte n
- ella scheda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/e
- venti/cerignola-2026-11-27-workshop-disinformazione-e-fake-news.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
- nola-2026-11-27-workshop-disinformazione-e-fake-news.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:cerignola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos@chesiface
  rignola
 DTSTAMP:20261127T000000Z

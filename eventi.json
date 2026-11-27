@@ -31,20 +31,6 @@
   },
   {
     "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Attività diurne",
-    "titolo": "Workshop: Disinformazione e Fake news",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Biblioteca",
-    "indirizzoMappa": "Biblioteca, Cerignola",
-    "costo": "Gratuito",
-    "descrizione": "dal 27 Novembre 2026 alle 09:30 al 27 Novembre 2026 alle 12:00",
-    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/workshop-disinformazione-e-fake-news/"
-  },
-  {
-    "tipoContenuto": "evento",
     "citta": "Trinitapoli",
     "categoria": "Sagre & Food",
     "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
