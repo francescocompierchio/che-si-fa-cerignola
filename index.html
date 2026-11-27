@@ -3182,13 +3182,13 @@ html.csf-side-open{overflow:hidden}
     }
     document.getElementById("quick-edit-draft").addEventListener("click",()=>{quickShowAll=!quickShowAll;showQuickDraft();});
     async function readQuickImage(image,seq){
-      let worker=null,timer;
+      let worker=null,timer,expired=false;
       try{
         const engine=await caricaOCR();
-        const work=async()=>{worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});if(seq!==quickSequence)throw Error("stale");return worker.recognize(image);};
-        const result=await Promise.race([work(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error("timeout")),45000);})]);
+        const work=async()=>{worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});if(expired||seq!==quickSequence){await worker.terminate();worker=null;throw Error("stale");}return worker.recognize(image);};
+        const result=await Promise.race([work(),new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;reject(Error("timeout"));},45000);})]);
         return CsfQuick.draft(result.data.text,getDataLocaleOggi(),quickCities);
-      }finally{clearTimeout(timer);if(worker)try{await worker.terminate();}catch(_){}}
+      }finally{expired=true;clearTimeout(timer);if(worker)try{await worker.terminate();}catch(_){}}
     }
     function quickUpdate(){
       const source=CsfQuick.publicUrl(quickInput.value);

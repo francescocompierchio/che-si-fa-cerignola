@@ -33,7 +33,7 @@ const assert = require("node:assert/strict");
     await page.locator("#quick-invia").click();
     assert.match(await page.locator("#quick-esito").textContent(),/Manca la prova/);
     const date = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
-    const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
+    const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30","Descrizione: Serata con musica dal vivo"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
     for(const invalid of ["Serata di prova a Cerignola", "https://www.instagram.com/locale/", "https://example.org/", "https://www.instagram.com/share/reel/AbCd1234/"]){
       await page.locator("#quick-link").fill(invalid);

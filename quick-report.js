@@ -30,15 +30,15 @@
  const fields=[["titolo","Nome dell’evento",150],["luogo","Locale o sede",200],["citta","Comune",80],["dataInizio","Data",10],["dataTesto","Orario",40],["descrizione","Descrizione",1000]];
  function clean(v,n){return typeof v==="string"?v.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g,"").trim().slice(0,n):"";}
  function draft(text,today,cities){
-  const p=root.CsfExtras.parsePoster(text), raw=p.text;
+  const p=CsfExtras.parsePoster(text), raw=p.text;
   const normalize=s=>s.toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-  const cityMatches=cities.filter(c=>new RegExp("(?:^|[^a-z])"+normalize(c).replace(/[.*+?^\${}()|[\]\\]/g,"\\ function payload(input,note,image,stamp){")+"(?:$|[^a-z])").test(normalize(raw)));
+  const cityMatches=cities.filter(c=>(" "+normalize(raw).replace(/[^a-z0-9]+/g," ")+" ").includes(" "+normalize(c).replace(/[^a-z0-9]+/g," ")+" "));
   const city= p.city&&cities.find(c=>normalize(c)===normalize(p.city))|| (cityMatches.length===1?cityMatches[0]:"");
   // Only propose title/venue on explicit labels; no guessed venue from an Instagram handle.
   const title=p.title||"", venue=p.venue||"";
   const time=p.time.replace(/^Ore /,"");
-  const description=lines.filter(x=>!/^(?:evento|titolo|nome dell.evento|locale|luogo|sede|comune|citt[àa]|data|ore|orario)\s*:/i.test(x)).join("\n");
+  const description=lines.filter(x=>!/^(?:evento|titolo|nome dell.evento|locale|luogo|sede|comune|citt[àa]|data|ore\b|orario\b|start\b|inizio\b)/i.test(x)).join("\n").replace(/^Descrizione:\s*/i,"");
   return {titolo:clean(title,150),luogo:clean(venue,200),citta:city||"",dataInizio:p.date>=today?p.date:"",dataTesto:time,descrizione:clean(description,1000),costo:clean(p.price,100)};
  }
  function missing(d,today,validCity=()=>true){
@@ -84,7 +84,8 @@
  async function resolveLink(value,fetcher=root.fetch.bind(root)){
   const source=publicUrl(value);
   if(!source)throw Error("link-invalido");
-  if(isDirectStory(source)||root.CsfExtras.socialUrl(source)||requiresScreenshot(source))throw Error("link-social");
+  if(requiresScreenshot(source))throw Error("link-indirect");
+  if(isDirectStory(source)||CsfExtras.socialUrl(source))throw Error("link-social");
   const u=trustedUrl(source);
   if(!u)throw Error("link-not-supported");
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
@@ -101,6 +102,7 @@
   }finally{clearTimeout(timer);}
  }
  function linkError(err){return ({
+  "link-indirect":"Il link di condivisione non identifica direttamente l’annuncio. Allega uno screenshot.",
   "link-social":"Instagram, Facebook o Telegram non consentono a questa app di leggere direttamente il contenuto del link. Allega lo screenshot: lo leggeremo automaticamente.",
   "link-not-supported":"La fonte non è ancora supportata per il recupero automatico. Allega uno screenshot.",
   "link-scaduto":"L’annuncio non è più disponibile. Allega uno screenshot se lo possiedi.",
