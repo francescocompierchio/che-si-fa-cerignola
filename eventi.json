@@ -238,6 +238,20 @@
     "fonteUrl": "https://xceed.me/it/barletta/event/classic-saturday-habibi-with-olive-f-sabato-28-novembre-2026/253326"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Golden - Opening Party at Vyon Club",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Idol Club",
+    "indirizzoMappa": "Idol Club, Bisceglie",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.",
+    "fonteUrl": "https://www.ticketsms.it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
+  },
+  {
     "locandinaUrl": "https://images.xceed.me/events/banners/habibi-2811-aphelion-club-trani-xceed-square-27bb.png?w=1920&h=1080&ar=16:9&fm=auto",
     "tipoContenuto": "evento",
     "citta": "Trani",
