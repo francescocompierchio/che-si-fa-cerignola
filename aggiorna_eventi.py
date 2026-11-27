@@ -2538,6 +2538,22 @@ def data_scheda_ticketsms(url):
     return _costruisci_data_sicura(giorno, mese, anno)
 
 
+def ticketsms_non_attivo(soup):
+    return any(re.search(r"\b(?:event[oa] (?:annullat[oa]|rimandat[oa]|riprogrammat[oa])|evento cancellato|event cancell?ed|event postponed)\b",
+                         el.get_text(" ", strip=True), re.I)
+               for el in soup.select("h1,h2,h3,h4,h5,[role=alert]"))
+
+
+def evento_ticketsms(titolo, url, citta, luogo, data, orario):
+    ev = normalizza_e_valida_evento({
+        "titolo": titolo, "citta": citta, "luogo": luogo, "indirizzoMappa": f"{luogo}, {citta}",
+        "dataInizio": data, "dataFine": data, "dataTesto": f"{formatta_data_italiano(data, data)} · Ore {orario}",
+        "descrizione": "Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.",
+        "costo": "Consulta la biglietteria", "fonteUrl": url,
+    }, fonte_curata_eventi=True)
+    return [dict(ev, categoria="Locali & Serate")] if ev and not evento_non_attivo(ev) else []
+
+
 def analizza_ticketsms(html_text, url, citta, luogo):
     """Solo schede TicketSms di club noto: data del permalink e data visibile concordanti."""
     if not _host_appartiene(url, "ticketsms.it"):
@@ -2549,13 +2565,9 @@ def analizza_ticketsms(html_text, url, citta, luogo):
     if registra_stati_negativi(html_text, url):
         return []
     h1 = soup.find("h1")
-    if not h1:
+    if not h1 or ticketsms_non_attivo(soup):
         return []
     titolo = h1.get_text(" ", strip=True)
-    if any(re.search(r"\b(?:event[oa] annullat[oa]|evento cancellato|event cancelled|event canceled)\b",
-                     el.get_text(" ", strip=True), re.I)
-           for el in soup.select("h1,h2,h3,h4,h5,[role=alert]")):
-        return []
     testo = soup.get_text(" ", strip=True)
     mesi = "|".join(MESI_IT)
     data_testo = re.search(rf"\b(\d{{1,2}})\s+({mesi})\s+(20\d{{2}})\s*/\s*([01]\d|2[0-3]):([0-5]\d)\b", testo, re.I)
@@ -2563,12 +2575,32 @@ def analizza_ticketsms(html_text, url, citta, luogo):
         return []
     if not re.search(rf"{re.escape(luogo)}\s*/\s*{re.escape(citta)}\b", testo, re.I):
         return []
-    data = dt.strftime("%Y-%m-%d")
-    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{luogo}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+" · Ore "+data_testo.group(4)+":"+data_testo.group(5), "descrizione":"Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.", "costo":"Consulta la biglietteria", "fonteUrl":url}, fonte_curata_eventi=True)
-    if not ev:
+    return evento_ticketsms(titolo, url, citta, luogo, dt.strftime("%Y-%m-%d"), f"{data_testo[4]}:{data_testo[5]}")
+
+
+def analizza_card_ticketsms(soup, calendario, url, citta, luogo):
+    """Incrocia le due parti della card pubblica dello stesso permalink."""
+    dt = data_scheda_ticketsms(url)
+    if not dt or dt.strftime("%Y-%m-%d") < oggi_iso() or not _host_appartiene(url, "ticketsms.it"):
         return []
-    ev["categoria"] = "Locali & Serate"
-    return [ev]
+    chiave = chiave_stato_evento(url, dt.strftime("%Y-%m-%d"))
+    parti = [a for a in soup.select("a[href]") if
+             chiave_stato_evento(urljoin(calendario, a["href"]), dt.strftime("%Y-%m-%d")) == chiave]
+    mesi = "|".join(MESI_IT)
+    suffisso = f" - {citta} - {luogo} - {dt:%d/%m/%Y} - TicketSms".casefold()
+    for link in parti:
+        titolo_card = link.find("h5")
+        if not titolo_card or ticketsms_non_attivo(link):
+            continue
+        titolo = titolo_card.get_text(" ", strip=True)
+        if not any(a.get("title", "").strip().casefold() == titolo.casefold() + suffisso for a in parti):
+            continue
+        if not any(t.casefold() == luogo.casefold() for t in link.stripped_strings):
+            continue
+        data_card = re.search(rf"\b(\d{{1,2}})\s+({mesi})\s*/\s*([01]\d|2[0-3]):([0-5]\d)\b", link.get_text(" ", strip=True), re.I)
+        if data_card and (int(data_card[1]), MESI_IT[data_card[2].lower()]) == (dt.day, dt.month):
+            return evento_ticketsms(titolo, url, citta, luogo, dt.strftime("%Y-%m-%d"), f"{data_card[3]}:{data_card[4]}")
+    return []
 
 
 def analizza_nightz(html_text, url):
@@ -3006,6 +3038,7 @@ def raccogli_da_portale_generico(session, fonte):
         scaricate = 0
         diagnostica = []
         rendering_schede = Counter()
+        eventi_da_calendario = 0
         if fonte.get("ticketsms"):
             links.sort(key=data_scheda_ticketsms)
         for link in links[:int(fonte.get("max_schede", 12))]:
@@ -3028,6 +3061,10 @@ def raccogli_da_portale_generico(session, fonte):
                         rendering_schede[esito] += 1
                         if html_scheda:
                             estratti = analizza_ticketsms(html_scheda, link, c_def, fonte["luogo_atteso"])
+                        if (esito == "nessuna scheda dopo rendering"
+                            and not ticketsms_non_attivo(BeautifulSoup(rp.text + html_scheda, "html.parser"))):
+                            estratti = analizza_card_ticketsms(soup, url, link, c_def, fonte["luogo_atteso"])
+                            eventi_da_calendario += len(estratti)
                 elif fonte.get("xceed"):
                     if registra_stati_negativi(rp.text, link):
                         continue
@@ -3075,7 +3112,8 @@ def raccogli_da_portale_generico(session, fonte):
         registra_statistica_fonte(
             nome, stato="ok", linkCandidati=len(links),
             pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica,
-            renderingSchede=dict(rendering_schede)
+            renderingSchede=dict(rendering_schede),
+            **({"eventiDaCalendario": eventi_da_calendario} if fonte.get("ticketsms") else {})
         )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:

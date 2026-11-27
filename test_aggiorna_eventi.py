@@ -160,6 +160,36 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(eventi[0]["luogo"], "Idol Club")
         self.assertIn("23:00", eventi[0]["dataTesto"])
 
+    def test_ticketsms_usa_la_card_solo_se_data_sede_e_titolo_concordano(self):
+        fonte = next(f for f in crawler.FONTI_PORTALI if f.get("ticketsms"))
+        percorso = "/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
+        titolo = "Golden - Opening Party at Vyon Club"
+        card = (
+            f'<a href="{percorso}" title="{titolo} - BISCEGLIE - IDOL CLUB - 28/11/2026 - TicketSms">'
+            '<img alt="Golden al Vyon Club"></a>'
+            f'<a href="{percorso}"><div>sabato 28 novembre / 23:00</div><h5>{titolo}</h5><div>IDOL CLUB</div></a>'
+        )
+        session = Mock()
+        shell = "<title>TicketSms</title><div id='root'></div>"
+        session.get.return_value = SimpleNamespace(status_code=200, text=shell, apparent_encoding="utf-8")
+        with patch.object(crawler, "oggi_dt", return_value=crawler.datetime(2026, 11, 27, 12)):
+            casi = [
+                (card, shell, "nessuna scheda dopo rendering", 1),
+                (card.replace("28 novembre", "29 novembre"), shell, "nessuna scheda dopo rendering", 0),
+                (card.replace("BISCEGLIE", "TRANI"), shell, "nessuna scheda dopo rendering", 0),
+                (card, "<h2>Evento annullato</h2>", "nessuna scheda dopo rendering", 0),
+                (card, "", "blocco esplicito", 0),
+            ]
+            for elenco, dettaglio, esito, attesi in casi:
+                with self.subTest(esito=esito, dettaglio=dettaglio, elenco=elenco), patch.object(
+                    crawler, "render_calendario_pubblico", side_effect=[(elenco, "ok"), (dettaglio, esito)]
+                ):
+                    eventi = crawler.raccogli_da_portale_generico(session, fonte)
+                    self.assertEqual(len(eventi), attesi)
+                    if eventi:
+                        self.assertEqual(eventi[0]["titolo"], titolo)
+                        self.assertIn("23:00", eventi[0]["dataTesto"])
+
     def test_sede_riservata_non_attribuita_a_comune(self):
         self.assertTrue(crawler.evento_sede_riservata({"titolo":"ECHOES Opening Winter Season with Stefano Andriezzi","dataInizio":"2026-11-28"}))
         self.assertFalse(crawler.evento_sede_riservata({"titolo":"Habibi","dataInizio":"2026-11-28"}))
