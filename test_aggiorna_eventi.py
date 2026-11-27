@@ -9,6 +9,16 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_partenza_locale_non_attribuisce_un_concerto_al_comune(self):
+        day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
+        raw = {"dataInizio":day, "dataFine":day, "luogo":"Piazza Catuma",
+               "citta":"Andria", "descrizione":"Appuntamento per un concerto di musica pop.",
+               "fonteUrl":"https://buzzeventmap.com/event/trasferta-di-prova"}
+        self.assertIsNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Bus Concerto Cremonini Bologna – Partenze dalla Puglia"), fonte_curata_eventi=True))
+        self.assertIsNotNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Concerto di musica pop in piazza"), fonte_curata_eventi=True))
+
     def test_agenda_scartati_i_workshop_informativi_e_ammessi_quelli_ricreativi(self):
         day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
         raw = {"dataInizio":day, "dataFine":day, "luogo":"Biblioteca di Comunità",

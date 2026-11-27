@@ -301,6 +301,9 @@ PAROLE_SCARTO = [
 ]
 
 REGEX_SCARTO = re.compile(r"\b(?:" + "|".join(re.escape(w) for w in PAROLE_SCARTO) + r")\b", re.I)
+TITOLO_TRASPORTO_SPETTACOLO = re.compile(
+    r"^\s*(?:bus|pullman|navetta)\s+(?:(?:per|al|alla)\s+)?(?:(?:il|lo|la)\s+)?(?:concerto|festival|spettacolo)\b", re.I
+)
 
 
 def evento_informativo_comunale(titolo, url):
@@ -1268,7 +1271,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
             return None
 
     testo_check = f"{titolo} {descrizione} {luogo}"
-    if REGEX_SCARTO.search(testo_check) or evento_informativo_comunale(titolo, url):
+    if REGEX_SCARTO.search(testo_check) or TITOLO_TRASPORTO_SPETTACOLO.match(titolo) or evento_informativo_comunale(titolo, url):
         return None
     if not fonte_curata_eventi and not REGEX_TEMA_COERENTE.search(testo_check):
         return None
@@ -3523,6 +3526,9 @@ def esegui_aggiornamento():
     automatici_iniziali = len(precedenti_auto)
     precedenti_auto = [e for e in precedenti_auto if not evento_informativo_comunale(e.get("titolo", ""), e.get("fonteUrl", ""))]
     scartati_informativi_comunali = automatici_iniziali - len(precedenti_auto)
+    automatici_iniziali = len(precedenti_auto)
+    precedenti_auto = [e for e in precedenti_auto if not TITOLO_TRASPORTO_SPETTACOLO.match(e.get("titolo") or "")]
+    scartati_trasporti = automatici_iniziali - len(precedenti_auto)
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
     editoriali_statici=apprendimento.editoriali()
@@ -3721,6 +3727,7 @@ def esegui_aggiornamento():
     report = {
         "misureCiclo": qualita,
         "scartatiInformativiComunali": scartati_informativi_comunali,
+        "scartatiTrasportiPerSpettacoli": scartati_trasporti,
         "meta": meta_report,
         "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
         "apifyIntegrati": [],
