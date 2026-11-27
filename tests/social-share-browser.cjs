@@ -33,6 +33,11 @@ const assert = require("node:assert/strict");
     const date = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
     const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
+    for(const invalid of ["Serata di prova a Cerignola", "https://www.instagram.com/locale/", "https://example.org/", "https://www.instagram.com/stories/locale/123456789/"]){
+      await page.locator("#quick-link").fill(invalid);
+      assert.ok(await page.locator("#quick-invia").isDisabled(),invalid);
+      assert.equal(await page.evaluate(v=>CsfQuick.payload(v,"nota","","2026-11-27"),invalid),null);
+    }
     await page.locator("#quick-link").fill(source);
     assert.equal(await page.evaluate(source=>CsfQuick.publicUrl(source),source),"https://www.instagram.com/reel/AbCd1234/");
     await page.locator("#quick-invia").click();
@@ -53,7 +58,7 @@ const assert = require("node:assert/strict");
     assert.ok(!second.dataInizio&&!second.citta);
     await Promise.all([
       page.waitForNavigation(),
-      page.evaluate(({source,text}) => {
+      page.evaluate(async ({source,text}) => {
         const form = document.createElement("form");
         form.method = "post";
         form.enctype = "multipart/form-data";
@@ -68,8 +73,15 @@ const assert = require("node:assert/strict");
         attachment.type = "file";
         attachment.name = "foto";
         const transfer = new DataTransfer();
-        const bytes = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAQElEQVR4nGP8//8/Ay0BE01NHxYWsCBzJNwXU8XQFztj4eyhH0SjFoxaMGrBqAWjFoxaMGrBCLGAcbRtOuAWAAB5ywk7zawkfQAAAABJRU5ErkJggg=="), c => c.charCodeAt(0));
-        transfer.items.add(new File([bytes], "prova.png", {type:"image/png"}));
+        // PNG fotografico reale sopra il vecchio limite di 8 MiB.
+        const canvas=document.createElement("canvas");canvas.width=2048;canvas.height=2048;
+        const ctx=canvas.getContext("2d");const im=ctx.createImageData(2048,2048);
+        let seed=123456;
+        for(let i=0;i<im.data.length;i+=4){for(let j=0;j<3;j++){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;im.data[i+j]=seed&255;}im.data[i+3]=255;}
+        ctx.putImageData(im,0,0);
+        const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
+        if(blob.size<=8*1024*1024||blob.size>32*1024*1024)throw Error("Dimensione PNG test "+blob.size);
+        transfer.items.add(new File([blob], "prova.png", {type:"image/png"}));
         attachment.files = transfer.files;
         form.append(attachment);
         document.body.append(form);
@@ -89,6 +101,8 @@ const assert = require("node:assert/strict");
     assert.equal(sent.tipoSegnalazione,"Segnalazione rapida");
     assert.equal(sent.fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
     assert.ok(sent.screenshot.startsWith("data:image/jpeg;base64,"));
+    assert.ok(sent.screenshot.length<=240000);
+    assert.equal(sent.descrizione,"");
     assert.ok(!sent.dataInizio&&!sent.citta);
     assert.ok(!JSON.stringify(sent).includes("prova.png"));
     // Verifica il pannello admin con una bozza privata simulata: mai approvazione istantanea.
