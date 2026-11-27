@@ -103,6 +103,21 @@
     "fonteUrl": "https://www.andriaviva.it/notizie/istituto-comprensivo-verdi-cafaro-di-andria-concerto-fiori-d-inverno/"
   },
   {
+    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/f367d777aa9183ab24e7830a05dc948e13734118-1600x900.png?w=1200&h=630&fit=crop&q=80",
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Sapori e Musica – Saxmoods Live | Quota 7",
+    "dataTesto": "Ven 27 Nov 2026 · Ore 21:00",
+    "dataInizio": "2026-11-27",
+    "dataFine": "2026-11-27",
+    "luogo": "Quota 7",
+    "indirizzoMappa": "Quota 7, Lungomare Nazario Sauro, 14/C, 71043 Manfredonia (FG), FG",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Venerdì 27 novembre 2026, Quota7 – Ristobistrò Cocktail & Dreams, sul Lungomare Nazario Sauro di Manfredonia, propone un nuovo appuntamento con Sapori e Musica, il format che unisce il piacere della buona tavola alla mus",
+    "fonteUrl": "https://www.manfredoniaeventi.com/evento/sapori-e-musica-saxmoods-live-quota-7-manfredonia-27-novembre-2026/"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336732_20261115_182257.jpg",
     "tipoContenuto": "evento",
     "citta": "Trani",
@@ -931,6 +946,21 @@
     "costo": "Consulta l’organizzatore",
     "descrizione": "Itinerario archeologico organizzato da Daunia TuR APS con degustazione finale. Posti limitati, prenotazione obbligatoria. Confermare ritrovo e orario con l’organizzatore: 0884 660558.",
     "fonteUrl": "https://www.csvfoggia.it/capitanata-escursioni-con-daunia-tur-aps/"
+  },
+  {
+    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/c46077385db521eca45b9ce479edbba682bdc885-1600x900.png?w=1200&h=630&fit=crop&q=80",
+    "tipoContenuto": "evento",
+    "citta": "Troia",
+    "categoria": "Locali & Serate",
+    "titolo": "Christmas Party 2026 – Caribe Dance Academy & Universo Manfredonia",
+    "dataTesto": "Sab 19 Dic 2026 · Ore 21:00",
+    "dataInizio": "2026-12-19",
+    "dataFine": "2026-12-19",
+    "luogo": "Il cielo in una stanza",
+    "indirizzoMappa": "Il cielo in una stanza, Località Conte di Troia, 71043 Manfredonia FG, Manfredonia, FG",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Sabato 19 dicembre 2026, a partire dalle ore 20:30, Il Cielo in una Stanza, in località Conte di Troia a Manfredonia, ospita il Christmas Party 2026, organizzato da Caribe Dance Academy e ASD Universo Manfredonia. Una se",
+    "fonteUrl": "https://www.manfredoniaeventi.com/evento/christmas-party-2026-caribe-dance-academy-universo-manfredonia-manfredonia-19-dicembre-2026/"
   },
   {
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/8b2046e7a2723a8127b3ec9bf5741654ac36330d-1672x941.png?w=1200&h=630&fit=crop&q=80",

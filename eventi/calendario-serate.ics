@@ -192,6 +192,26 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:manfredonia-2026-11-27-sapori-e-musica-saxmoods-live-quota-7@chesifacer
+ ignola
+DTSTAMP:20261127T000000Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+SUMMARY:Sapori e Musica – Saxmoods Live | Quota 7 – Manfredonia
+LOCATION:Quota 7\, Lungomare Nazario Sauro\, 14/C\, 71043 Manfredonia (FG)\
+ , FG
+DESCRIPTION:Ven 27 Nov 2026 · Ore 21:00\nVenerdì 27 novembre 2026\, Quota
+ 7 – Ristobistrò Cocktail & Dreams\, sul Lungomare Nazario Sauro di Manf
+ redonia\, propone un nuovo appuntamento con Sapori e Musica\, il format ch
+ e unisce il piacere della buona tavola alla mus\nAccesso: Non specificato 
+ nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://fr
+ ancescocompierchio.github.io/che-si-fa-cerignola/eventi/manfredonia-2026-1
+ 1-27-sapori-e-musica-saxmoods-live-quota-7.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
+ edonia-2026-11-27-sapori-e-musica-saxmoods-live-quota-7.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:trani-2026-11-27-trani-impromptu-jazz-quartet-live-feel-the-music-festi
  val@chesifacerignola
 DTSTAMP:20261127T000000Z
@@ -592,6 +612,28 @@ DESCRIPTION:Ven 18 Dic 2026\nSerata in club pubblicata sul calendario Xceed
  etta-2026-12-18-habibi-with-benja.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
  tta-2026-12-18-habibi-with-benja.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:troia-2026-12-19-christmas-party-2026-caribe-dance-academy-universo-man
+ fredonia@chesifacerignola
+DTSTAMP:20261127T000000Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:Christmas Party 2026 – Caribe Dance Academy & Universo Manfredoni
+ a – Troia
+LOCATION:Il cielo in una stanza\, Località Conte di Troia\, 71043 Manfredo
+ nia FG\, Manfredonia\, FG
+DESCRIPTION:Sab 19 Dic 2026 · Ore 21:00\nSabato 19 dicembre 2026\, a parti
+ re dalle ore 20:30\, Il Cielo in una Stanza\, in località Conte di Troia 
+ a Manfredonia\, ospita il Christmas Party 2026\, organizzato da Caribe Dan
+ ce Academy e ASD Universo Manfredonia. Una se\nAccesso: Non specificato ne
+ lla fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://fran
+ cescocompierchio.github.io/che-si-fa-cerignola/eventi/troia-2026-12-19-chr
+ istmas-party-2026-caribe-dance-academy-universo-manfredonia.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/troia
+ -2026-12-19-christmas-party-2026-caribe-dance-academy-universo-manfredonia
+ .html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
