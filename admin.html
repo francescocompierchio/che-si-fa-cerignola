@@ -582,6 +582,7 @@
             <div class="field">
               <label for="ev-locandina">URL immagine locandina (opzionale)</label>
               <input type="url" id="ev-locandina" placeholder="https://..." />
+              <div id="ev-locandina-allegata" hidden><p>Foto allegata: sarà resa pubblica con l’evento. Verifica che sia pertinente e priva di dati privati.</p><img id="ev-locandina-preview" alt="Locandina da approvare" style="max-width:100%;max-height:360px;object-fit:contain" /><button type="button" class="btn btn-sm" id="ev-locandina-rimuovi">Rimuovi foto allegata</button></div>
               <small>Incolla il link diretto dell'immagine locandina (.jpg, .png, .webp) se vuoi mostrarla nella scheda.</small>
             </div>
 
@@ -659,7 +660,7 @@
 
   <!-- Firebase SDK -->
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=4"></script>
+  <script src="quick-report.js?v=5"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -946,8 +947,8 @@
 
     function renderRapida(box,id,seg){
       const div=document.createElement("div");div.className="item-card";
-      const title=document.createElement("p");title.className="item-title";title.textContent="Segnalazione rapida · da verificare";
-      const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
+      const title=document.createElement("p");title.className="item-title";title.textContent=seg.titolo?"Segnalazione rapida · "+seg.titolo:"Segnalazione rapida · da verificare";
+      const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[seg.dataInizio,seg.dataTesto,seg.luogo,seg.citta,seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
       div.append(title,desc);
       const source=CsfQuick.publicUrl(seg.fonteUrl);
       if(source){const a=document.createElement("a");a.href=source;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Apri annuncio originale";a.className="btn btn-sm";div.append(a);}
@@ -958,12 +959,12 @@
         const a=document.createElement("a");a.href=image;a.download="segnalazione.jpg";a.textContent="Scarica screenshot";a.className="btn btn-sm";div.append(a);
       }
       const actions=document.createElement("div");actions.className="item-actions";
-      const edit=document.createElement("button");edit.type="button";edit.className="btn btn-primary btn-sm";edit.textContent=image?"Leggi screenshot e rivedi":"Rivedi e pubblica";
+      const edit=document.createElement("button");edit.type="button";edit.className="btn btn-primary btn-sm";edit.textContent=image&&seg.titolo?"Verifica e approva":image?"Leggi screenshot e rivedi":"Rivedi e pubblica";
       edit.onclick=async()=>{
         const parsed=CsfExtras.parsePoster(typeof seg.descrizione==="string"?seg.descrizione:"");
-        const draft={tipoSegnalazione:"Segnalazione rapida",titolo:parsed.title,citta:parsed.city,luogo:parsed.venue,dataInizio:parsed.date,dataFine:parsed.date,dataTesto:parsed.time,costo:parsed.price,fonteUrl:source,descrizione:parsed.text.slice(0,1000)};
+        const draft={tipoSegnalazione:"Segnalazione rapida",titolo:seg.titolo||parsed.title,citta:seg.citta||parsed.city,luogo:seg.luogo||parsed.venue,dataInizio:seg.dataInizio||parsed.date,dataFine:seg.dataFine||parsed.date,dataTesto:seg.dataTesto||parsed.time,costo:seg.costo||parsed.price,fonteUrl:source,descrizione:seg.descrizione||parsed.text.slice(0,1000),locandinaUrl:image};
         caricaEventoNelForm("",draft,id);attivaTab("tab-eventi");
-        if(!image)return;
+        if(!image||seg.titolo)return;
         const stillEditing=()=>document.getElementById("ev-from-segnalazione-id").value===id;
         let worker=null;
         try{
@@ -985,7 +986,16 @@
       actions.append(edit,del);div.append(actions);box.append(div);
     }
 
+    let posterAllegato="";
+    function mostraPosterAllegato(value){
+      posterAllegato=CsfQuick.safeImage(value)?value:"";
+      const img=document.getElementById("ev-locandina-preview");
+      document.getElementById("ev-locandina-allegata").hidden=!posterAllegato;
+      if(posterAllegato)img.src=posterAllegato;else img.removeAttribute("src");
+    }
+    document.getElementById("ev-locandina-rimuovi").addEventListener("click",()=>mostraPosterAllegato(""));
     function resetFormEvento() {
+      mostraPosterAllegato("");
       document.getElementById("form-evento").reset();
       showBoxError("evento-error", "");
       document.getElementById("ev-edit-id").value = "";
@@ -1013,7 +1023,7 @@
       document.getElementById("ev-descrizione").value = ev.descrizione || "";
       document.getElementById("ev-costo").value = ev.costo || "";
       document.getElementById("ev-fonte").value = ev.fonteUrl || "";
-      document.getElementById("ev-locandina").value = ev.locandinaUrl || "";
+      mostraPosterAllegato(ev.locandinaUrl);document.getElementById("ev-locandina").value = posterAllegato?"":ev.locandinaUrl || "";
       document.getElementById("ev-in-evidenza").checked = ev.inEvidenza !== false;
 
       document.getElementById("form-evento-title").textContent = editId ? "Modifica Contenuto" : "Approva Segnalazione";
@@ -1043,7 +1053,9 @@
         const editId = document.getElementById("ev-edit-id").value;
         const fromSegId = document.getElementById("ev-from-segnalazione-id").value;
         const rapida=cacheSegnalazioni[fromSegId]?.tipoSegnalazione==="Segnalazione rapida";
-        if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
+        if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine","ev-data-testo","ev-descrizione"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
+        if(rapida&&(!posterAllegato&&!/^https:\/\//i.test(document.getElementById("ev-locandina").value.trim())))throw Error("Serve una locandina autentica prima di pubblicare.");
+        if(rapida&&(!/\b(?:[01]\d|2[0-3]):[0-5]\d\b/.test(document.getElementById("ev-data-testo").value)||document.getElementById("ev-data-inizio").value<getOggiISO()||document.getElementById("ev-data-fine").value<document.getElementById("ev-data-inizio").value))throw Error("Controlla data e orario dell’evento.");
         const cittaVal = document.getElementById("ev-citta").value.trim() || "Cerignola";
         const luogoVal = document.getElementById("ev-luogo").value.trim();
         const indVal = document.getElementById("ev-indirizzo").value.trim();
@@ -1060,7 +1072,7 @@
           descrizione: document.getElementById("ev-descrizione").value.trim(),
           costo: document.getElementById("ev-costo").value.trim(),
           fonteUrl: document.getElementById("ev-fonte").value.trim(),
-          locandinaUrl: document.getElementById("ev-locandina").value.trim(),
+          locandinaUrl: document.getElementById("ev-locandina").value.trim()||posterAllegato,
           inEvidenza: document.getElementById("ev-in-evidenza").checked
         };
 

@@ -10,6 +10,7 @@ const assert = require("node:assert/strict");
     page.on("dialog", dialog => dialog.accept());
     await page.addInitScript(() => {
       window.segnalazioniTest = [];
+      window.Tesseract={createWorker:async()=>({recognize:async()=>({data:{text:window.testOCR||""}}),terminate:async()=>{}})};
       window.firebase = {
         initializeApp() {},
         database: () => ({
@@ -40,8 +41,22 @@ const assert = require("node:assert/strict");
       assert.match(await page.locator("#quick-esito").textContent(),/link non è valido|link di condivisione non identifica/);
       assert.equal(await page.evaluate(v=>CsfQuick.payload(v,"nota","","2026-11-27"),invalid),null);
     }
+    for(const link of [source,"https://www.instagram.com/stories/locale/123456789/?igsh=tracking"]){
+      await page.locator("#quick-link").fill(link);
+      await page.locator("#quick-invia").click();
+      await page.waitForFunction(()=>document.querySelector("#quick-esito").textContent.includes("Allega lo screenshot"));
+      assert.equal(await page.evaluate(()=>window.segnalazioniTest.length),0);
+    }
     await page.locator("#quick-link").fill(source);
-    assert.equal(await page.evaluate(source=>CsfQuick.publicUrl(source),source),"https://www.instagram.com/reel/AbCd1234/");
+    const photo={name:"screenshot.png",mimeType:"image/png",buffer:Buffer.from("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAQElEQVR4nGP8//8/Ay0BE01NHxYWsCBzJNwXU8XQFztj4eyhH0SjFoxaMGrBqAWjFoxaMGrBCLGAcbRtOuAWAAB5ywk7zawkfQAAAABJRU5ErkJggg==","base64")};
+    // OCR parziale: un solo campo mancante, nessun invio finché non completato.
+    await page.evaluate(v=>window.testOCR=v,text.replace("Locale: Sala di prova\n",""));
+    await page.locator("#quick-foto").setInputFiles(photo);
+    await page.waitForFunction(()=>!document.querySelector("#quick-invia").disabled&&document.querySelector("#quick-data-luogo").offsetParent!==null);
+    await page.locator("#quick-invia").click();
+    assert.match(await page.locator("#quick-esito").textContent(),/Completa i dati/);
+    assert.equal(await page.evaluate(()=>window.segnalazioniTest.length),0);
+    await page.locator("#quick-data-luogo").fill("Sala di prova");
     await page.evaluate(()=>window.testSendError="PERMISSION_DENIED");
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>document.querySelector("#quick-esito").textContent.includes("rifiutato"));
@@ -51,30 +66,32 @@ const assert = require("node:assert/strict");
     await page.evaluate(()=>window.testSendError="");
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>window.segnalazioniTest.length===1);
-    let first=await page.evaluate(()=>window.segnalazioniTest[0]);
+    const first=await page.evaluate(()=>window.segnalazioniTest[0]);
     assert.equal(first.tipoSegnalazione,"Segnalazione rapida");
     assert.equal(first.fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
-    assert.ok(!first.dataInizio&&!first.citta&&!first.luogo);
-    assert.ok(!first.screenshot);
-    await page.locator("#quick-foto").setInputFiles({name:"screenshot.png",mimeType:"image/png",buffer:Buffer.from("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAQElEQVR4nGP8//8/Ay0BE01NHxYWsCBzJNwXU8XQFztj4eyhH0SjFoxaMGrBqAWjFoxaMGrBCLGAcbRtOuAWAAB5ywk7zawkfQAAAABJRU5ErkJggg==","base64")});
-    await page.locator("#quick-preview").waitFor({state:"visible"});
+    assert.equal(first.titolo,"DJ Set di prova");assert.equal(first.dataInizio,date);
+    assert.equal(first.dataTesto,"Ore 22:30");assert.equal(first.citta,"Cerignola");
+    assert.equal(first.luogo,"Sala di prova");assert.ok(first.screenshot.startsWith("data:image/jpeg;base64,"));
+    assert.ok(first.descrizione);
+    // OCR completo, screenshot senza link: un solo invio.
+    await page.evaluate(v=>window.testOCR=v,text);
+    await page.locator("#quick-foto").setInputFiles(photo);
+    await page.waitForFunction(()=>!document.querySelector("#quick-invia").disabled&&document.querySelector("#quick-draft-summary").textContent.includes("Dati rilevati"));
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>window.segnalazioniTest.length===2);
     const second=await page.evaluate(()=>window.segnalazioniTest[1]);
-    assert.ok(second.screenshot.startsWith("data:image/jpeg;base64,"));
-    assert.ok(second.screenshot.length<=240000);
-    assert.equal(second.fonteUrl,"");
-    assert.ok(!second.dataInizio&&!second.citta);
-    // Una Storia diretta deve entrare nella coda privata senza foto.
-    const story="https://www.instagram.com/stories/locale/123456789/?igsh=tracking";
-    await page.locator("#quick-link").fill(story);
-    assert.match(await page.locator("#quick-link-help").textContent(),/senza foto/);
-    await page.locator("#quick-invia").click();
-    await page.waitForFunction(()=>window.segnalazioniTest.length===3);
-    const storyItem=await page.evaluate(()=>window.segnalazioniTest[2]);
-    assert.equal(storyItem.fonteUrl,"https://www.instagram.com/stories/locale/123456789/");
-    assert.ok(!storyItem.screenshot&&!storyItem.dataInizio&&!storyItem.citta);
-    assert.match(await page.locator("#quick-esito").textContent(),/Link alla Storia ricevuto/);
+    assert.equal(second.fonteUrl,"");assert.equal(second.titolo,first.titolo);
+    // Verifica recupero HTML strutturato + locandina con risposta pubblica simulata.
+    const resolved=await page.evaluate(async({date,bytes})=>{
+      const url="https://iltaccodibacco.it/puglia/eventi/123.html";
+      const schema={"@type":"MusicEvent",name:"Concerto",startDate:date+"T21:00:00+01:00",location:{name:"Sala",address:{addressLocality:"Cerignola"}},description:"Musica dal vivo",image:"https://iltaccodibacco.it/img_eventi/123.png"};
+      const out=await CsfQuick.resolveLink(url,async(u,opt)=>{
+        if(opt.credentials!=="omit"||opt.redirect!=="error")throw Error("unsafe");
+        return u===url?new Response('<script type="application/ld+json">'+JSON.stringify(schema)+'</script>',{headers:{"content-type":"text/html"}}):new Response(Uint8Array.from(atob(bytes),c=>c.charCodeAt(0)),{headers:{"content-type":"image/png"}});
+      });
+      return {data:out.data,type:out.file.type};
+    },{date,bytes:photo.buffer.toString("base64")});
+    assert.equal(resolved.data.titolo,"Concerto");assert.equal(resolved.data.dataTesto,"21:00");assert.equal(resolved.type,"image/png");
     await Promise.all([
       page.waitForNavigation(),
       page.evaluate(async ({source,text}) => {
@@ -108,12 +125,13 @@ const assert = require("node:assert/strict");
       }, {source,text})
     ]);
     await page.waitForFunction(() => document.querySelector("#quick-link").value.includes("/reel/AbCd1234/"));
-    await page.locator("#quick-preview").waitFor({state:"visible"});
+    await page.waitForFunction(()=>!document.querySelector("#quick-invia").disabled&&document.querySelector("#quick-preview").offsetParent!==null);
     assert.ok(await page.locator("#seg-rapida").isVisible());
     assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
     assert.equal(new URL(page.url()).search,"");
     assert.equal(await page.evaluate(async () => (await (await caches.open("chesifa-social-local-v1")).keys()).length),0);
     assert.equal(await page.evaluate(() => window.segnalazioniTest.length),0);
+    for(const [id,value] of [["titolo","DJ Set"],["luogo","Sala"],["citta","Cerignola"],["dataInizio",date],["dataTesto","22:30"],["descrizione","Serata con musica"]]){const field=page.locator("#quick-data-"+id);if(await field.isVisible())await field.fill(value);}
     await page.locator("#quick-invia").click();
     await page.waitForFunction(()=>window.segnalazioniTest.length===1);
     const sent=await page.evaluate(()=>window.segnalazioniTest[0]);
@@ -121,8 +139,7 @@ const assert = require("node:assert/strict");
     assert.equal(sent.fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
     assert.ok(sent.screenshot.startsWith("data:image/jpeg;base64,"));
     assert.ok(sent.screenshot.length<=240000);
-    assert.equal(sent.descrizione,"");
-    assert.ok(!sent.dataInizio&&!sent.citta);
+    assert.ok(sent.descrizione&&sent.dataInizio&&sent.citta);
     assert.ok(!JSON.stringify(sent).includes("prova.png"));
     // Verifica il pannello admin con una bozza privata simulata: mai approvazione istantanea.
     const adm=await browser.newPage({serviceWorkers:"block"});
@@ -134,16 +151,17 @@ const assert = require("node:assert/strict");
     await adm.goto("http://127.0.0.1:8765/admin.html");
     const card=adm.locator("#lista-segnalazioni .item-card").first();
     await card.waitFor({state:"visible"});
-    assert.match(await card.textContent(),/Segnalazione rapida · da verificare/);
+    assert.match(await card.textContent(),/Segnalazione rapida · DJ Set di prova/);
     assert.equal(await card.getByRole("button",{name:"Approva subito"}).count(),0);
-    await card.getByRole("button",{name:"Rivedi e pubblica"}).click();
-    assert.equal(await adm.locator("#ev-citta").inputValue(),"");
-    assert.equal(await adm.locator("#ev-data-inizio").inputValue(),"");
-    assert.equal(await adm.locator("#ev-titolo").inputValue(),"");
+    await card.getByRole("button",{name:"Verifica e approva"}).click();
+    assert.equal(await adm.locator("#ev-citta").inputValue(),"Cerignola");
+    assert.equal(await adm.locator("#ev-data-inizio").inputValue(),date);
+    assert.equal(await adm.locator("#ev-titolo").inputValue(),first.titolo);
+    assert.ok(await adm.locator("#ev-locandina-preview").isVisible());
     assert.equal(await adm.locator("#ev-fonte").inputValue(),first.fonteUrl);
     await adm.close();
     assert.deepEqual(errors, []);
-    console.log("OK segnalazioni rapide: link solo, screenshot solo, share target con foto, bozza consumata e invio esplicito.");
+    console.log("OK segnalazioni complete: OCR, dati mancanti, link non leggibile rifiutato, immagine allegata, link strutturato simulato, share target e anteprima admin.");
   } finally {
     await browser.close();
   }

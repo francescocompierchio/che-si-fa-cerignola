@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=4"></script>
+  <script src="quick-report.js?v=5"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -1465,11 +1465,12 @@ html.csf-side-open{overflow:hidden}
         <div class="m-field">
           <label for="quick-link">Oppure incolla il link diretto all’annuncio</label>
           <input id="quick-link" type="text" inputmode="url" autocomplete="off" maxlength="1800" placeholder="https://www.instagram.com/p/…" />
-          <p class="quick-share-help" id="quick-link-help" role="status">Le Storie possono scadere: lo screenshot è consigliato, non obbligatorio per un link diretto.</p>
+          <p class="quick-share-help" id="quick-link-help" role="status">Se il link non è leggibile automaticamente, ti chiederemo lo screenshot.</p>
         </div>
+        <div class="m-field" id="quick-details" hidden><p id="quick-draft-summary" class="quick-share-help" role="status"></p><button type="button" class="seg-link" id="quick-edit-draft">Modifica dati riconosciuti</button><div id="quick-fields"></div></div>
         <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
-        <p class="quick-note">Invia solo annunci pubblici senza dati privati. Le immagini fino a 32 MB vengono ridimensionate e compresse automaticamente sul telefono. Le segnalazioni senza foto o link diretto non sono accettate.</p>
-        <button type="submit" class="btn btn-map seg-full" id="quick-invia">Invia segnalazione</button>
+        <p class="quick-note">Invia solo annunci pubblici senza dati privati. Le immagini fino a 32 MB vengono ridimensionate e compresse automaticamente sul telefono. Il link è sufficiente solo se riusciamo a recuperare la locandina. Controlla che l’immagine non contenga informazioni private.</p>
+        <button type="submit" class="btn btn-map seg-full" id="quick-invia">Verifica e invia</button>
         <p id="quick-esito" class="quick-status" role="status" aria-live="polite"></p>
         <button type="button" class="seg-link" id="quick-wa" hidden>Invia invece via WhatsApp</button>
         <p class="quick-share-help">Su Android, se Che Si Fa è installata e compare tra le app di condivisione, puoi usare Condividi direttamente da Instagram. Altrimenti usa lo screenshot.</p>
@@ -3155,15 +3156,48 @@ html.csf-side-open{overflow:hidden}
       field.setAttribute("aria-describedby",[field.getAttribute("aria-describedby"),note.id].filter(Boolean).join(" "));
     }
     for(const field of segForm.querySelectorAll("input,textarea,select")){field.addEventListener("input",()=>clearFieldError(field));field.addEventListener("change",()=>clearFieldError(field));}
-    let quickImage="",quickBusy=false,quickSending=false,quickSequence=0;
+    let quickImage="",quickBusy=false,quickSending=false,quickSequence=0,quickDraft={},quickShowAll=false;
+    const quickFields=document.getElementById("quick-fields"),quickDetails=document.getElementById("quick-details");
+    const quickCities=["Cerignola",...[...CINTURA_25_KM,...CINTURA_50_KM].map(c=>c.replace(/\b\w/g,x=>x.toUpperCase()))];
+    const validQuickCity=c=>getFasciaCerchioCerignola(c)<3;
+    const quickMissing=()=>CsfQuick.missing(quickDraft,getDataLocaleOggi(),validQuickCity);
+    for(const [key,label,max] of CsfQuick.fields){
+      const wrap=document.createElement("div");wrap.className="m-field";wrap.dataset.quickField=key;
+      const l=document.createElement("label");l.textContent=label;l.htmlFor="quick-data-"+key;
+      const f=document.createElement(key==="descrizione"?"textarea":"input");f.id=l.htmlFor;f.maxLength=max;
+      if(key==="dataInizio"){f.type="date";f.min=getDataLocaleOggi();}
+      if(key==="dataTesto")f.type="time";
+      if(key==="citta"){f.setAttribute("list","quick-cities");}
+      f.addEventListener("input",()=>{quickDraft[key]=f.value;});
+      wrap.append(l,f);quickFields.append(wrap);
+    }
+    const quickCityList=document.createElement("datalist");quickCityList.id="quick-cities";
+    for(const c of quickCities){const o=document.createElement("option");o.value=c;quickCityList.append(o);}quickFields.append(quickCityList);
+    function showQuickDraft(){
+      if(!quickImage){quickDetails.hidden=true;return;}
+      quickDetails.hidden=false;const missing=quickMissing();
+      const names=CsfQuick.fields.filter(([k])=>missing.includes(k)).map(([,label])=>label);
+      document.getElementById("quick-draft-summary").textContent=missing.length?"Completa soltanto: "+names.join(", ")+".":"Dati rilevati: "+[quickDraft.titolo,quickDraft.luogo,quickDraft.citta,quickDraft.dataInizio,quickDraft.dataTesto].join(" · ")+". Controlla i dati prima dell’invio.";
+      for(const [key] of CsfQuick.fields){const f=document.getElementById("quick-data-"+key);f.value=quickDraft[key]||"";f.parentElement.hidden=!quickShowAll&&!missing.includes(key);}
+    }
+    document.getElementById("quick-edit-draft").addEventListener("click",()=>{quickShowAll=!quickShowAll;showQuickDraft();});
+    async function readQuickImage(image,seq){
+      let worker=null,timer;
+      try{
+        const engine=await caricaOCR();
+        const work=async()=>{worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});if(seq!==quickSequence)throw Error("stale");return worker.recognize(image);};
+        const result=await Promise.race([work(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error("timeout")),45000);})]);
+        return CsfQuick.draft(result.data.text,getDataLocaleOggi(),quickCities);
+      }finally{clearTimeout(timer);if(worker)try{await worker.terminate();}catch(_){}}
+    }
     function quickUpdate(){
       const source=CsfQuick.publicUrl(quickInput.value);
       const help=document.getElementById("quick-link-help");
-      help.textContent=source&&CsfQuick.requiresScreenshot(source)?"Link di condivisione non diretto: copia il link dell’annuncio o aggiungi uno screenshot.":source&&CsfQuick.isDirectStory(source)?"Puoi inviare questo link senza foto. La Storia può scadere o richiedere accesso: uno screenshot è consigliato.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Le Storie possono scadere: lo screenshot è consigliato, non obbligatorio per un link diretto.";
+      help.textContent=source&&CsfExtras.socialUrl(source)?"Per i link social, il recupero può non essere consentito. Lo screenshot permette la lettura automatica.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Se il link non è leggibile automaticamente, ti chiederemo lo screenshot.";
       quickSend.disabled=quickBusy||quickSending;
     }
     function quickClearPhoto(){
-      quickSequence++;quickBusy=false;quickImage="";quickFile.value="";
+      quickSequence++;quickBusy=false;quickImage="";quickDraft={};quickShowAll=false;quickDetails.hidden=true;quickFile.value="";
       quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;reportMessage(quickPhotoStatus,"");quickUpdate();
     }
     function quickReset(){
@@ -3173,14 +3207,19 @@ html.csf-side-open{overflow:hidden}
       segForm.hidden=true;segScelta.hidden=true;quickForm.hidden=false;
       modalSegnala.querySelector(".modal-box").scrollTop=0;quickUpdate();
     }
-    async function quickLoadPhoto(file){
+    async function quickLoadPhoto(file,knownData=null){
       quickClearPhoto();if(!file)return;
       const seq=++quickSequence;quickBusy=true;quickPhotoStatus.textContent="Preparo la foto…";quickUpdate();
       try{
         const data=await CsfQuick.compress(file);
         if(seq!==quickSequence)return;
         quickImage=data;quickPreview.src=data;quickPreview.hidden=false;quickRemove.hidden=false;
-        quickPhotoStatus.textContent="Foto pronta per l’invio.";
+        reportMessage(quickPhotoStatus,"Leggo automaticamente la locandina…");
+        let parsed={};
+        try{parsed=await readQuickImage(data,seq);}catch(_){if(seq===quickSequence)reportMessage(quickPhotoStatus,"Lettura automatica non riuscita. Compila solo i dati che mancano.");}
+        if(seq!==quickSequence)return;
+        quickDraft={...parsed,...Object.fromEntries(Object.entries(knownData||{}).filter(([,v])=>v))};
+        showQuickDraft();if(!quickMissing().length)reportMessage(quickPhotoStatus,"Locandina e dati pronti. Controlla e invia.");else if(Object.values(parsed).some(Boolean))reportMessage(quickPhotoStatus,"Locandina letta. Completa solo le informazioni mancanti.");
       }catch(err){if(seq===quickSequence){reportMessage(quickPhotoStatus,CsfQuick.imageError(err),true);quickFile.value="";}}
       finally{if(seq===quickSequence){quickBusy=false;quickUpdate();}}
     }
@@ -3196,8 +3235,21 @@ html.csf-side-open{overflow:hidden}
     });
     quickForm.addEventListener("submit",async e=>{
       e.preventDefault();if(quickBusy||quickSending||quickForm.hidden)return;
-      const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString());
-      if(!item){reportMessage(quickStatus,CsfQuick.evidenceError(quickInput.value,quickImage),true);return;}
+      if(!quickImage){
+        const source=CsfQuick.publicUrl(quickInput.value);
+        if(!source){reportMessage(quickStatus,CsfQuick.evidenceError(quickInput.value,""),true);return;}
+        quickSending=true;quickUpdate();reportMessage(quickStatus,"Verifico il link e cerco la locandina…");
+        const seq=quickSequence;
+        try{
+          const resolved=await CsfQuick.resolveLink(source);
+          if(seq!==quickSequence||quickForm.hidden)return;
+          await quickLoadPhoto(resolved.file,resolved.data);
+        }catch(err){if(seq===quickSequence)reportMessage(quickStatus,CsfQuick.linkError(err),true);}
+        finally{quickSending=false;quickUpdate();}
+        if(!quickImage)return;
+      }
+      const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString(),quickDraft,getDataLocaleOggi(),validQuickCity);
+      if(!item){showQuickDraft();reportMessage(quickStatus,"Completa i dati mancanti o non validi indicati sopra (data futura o odierna, orario e comune entro 50 km).",true);return;}
       if(navigator.onLine===false){reportMessage(quickStatus,CsfQuick.sendError(null,false),true);return;}
       if(!dbGlobal){reportMessage(quickStatus,"Il servizio di invio non è disponibile o non si è caricato. Controlla Internet e riprova, oppure usa WhatsApp e allega lì la foto.",true);quickWA.hidden=false;return;}
       quickSending=true;quickUpdate();reportMessage(quickStatus,"Invio in corso…");quickWA.hidden=true;
@@ -3205,7 +3257,7 @@ html.csf-side-open{overflow:hidden}
       try{
         await dbGlobal.ref("segnalazioniDaApprovare").push(item);
         try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
-        quickReset();reportMessage(quickStatus,CsfQuick.isDirectStory(item.fonteUrl)&&!item.screenshot?"Link alla Storia ricevuto! Sarà verificato prima della pubblicazione. Se la Storia non sarà più accessibile, l’evento non potrà essere confermato dal solo link.":"Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.");
+        quickReset();reportMessage(quickStatus,"Grazie! Evento completo e locandina ricevuti. Saranno verificati prima della pubblicazione.");
       }catch(err){reportMessage(quickStatus,CsfQuick.sendError(err,navigator.onLine!==false)+" Se usi WhatsApp, allega lì la foto.",true);quickWA.hidden=false;}
       finally{clearTimeout(timer);quickSending=false;quickUpdate();}
     });
@@ -3622,7 +3674,7 @@ html.csf-side-open{overflow:hidden}
         const body = document.createElement("div");
         body.className = "details-body";
 
-        if (isSafeHttpUrl(ev.locandinaUrl)) {
+        if (isSafeHttpUrl(ev.locandinaUrl)||CsfQuick.safeImage(ev.locandinaUrl)) {
           const poster = document.createElement("img");
           poster.className = ev.inEvidenza ? "event-poster event-poster-full" : "event-poster";
           poster.alt = "Locandina: " + ev.titolo;

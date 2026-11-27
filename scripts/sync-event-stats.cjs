@@ -30,7 +30,7 @@ const same=(a,b)=>JSON.stringify(canon(a))===JSON.stringify(canon(b));
   const manual=(await db.ref("eventiManuali").get()).val()||{};
   const events=[...automatic,...JSON.parse(match[1]),...Object.values(manual)].filter(e=>e&&typeof e.dataInizio==="string"&&String(e.dataFine||e.dataInizio)>=today);
   const active=new Set(events.map(csfEventStatsKey).filter(Boolean));
-  const posters=new Set(events.filter(e=>{try{return ["http:","https:"].includes(new URL(e.locandinaUrl).protocol);}catch(_){return false;}}).map(csfEventStatsKey).filter(Boolean));
+  const posters=new Set(events.filter(e=>{try{return ["http:","https:"].includes(new URL(e.locandinaUrl).protocol)||(typeof e.locandinaUrl==="string"&&e.locandinaUrl.length<=240000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(e.locandinaUrl));}catch(_){return false;}}).map(csfEventStatsKey).filter(Boolean));
   if(!active.size)throw Error("Archivio vuoto: nessuna disattivazione");
   const r=db.ref("statisticheEventi"),previous=(await r.get()).val()||{},updates={};
   for(const id of active){if(previous[id]?.enabled!==true)updates[id+"/enabled"]=true;if(posters.has(id)&&previous[id]?.posterEnabled!==true)updates[id+"/posterEnabled"]=true;else if(!posters.has(id)&&previous[id]?.posterEnabled===true)updates[id+"/posterEnabled"]=false;}
