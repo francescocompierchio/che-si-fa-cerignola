@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=1"></script>
+  <script src="quick-report.js?v=2"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -1453,17 +1453,17 @@ html.csf-side-open{overflow:hidden}
       </div>
       <form id="seg-rapida" hidden>
         <button type="button" class="seg-link" id="quick-indietro">‹ Indietro</button>
-        <p class="seg-intro">Hai visto un evento? Invia uno screenshot o un link. Verificheremo noi i dettagli.</p>
+        <p class="seg-intro">Hai visto un evento? Invia la locandina leggibile o il link diretto all’annuncio originale.</p>
         <label class="quick-photo"><input type="file" id="quick-foto" accept="image/jpeg,image/png,image/webp" />📷 Scegli screenshot o locandina</label>
         <img id="quick-preview" class="quick-preview" alt="Anteprima dello screenshot scelto" hidden />
         <button type="button" class="seg-link" id="quick-remove" hidden>Rimuovi foto</button>
         <p id="quick-foto-stato" class="quick-status" role="status" aria-live="polite"></p>
         <div class="m-field">
-          <label for="quick-link">Oppure incolla il link o il testo dell'annuncio</label>
-          <textarea id="quick-link" rows="2" maxlength="4000" placeholder="Link Instagram, Facebook o testo dell’evento"></textarea>
+          <label for="quick-link">Oppure incolla il link diretto all’evento</label>
+          <textarea id="quick-link" rows="2" maxlength="4000" placeholder="https://… (post, reel o pagina dell’evento)"></textarea>
         </div>
         <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
-        <p class="quick-note">Invia solo annunci destinati al pubblico. Ritaglia eventuali dati privati. Foto e testo saranno visibili soltanto al gestore dell’app per la verifica, non pubblicati automaticamente.</p>
+        <p class="quick-note">Scegli un annuncio completo di nome dell’evento, locale, città, data, orario e prezzo (se indicato). Il solo testo non basta. Invia solo annunci destinati al pubblico. Ritaglia eventuali dati privati. Foto e testo saranno visibili soltanto al gestore dell’app per la verifica, non pubblicati automaticamente.</p>
         <button type="submit" class="btn btn-map seg-full" id="quick-invia" disabled>Invia segnalazione</button>
         <p id="quick-esito" class="quick-status" role="status" aria-live="polite"></p>
         <button type="button" class="seg-link" id="quick-wa" hidden>Invia invece via WhatsApp</button>
@@ -3133,7 +3133,7 @@ html.csf-side-open{overflow:hidden}
     const quickWA=document.getElementById("quick-wa");
     let quickImage="",quickBusy=false,quickSending=false,quickSequence=0;
     function quickUpdate(){
-      const hasInput=quickImage||quickInput.value.trim();
+      const hasInput=quickImage||CsfQuick.publicUrl(quickInput.value)||CsfQuick.linkFromText(quickInput.value);
       quickSend.disabled=quickBusy||quickSending||!hasInput;
     }
     function quickClearPhoto(){
@@ -3171,7 +3171,7 @@ html.csf-side-open{overflow:hidden}
     quickForm.addEventListener("submit",async e=>{
       e.preventDefault();if(quickBusy||quickSending||quickForm.hidden)return;
       const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString());
-      if(!item){quickStatus.textContent="Aggiungi una foto, un link valido o il testo di un annuncio.";return;}
+      if(!item){quickStatus.textContent="Aggiungi una locandina leggibile o un link diretto valido. Il solo testo non basta.";return;}
       if(!dbGlobal){quickStatus.textContent="Invio non disponibile. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;return;}
       quickSending=true;quickUpdate();quickStatus.textContent="Invio in corso…";quickWA.hidden=true;
       try{
