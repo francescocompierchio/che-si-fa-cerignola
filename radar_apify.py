@@ -16,8 +16,9 @@ OUTPUT = Path("apify-eventi.json")
 CAP = 0.035
 INTERVAL = 8 * 3600
 ACTORS = {"instagram.com": "instagram-post-scraper", "facebook.com": "facebook-posts-scraper"}
-ATTORE_CALENDARI = "acts/topapi~website-content-crawler"
+ATTORE_CALENDARI = "acts/automa-flow~website-content-crawler"
 AGENDA_CERIGNOLA = "https://comune.cerignola.fg.it/vivere-il-comune/eventi/"
+LICENZA_CERIGNOLA = "https://comune.cerignola.fg.it/note-legali/"
 PERCORSO_EVENTO_COMUNALE = re.compile(r"/vivere-il-comune/eventi/[a-z0-9][a-z0-9-]*/?")
 TETTO_CALENDARI = 0.01
 INTERVALLO_CALENDARI = 24 * 3600
@@ -191,6 +192,32 @@ def leggi_righe_calendario(rows, engine):
     return eventi, metriche
 
 
+def leggi_indice_apify(rows, engine, session):
+    """L'indice viene acquisito da Apify; il motore verifica il markup originale delle schede."""
+    indici = [r for r in rows if isinstance(r, dict) and r.get("record_type") == "PAGE"
+              and r.get("status") == "SUCCESS" and r.get("source_url") == AGENDA_CERIGNOLA
+              and isinstance(r.get("markdown"), str) and 10 <= len(r["markdown"]) <= 2_000_000]
+    if not indici:
+        return [], {"indiciLetti": 0, "schedeLette": 0, "pagineLette": 0, "schedeCandidate": 0}
+    prefisso = re.escape(AGENDA_CERIGNOLA)
+    links = list(dict.fromkeys(re.findall(prefisso + r"[a-z0-9][a-z0-9-]*/?(?=[\s)<>\]]|$)", indici[0]["markdown"])))
+    pagine = []
+    origine = urlsplit(AGENDA_CERIGNOLA).hostname
+    for url in links[:MASSIMO_PAGINE_CALENDARI - 1]:
+        try:
+            risposta = engine.fonti_editori.scheda_da_origini_note(session, url, {origine})
+        except requests.RequestException:
+            continue
+        if risposta is not None and risposta.ok and "text/html" in risposta.headers.get("Content-Type", ""):
+            pagine.append({"url": url, "rawHtml": risposta.text,
+                           "crawl": {"httpStatusCode": risposta.status_code, "loadedUrl": risposta.url}})
+    eventi, metriche = leggi_righe_calendario(pagine, engine)
+    metriche["indiciLetti"] = 1
+    metriche["pagineLette"] += 1
+    metriche["schedeCandidate"] = len(links)
+    return eventi, metriche
+
+
 def raccogli_calendario():
     import aggiorna_eventi as engine
 
@@ -199,16 +226,16 @@ def raccogli_calendario():
         return {"stato": "secret APIFY_TOKEN assente nel workflow"}
     now = int(time.time())
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
-    ultima = state.get("ultimoCalendario", 0)
+    ultima = state.get("ultimoCalendarioLicenziato", 0)
     if now - ultima < INTERVALLO_CALENDARI:
         report = {"stato": "pausa programmata", "prossimoUnix": ultima + INTERVALLO_CALENDARI}
-        if "diagnosiCalendario" not in state:
+        if "diagnosiCalendarioLicenziato" not in state:
             try:
-                state["diagnosiCalendario"] = diagnosi_ultimo_calendario(token, ultima)
+                state["diagnosiCalendarioLicenziato"] = diagnosi_ultimo_calendario(token, ultima)
                 engine._scrivi_json_atomico(str(STATE), state)
             except (requests.RequestException, Pausa, TypeError, ValueError, KeyError):
                 return dict(report, ultimoStatoActor="diagnosi_indisponibile")
-        return dict(report, **state["diagnosiCalendario"])
+        return dict(report, **state["diagnosiCalendarioLicenziato"])
 
     with requests.Session() as pubblico:
         policy = engine.fonti_editori.robots(pubblico, AGENDA_CERIGNOLA)
@@ -219,23 +246,22 @@ def raccogli_calendario():
         auth.headers["Authorization"] = "Bearer " + token
         account = api(auth, "users/me")["data"]
         verifica_budget(account["plan"], api(auth, "users/me/limits")["data"], TETTO_CALENDARI)
-        fees = verifica_prezzi(api(auth, ATTORE_CALENDARI)["data"], datetime.now(timezone.utc), "page-crawled", TETTO_CALENDARI)
-        if MASSIMO_PAGINE_CALENDARI * fees["page-crawled"] > TETTO_CALENDARI:
+        evento_addebitabile = "http-page-extracted"
+        fees = verifica_prezzi(api(auth, ATTORE_CALENDARI)["data"], datetime.now(timezone.utc), evento_addebitabile, TETTO_CALENDARI)
+        if fees[evento_addebitabile] > TETTO_CALENDARI:
             raise Pausa("tariffa del calendario oltre il tetto per esecuzione")
         body = {
-            "startUrls": [{"url": AGENDA_CERIGNOLA}], "crawlMode": "startUrlPath",
-            "maxCrawlDepth": 1, "maxCrawlPages": MASSIMO_PAGINE_CALENDARI, "maxConcurrency": 1,
-            "linkSelector": f'main a[href^="{AGENDA_CERIGNOLA}"]:not([href="{AGENDA_CERIGNOLA}"])',
-            "respectRobotsTxtFile": True, "renderJavaScript": "never", "maxRequestRetries": 0,
-            "requestTimeoutSecs": 10, "outputFormats": ["raw"],
-            "proxyConfiguration": {"useApifyProxy": False},
+            "sources": [{"url": AGENDA_CERIGNOLA, "scope": "page", "rightsBasis": "licensed",
+                         "rightsReference": LICENZA_CERIGNOLA}],
+            "maxPages": 1, "maxDepth": 0, "discoverSitemaps": False, "renderingMode": "http",
+            "contentSelector": "main",
         }
-        state["ultimoCalendario"] = now
-        state.pop("diagnosiCalendario", None)
+        state["ultimoCalendarioLicenziato"] = now
+        state.pop("diagnosiCalendarioLicenziato", None)
         STATE.parent.mkdir(exist_ok=True)
         engine._scrivi_json_atomico(str(STATE), state)
         run = api(auth, ATTORE_CALENDARI + "/runs", body, maxTotalChargeUsd=TETTO_CALENDARI,
-                  waitForFinish=50, timeout=75)["data"]
+                  waitForFinish=50, timeout=75, restartOnError="false", forcePermissionLevel="LIMITED_PERMISSIONS")["data"]
         for _ in range(4):
             if run["status"] not in {"READY", "RUNNING", "TIMING-OUT", "ABORTING"}:
                 break
@@ -243,21 +269,22 @@ def raccogli_calendario():
             run = api(auth, "actor-runs/" + run["id"])["data"]
         report = {"fonte": AGENDA_CERIGNOLA, "stato": run["status"], "pianoGratuitoVerificato": True,
                   "tettoUsd": TETTO_CALENDARI, "costoUsd": run.get("usageTotalUsd"),
-                  "eventiAddebitati": {"page-crawled": run.get("chargedEventCounts", {}).get("page-crawled", 0)}}
+                  "eventiAddebitati": {evento_addebitabile: run.get("chargedEventCounts", {}).get(evento_addebitabile)}}
         try:
             diagnosi = diagnosi_calendario(auth, run)
-            state["diagnosiCalendario"] = diagnosi
+            state["diagnosiCalendarioLicenziato"] = diagnosi
             engine._scrivi_json_atomico(str(STATE), state)
             report.update(diagnosi)
         except requests.RequestException:
             pass
         if run["status"] != "SUCCEEDED":
             return report
-        rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=MASSIMO_PAGINE_CALENDARI,
-                   fields="url,crawl,rawHtml", clean="true")
+        rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=12,
+                   fields="record_type,status,source_url,markdown", clean="true")
     if not isinstance(rows, list):
         raise Pausa("risultato calendario non verificabile")
-    eventi, metriche = leggi_righe_calendario(rows, engine)
+    with requests.Session() as pubblico:
+        eventi, metriche = leggi_indice_apify(rows, engine, pubblico)
     engine._scrivi_json_atomico(str(OUTPUT), eventi)
     return dict(report, **metriche, righeRicevute=len(rows), validi=len(eventi))
 
