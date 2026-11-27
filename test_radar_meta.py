@@ -19,12 +19,18 @@ class RadarMetaTests(unittest.TestCase):
 
     def test_senza_accesso_non_interroga_la_rete(self):
         session = MagicMock()
-        self.assertEqual(meta.raccogli(aggiorna_eventi, {}, session=session), ([], {"stato": "non_configurato"}))
+        events, report = meta.raccogli(aggiorna_eventi, {}, session=session)
+        self.assertEqual(events, [])
+        self.assertEqual(report["stato"], "non_configurato")
+        self.assertIn("META_IG_ACCESS_TOKEN", report["instagram"]["impostazioniMancanti"])
+        self.assertIn("META_FB_PAGE_IDS", report["facebook"]["impostazioniMancanti"])
         session.get.assert_not_called()
-        self.assertEqual(meta.selezione(dict(self.config, META_GRAPH_VERSION="../"))[1], [])
+        _, profiles, validation = meta.selezione(dict(self.config, META_GRAPH_VERSION="../"))
+        self.assertEqual(profiles, [])
+        self.assertEqual(validation["instagram"]["impostazioniNonValide"], ["META_GRAPH_VERSION"])
 
     def test_connettore_legge_solo_endpoint_ufficiale_e_senza_redirect(self):
-        version, profiles = meta.selezione(self.config)
+        version, profiles, _ = meta.selezione(dict(self.config, META_IG_PROFILES="@Locale_Aderente, altro_locale ignorato()"))
         self.assertEqual([row[1] for row in profiles], ["locale_aderente", "altro_locale"])
         session = MagicMock()
         response = session.get.return_value.__enter__.return_value
@@ -58,3 +64,17 @@ class RadarMetaTests(unittest.TestCase):
                  dict(row, timestamp="2025-11-20T17:10:00Z"),dict(row,permalink="https://instagram.com/stories/profilo/123456")]
         self.assertEqual(meta.eventi_da_post(fake, reads, "instagram", now), [{"titolo":"Test"}])
         self.assertEqual(fake.eventi_da_locandina.call_count,1)
+
+    def test_meta_segnala_token_o_limite_in_http_400_senza_esporre_la_risposta(self):
+        session = MagicMock()
+        response = session.get.return_value.__enter__.return_value
+        response.status_code = 400
+        now = datetime(2026, 11, 26, 18, tzinfo=timezone.utc)
+        for code, status in ((190, 401), (10, 403), (17, 429)):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as directory, patch.object(meta, "STATE", Path(directory)/"meta.json"):
+                response.iter_content.return_value = [json.dumps({"error":{"code":code,"message":"dato da non pubblicare"}}).encode()]
+                _, report = meta.raccogli(aggiorna_eventi, self.config, now, session)
+                self.assertEqual(report["stato"], "errore")
+                self.assertEqual(report["esiti"], {f"instagram/{status}":1})
+                self.assertNotIn("dato da non pubblicare", str(report))
+                self.assertNotIn(self.config["META_IG_ACCESS_TOKEN"], str(report))
