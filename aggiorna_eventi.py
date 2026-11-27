@@ -3095,6 +3095,32 @@ def _titolo_base_duplicato(titolo):
     return re.sub(r"\s+", " ", testo).strip()
 
 
+def _sede_movida_nota(ev):
+    sede = str(ev.get("luogo") or "").casefold()
+    locali = registro_locali_movida().get(ev.get("citta"), [])
+    return next((r.get("nome") for r in locali if any(
+        re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
+        for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
+
+
+def integra_dettagli_serata(evento, duplicato):
+    """Conserva dettagli già documentati per una serata riconosciuta in due fonti."""
+    if evento.get("categoria") != "Locali & Serate" or duplicato.get("categoria") != "Locali & Serate":
+        return evento
+    if not all(evento.get(k) == duplicato.get(k) for k in ("citta", "dataInizio", "dataFine")):
+        return evento
+    sede = _sede_movida_nota(evento)
+    if not sede or sede != _sede_movida_nota(duplicato):
+        return evento
+    dettagli = {}
+    if not evento.get("locandinaUrl") and duplicato.get("locandinaUrl"):
+        dettagli["locandinaUrl"] = duplicato["locandinaUrl"]
+    orario = r"\b(?:[01]?\d|2[0-3])[:.][0-5]\d\b"
+    if not re.search(orario, evento.get("dataTesto") or "") and re.search(orario, duplicato.get("dataTesto") or ""):
+        dettagli["dataTesto"] = duplicato["dataTesto"]
+    return dict(evento, **dettagli) if dettagli else evento
+
+
 def sono_duplicati(a, b):
     if str(a.get("citta", "")).casefold() != str(b.get("citta", "")).casefold():
         return False
@@ -3118,14 +3144,7 @@ def sono_duplicati(a, b):
     # Due serate omonime in club distinti non devono annullarsi a vicenda.
     stessa_sede_nota = False
     if a.get("categoria") == b.get("categoria") == "Locali & Serate":
-        registro = registro_locali_movida()
-        locali = registro.get(a.get("citta"), [])
-        def sede_nota(ev):
-            sede = str(ev.get("luogo") or "").casefold()
-            return next((r.get("nome") for r in locali if any(
-                re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
-                for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
-        sa, sb = sede_nota(a), sede_nota(b)
+        sa, sb = _sede_movida_nota(a), _sede_movida_nota(b)
         if sa and sb:
             if sa != sb:
                 return False
@@ -3562,7 +3581,9 @@ def esegui_aggiornamento():
         if _host_appartiene(ev.get("fonteUrl"), "lineupatlas.com") and any(sono_duplicati(x,ev) and not _host_appartiene(x.get("fonteUrl"),"lineupatlas.com") for x in precedenti_auto):
             duplicati_evitati += 1
             continue
-        if any(sono_duplicati(x, ev) for x in nuovi_unici):
+        indice = next((i for i, x in enumerate(nuovi_unici) if sono_duplicati(x, ev)), None)
+        if indice is not None:
+            nuovi_unici[indice] = integra_dettagli_serata(nuovi_unici[indice], ev)
             duplicati_evitati += 1
         else:
             nuovi_unici.append(ev)
@@ -3591,8 +3612,11 @@ def esegui_aggiornamento():
                 aggiunti_nuovi += 1
 
     for ev_old in precedenti_auto:
-        if not any(sono_duplicati(x, ev_old) for x in consolidati):
+        indice = next((i for i, x in enumerate(consolidati) if sono_duplicati(x, ev_old)), None)
+        if indice is None:
             consolidati.append(ev_old)
+        elif indice >= len(manuali_admin):
+            consolidati[indice] = integra_dettagli_serata(consolidati[indice], ev_old)
 
     lista_finale = sorted(
         consolidati,
