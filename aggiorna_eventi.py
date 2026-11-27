@@ -3443,10 +3443,11 @@ def evento_sede_riservata(ev):
 def intervallo_editoriale_sostituito(ev):
     """Un programma su date discontinue già pubblicato come singoli appuntamenti.
     Escludi solo la scheda aggregata errata, non le date realmente confermate."""
-    return (ev.get("fonteUrl") == "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
-            and ev.get("citta") == "Cerignola"
-            and ev.get("dataInizio") == "2026-11-21"
-            and ev.get("dataFine") == "2026-12-06")
+    chiave = (ev.get("fonteUrl"), ev.get("citta"), ev.get("dataInizio"), ev.get("dataFine"))
+    return chiave in (
+        ("https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html", "Cerignola", "2026-11-21", "2026-12-06"),
+        ("https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788", "Barletta", "2026-11-08", "2026-11-29"),
+    )
 
 
 def prossimo_weekend_movida(ev):

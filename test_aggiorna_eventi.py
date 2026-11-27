@@ -9,6 +9,12 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_rassegna_apulia_suona_non_comporta_eventi_ogni_giorno(self):
+        rassegna = {"fonteUrl":"https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788",
+                    "citta":"Barletta", "dataInizio":"2026-11-08", "dataFine":"2026-11-29"}
+        self.assertTrue(crawler.intervallo_editoriale_sostituito(rassegna))
+        self.assertFalse(crawler.intervallo_editoriale_sostituito(dict(rassegna, dataInizio="2026-11-29")))
+
     def test_partenza_locale_non_attribuisce_un_concerto_al_comune(self):
         day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
         raw = {"dataInizio":day, "dataFine":day, "luogo":"Piazza Catuma",
