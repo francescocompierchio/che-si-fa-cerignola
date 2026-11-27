@@ -90,7 +90,7 @@ FONTI_PORTALI = [
     {"nome": "Nightz Divine Club", "url": "https://nightoutz.it/locali/divine-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome": "Nightz Aphelion Club", "url": "https://nightoutz.it/locali/aphelion-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
     {"nome": "Nightz Vyon Club", "url": "https://nightoutz.it/locali/vyon-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome":"TicketSms Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
+    {"nome":"TicketSms calendario Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
     {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -2529,15 +2529,20 @@ def analizza_xceed(html_text, url, citta):
 
 
 
+def data_scheda_ticketsms(url):
+    path = urlparse(url).path
+    match = re.fullmatch(r"/(?:it/)?event/[^/]+-(\d{2})-(\d{2})-(20\d{2})/?", path, re.I)
+    if not match:
+        return None
+    giorno, mese, anno = (int(v) for v in match.groups())
+    return _costruisci_data_sicura(giorno, mese, anno)
+
+
 def analizza_ticketsms(html_text, url, citta, luogo):
     """Solo schede TicketSms di club noto: data del permalink e data visibile concordanti."""
     if not _host_appartiene(url, "ticketsms.it"):
         return []
-    path = urlparse(url).path
-    m = re.search(r"-(\d{2})-(\d{2})-(20\d{2})/?$", path)
-    if not re.match(r"^/(?:it/)?event/[^/]+/?$", path, re.I) or not m:
-        return []
-    dt = _costruisci_data_sicura(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    dt = data_scheda_ticketsms(url)
     if not dt or dt.strftime("%Y-%m-%d") < oggi_iso():
         return []
     soup = BeautifulSoup(html_text, "html.parser")
@@ -2547,6 +2552,10 @@ def analizza_ticketsms(html_text, url, citta, luogo):
     if not h1:
         return []
     titolo = h1.get_text(" ", strip=True)
+    if any(re.search(r"\b(?:event[oa] annullat[oa]|evento cancellato|event cancelled|event canceled)\b",
+                     el.get_text(" ", strip=True), re.I)
+           for el in soup.select("h1,h2,h3,h4,h5,[role=alert]")):
+        return []
     testo = soup.get_text(" ", strip=True)
     mesi = "|".join(MESI_IT)
     data_testo = re.search(rf"\b(\d{{1,2}})\s+({mesi})\s+(20\d{{2}})\s*/\s*([01]\d|2[0-3]):([0-5]\d)\b", testo, re.I)
@@ -2820,12 +2829,23 @@ def esplora_lineup_atlas(session, fonte):
 
 def calendario_ha_link_movida(html_text, url, dominio, tipo):
     soup = BeautifulSoup(html_text,"html.parser")
-    pattern = r"^/eventi/[^/]+/?$" if tipo == "nightz" else r"^/(?:it/)?event/[^/]+/?$"
-    return any(_host_appartiene(urljoin(url,a["href"]),dominio) and re.fullmatch(pattern,urlparse(urljoin(url,a["href"])).path,re.I) for a in soup.find_all("a",href=True))
+    if tipo == "ticketsms-scheda":
+        return soup.find("h1") is not None
+    for a in soup.find_all("a", href=True):
+        link = urljoin(url, a["href"])
+        if not _host_appartiene(link, dominio):
+            continue
+        if tipo == "nightz" and re.fullmatch(r"/eventi/[^/]+/?", urlparse(link).path, re.I):
+            return True
+        if tipo == "ticketsms":
+            data = data_scheda_ticketsms(link)
+            if data and data.strftime("%Y-%m-%d") >= oggi_iso():
+                return True
+    return False
 
 
 def render_calendario_pubblico(session, url, html_text, dominio, tipo):
-    """Fallback browser normale per calendari con contenuti JS.
+    """Fallback browser normale per calendari e schede TicketSms con contenuti JS.
     Non usa login, proxy, stealth, CAPTCHA o accessi a endpoint privati.
     Rispetta robots.txt e non riprova pagine che mostrano un blocco esplicito."""
     from urllib.robotparser import RobotFileParser
@@ -2851,20 +2871,30 @@ def render_calendario_pubblico(session, url, html_text, dominio, tipo):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(channel="chrome",headless=True)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale="it-IT", timezone_id="Europe/Rome")
                 page.route("**/*",lambda route: route.abort() if route.request.resource_type in {"image","media","font"} else route.continue_())
                 response = page.goto(url,wait_until="domcontentloaded",timeout=12000)
                 if not response or response.status != 200 or not _host_appartiene(page.url,dominio):
                     return "", "navigazione non riuscita"
                 if re.search(r"just a moment|access denied|attention required|captcha|verify you are human",page.title(),re.I):
                     return "", "blocco esplicito"
-                selettore = 'a[href*="/eventi/"]' if tipo=="nightz" else 'a[href*="/event/"]'
                 try:
-                    page.wait_for_selector(selettore,state="attached",timeout=7000)
+                    if tipo == "ticketsms":
+                        # Il footer compare prima del calendario e contiene anche URL
+                        # provvisori. Attendi un permalink con una data in programma.
+                        page.wait_for_function(r"""oggi => Array.from(document.links).some(link => {
+                            const url = new URL(link.href);
+                            const m = url.pathname.match(/^\/(?:it\/)?event\/[^/]+-(\d{2})-(\d{2})-(20\d{2})\/?$/i);
+                            return /^(?:www\.)?ticketsms\.it$/i.test(url.hostname)
+                                && m && [m[3], m[2], m[1]].join("-") >= oggi;
+                        })""", arg=oggi_iso(), timeout=10000)
+                    else:
+                        selettore = "h1" if tipo == "ticketsms-scheda" else 'a[href*="/eventi/"]'
+                        page.wait_for_selector(selettore, state="visible", timeout=10000)
                 except PlaywrightTimeout:
                     pass
                 rendered = page.content()
-                return rendered, "ok" if calendario_ha_link_movida(rendered,url,dominio,tipo) else "nessuna scheda dopo rendering"
+                return rendered, "ok" if calendario_ha_link_movida(rendered, url, dominio, tipo) else "nessuna scheda dopo rendering"
             finally:
                 browser.close()
     except Exception as exc:
@@ -2945,7 +2975,8 @@ def raccogli_da_portale_generico(session, fonte):
                 if not re.fullmatch(r"/eventi/[^/]+/?", p_low):
                     continue
             elif fonte.get("ticketsms"):
-                if not re.match(r"^/(?:it/)?event/[^/]+/?$", p_low) or not re.search(r"-\d{2}-\d{2}-20\d{2}/?$", p_low):
+                data_ticket = data_scheda_ticketsms(full)
+                if not data_ticket or data_ticket.strftime("%Y-%m-%d") < oggi_iso():
                     continue
             elif parametro_scheda:
                 # Alcuni calendari ufficiali pubblicano le schede come query
@@ -2974,6 +3005,9 @@ def raccogli_da_portale_generico(session, fonte):
 
         scaricate = 0
         diagnostica = []
+        rendering_schede = Counter()
+        if fonte.get("ticketsms"):
+            links.sort(key=data_scheda_ticketsms)
         for link in links[:int(fonte.get("max_schede", 12))]:
             try:
                 rp = session.get(link, timeout=(4, 7))
@@ -2987,6 +3021,13 @@ def raccogli_da_portale_generico(session, fonte):
                     estratti = analizza_nightz(rp.text, link)
                 elif fonte.get("ticketsms"):
                     estratti = analizza_ticketsms(rp.text, link, c_def, fonte["luogo_atteso"])
+                    if (not estratti and fonte.get("browser_pubblico")
+                        and sum(rendering_schede.values()) < 2
+                        and not calendario_ha_link_movida(rp.text, link, dominio, "ticketsms-scheda")):
+                        html_scheda, esito = render_calendario_pubblico(session, link, rp.text, dominio, "ticketsms-scheda")
+                        rendering_schede[esito] += 1
+                        if html_scheda:
+                            estratti = analizza_ticketsms(html_scheda, link, c_def, fonte["luogo_atteso"])
                 elif fonte.get("xceed"):
                     if registra_stati_negativi(rp.text, link):
                         continue
@@ -3033,7 +3074,8 @@ def raccogli_da_portale_generico(session, fonte):
 
         registra_statistica_fonte(
             nome, stato="ok", linkCandidati=len(links),
-            pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica
+            pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica,
+            renderingSchede=dict(rendering_schede)
         )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:
@@ -3059,6 +3101,32 @@ def _titolo_base_duplicato(titolo):
     return re.sub(r"\s+", " ", testo).strip()
 
 
+def _sede_movida_nota(ev):
+    sede = str(ev.get("luogo") or "").casefold()
+    locali = registro_locali_movida().get(ev.get("citta"), [])
+    return next((r.get("nome") for r in locali if any(
+        re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
+        for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
+
+
+def integra_dettagli_serata(evento, duplicato):
+    """Conserva dettagli già documentati per una serata riconosciuta in due fonti."""
+    if evento.get("categoria") != "Locali & Serate" or duplicato.get("categoria") != "Locali & Serate":
+        return evento
+    if not all(evento.get(k) == duplicato.get(k) for k in ("citta", "dataInizio", "dataFine")):
+        return evento
+    sede = _sede_movida_nota(evento)
+    if not sede or sede != _sede_movida_nota(duplicato):
+        return evento
+    dettagli = {}
+    if not evento.get("locandinaUrl") and duplicato.get("locandinaUrl"):
+        dettagli["locandinaUrl"] = duplicato["locandinaUrl"]
+    orario = r"\b(?:[01]?\d|2[0-3])[:.][0-5]\d\b"
+    if not re.search(orario, evento.get("dataTesto") or "") and re.search(orario, duplicato.get("dataTesto") or ""):
+        dettagli["dataTesto"] = duplicato["dataTesto"]
+    return dict(evento, **dettagli) if dettagli else evento
+
+
 def sono_duplicati(a, b):
     if str(a.get("citta", "")).casefold() != str(b.get("citta", "")).casefold():
         return False
@@ -3080,17 +3148,13 @@ def sono_duplicati(a, b):
         return False
 
     # Due serate omonime in club distinti non devono annullarsi a vicenda.
+    stessa_sede_nota = False
     if a.get("categoria") == b.get("categoria") == "Locali & Serate":
-        registro = registro_locali_movida()
-        locali = registro.get(a.get("citta"), [])
-        def sede_nota(ev):
-            sede = str(ev.get("luogo") or "").casefold()
-            return next((r.get("nome") for r in locali if any(
-                re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
-                for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
-        sa, sb = sede_nota(a), sede_nota(b)
-        if sa and sb and sa != sb:
-            return False
+        sa, sb = _sede_movida_nota(a), _sede_movida_nota(b)
+        if sa and sb:
+            if sa != sb:
+                return False
+            stessa_sede_nota = True
 
     if capodanno.TEMA.search(str(a.get("titolo") or "")) and capodanno.TEMA.search(str(b.get("titolo") or "")):
         # Due cenoni in sale diverse non sono duplicati, anche con titoli identici.
@@ -3113,7 +3177,7 @@ def sono_duplicati(a, b):
         generiche = {"teatro", "comunale", "piazza", "palazzo", "centro", "parco", "chiesa", "cinema", "ristorante", "cerignola", "foggia", "barletta", "andria", "trani", "manfredonia"}
         comune = {x for x in la & lb if len(x) >= 5 and x not in generiche}
         breve, lungo = sorted((ta, tb), key=len)
-        if comune and len(breve) >= 9 and f" {breve} " in f" {lungo} ":
+        if (comune or stessa_sede_nota) and len(breve) >= 9 and f" {breve} " in f" {lungo} ":
             return True
 
     # Le fonti ufficiali e gli aggregatori spesso usano sottotitoli diversi
@@ -3523,7 +3587,9 @@ def esegui_aggiornamento():
         if _host_appartiene(ev.get("fonteUrl"), "lineupatlas.com") and any(sono_duplicati(x,ev) and not _host_appartiene(x.get("fonteUrl"),"lineupatlas.com") for x in precedenti_auto):
             duplicati_evitati += 1
             continue
-        if any(sono_duplicati(x, ev) for x in nuovi_unici):
+        indice = next((i for i, x in enumerate(nuovi_unici) if sono_duplicati(x, ev)), None)
+        if indice is not None:
+            nuovi_unici[indice] = integra_dettagli_serata(nuovi_unici[indice], ev)
             duplicati_evitati += 1
         else:
             nuovi_unici.append(ev)
@@ -3552,8 +3618,11 @@ def esegui_aggiornamento():
                 aggiunti_nuovi += 1
 
     for ev_old in precedenti_auto:
-        if not any(sono_duplicati(x, ev_old) for x in consolidati):
+        indice = next((i for i, x in enumerate(consolidati) if sono_duplicati(x, ev_old)), None)
+        if indice is None:
             consolidati.append(ev_old)
+        elif indice >= len(manuali_admin):
+            consolidati[indice] = integra_dettagli_serata(consolidati[indice], ev_old)
 
     lista_finale = sorted(
         consolidati,

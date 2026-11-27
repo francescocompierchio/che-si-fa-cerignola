@@ -77,7 +77,8 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
         self.assertFalse(crawler.calendario_ha_link_movida('<a href="/eventi/">Eventi</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
         self.assertFalse(crawler.calendario_ha_link_movida('<a href="https://example.org/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
-        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/it/event/Golden-28-11-2026">Golden</a>', "https://www.ticketsms.it/it/location/Idol-Club", "ticketsms.it", "ticketsms"))
+        with patch.object(crawler, "oggi_iso", return_value="2026-11-27"):
+            self.assertTrue(crawler.calendario_ha_link_movida('<a href="/it/event/Golden-28-11-2026">Golden</a>', "https://www.ticketsms.it/location/Idol-Club", "ticketsms.it", "ticketsms"))
     def test_browser_non_aggira_blocchi(self):
         self.assertEqual(crawler.render_calendario_pubblico(None,"https://nightz.it/eventi/","<title>Just a moment...</title>","nightz.it","nightz"),("","blocco esplicito"))
 
@@ -127,6 +128,38 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(len(crawler.analizza_ticketsms(html,url,"Bisceglie","Idol Club")),1)
         self.assertEqual(crawler.analizza_ticketsms(html,url,"Trani","Idol Club"),[])
         self.assertEqual(crawler.analizza_ticketsms(html.replace("22:00",""),url,"Bisceglie","Idol Club"),[])
+    def test_ticketsms_verifica_renderizzato_e_salta_eventi_passati(self):
+        today = crawler.datetime(2026, 11, 27, 12)
+        fonte = next(f for f in crawler.FONTI_PORTALI if f.get("ticketsms"))
+        url = "https://www.ticketsms.it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
+        shell = "<html><head><title>TicketSms</title></head><body><div id='root'></div></body></html>"
+        indice = (
+            '<a href="/event/Altro-21-11-2026">Passato</a>'
+            '<a href="/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026">Golden</a>'
+        )
+        scheda = (
+            "<h4>Sabato 28 novembre 2026 / 23:00</h4>"
+            "<h1>Golden - Opening Party at Vyon Club</h1><h4>IDOL CLUB / BISCEGLIE</h4>"
+        )
+        with patch.object(crawler, "oggi_dt", return_value=today):
+            self.assertFalse(crawler.calendario_ha_link_movida(
+                '<a href="/event/Ara-10-10-2026">Ara</a>', fonte["url"], fonte["dominio"], "ticketsms"
+            ))
+            self.assertEqual(crawler.analizza_ticketsms(shell, url, "Bisceglie", "Idol Club"), [])
+            self.assertEqual(crawler.analizza_ticketsms(
+                scheda+"<h3>Evento annullato</h3>", url, "Bisceglie", "Idol Club"
+            ), [])
+            session = Mock()
+            session.get.return_value = SimpleNamespace(status_code=200, text=shell, apparent_encoding="utf-8")
+            with patch.object(crawler, "render_calendario_pubblico", side_effect=[(indice, "ok"), (scheda, "ok")]) as render:
+                eventi = crawler.raccogli_da_portale_generico(session, fonte)
+        self.assertEqual([arg.args[0] for arg in session.get.call_args_list], [fonte["url"], url])
+        self.assertEqual([arg.args[-1] for arg in render.call_args_list], ["ticketsms", "ticketsms-scheda"])
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["fonteUrl"], url)
+        self.assertEqual(eventi[0]["luogo"], "Idol Club")
+        self.assertIn("23:00", eventi[0]["dataTesto"])
+
     def test_sede_riservata_non_attribuita_a_comune(self):
         self.assertTrue(crawler.evento_sede_riservata({"titolo":"ECHOES Opening Winter Season with Stefano Andriezzi","dataInizio":"2026-11-28"}))
         self.assertFalse(crawler.evento_sede_riservata({"titolo":"Habibi","dataInizio":"2026-11-28"}))
