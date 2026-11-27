@@ -132,6 +132,19 @@ class TestRadar(unittest.TestCase):
         self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1,"schedeCandidate":1})
         engine.fonti_editori.scheda_da_origini_note.assert_called_once_with(session, url, {"comune.cerignola.fg.it"})
 
+    def test_agenda_scartati_i_workshop_informativi_e_ammessi_quelli_ricreativi(self):
+        import aggiorna_eventi as engine
+        from datetime import timedelta
+
+        event_day = (engine.oggi_dt() + timedelta(days=3)).date().isoformat()
+        raw = {"dataInizio":event_day, "dataFine":event_day, "luogo":"Biblioteca di Comunità",
+               "citta":"Cerignola", "descrizione":"Laboratorio creativo con attività per famiglie.",
+               "fonteUrl":radar.AGENDA_CERIGNOLA + "laboratorio/"}
+        formazione = dict(raw, titolo="Workshop: Disinformazione e Fake news")
+        svago = dict(raw, titolo="Workshop di pittura per famiglie")
+        self.assertIsNone(engine.normalizza_e_valida_evento(formazione, fonte_curata_eventi=True))
+        self.assertIsNotNone(engine.normalizza_e_valida_evento(svago, fonte_curata_eventi=True))
+
     def test_diagnosi_actor_non_pubblica_il_log(self):
         session = MagicMock()
         response = session.get.return_value.__enter__.return_value
