@@ -1,0 +1,3 @@
+const {initializeApp,cert,deleteApp}=require("firebase-admin/app");
+const {getDatabase}=require("firebase-admin/database");
+(async()=>{const a=initializeApp({credential:cert(JSON.parse(process.env.FIREBASE_KEY)),databaseURL:"https://chesifa-cerignola-default-rtdb.europe-west1.firebasedatabase.app"});try{const r=(await getDatabase(a).getRulesJSON()).rules.segnalazioniDaApprovare;const clean=JSON.stringify(r).replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g,"[ADMIN]").replace(/(['"])[A-Za-z0-9_-]{20,128}\1/g,"'[REDACTED]'");console.log("SCHEMA "+clean);}finally{await deleteApp(a)}})().catch(()=>{console.error("Audit non riuscito");process.exitCode=1;});

@@ -1,0 +1,21 @@
+name: Audit schema segnalazioni sola lettura
+on:
+  push:
+    branches: ['audit/segnalazioni-rapide-20261127']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts firebase-admin@13.6.0
+      - run: node scripts/audit-quick-schema.cjs
+        env:
+          FIREBASE_KEY: ${{ secrets.EVENT_STATS_FIREBASE_SERVICE_ACCOUNT }}
