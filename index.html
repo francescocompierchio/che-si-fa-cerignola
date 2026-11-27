@@ -3182,7 +3182,7 @@ html.csf-side-open{overflow:hidden}
     }
     quickFile.addEventListener("change",()=>quickLoadPhoto(quickFile.files[0]));
     quickRemove.addEventListener("click",quickClearPhoto);
-    quickInput.addEventListener("input",()=>quickPrefill(quickInput.value));
+    quickInput.addEventListener("input",()=>{if(quickImage||CsfQuick.publicUrl(quickInput.value)||CsfQuick.linkFromText(quickInput.value))quickPrefill(quickInput.value);else quickUpdate();});
     document.getElementById("quick-indietro").addEventListener("click",()=>{
       quickForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;
     });
