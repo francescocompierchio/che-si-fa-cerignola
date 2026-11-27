@@ -16,6 +16,12 @@ OUTPUT = Path("apify-eventi.json")
 CAP = 0.035
 INTERVAL = 8 * 3600
 ACTORS = {"instagram.com": "instagram-post-scraper", "facebook.com": "facebook-posts-scraper"}
+ATTORE_CALENDARI = "acts/topapi~website-content-crawler"
+AGENDA_CERIGNOLA = "https://comune.cerignola.fg.it/vivere-il-comune/eventi/"
+PERCORSO_EVENTO_COMUNALE = re.compile(r"/vivere-il-comune/eventi/[a-z0-9][a-z0-9-]*/?")
+TETTO_CALENDARI = 0.01
+INTERVALLO_CALENDARI = 24 * 3600
+MASSIMO_PAGINE_CALENDARI = 5
 
 
 class Pausa(Exception):
@@ -28,29 +34,34 @@ def numero(value):
     return value
 
 
-def verifica_budget(plan, limits):
-    if plan.get("tier", "").upper() != "FREE" or numero(plan["monthlyBasePriceUsd"]) != 0:
+def verifica_budget(plan, limits, tetto=CAP):
+    piano = plan.get("tier") or plan.get("id")
+    if str(piano).strip().upper() != "FREE" or numero(plan["monthlyBasePriceUsd"]) != 0:
         raise Pausa("piano gratuito non confermato")
     credit = numero(plan["monthlyUsageCreditsUsd"])
     hard = numero(limits["limits"]["maxMonthlyUsageUsd"])
     used = numero(limits["current"]["monthlyUsageUsd"])
-    if hard > credit or used + CAP + 0.25 > min(hard, credit, 5):
+    if hard > credit or used + tetto + 0.25 > min(hard, credit, 5):
         raise Pausa("limite account o credito residuo insufficiente")
 
 
-def verifica_prezzi(actor, now, primary="post"):
+def verifica_prezzi(actor, now, primary="post", tetto=CAP):
     if actor.get("actorPermissionLevel") != "LIMITED_PERMISSIONS":
         raise Pausa("permessi Actor non compatibili")
     active = [p for p in actor["pricingInfos"] if datetime.fromisoformat(
         p["startedAt"].replace("Z", "+00:00")) <= now]
+    if not active:
+        raise Pausa("tariffa attiva non verificabile")
     price = max(active, key=lambda p: p["startedAt"])
-    if price["pricingModel"] != "PAY_PER_EVENT" or numero(price.get("minimalMaxTotalChargeUsd", 0)) > CAP:
+    minimo = price.get("minimalMaxTotalChargeUsd")
+    if (price["pricingModel"] != "PAY_PER_EVENT" or price.get("isPPEPlatformUsagePaidByUser")
+        or (minimo is not None and numero(minimo) > tetto)):
         raise Pausa("modello tariffario non compatibile")
     events = price["pricingPerEvent"]["actorChargeEvents"]
     fees = {k: numero(v["eventTieredPricingUsd"]["FREE"]["tieredEventPriceUsd"]
                       if "eventTieredPricingUsd" in v else v["eventPriceUsd"])
             for k, v in events.items()}
-    if not 0 < fees[primary] <= .005 or any(v > CAP for v in fees.values()):
+    if not 0 < fees.get(primary, 0) <= .005 or any(v > tetto for v in fees.values()):
         raise Pausa("tariffa oltre soglia")
     return fees
 
@@ -100,6 +111,96 @@ def api(session, path, body=None, **params):
     if r.status_code not in (200, 201):
         raise Pausa(f"API HTTP {r.status_code} su {path.split('/')[0]}")
     return r.json()
+
+
+def leggi_righe_calendario(rows, engine):
+    """Accetta solo risposte HTML leggibili e schede del calendario concordanti con l'URL richiesto."""
+    eventi = []
+    metriche = {"pagineLette": 0, "indiciLetti": 0, "schedeLette": 0}
+    origine = urlsplit(AGENDA_CERIGNOLA)
+    for row in rows[:MASSIMO_PAGINE_CALENDARI]:
+        if not isinstance(row, dict):
+            continue
+        url, html, crawl = row.get("url"), row.get("rawHtml"), row.get("crawl")
+        if not isinstance(url, str) or not isinstance(html, str) or not 50 <= len(html) <= 2_000_000 or not isinstance(crawl, dict):
+            continue
+        if crawl.get("httpStatusCode") != 200 or crawl.get("loadedUrl") != url:
+            continue
+        p = urlsplit(url)
+        if (p.scheme, p.netloc) != (origine.scheme, origine.netloc) or p.query or p.fragment:
+            continue
+        indice = p.path.rstrip("/") == origine.path.rstrip("/")
+        if not indice and not PERCORSO_EVENTO_COMUNALE.fullmatch(p.path):
+            continue
+        metriche["pagineLette"] += 1
+        if indice:
+            metriche["indiciLetti"] += 1
+            continue
+        metriche["schedeLette"] += 1
+        for evento in engine.analizza_pagina_evento(html, url, citta_default="Cerignola", fonte_curata_eventi=True):
+            if evento.get("citta") != "Cerignola" or engine.evento_non_attivo(evento) or any(engine.sono_duplicati(evento, e) for e in eventi):
+                continue
+            evento.pop("locandinaUrl", None)
+            descrizione = evento.get("descrizione", "")[:190].rstrip()
+            evento["descrizione"] = f"{descrizione} · Fonte: Comune di Cerignola" if descrizione else "Fonte: Comune di Cerignola"
+            eventi.append(evento)
+    return eventi, metriche
+
+
+def raccogli_calendario():
+    import aggiorna_eventi as engine
+
+    token = os.getenv("APIFY_TOKEN", "").strip()
+    if not token:
+        return {"stato": "secret APIFY_TOKEN assente nel workflow"}
+    now = int(time.time())
+    state = json.loads(STATE.read_text()) if STATE.exists() else {}
+    ultima = state.get("ultimoCalendario", 0)
+    if now - ultima < INTERVALLO_CALENDARI:
+        return {"stato": "pausa programmata", "prossimoUnix": ultima + INTERVALLO_CALENDARI}
+
+    with requests.Session() as pubblico:
+        policy = engine.fonti_editori.robots(pubblico, AGENDA_CERIGNOLA)
+    if not policy or not all(policy.can_fetch(agent, AGENDA_CERIGNOLA) for agent in ("*", engine.fonti_editori.BOT)):
+        raise Pausa("robots.txt del calendario non consente la lettura o non è verificabile")
+
+    with requests.Session() as auth:
+        auth.headers["Authorization"] = "Bearer " + token
+        account = api(auth, "users/me")["data"]
+        verifica_budget(account["plan"], api(auth, "users/me/limits")["data"], TETTO_CALENDARI)
+        fees = verifica_prezzi(api(auth, ATTORE_CALENDARI)["data"], datetime.now(timezone.utc), "page-crawled", TETTO_CALENDARI)
+        if MASSIMO_PAGINE_CALENDARI * fees["page-crawled"] > TETTO_CALENDARI:
+            raise Pausa("tariffa del calendario oltre il tetto per esecuzione")
+        body = {
+            "startUrls": [{"url": AGENDA_CERIGNOLA}], "crawlMode": "startUrlPath",
+            "maxCrawlDepth": 1, "maxCrawlPages": MASSIMO_PAGINE_CALENDARI, "maxConcurrency": 1,
+            "linkSelector": f'main a[href^="{AGENDA_CERIGNOLA}"]:not([href="{AGENDA_CERIGNOLA}"])',
+            "respectRobotsTxtFile": True, "renderJavaScript": "never", "maxRequestRetries": 0,
+            "requestTimeoutSecs": 10, "outputFormats": ["raw"],
+            "proxyConfiguration": {"useApifyProxy": False},
+        }
+        state["ultimoCalendario"] = now
+        STATE.parent.mkdir(exist_ok=True)
+        engine._scrivi_json_atomico(str(STATE), state)
+        run = api(auth, ATTORE_CALENDARI + "/runs", body, maxTotalChargeUsd=TETTO_CALENDARI,
+                  waitForFinish=50, timeout=75)["data"]
+        for _ in range(4):
+            if run["status"] not in {"READY", "RUNNING", "TIMING-OUT", "ABORTING"}:
+                break
+            time.sleep(5)
+            run = api(auth, "actor-runs/" + run["id"])["data"]
+        report = {"fonte": AGENDA_CERIGNOLA, "stato": run["status"], "pianoGratuitoVerificato": True,
+                  "tettoUsd": TETTO_CALENDARI, "costoUsd": run.get("usageTotalUsd"),
+                  "eventiAddebitati": {"page-crawled": run.get("chargedEventCounts", {}).get("page-crawled", 0)}}
+        if run["status"] != "SUCCEEDED":
+            return report
+        rows = api(auth, "datasets/" + run["defaultDatasetId"] + "/items", limit=MASSIMO_PAGINE_CALENDARI,
+                   fields="url,crawl,rawHtml", clean="true")
+    if not isinstance(rows, list):
+        raise Pausa("risultato calendario non verificabile")
+    eventi, metriche = leggi_righe_calendario(rows, engine)
+    engine._scrivi_json_atomico(str(OUTPUT), eventi)
+    return dict(report, **metriche, righeRicevute=len(rows), validi=len(eventi))
 
 
 def pagine_google(rows, engine):
@@ -234,7 +335,7 @@ def raccogli():
 if __name__ == "__main__":
     OUTPUT.unlink(missing_ok=True)
     try:
-        report = raccogli()
+        report = raccogli_calendario()
     except Pausa as exc:
         report = {"stato": "sospeso", "motivo": str(exc)}
     except KeyError as exc:
