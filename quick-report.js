@@ -18,14 +18,37 @@
   return (String(v||"").match(/https:\/\/[^\s<>"']+/gi)||[]).map(x=>publicUrl(x.replace(/[.,!?)\]}]+$/g,""))).find(Boolean)||"";
  }
  function safeImage(v){return typeof v==="string"&&v.length<=MAX_DATA&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(v);}
- function payload(input,note,image,stamp){
+ function essentials(value){
+  const v=value||{}, clean=(k,max)=>String(v[k]||"").replace(/\s+/g," ").trim().slice(0,max);
+  const title=clean("title",150),venue=clean("venue",200),city=clean("city",80),date=clean("date",10),time=clean("time",5);
+  const validDate=/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date))&&new Date(date).toISOString().slice(0,10)===date;
+  const validTime=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time);
+  if(title.length<3||venue.length<2||city.length<2||!validDate||!validTime)return null;
+  return {titolo:title,luogo:venue,citta:city,dataInizio:date,dataFine:date,dataTesto:"Ore "+time};
+ }
+ async function readPoster(image){
+  if(!safeImage(image))throw Error("image");
+  if(!root.Tesseract)await new Promise((resolve,reject)=>{
+   const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js";
+   const timer=setTimeout(()=>{s.remove();reject(Error("timeout"));},15000);
+   s.onload=()=>{clearTimeout(timer);resolve();};s.onerror=()=>{clearTimeout(timer);reject(Error("OCR"));};document.head.appendChild(s);
+  });
+  let worker;
+  try{
+   worker=await root.Tesseract.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});
+   const result=await worker.recognize(image);
+   return String(result.data.text||"").slice(0,4000);
+  }finally{if(worker)try{await worker.terminate();}catch(_){}}
+ }
+ function payload(input,note,image,stamp,details,posterText){
   const text=String(input||"").trim().slice(0,4000),n=String(note||"").trim().slice(0,500);
   const source=publicUrl(text)||linkFromText(text);
   // A URL that cannot be recognized must not be interpreted as event text.
   const textOnly=/^https?:\/\/\S+$/i.test(text);
   const body=textOnly?"":text;
-  if(!safeImage(image)&&!source)return null;
-  const out={tipoSegnalazione:"Segnalazione rapida",titolo:"",fonteUrl:source,descrizione:body,notaRapida:n,inviatoIl:stamp};
+  const info=essentials(details);
+  if((!safeImage(image)&&!source)||!info)return null;
+  const out={tipoSegnalazione:"Segnalazione rapida",...info,fonteUrl:source,descrizione:[body,String(posterText||"").slice(0,4000)].filter(Boolean).join("\n").slice(0,4000),notaRapida:n,inviatoIl:stamp};
   if(safeImage(image))out.screenshot=image;
   return out;
  }
@@ -46,5 +69,5 @@
    throw Error("dimensione");
   }finally{URL.revokeObjectURL(url);}
  }
- root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,MAX_DATA};
+ root.CsfQuick={publicUrl,linkFromText,safeImage,essentials,readPoster,payload,compress,MAX_DATA};
 })(typeof window!=="undefined"?window:globalThis);
