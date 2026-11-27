@@ -789,6 +789,20 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335514.html"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Ven 11 Dic 2026",
+    "dataInizio": "2026-12-11",
+    "dataFine": "2026-12-11",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
+  },
+  {
     "locandinaUrl": "https://glnbdtlftdlvofuhqmjo.supabase.co/storage/v1/object/public/il-borghista-backend/events/06a75296-b65c-488e-8b95-c097d35f4bba.webp",
     "tipoContenuto": "evento",
     "citta": "Canosa di Puglia",
@@ -835,6 +849,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Sab 12 Dic 2026",
+    "dataInizio": "2026-12-12",
+    "dataFine": "2026-12-12",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Attività diurne",
     "titolo": "Antiquariando – Mercatino dell'antiquariato e dell'usato",
@@ -860,6 +888,20 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Mercatini straordinari del consorzio La Cicogna, dalle 07:00 alle 14:30 lungo il perimetro della Villa Comunale.",
     "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Dom 13 Dic 2026",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/10/330201_20260915_083447.jpg",
