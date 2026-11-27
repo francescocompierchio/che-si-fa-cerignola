@@ -24,7 +24,7 @@
   // A URL that cannot be recognized must not be interpreted as event text.
   const textOnly=/^https?:\/\/\S+$/i.test(text);
   const body=textOnly?"":text;
-  if(!safeImage(image)&&!source&&body.length<12)return null;
+  if(!safeImage(image)&&!source)return null;
   const out={tipoSegnalazione:"Segnalazione rapida",titolo:"",fonteUrl:source,descrizione:body,notaRapida:n,inviatoIl:stamp};
   if(safeImage(image))out.screenshot=image;
   return out;
