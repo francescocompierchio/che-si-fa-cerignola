@@ -16,6 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
+  <script src="quick-report.js?v=1"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -851,6 +852,13 @@
     #modal-segnala .seg-dichiarazione input { flex:0 0 20px; width:20px; height:20px; margin:0; }
     #modal-segnala details[open] summary { margin-bottom:10px; }
     #modal-segnala [hidden] { display:none!important; }
+    #seg-rapida .quick-photo{display:flex;align-items:center;justify-content:center;min-height:62px;border:1px dashed var(--accent);border-radius:14px;background:var(--card);color:var(--accent);font-weight:750;cursor:pointer;text-align:center;padding:12px}
+    #seg-rapida .quick-photo:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+    #seg-rapida .quick-photo input{position:absolute;width:1px;height:1px;opacity:0}
+    #seg-rapida .quick-preview{max-height:140px;max-width:100%;object-fit:contain;display:block;margin:8px auto;border-radius:9px}
+    #seg-rapida .quick-status{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere;line-height:1.4;margin:8px 0}
+    #seg-rapida .quick-note{font-size:.75rem;color:var(--muted);line-height:1.45;margin:10px 0}
+    #seg-rapida .quick-share-help{font-size:.78rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
     #modal-segnala .seg-choice-note{margin:6px 0 14px;font-size:.78rem;color:var(--muted);line-height:1.4}
     #modal-segnala .seg-link{border:0;background:transparent;color:var(--accent);font:inherit;font-size:.82rem;font-weight:650;min-height:44px;padding:8px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
     #modal-segnala .seg-other{border-top:1px solid var(--border);padding-top:6px;margin-top:8px;text-align:center}
@@ -1439,10 +1447,28 @@ html.csf-side-open{overflow:hidden}
         <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Invio gratuito, pubblicazione dopo verifica.</p>
         <button type="button" class="btn btn-map seg-full" id="seg-gestore">Pubblica il mio evento</button>
         <p class="seg-choice-note">Per gestori e organizzatori. Puoi usare la locandina o compilare i dati.</p>
-        <button type="button" class="btn btn-soft seg-full" id="seg-social">Suggerisci un evento trovato online</button>
-        <p class="seg-choice-note">Per chi ha visto un annuncio pubblico e vuole farlo inserire nell’agenda.</p>
+        <button type="button" class="btn btn-soft seg-full" id="seg-social">Segnala un evento in pochi secondi</button>
+        <p class="seg-choice-note">Hai visto una storia o una locandina? Basta una foto o un link.</p>
         <div class="seg-other"><button type="button" class="seg-link" id="seg-community">Parlane nella Community</button></div>
       </div>
+      <form id="seg-rapida" hidden>
+        <button type="button" class="seg-link" id="quick-indietro">‹ Indietro</button>
+        <p class="seg-intro">Hai visto un evento? Invia uno screenshot o un link. Verificheremo noi i dettagli.</p>
+        <label class="quick-photo"><input type="file" id="quick-foto" accept="image/jpeg,image/png,image/webp" />📷 Scegli screenshot o locandina</label>
+        <img id="quick-preview" class="quick-preview" alt="Anteprima dello screenshot scelto" hidden />
+        <button type="button" class="seg-link" id="quick-remove" hidden>Rimuovi foto</button>
+        <p id="quick-foto-stato" class="quick-status" role="status" aria-live="polite"></p>
+        <div class="m-field">
+          <label for="quick-link">Oppure incolla il link o il testo dell'annuncio</label>
+          <textarea id="quick-link" rows="2" maxlength="4000" placeholder="Link Instagram, Facebook o testo dell’evento"></textarea>
+        </div>
+        <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
+        <p class="quick-note">Invia solo annunci destinati al pubblico. Ritaglia eventuali dati privati. Foto e testo saranno visibili soltanto al gestore dell’app per la verifica, non pubblicati automaticamente.</p>
+        <button type="submit" class="btn btn-map seg-full" id="quick-invia" disabled>Invia segnalazione</button>
+        <p id="quick-esito" class="quick-status" role="status" aria-live="polite"></p>
+        <button type="button" class="seg-link" id="quick-wa" hidden>Invia invece via WhatsApp</button>
+        <p class="quick-share-help">Su Android, se Che Si Fa è installata e compare tra le app di condivisione, puoi usare Condividi direttamente da Instagram. Altrimenti usa lo screenshot.</p>
+      </form>
       <form id="form-segnalazione-pubblica" hidden>
         <button type="button" class="seg-link" id="seg-indietro">‹ Cambia modalità</button>
         <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
@@ -3095,6 +3121,66 @@ html.csf-side-open{overflow:hidden}
     segCategoriaSelect.addEventListener("change", aggiornaCampiTipoSegnalazione);
     const segForm=document.getElementById("form-segnalazione-pubblica");
     const segScelta=document.getElementById("seg-scelta");
+    const quickForm=document.getElementById("seg-rapida");
+    const quickFile=document.getElementById("quick-foto");
+    const quickInput=document.getElementById("quick-link");
+    const quickNote=document.getElementById("quick-nota");
+    const quickPreview=document.getElementById("quick-preview");
+    const quickPhotoStatus=document.getElementById("quick-foto-stato");
+    const quickStatus=document.getElementById("quick-esito");
+    const quickSend=document.getElementById("quick-invia");
+    const quickRemove=document.getElementById("quick-remove");
+    const quickWA=document.getElementById("quick-wa");
+    let quickImage="",quickBusy=false,quickSending=false,quickSequence=0;
+    function quickUpdate(){
+      const hasInput=quickImage||quickInput.value.trim();
+      quickSend.disabled=quickBusy||quickSending||!hasInput;
+    }
+    function quickClearPhoto(){
+      quickSequence++;quickBusy=false;quickImage="";quickFile.value="";
+      quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;quickPhotoStatus.textContent="";quickUpdate();
+    }
+    function quickReset(){
+      quickForm.reset();quickClearPhoto();quickStatus.textContent="";quickWA.hidden=true;
+    }
+    function apriRapida(){
+      segForm.hidden=true;segScelta.hidden=true;quickForm.hidden=false;
+      modalSegnala.querySelector(".modal-box").scrollTop=0;quickUpdate();
+    }
+    async function quickLoadPhoto(file){
+      quickClearPhoto();if(!file)return;
+      const seq=++quickSequence;quickBusy=true;quickPhotoStatus.textContent="Preparo la foto…";quickUpdate();
+      try{
+        const data=await CsfQuick.compress(file);
+        if(seq!==quickSequence)return;
+        quickImage=data;quickPreview.src=data;quickPreview.hidden=false;quickRemove.hidden=false;
+        quickPhotoStatus.textContent="Foto pronta per l’invio.";
+      }catch(_){if(seq===quickSequence){quickPhotoStatus.textContent="Foto non leggibile o troppo grande. Scegli un JPG, PNG o WebP fino a 8 MB.";quickFile.value="";}}
+      finally{if(seq===quickSequence){quickBusy=false;quickUpdate();}}
+    }
+    quickFile.addEventListener("change",()=>quickLoadPhoto(quickFile.files[0]));
+    quickRemove.addEventListener("click",quickClearPhoto);
+    quickInput.addEventListener("input",quickUpdate);
+    document.getElementById("quick-indietro").addEventListener("click",()=>{
+      quickForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;
+    });
+    quickWA.addEventListener("click",()=>{
+      const msg=["Ciao, segnalo un evento a Che Si Fa Cerignola.",quickInput.value.trim(),quickNote.value.trim(),quickImage?"Allego lo screenshot nella chat.":""].filter(Boolean).join("\n");
+      const a=document.createElement("a");a.href="https://wa.me/393474181072?text="+encodeURIComponent(msg);a.target="_blank";a.rel="noopener noreferrer";document.body.appendChild(a);a.click();a.remove();
+    });
+    quickForm.addEventListener("submit",async e=>{
+      e.preventDefault();if(quickBusy||quickSending||quickForm.hidden)return;
+      const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString());
+      if(!item){quickStatus.textContent="Aggiungi una foto, un link valido o il testo di un annuncio.";return;}
+      if(!dbGlobal){quickStatus.textContent="Invio non disponibile. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;return;}
+      quickSending=true;quickUpdate();quickStatus.textContent="Invio in corso…";quickWA.hidden=true;
+      try{
+        await dbGlobal.ref("segnalazioniDaApprovare").push(item);
+        window.CsfMetrics?.action?.("csf_report_sent");
+        quickReset();quickStatus.textContent="Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.";
+      }catch(_){quickStatus.textContent="Invio non riuscito. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;}
+      finally{quickSending=false;quickUpdate();}
+    });
     function apriModuloSegnalazione(social){
       if(social!==modalitaSocial){
         if(social&&segDataInput.value===oggi)segDataInput.value="";
@@ -3103,7 +3189,7 @@ html.csf-side-open{overflow:hidden}
         if(!social&&!segCitta.value)segCitta.value="Cerignola";
       }
       modalitaSocial=social;
-      segScelta.hidden=true;segForm.hidden=false;
+      quickForm.hidden=true;segScelta.hidden=true;segForm.hidden=false;
       segFonte.required=social;
       segContatto.required=!social;
       document.getElementById("seg-contatto-wrap").hidden=social;
@@ -3121,14 +3207,14 @@ html.csf-side-open{overflow:hidden}
       document.getElementById("seg-indietro").focus({preventScroll:true});
     }
     document.getElementById("seg-gestore").addEventListener("click",()=>apriModuloSegnalazione(false));
-    document.getElementById("seg-social").addEventListener("click",()=>apriModuloSegnalazione(true));
+    document.getElementById("seg-social").addEventListener("click",apriRapida);
     document.getElementById("seg-indietro").addEventListener("click",()=>{segForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;document.getElementById("seg-gestore").focus({preventScroll:true});});
 
     async function importaBozzaSocial(){
       if(urlParams.get("segnalaSocial")!=="1")return;
       modalSegnala.classList.add("open");
       aggiornaCampiTipoSegnalazione();
-      apriModuloSegnalazione(true);
+      apriRapida();
       const token=urlParams.get("bozza")||"", timestamp=Number(urlParams.get("t"));
       const clean=new URL(location.href);
       for(const k of ["segnalaSocial","bozza","t"])clean.searchParams.delete(k);
@@ -3140,21 +3226,16 @@ html.csf-side-open{overflow:hidden}
         const response=await store.match(key);
         if(!response||!await store.delete(key))throw Error();
         const draft=await response.formData();
-        if(!modalitaSocial||segForm.hidden||!modalSegnala.classList.contains("open"))return;
+        if(quickForm.hidden||!modalSegnala.classList.contains("open"))return;
         const testo=String(draft.get("testo")||"");
-        const fonte=CsfExtras.socialUrl(draft.get("fonte"))||CsfExtras.socialLinkFromText(testo);
-        if(fonte&&!segFonte.value)segFonte.value=fonte;
-        segTesto.value=testo;
-        if(testo){document.getElementById("seg-social-testo").open=true;applicaDatiSegnalazione(testo,segStatus);}
+        const titolo=String(draft.get("titolo")||"");
+        const fonte=CsfQuick.publicUrl(draft.get("fonte"))||CsfQuick.linkFromText(testo);
+        if(!quickInput.value)quickInput.value=[fonte,titolo,testo].filter(Boolean).join("\n").slice(0,4000);
         const foto=draft.get("foto");
-        if(foto instanceof File){
-          posterCondiviso=foto;
-          document.getElementById("seg-poster-tools").open=true;
-          posterStatus.textContent="Locandina pronta. Premi «Leggi locandina» per ricavare i dati.";
-        }
+        if(foto instanceof File)await quickLoadPhoto(foto);
+        quickUpdate();
       }catch(_){
-        segStatus.hidden=false;
-        segStatus.textContent="Puoi incollare il link o scegliere la locandina dal dispositivo.";
+        quickStatus.textContent="Puoi incollare il link o scegliere lo screenshot dal dispositivo.";
       }
     }
     document.getElementById("seg-community").addEventListener("click",()=>{
@@ -3168,7 +3249,7 @@ html.csf-side-open{overflow:hidden}
       window.CsfMetrics?.action?.("csf_report_open");
       if (!modalitaSocial&&!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
-      segScelta.hidden=false;segForm.hidden=true;
+      segScelta.hidden=false;segForm.hidden=true;quickForm.hidden=true;
       document.getElementById("seg-autorizzato").checked=false;
       modalSegnala.classList.add("open");
       modalSegnala.querySelector(".modal-box").scrollTop=0;

@@ -27,24 +27,29 @@ const assert = require("node:assert/strict");
     await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
     await page.locator("#btn-segnala-evento").click();
     await page.locator("#seg-social").click();
-    assert.ok(await page.locator("#seg-contatto-wrap").isHidden());
-    assert.equal(await page.locator("#seg-contatto").evaluate(el => el.required), false);
-    assert.equal(await page.locator("#seg-data").inputValue(), "");
-    assert.equal(await page.locator("#seg-citta").inputValue(), "");
-    assert.equal(await page.locator("#seg-autorizzato").isChecked(), false);
-
-    await page.locator("#seg-social-testo summary").click();
+    assert.ok(await page.locator("#seg-rapida").isVisible());
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
+    assert.ok(await page.locator("#quick-invia").isDisabled());
     const date = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
     const text = ["Evento: DJ Set di prova", "Locale: Sala di prova", "Comune: Cerignola", "Data: "+date, "Ore 22:30"].join("\n");
     const source = "https://www.instagram.com/reel/AbCd1234/?igsh=tracking";
-    await page.locator("#seg-social-incolla").fill(text+"\n"+source);
-    await page.locator("#seg-social-applica").click();
-    assert.equal(await page.locator("#seg-titolo").inputValue(), "DJ Set di prova");
-    assert.equal(await page.locator("#seg-data").inputValue(), date);
-    assert.equal(await page.locator("#seg-ora").inputValue(), "Ore 22:30");
-    assert.equal(await page.locator("#seg-citta").inputValue(), "Cerignola");
-    assert.equal(await page.locator("#seg-fonte").inputValue(), "https://www.instagram.com/reel/AbCd1234/");
-
+    await page.locator("#quick-link").fill(source);
+    await page.locator("#quick-invia").click();
+    await page.waitForFunction(()=>window.segnalazioniTest.length===1);
+    let first=await page.evaluate(()=>window.segnalazioniTest[0]);
+    assert.equal(first.tipoSegnalazione,"Segnalazione rapida");
+    assert.equal(first.fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
+    assert.ok(!first.dataInizio&&!first.citta&&!first.luogo);
+    assert.ok(!first.screenshot);
+    await page.locator("#quick-foto").setInputFiles({name:"screenshot.png",mimeType:"image/png",buffer:Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==","base64")});
+    await page.locator("#quick-preview").waitFor({state:"visible"});
+    await page.locator("#quick-invia").click();
+    await page.waitForFunction(()=>window.segnalazioniTest.length===2);
+    const second=await page.evaluate(()=>window.segnalazioniTest[1]);
+    assert.ok(second.screenshot.startsWith("data:image/jpeg;base64,"));
+    assert.ok(second.screenshot.length<=240000);
+    assert.equal(second.fonteUrl,"");
+    assert.ok(!second.dataInizio&&!second.citta);
     await Promise.all([
       page.waitForNavigation(),
       page.evaluate(({source,text}) => {
@@ -70,24 +75,23 @@ const assert = require("node:assert/strict");
         form.submit();
       }, {source,text})
     ]);
-    await page.waitForFunction(() => document.querySelector("#seg-fonte").value.includes("/reel/AbCd1234/"));
-    assert.ok(await page.locator("#form-segnalazione-pubblica").isVisible());
-    assert.equal(await page.locator("#seg-autorizzato").isChecked(),false);
-    assert.equal(await page.locator("#seg-data").inputValue(),date);
-    assert.match(await page.locator("#seg-poster-status").textContent(), /Locandina pronta/);
+    await page.waitForFunction(() => document.querySelector("#quick-link").value.includes("/reel/AbCd1234/"));
+    await page.locator("#quick-preview").waitFor({state:"visible"});
+    assert.ok(await page.locator("#seg-rapida").isVisible());
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
     assert.equal(new URL(page.url()).search,"");
     assert.equal(await page.evaluate(async () => (await (await caches.open("chesifa-social-local-v1")).keys()).length),0);
-    assert.equal(await page.evaluate(() => window.segnalazioniTest.length), 0);
-    await page.locator("#seg-autorizzato").check();
-    await page.locator("#btn-invia-segnalazione").click();
-    const sent = await page.evaluate(() => window.segnalazioniTest);
-    assert.equal(sent.length,1);
-    assert.equal(sent[0].fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
-    assert.equal(sent[0].dataInizio,date);
-    assert.equal(sent[0].locandinaUrl,"");
+    assert.equal(await page.evaluate(() => window.segnalazioniTest.length),0);
+    await page.locator("#quick-invia").click();
+    await page.waitForFunction(()=>window.segnalazioniTest.length===1);
+    const sent=await page.evaluate(()=>window.segnalazioniTest[0]);
+    assert.equal(sent.tipoSegnalazione,"Segnalazione rapida");
+    assert.equal(sent.fonteUrl,"https://www.instagram.com/reel/AbCd1234/");
+    assert.ok(sent.screenshot.startsWith("data:image/jpeg;base64,"));
+    assert.ok(!sent.dataInizio&&!sent.citta);
     assert.ok(!JSON.stringify(sent).includes("prova.png"));
     assert.deepEqual(errors, []);
-    console.log("OK segnalazioni social: compilazione, condivisione POST con foto, bozza locale consumata e invio esplicito.");
+    console.log("OK segnalazioni rapide: link solo, screenshot solo, share target con foto, bozza consumata e invio esplicito.");
   } finally {
     await browser.close();
   }
