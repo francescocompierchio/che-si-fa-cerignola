@@ -135,7 +135,7 @@ def eventi_nella_finestra(eventi, oggi, comuni):
     ]
 
 
-def ricerche(memoria, eventi, oggi, priorita_km, comuni):
+def ricerche(memoria, eventi, oggi, priorita_km, comuni, registro_locali=None):
     """Uguali categorie e regole di ricerca, con un massimo di 3, 2, 1 query."""
     territorio = memoria.get("territorio", {})
     ultimo = territorio.get("ultimeRicerche", {})
@@ -168,24 +168,42 @@ def ricerche(memoria, eventi, oggi, priorita_km, comuni):
         nome = f"{prefisso}{categoria} {variante + 1}"
         if any(f["nome"] == nome for f in fonti):
             # Il secondo slot di Cerignola cerca anche le sedi ricorrenti o approvate.
-            luoghi = sorted({v["luogo"] for v in territorio.get("organizzatori", {}).values()
-                            if v["citta"] == comune and (v["categorie"].get(MOVIDA, 0) >= 2
-                            or any(d.get("presenteInEventoApprovato") for d in v["domini"].values()))})
+            # Anche i locali senza storico meritano un turno. L'anagrafica è solo
+            # un indizio di ricerca, mai una prova che esista una serata.
+            luoghi = {v["luogo"] for v in territorio.get("organizzatori", {}).values()
+                      if v["citta"] == comune and (v["categorie"].get(MOVIDA, 0) >= 2
+                      or any(d.get("presenteInEventoApprovato") for d in v["domini"].values()))}
+            if comune == "Cerignola":
+                luoghi.update(nome_locale(v.get("nome")) for v in (registro_locali or [])
+                              if isinstance(v, dict) and v.get("gruppo") == "movida")
+            luoghi = sorted({nome_locale(v) for v in luoghi} - {""})
             if luoghi:
-                luogo = luoghi[ciclo % len(luoghi)]
+                ultimi_locali = territorio.get("ultimeRicercheLocali", {})
+                def ordine_locale(v):
+                    k = f"{comune}/{v.casefold()}"
+                    attivi = sum(1 for e in eventi_nella_finestra(eventi, oggi, comuni)
+                                 if e["citta"] == comune and e["categoria"] == MOVIDA
+                                 and nome_locale(e.get("luogo")).casefold() == v.casefold())
+                    return (ultimi_locali.get(k, 0), attivi, (luoghi.index(v) - ciclo) % len(luoghi))
+                luogo = min(luoghi, key=ordine_locale)
                 nome = f"Ricerca locale {comune} / {luogo}"
-                termini = f'"{luogo}" {termini}'
+                # Termini meno restrittivi: il validatore originale verifica data, sede e pertinenza.
+                termini = f'"{luogo}" (serata OR evento OR party OR dj OR karaoke OR aperitivo OR live OR concerto)'
             else:
                 variante = (variante + 1 + ciclo % 2) % len(apprendimento.AREE[categoria])
                 nome = f"{prefisso}{categoria} {variante + 1}"
                 termini = apprendimento.AREE[categoria][variante]
         fonte = query(nome, f'"{comune}" {termini}', comune, movida=categoria == MOVIDA)
+        if nome.startswith("Ricerca locale "):
+            fonte["locale_radar"] = luogo
         fonti.append(dict(fonte, fascia_copertura=fascia, categoria_cercata=categoria))
     return fonti
 
 
 def registra_ricerche(memoria, fonti, diagnostica, ora):
-    ultimo = memoria.setdefault("territorio", {}).setdefault("ultimeRicerche", {})
+    territorio = memoria.setdefault("territorio", {})
+    ultimo = territorio.setdefault("ultimeRicerche", {})
+    ultimi_locali = territorio.setdefault("ultimeRicercheLocali", {})
     risultati = []
     for fonte in fonti:
         comune, categoria = fonte["comune_radar"], fonte["categoria_cercata"]
@@ -193,9 +211,12 @@ def registra_ricerche(memoria, fonti, diagnostica, ora):
         esito = dati.get("stato", "non_eseguita")
         if esito not in ("pausa", "non_eseguita"):
             ultimo.setdefault(comune, {})[categoria] = ora
+            if fonte.get("locale_radar"):
+                ultimi_locali[f"{comune}/{fonte['locale_radar'].casefold()}"] = ora
         risultati.append({"fascia": FASCE[fonte["fascia_copertura"]], "comune": comune,
                           "categoria": categoria, "fonte": fonte["nome"], "esito": esito,
                           "eventiEstratti": dati.get("eventiEstratti", 0)})
+    territorio["ultimeRicercheLocali"] = dict(sorted(ultimi_locali.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)[:300])
     return risultati
 
 

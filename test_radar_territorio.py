@@ -51,6 +51,21 @@ class RadarTerritorioTests(unittest.TestCase):
         self.assertTrue(any(r["nome"] == "Ricerca locale Cerignola / Caffè Esempio" for r in ricerche))
         self.assertTrue(all(r["origini_note"] for r in ricerche))
 
+    def test_rotazione_locali_anche_senza_storico(self):
+        memoria = {}
+        oggi = date(2026, 11, 27)
+        anagrafica = [{"nome": n, "gruppo": "movida"} for n in ("Locale Alfa", "Locale Beta", "Locale Gamma")]
+        anagrafica += [{"nome": "Associazione Test", "gruppo": "associazioni"}]
+        visti = set()
+        for ciclo in range(3):
+            piano = radar.ricerche(memoria, [], oggi, lambda c: 0, {"Cerignola"}, anagrafica)
+            self.assertEqual(len(piano), 3)
+            f = next(f for f in piano if f.get("locale_radar"))
+            visti.add(f["locale_radar"])
+            radar.registra_ricerche(memoria, piano, {x["nome"]: {"stato": "ok"} for x in piano}, ciclo + 1)
+        self.assertEqual(visti, {"Locale Alfa", "Locale Beta", "Locale Gamma"})
+        self.assertEqual(len(memoria["territorio"]["ultimeRicercheLocali"]), 3)
+
     def test_stesse_categorie_in_tutte_le_fasce_con_memoria_dei_tentativi(self):
         fasce = {"Cerignola": 0, "Stornara": 1, "Canosa di Puglia": 1, "Trani": 2, "Foggia": 2}
         memoria = {"apprendimento": {}}

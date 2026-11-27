@@ -851,6 +851,9 @@
     #modal-segnala .seg-dichiarazione input { flex:0 0 20px; width:20px; height:20px; margin:0; }
     #modal-segnala details[open] summary { margin-bottom:10px; }
     #modal-segnala [hidden] { display:none!important; }
+    #modal-segnala .seg-choice-note{margin:6px 0 14px;font-size:.78rem;color:var(--muted);line-height:1.4}
+    #modal-segnala .seg-link{border:0;background:transparent;color:var(--accent);font:inherit;font-size:.82rem;font-weight:650;min-height:44px;padding:8px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+    #modal-segnala .seg-other{border-top:1px solid var(--border);padding-top:6px;margin-top:8px;text-align:center}
     #modal-segnala .m-row > * { min-width:0; }
     .modal-head h2 {
       margin: 0;
@@ -1230,13 +1233,13 @@ html[data-csf-theme="dark"] .agenda-more input{color-scheme:dark}
 html.csf-side-open{overflow:hidden}
 .csf-side-swipe{display:none}
 @media(max-width:900px) and (pointer:coarse){
- .csf-side-swipe{display:flex;align-items:center;justify-content:center;position:fixed;top:48%;height:64px;width:44px;left:8px;z-index:160;touch-action:pan-y;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
- .csf-side-swipe[data-side="right"]{left:auto;right:8px}
- .csf-side-grip{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:12px;height:44px;position:absolute;left:0;top:10px;font-size:16px;font-weight:800;line-height:1;background:linear-gradient(145deg,#102b61,#2864c3);color:#fff4cd;border:1px solid #d5b360;border-radius:8px;box-shadow:0 2px 6px #102b6144,inset 0 1px 0 #ffffff35;pointer-events:none}
- .csf-side-swipe[data-side="right"] .csf-side-grip{left:auto;right:0}
+ .csf-side-swipe{display:flex;align-items:center;justify-content:center;position:fixed;top:48%;height:48px;width:44px;left:0;z-index:160;touch-action:pan-y;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+ .csf-side-swipe[data-side="right"]{left:auto;right:0}
+ .csf-side-grip{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:9px;height:26px;position:absolute;left:1px;top:11px;font-size:13px;font-weight:700;line-height:1;background:transparent;color:var(--accent);border:0;border-radius:4px;box-shadow:none;opacity:.72;pointer-events:none}
+ .csf-side-swipe[data-side="right"] .csf-side-grip{left:auto;right:1px}
  .csf-side-swipe:focus{outline:none}
  .csf-side-swipe:focus-visible .csf-side-grip{outline:2px solid #e4bd5b;outline-offset:2px}
- .csf-side-swipe:active .csf-side-grip{filter:brightness(1.15)}
+ .csf-side-swipe:active .csf-side-grip{opacity:1}
  html.csf-side-open .csf-side-swipe,body:has(.modal-backdrop.open,.venues-drawer.open,#csfc-panel:not([hidden])) .csf-side-swipe{visibility:hidden;pointer-events:none}
  @media(max-height:500px){.csf-side-swipe{top:43%}}
 }
@@ -1433,13 +1436,15 @@ html.csf-side-open{overflow:hidden}
         <button type="button" class="modal-close" id="btn-chiudi-modale" aria-label="Chiudi">✕</button>
       </div>
       <div id="seg-scelta">
-        <p class="seg-intro">Hai un locale o organizzi un evento a Cerignola o entro 50 km? Proponi il tuo appuntamento gratuitamente.</p>
-        <button type="button" class="btn btn-map seg-full" id="seg-gestore">Sono un gestore / organizzatore</button>
-        <button type="button" class="btn btn-soft seg-full" id="seg-social" style="margin-top:8px;">Segnala un post o una Storia</button>
-        <p class="seg-intro" style="margin-top:12px;">Vuoi soltanto consigliare un evento ad altre persone?</p>
-        <button type="button" class="btn btn-soft seg-full" id="seg-community">Segnala nella Community</button>
+        <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Invio gratuito, pubblicazione dopo verifica.</p>
+        <button type="button" class="btn btn-map seg-full" id="seg-gestore">Pubblica il mio evento</button>
+        <p class="seg-choice-note">Per gestori e organizzatori. Puoi usare la locandina o compilare i dati.</p>
+        <button type="button" class="btn btn-soft seg-full" id="seg-social">Suggerisci un evento trovato online</button>
+        <p class="seg-choice-note">Per chi ha visto un annuncio pubblico e vuole farlo inserire nell’agenda.</p>
+        <div class="seg-other"><button type="button" class="seg-link" id="seg-community">Parlane nella Community</button></div>
       </div>
       <form id="form-segnalazione-pubblica" hidden>
+        <button type="button" class="seg-link" id="seg-indietro">‹ Cambia modalità</button>
         <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
         <div class="m-field">
           <label for="seg-fonte" id="seg-fonte-label">Link del post o del sito</label>
@@ -3103,8 +3108,8 @@ html.csf-side-open{overflow:hidden}
       segContatto.required=!social;
       document.getElementById("seg-contatto-wrap").hidden=social;
       document.getElementById("seg-locandina-wrap").hidden=social;
-      document.getElementById("seg-social-testo").hidden=!social;
-      document.getElementById("seg-fonte-label").textContent=social?"Link pubblico al post o alla Storia *":"Link del post o del sito";
+      document.getElementById("seg-social-testo").hidden=false;
+      document.getElementById("seg-fonte-label").textContent=social?"Link pubblico all’annuncio *":"Link all’annuncio (facoltativo)";
       document.getElementById("seg-autorizzato-testo").textContent=social
         ?"Confermo che il link rimanda a un annuncio pubblico e che posso condividere l’eventuale locandina."
         :"Dichiaro di essere il gestore o un organizzatore autorizzato.";
@@ -3113,10 +3118,11 @@ html.csf-side-open{overflow:hidden}
         ?"Incolla il link all’annuncio. Puoi ricavare i dati dal testo o dalla locandina. La segnalazione sarà verificata prima della pubblicazione."
         :"Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.";
       modalSegnala.querySelector(".modal-box").scrollTop=0;
-      (social?segFonte:document.getElementById("seg-titolo")).focus({preventScroll:true});
+      document.getElementById("seg-indietro").focus({preventScroll:true});
     }
     document.getElementById("seg-gestore").addEventListener("click",()=>apriModuloSegnalazione(false));
     document.getElementById("seg-social").addEventListener("click",()=>apriModuloSegnalazione(true));
+    document.getElementById("seg-indietro").addEventListener("click",()=>{segForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;document.getElementById("seg-gestore").focus({preventScroll:true});});
 
     async function importaBozzaSocial(){
       if(urlParams.get("segnalaSocial")!=="1")return;

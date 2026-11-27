@@ -3587,7 +3587,7 @@ def esegui_aggiornamento():
             ))
     radar_territorio.aggiorna_registro(memoria, copertura_iniziale, approvati, oggi_stagionale, now)
     copertura_ricerca = apprendimento.copertura_unita(copertura_iniziale, approvati, sono_duplicati)
-    ricerche_territoriali = radar_territorio.ricerche(memoria, copertura_ricerca, oggi_stagionale, priorita_km, comuni)
+    ricerche_territoriali = radar_territorio.ricerche(memoria, copertura_ricerca, oggi_stagionale, priorita_km, comuni, registro_cerignola())
     fonti_adattive = (ricerche_territoriali
                       + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
                       + apprendimento.esplora_candidati(memoria,oggi_stagionale)
