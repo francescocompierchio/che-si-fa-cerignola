@@ -18,6 +18,15 @@ const ev={titolo:"Serata di prova",citta:"Cerignola",categoria:"Locali & Serate"
 const second={...ev,titolo:"Serata due",dataInizio:"2026-11-29",dataFine:"2026-11-29"};
 const third={...ev,titolo:"Serata tre",citta:"Foggia"};
 const invalid={...ev,titolo:"Data impossibile",dataInizio:"2027-02-31",dataFine:"2027-02-31"};
+const aroundEditorial={...ev,citta:"Bisceglie",titolo:"Around Us – Salomé Le Chat",luogo:"Divine Club",dataTesto:"Sab 28 Nov 2026 · Ore 23:00",locandinaUrl:"https://example.org/locandina.jpg"};
+const aroundAutomatic={...aroundEditorial,titolo:"Bisceglie | Around Us con Salomé Le Chat, Skizzo, Innocent Soul e White Soxx",luogo:"Divinae Follie",fonteUrl:"https://example.net/evento"};
+assert.deepEqual(u.dedup([aroundEditorial,aroundAutomatic]),[aroundEditorial]);
+assert.equal(u.duplicate(aroundEditorial,{...aroundAutomatic,luogo:"Idol Club"}),false);
+const aroundPages=genera([aroundAutomatic],[aroundEditorial],"2026-11-27");
+const aroundCanonical="eventi/bisceglie-2026-11-28-around-us-salome-le-chat.html";
+assert.equal((aroundPages["sitemap.xml"].match(/around-us/g)||[]).length,1);
+assert.ok(aroundPages[aroundCanonical].includes("locandina.jpg"));
+assert.ok(aroundPages[aroundCanonical].includes("23:00"));
 const files=genera([ev,second,third,invalid],[],"2026-11-24");
 assert.ok(files["sitemap.xml"].includes("collabora.html"));
 assert.ok(files["sitemap.xml"].includes("hub-serate.html"));

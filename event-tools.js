@@ -20,6 +20,12 @@ function strumenti(){
  if(!a||!b||a.tipoContenuto==="esperienza"||b.tipoContenuto==="esperienza"||!norm(a.citta)||norm(a.citta)!==norm(b.citta)||!validDate(a.dataInizio)||a.dataInizio!==b.dataInizio||(a.dataFine||a.dataInizio)!==(b.dataFine||b.dataInizio))return false;
  const ta=norm(a.titolo),tb=norm(b.titolo);
  const la=norm(a.luogo),lb=norm(b.luogo);
+ const divineClub=norm(a.citta)==="bisceglie"&&[la,lb].every(l=>["divine club","divinae follie"].includes(l));
+ if(divineClub&&[a,b].every(ev=>norm(ev.categoria)==="locali serate")){
+   const titoloLocale=ev=>norm(ev.titolo).replace(/^bisceglie /,"").replace(/ con /," ");
+   const [breve,esteso]=[titoloLocale(a),titoloLocale(b)].sort((x,y)=>x.length-y.length);
+   if(breve.length>=9&&(" "+esteso+" ").includes(" "+breve+" "))return true;
+ }
  const stop=new Set(["teatro","comunale","sala","piazza","palazzo","centro","parco","chiesa","auditorium","cinema","ristorante","locale","cerignola","foggia","barletta","andria","trani","manfredonia"]);
  const sameVenue=la&&lb&&(la===lb||la.split(" ").some(x=>x.length>=5&&!stop.has(x)&&lb.split(" ").includes(x)));
  if(!sameVenue)return false;
