@@ -152,24 +152,35 @@ def process(updates, state, channels, today, validate):
 def collect(today, validate, path=STATE, session=requests):
     state=load_state(path)
     token=os.environ.get("TELEGRAM_EVENT_BOT_TOKEN","").strip()
-    setting=os.environ.get("TELEGRAM_EVENT_CHANNELS","")
-    empty={"version":1,"offset":state["offset"],"events":{k:v for k,v in state["events"].items() if v.get("dataFine","")>=today.isoformat()}}
-    if not token or not setting:
-        return empty,{"stato":"non_configurato","accettati":0,"annullati":0,"ignorati":0}
+    setting=os.environ.get("TELEGRAM_EVENT_CHANNELS","").strip()
+    empty, counts = process([], state, {}, today, validate)
+    mancanti = [key for key, value in (("TELEGRAM_EVENT_BOT_TOKEN", token), ("TELEGRAM_EVENT_CHANNELS", setting)) if not value]
+    if mancanti:
+        return empty, {"stato":"non_configurato", "impostazioniMancanti":mancanti, **counts}
+    if not TOKEN.fullmatch(token):
+        return empty, {"stato":"configurazione_non_valida", "impostazioniNonValide":["TELEGRAM_EVENT_BOT_TOKEN"], **counts}
     try:
         channels=config(setting)
-        if not channels or not TOKEN.fullmatch(token):
-            return empty,{"stato":"non_configurato","accettati":0,"annullati":0,"ignorati":0}
+        if not channels:
+            raise ValueError("Serve almeno un canale")
+    except (ValueError, TypeError):
+        return empty, {"stato":"configurazione_non_valida", "impostazioniNonValide":["TELEGRAM_EVENT_CHANNELS"], **counts}
+    report = {"canaliConfigurati":len(channels), **counts}
+    try:
         # Offset confermato solo dopo il commit atomico di archivio e stato su main.
         # Se il push fallisce, la prossima esecuzione ripete il lotto senza perdere eventi.
         res=session.post("https://api.telegram.org/bot"+token+"/getUpdates",json={"offset":state["offset"],"limit":100,"timeout":0,"allowed_updates":["channel_post","edited_channel_post"]},timeout=(4,12),allow_redirects=False)
         if res.status_code!=200:
-            raise ValueError("Bot API non disponibile")
+            motivo = {401:"token_respinto", 403:"accesso_negato", 404:"token_o_endpoint_non_valido",
+                      409:"conflitto_webhook_o_altro_polling", 429:"limite_api"}.get(res.status_code, "http")
+            return empty, {"stato":"errore", "motivo":motivo, "http":res.status_code, **report}
         payload=res.json()
-        if not payload.get("ok") or not isinstance(payload.get("result"),list):
+        if not isinstance(payload, dict) or not payload.get("ok") or not isinstance(payload.get("result"),list):
             raise ValueError("Risposta Bot API non valida")
         new,counts=process(payload["result"],state,channels,today,validate)
-        return new,{"stato":"ok",**counts}
-    except (requests.RequestException,ValueError,TypeError,KeyError):
+        return new, {"stato":"ok", "aggiornamentiRicevuti":len(payload["result"]), **report, **counts}
+    except requests.RequestException:
+        return empty, {"stato":"errore", "motivo":"connessione", **report}
+    except (ValueError,TypeError,KeyError,AttributeError):
         # Non includere mai URL, token, corpo della risposta o messaggi nel log.
-        return empty,{"stato":"errore","accettati":0,"annullati":0,"ignorati":0}
+        return empty, {"stato":"errore", "motivo":"risposta_non_valida", **report}

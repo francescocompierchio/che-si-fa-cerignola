@@ -50,17 +50,28 @@ class TelegramTests(unittest.TestCase):
             path=Path(d)/"state.json"
             session=Mock()
             with patch.dict(os.environ,{"TELEGRAM_EVENT_BOT_TOKEN":"","TELEGRAM_EVENT_CHANNELS":""}):
-                self.assertEqual(tg.collect(self.today,self.validate,path,session)[1]["stato"],"non_configurato")
+                _, report = tg.collect(self.today,self.validate,path,session)
+                self.assertEqual(report["stato"],"non_configurato")
+                self.assertEqual(report["impostazioniMancanti"],["TELEGRAM_EVENT_BOT_TOKEN","TELEGRAM_EVENT_CHANNELS"])
             session.post.assert_not_called()
             with patch.dict(os.environ,{"TELEGRAM_EVENT_BOT_TOKEN":"123:"+"a"*30,"TELEGRAM_EVENT_CHANNELS":json.dumps(self.channels)}):
                 session.post.return_value.status_code=200
                 session.post.return_value.json.return_value={"ok":True,"result":[self.upd()]}
                 s,c=tg.collect(self.today,self.validate,path,session)
                 self.assertEqual(c["accettati"],1)
+                self.assertEqual(c["aggiornamentiRicevuti"],1)
                 self.assertEqual(session.post.call_args.kwargs["json"]["allowed_updates"],["channel_post","edited_channel_post"])
                 path.write_text(json.dumps(s),encoding="utf-8")
                 session.post.return_value.status_code=403
-                self.assertEqual(tg.collect(self.today,self.validate,path,session)[0],s)
+                recovered, report = tg.collect(self.today,self.validate,path,session)
+                self.assertEqual(recovered,s)
+                self.assertEqual(report["motivo"],"accesso_negato")
+                session.post.return_value.status_code=409
+                self.assertEqual(tg.collect(self.today,self.validate,path,session)[1]["motivo"],"conflitto_webhook_o_altro_polling")
+            with patch.dict(os.environ,{"TELEGRAM_EVENT_BOT_TOKEN":"123:"+"a"*30,"TELEGRAM_EVENT_CHANNELS":"json non pubblico"}):
+                _, report = tg.collect(self.today,self.validate,path,session)
+                self.assertEqual(report["impostazioniNonValide"],["TELEGRAM_EVENT_CHANNELS"])
+                self.assertNotIn("json non pubblico", str(report))
 
     def test_didascalia_senza_json_e_solo_da_canale_aderente(self):
         text = "\n".join((
