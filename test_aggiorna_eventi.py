@@ -9,6 +9,24 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_agenda_scartati_i_workshop_informativi_e_ammessi_quelli_ricreativi(self):
+        day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
+        raw = {"dataInizio":day, "dataFine":day, "luogo":"Biblioteca di Comunità",
+               "citta":"Cerignola", "descrizione":"Laboratorio creativo con attività per famiglie.",
+               "fonteUrl":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/laboratorio/"}
+        self.assertIsNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Workshop: Disinformazione e Fake news"), fonte_curata_eventi=True))
+        self.assertIsNotNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Workshop di pittura per famiglie"), fonte_curata_eventi=True))
+
+    def test_calendario_luma_rispetta_il_blocco_robots(self):
+        fonte = next(f for f in crawler.FONTI_PORTALI if f["nome"] == "Xceed Luma Club Barletta")
+        session = Mock()
+        with patch.object(crawler.fonti_editori, "scheda_da_origini_note", return_value=None) as scarica:
+            self.assertEqual(crawler.raccogli_da_portale_generico(session, fonte), [])
+        scarica.assert_called_once_with(session, fonte["url"], {"xceed.me"})
+        session.get.assert_not_called()
+
     def test_rettifiche_documentate_novembre_2026(self):
         from datetime import datetime
         ref = datetime(2026,11,26,12)

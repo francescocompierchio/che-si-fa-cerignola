@@ -1,157 +1,22 @@
-import unittest
-from datetime import datetime, timezone
+import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 from tempfile import TemporaryDirectory
-from unittest.mock import MagicMock, Mock, patch
-
-import radar_apify as radar
+import unittest
 
 
-class TestRadar(unittest.TestCase):
-    def test_budget(self):
-        plan = {"tier": "FREE", "monthlyBasePriceUsd": 0, "monthlyUsageCreditsUsd": 5}
-        limits = {"limits": {"maxMonthlyUsageUsd": 5}, "current": {"monthlyUsageUsd": 0}}
-        radar.verifica_budget(plan, limits)
-        radar.verifica_budget({"id":"Free", "monthlyBasePriceUsd":0, "monthlyUsageCreditsUsd":5}, limits)
-        for field, value in (("tier", "BRONZE"), ("monthlyBasePriceUsd", 1)):
-            with patch.dict(plan, {field: value}), self.assertRaises(radar.Pausa):
-                radar.verifica_budget(plan, limits)
-        for field, key, value in (("current", "monthlyUsageUsd", 4.8),
-                                  ("current", "monthlyUsageUsd", float("nan")),
-                                  ("limits", "maxMonthlyUsageUsd", 10)):
-            with patch.dict(limits[field], {key: value}), self.assertRaises(radar.Pausa):
-                radar.verifica_budget(plan, limits)
+class TestBudgetZero(unittest.TestCase):
+    def test_il_workflow_non_trasmette_le_credenziali(self):
+        workflow = Path(".github/workflows/aggiorna-eventi.yml").read_text(encoding="utf-8")
+        self.assertNotIn("secrets.APIFY", workflow)
+        self.assertNotIn("vars.APIFY", workflow)
 
-    def test_actor_non_compatibile(self):
-        actor = {"pricingInfos": [{"startedAt": "2020-01-01T00:00:00Z", "pricingModel": "FLAT_PRICE_PER_MONTH"}]}
-        with self.assertRaises(radar.Pausa):
-            radar.verifica_prezzi(actor, datetime.now(timezone.utc))
-
-    def test_rotazione(self):
-        now = 1800000000
-        profiles = radar.profili()
-        url, _ = radar.scegli(profiles, {}, now)
-        self.assertEqual(profiles[url][0], "Cerignola")
-        self.assertNotEqual(radar.scegli(profiles, {url: {"at": now}}, now)[0], url)
-
-    def test_prezzo_senza_tariffa_free(self):
-        actor = {"actorPermissionLevel": "LIMITED_PERMISSIONS", "pricingInfos": [{
-            "startedAt": "2020-01-01T00:00:00Z", "pricingModel": "PAY_PER_EVENT",
-            "pricingPerEvent": {"actorChargeEvents": {"post": {"eventPriceUsd": 0.002}}}}]}
-        self.assertEqual(radar.verifica_prezzi(actor, datetime.now(timezone.utc)), {"post": 0.002})
-        actor["pricingInfos"][0]["minimalMaxTotalChargeUsd"] = None
-        self.assertEqual(radar.verifica_prezzi(actor, datetime.now(timezone.utc)), {"post": 0.002})
-        with patch.dict(actor["pricingInfos"][0], {"isPPEPlatformUsagePaidByUser":True}), self.assertRaises(radar.Pausa):
-            radar.verifica_prezzi(actor, datetime.now(timezone.utc))
-        actor["pricingInfos"][0]["minimalMaxTotalChargeUsd"] = 0.5
-        with self.assertRaises(radar.Pausa):
-            radar.verifica_prezzi(actor, datetime.now(timezone.utc))
-
-    def test_snippet_google_non_e_un_evento(self):
-        import aggiorna_eventi as engine
-        rows = [{"organicResults": [{"url": "https://example.com/festa",
-                                     "snippet": "Karaoke a Cerignola il 31 dicembre 2026"}]}]
-        with patch("radar_apify.requests.get") as get:
-            events, stats = radar.pagine_google(rows, engine)
-        get.assert_not_called()
-        self.assertFalse(events)
-        self.assertEqual(stats["pagineLette"], 0)
-
-    def test_post_con_e_senza_data_documentata(self):
-        import aggiorna_eventi as engine
-        from datetime import timedelta
-        day = (engine.oggi_dt() + timedelta(days=5)).date()
-        month = "gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre".split()[day.month-1]
-        title = "Gold Fashion Karaoke Show"
-        post = "https://www.instagram.com/p/test-fixture/"
-        text = f"{title}. Il {day.day} {month} {day.year} alle 21:00 presso Gold Fashion Pub a Cerignola."
-        valid = engine.eventi_da_locandina(text, "", title, post)
-        self.assertEqual([e["dataInizio"] for e in valid], [day.isoformat()])
-        self.assertFalse(engine.eventi_da_locandina(text.replace(str(day.year), ""), "", title, post))
-
-    def test_calendario_avvia_solo_http_con_robots_e_tetto(self):
-        import aggiorna_eventi as engine
-
-        plan = {"id":"Free", "monthlyBasePriceUsd":0, "monthlyUsageCreditsUsd":5}
-        limits = {"limits":{"maxMonthlyUsageUsd":5}, "current":{"monthlyUsageUsd":0}}
-        pricing = {"actorPermissionLevel":"LIMITED_PERMISSIONS", "pricingInfos":[{
-            "startedAt":"2020-01-01T00:00:00Z", "pricingModel":"PAY_PER_EVENT",
-            "minimalMaxTotalChargeUsd":None,
-            "pricingPerEvent":{"actorChargeEvents":{"http-page-extracted":{"eventPriceUsd":0.002}}},
-        }]}
-        run = {"status":"SUCCEEDED", "defaultDatasetId":"test", "usageTotalUsd":0.002}
-        policy = Mock()
-        policy.can_fetch.return_value = True
-        with TemporaryDirectory() as folder, patch.dict("os.environ", {"APIFY_TOKEN":"fixture"}), patch.object(
-            radar, "STATE", Path(folder)/"apify.json"
-        ), patch.object(radar, "OUTPUT", Path(folder)/"eventi.json"), patch.object(
-            engine.fonti_editori, "robots", return_value=policy
-        ), patch.object(radar, "api", side_effect=[{"data":{"plan":plan}}, {"data":limits}, {"data":pricing}, {"data":run}, []]) as api:
-            result = radar.raccogli_calendario()
-            self.assertEqual(result["stato"], "SUCCEEDED")
-            self.assertEqual(result["tettoUsd"], 0.01)
-            self.assertEqual(radar.raccogli_calendario()["stato"], "pausa programmata")
-            self.assertEqual(api.call_count, 5)
-            _, path, payload = api.call_args_list[3].args
-            self.assertEqual(path, radar.ATTORE_CALENDARI + "/runs")
-            self.assertEqual(payload["sources"], [{"url":radar.AGENDA_CERIGNOLA, "scope":"page",
-                                                   "rightsBasis":"licensed", "rightsReference":radar.LICENZA_CERIGNOLA}])
-            self.assertEqual(payload["renderingMode"], "http")
-            self.assertEqual(payload["maxPages"], 1)
-            self.assertEqual(payload["maxDepth"], 0)
-            self.assertEqual(api.call_args_list[3].kwargs["maxTotalChargeUsd"], 0.01)
-
-    def test_calendario_scarta_pagine_non_pertinenti_e_reindirizzate(self):
-        engine = Mock()
-        engine.analizza_pagina_evento.return_value = [{"citta":"Cerignola", "descrizione":"Serata", "locandinaUrl":"https://altro.example/foto.jpg"}]
-        engine.evento_non_attivo.return_value = False
-        url = radar.AGENDA_CERIGNOLA + "serata-di-prova/"
-        def pagina(url, loaded=None, status=200):
-            return {"url":url, "rawHtml":"<main>Evento comunale con descrizione, data e luogo.</main>",
-                    "crawl":{"httpStatusCode":status,"loadedUrl":loaded or url}}
-        eventi, metrics = radar.leggi_righe_calendario([
-            pagina(radar.AGENDA_CERIGNOLA), pagina(url), pagina(url, "https://altro.example/evento"),
-            pagina(url, status=403), pagina("https://altro.example/vivere-il-comune/eventi/serata-di-prova/"),
-        ], engine)
-        self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1})
-        self.assertEqual(eventi, [{"citta":"Cerignola","descrizione":"Serata · Fonte: Comune di Cerignola"}])
-        self.assertEqual(engine.analizza_pagina_evento.call_count, 1)
-
-    def test_indice_apify_verifica_le_schede_dirette_solo_sul_comune(self):
-        engine = Mock()
-        session = Mock()
-        url = radar.AGENDA_CERIGNOLA + "festa-di-prova/"
-        response = engine.fonti_editori.scheda_da_origini_note.return_value
-        response.headers = {"Content-Type":"text/html; charset=UTF-8"}
-        response.url, response.status_code = url, 200
-        response.text = "<main>Evento comunale con descrizione, data e luogo.</main>"
-        engine.analizza_pagina_evento.return_value = []
-        rows = [{"record_type":"PAGE", "status":"SUCCESS", "source_url":radar.AGENDA_CERIGNOLA,
-                 "markdown":f"[Festa]({url}) [Riferimento]({url}) [Altro](https://example.org/evento)"}]
-        _, metrics = radar.leggi_indice_apify(rows, engine, session)
-        self.assertEqual(metrics, {"pagineLette":2,"indiciLetti":1,"schedeLette":1,"schedeCandidate":1})
-        engine.fonti_editori.scheda_da_origini_note.assert_called_once_with(session, url, {"comune.cerignola.fg.it"})
-
-    def test_agenda_scartati_i_workshop_informativi_e_ammessi_quelli_ricreativi(self):
-        import aggiorna_eventi as engine
-        from datetime import timedelta
-
-        event_day = (engine.oggi_dt() + timedelta(days=3)).date().isoformat()
-        raw = {"dataInizio":event_day, "dataFine":event_day, "luogo":"Biblioteca di Comunità",
-               "citta":"Cerignola", "descrizione":"Laboratorio creativo con attività per famiglie.",
-               "fonteUrl":radar.AGENDA_CERIGNOLA + "laboratorio/"}
-        formazione = dict(raw, titolo="Workshop: Disinformazione e Fake news")
-        svago = dict(raw, titolo="Workshop di pittura per famiglie")
-        self.assertIsNone(engine.normalizza_e_valida_evento(formazione, fonte_curata_eventi=True))
-        self.assertIsNotNone(engine.normalizza_e_valida_evento(svago, fonte_curata_eventi=True))
-
-    def test_diagnosi_actor_non_pubblica_il_log(self):
-        session = MagicMock()
-        response = session.get.return_value.__enter__.return_value
-        response.status_code = 200
-        response.iter_content.return_value = [b"Error: Cannot find module 'dato-riservato'\nERR_MODULE_NOT_FOUND"]
-        report = radar.diagnosi_calendario(session, {"status":"FAILED", "id":"RunFixture123"})
-        self.assertEqual(report["segnaliActor"], ["avvio_o_dipendenza"])
-        self.assertEqual(report["classiErroreActor"], ["ERR_MODULE_NOT_FOUND"])
-        self.assertNotIn("dato-riservato", str(report))
-        self.assertFalse(session.get.call_args.kwargs["allow_redirects"])
+    def test_le_vecchie_variabili_non_avviano_actor(self):
+        script = Path("radar_apify.py").resolve()
+        env = dict(os.environ, APIFY_TOKEN="test", APIFY_META_AUTORIZZATO="1", APIFY_GOOGLE_AUTORIZZATO="1")
+        with TemporaryDirectory() as directory:
+            subprocess.run([sys.executable, str(script)], env=env, cwd=directory, check=True, capture_output=True)
+            report = json.loads(Path(directory, "apify-rapporto.json").read_text(encoding="utf-8"))
+        self.assertEqual(report, {"stato": "disattivato_budget_zero", "budgetUsd": 0, "actorAvviati": 0})
