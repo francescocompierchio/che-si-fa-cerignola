@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=5"></script>
+  <script src="quick-report.js?v=6"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -1450,14 +1450,14 @@ html.csf-side-open{overflow:hidden}
       <div id="seg-scelta">
         <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Invio gratuito, pubblicazione dopo verifica.</p>
         <button type="button" class="btn btn-map seg-full" id="seg-gestore">Pubblica il mio evento</button>
-        <p class="seg-choice-note">Per gestori e organizzatori. Puoi usare la locandina o compilare i dati.</p>
+        <p class="seg-choice-note">Per gestori e organizzatori autorizzati. Richiesta promozionale oggi gratuita: carica la locandina o compila i dati.</p>
         <button type="button" class="btn btn-soft seg-full" id="seg-social">Segnala un evento in pochi secondi</button>
-        <p class="seg-choice-note">Hai visto una storia o una locandina? Basta una foto o un link.</p>
+        <p class="seg-choice-note">Per chi ha scoperto un evento pubblico. Segnalazione editoriale gratuita, senza priorità o garanzia di pubblicazione.</p>
         <div class="seg-other"><button type="button" class="seg-link" id="seg-community">Parlane nella Community</button></div>
       </div>
       <form id="seg-rapida" hidden>
         <button type="button" class="seg-link" id="quick-indietro">‹ Indietro</button>
-        <p class="seg-intro">Hai visto un evento? Invia la locandina, uno screenshot oppure il link diretto all’annuncio pubblico.</p>
+        <p class="seg-intro">Hai visto un evento? Invia la locandina, uno screenshot oppure il link diretto all’annuncio pubblico. Se organizzi l’evento, usa la modalità gestore. La segnalazione non dà diritto a promozione o pubblicazione.</p>
         <label class="quick-photo"><input type="file" id="quick-foto" accept="image/jpeg,image/png,image/webp" />📷 Scegli screenshot o locandina</label>
         <img id="quick-preview" class="quick-preview" alt="Anteprima dello screenshot scelto" hidden />
         <button type="button" class="seg-link" id="quick-remove" hidden>Rimuovi foto</button>
@@ -1490,7 +1490,7 @@ html.csf-side-open{overflow:hidden}
         <p id="seg-social-stato" role="status" aria-live="polite" hidden></p>
         <details class="m-field" id="seg-poster-tools">
           <summary>Hai una locandina? Compila dalla foto</summary>
-          <p class="seg-intro">Scegli una foto JPG/PNG/WebP (max 8 MB). La lettura avviene sul dispositivo e non carica la foto. Per inviare anche la locandina, allegala nella chat WhatsApp.</p>
+          <p class="seg-intro">Scegli una foto JPG/PNG/WebP (fino a 32 MB): lettura e compressione automatiche sul dispositivo. La locandina compressa sarà allegata alla richiesta; controlla i dati e il contatto prima di inviare.</p>
           <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" />
           <button type="button" class="btn btn-soft" id="seg-poster-read">Leggi locandina</button>
           <p id="seg-poster-status" role="status" aria-live="polite"></p>
@@ -3050,7 +3050,7 @@ html.csf-side-open{overflow:hidden}
 
     let ocrInCorso=false;
     let modalitaSocial=false;
-    let posterCondiviso=null;
+    let posterCondiviso=null,posterProfessionale="";
     const segFonte=document.getElementById("seg-fonte");
     const segContatto=document.getElementById("seg-contatto");
     const segCitta=document.getElementById("seg-citta");
@@ -3073,21 +3073,23 @@ html.csf-side-open{overflow:hidden}
     posterRead.addEventListener("click",async()=>{
       if(ocrInCorso)return;
       const file=posterFileInput.files[0]||posterCondiviso;
-      if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>8*1024*1024){posterStatus.textContent="Scegli un'immagine JPG, PNG o WebP di massimo 8 MB.";return;}
+      if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>CsfQuick.MAX_FILE){posterStatus.textContent="Scegli un’immagine JPG, PNG o WebP fino a 32 MB.";return;}
+      posterProfessionale="";posterFileInput.disabled=true;
       ocrInCorso=true;posterRead.disabled=true;posterApply.hidden=true;posterText.hidden=true;posterText.value="";
       posterStatus.textContent="Preparazione lettura. Al primo utilizzo vengono scaricati i componenti OCR.";
       let worker=null;
       try{
+        posterProfessionale=await CsfQuick.compress(file);
         const engine=await caricaOCR();
         worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js",logger:m=>{if(m.status==="recognizing text")posterStatus.textContent="Lettura testo: "+Math.round(m.progress*100)+"%";}});
-        const result=await worker.recognize(file);
+        const result=await worker.recognize(posterProfessionale);
         posterText.value=String(result.data.text||"").trim().slice(0,10000);
         posterText.hidden=!posterText.value;posterApply.hidden=!posterText.value;
-        posterStatus.textContent=posterText.value?"Verifica e correggi il testo. Solo data con anno esplicito e orario chiaramente indicato vengono proposti.":"Nessun testo riconosciuto: compila il modulo manualmente.";
-      }catch(error){posterStatus.textContent="Lettura non disponibile su questo dispositivo. Puoi compilare il modulo manualmente.";}
-      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;}
+        if(posterText.value)applicaDatiSegnalazione(posterText.value,posterStatus);else posterStatus.textContent="Locandina allegata. Nessun testo riconosciuto: completa i dati manualmente.";
+      }catch(error){posterStatus.textContent=posterProfessionale?"Locandina allegata; lettura non disponibile. Completa i dati manualmente.":"Foto non allegata: "+CsfQuick.imageError(error)+" Puoi scegliere un’altra foto."; }
+      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;posterFileInput.disabled=false;}
     });
-    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;});
+    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;posterProfessionale="";if(posterFileInput.files.length)posterRead.click();});
     function applicaDatiSegnalazione(testo,stato){
       const result=CsfExtras.parsePoster(testo);
       const campi=[
@@ -3250,6 +3252,7 @@ html.csf-side-open{overflow:hidden}
       }
       const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString(),quickDraft,getDataLocaleOggi(),validQuickCity);
       if(!item){showQuickDraft();reportMessage(quickStatus,"Completa i dati mancanti o non validi indicati sopra (data futura o odierna, orario e comune entro 50 km).",true);return;}
+      if(tuttiEventiAttivi.some(ev=>CsfQuick.sameEvent(ev,item))){reportMessage(quickStatus,"Questo evento è già nell’agenda. Non occorre inviarlo nuovamente.",true);return;}
       if(navigator.onLine===false){reportMessage(quickStatus,CsfQuick.sendError(null,false),true);return;}
       if(!dbGlobal){reportMessage(quickStatus,"Il servizio di invio non è disponibile o non si è caricato. Controlla Internet e riprova, oppure usa WhatsApp e allega lì la foto.",true);quickWA.hidden=false;return;}
       quickSending=true;quickUpdate();reportMessage(quickStatus,"Invio in corso…");quickWA.hidden=true;
@@ -3398,7 +3401,7 @@ html.csf-side-open{overflow:hidden}
         costo: document.getElementById("seg-costo").value.trim(),
         contatto: modalitaSocial ? "Segnalazione da fonte pubblica" : segContatto.value.trim(),
         fonteUrl: fonteVal,
-        locandinaUrl: !modalitaSocial && isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "",
+        locandinaUrl: !modalitaSocial ? (posterProfessionale || (isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "")) : "",
         inviatoIl: new Date().toISOString()
       };
 
@@ -3413,11 +3416,11 @@ html.csf-side-open{overflow:hidden}
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
         try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
         reportMessage(segEsito,"");
-        e.target.reset();posterCondiviso=null;segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
+        e.target.reset();posterCondiviso=null;posterProfessionale="";segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
         document.getElementById("seg-citta").value = "Cerignola";
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
-        alert("Richiesta ricevuta! L’evento sarà pubblicato gratuitamente dopo verifica.");
+        alert("Richiesta professionale ricevuta gratuitamente. Pubblicazione e promozione sono soggette a verifica.");
       } catch (err) {
         reportMessage(segEsito,CsfQuick.sendError(err,navigator.onLine!==false),true);
       } finally {

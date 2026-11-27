@@ -660,7 +660,7 @@
 
   <!-- Firebase SDK -->
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=5"></script>
+  <script src="quick-report.js?v=6"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -796,7 +796,7 @@
 
       db.ref("eventiManuali").on("value", s => {
         cacheEventi = s.val() || {};
-        renderEventiAdmin();
+        renderEventiAdmin();renderSegnalazioni();
       });
 
       db.ref("localiCerignola").on("value", s => {
@@ -818,6 +818,17 @@
       return "Locali & Serate";
     }
 
+    function segnaliSegnalazione(seg,id){
+      return CsfQuick.reviewSignals(seg,Object.entries(cacheSegnalazioni).filter(([k])=>k!==id).map(([,v])=>v),Object.values(cacheEventi));
+    }
+    function notaCanale(seg,id){
+      const s=segnaliSegnalazione(seg,id),note=document.createElement("p");note.className="item-meta";
+      const msgs=[s.channel==="editoriale"?"Editoriale · senza promozione":"Professionale dichiarato · identità da verificare"];
+      if(s.duplicatePublished)msgs.push("Evento già presente tra i manuali: controlla prima di pubblicare.");
+      if(s.duplicatePending)msgs.push("Possibile duplicato in coda.");
+      if(s.recurring)msgs.push("Locale ricorrente: "+s.relatedDates+" altre date. Verifica eventuale uso commerciale; non è una prova.");
+      note.textContent=msgs.join(" · ");return note;
+    }
     function renderSegnalazioni() {
       const box = document.getElementById("lista-segnalazioni");
       const entries = Object.entries(cacheSegnalazioni);
@@ -891,6 +902,7 @@
         btnOk.addEventListener("click", async () => {
           try {
             if (auth.currentUser) await auth.currentUser.getIdToken(true);
+            if(segnaliSegnalazione(seg,id).duplicatePublished)throw Error("Evento già presente: modifica quello esistente.");
             const nuovoEvento = {
               titolo: seg.titolo || "",
               citta: seg.citta || "Cerignola",
@@ -940,7 +952,7 @@
         });
 
         actions.append(btnOk, btnEdit, btnDel);
-        div.append(top, meta, desc, actions);
+        div.append(top, meta, notaCanale(seg,id), desc, actions);
         box.appendChild(div);
       });
     }
@@ -949,7 +961,7 @@
       const div=document.createElement("div");div.className="item-card";
       const title=document.createElement("p");title.className="item-title";title.textContent=seg.titolo?"Segnalazione rapida · "+seg.titolo:"Segnalazione rapida · da verificare";
       const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[seg.dataInizio,seg.dataTesto,seg.luogo,seg.citta,seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
-      div.append(title,desc);
+      div.append(title,notaCanale(seg,id),desc);
       const source=CsfQuick.publicUrl(seg.fonteUrl);
       if(source){const a=document.createElement("a");a.href=source;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Apri annuncio originale";a.className="btn btn-sm";div.append(a);}
       const image=CsfQuick.safeImage(seg.screenshot)?seg.screenshot:"";
@@ -1001,6 +1013,7 @@
       document.getElementById("ev-edit-id").value = "";
       document.getElementById("ev-from-segnalazione-id").value = "";
       document.getElementById("ev-citta").value = "Cerignola";
+      document.getElementById("ev-in-evidenza").disabled=false;
       document.getElementById("ev-in-evidenza").checked = true;
       document.getElementById("form-evento-title").textContent = "Nuovo Evento / Serata / Attività";
       document.getElementById("btn-salva-evento").textContent = "Pubblica";
@@ -1024,7 +1037,9 @@
       document.getElementById("ev-costo").value = ev.costo || "";
       document.getElementById("ev-fonte").value = ev.fonteUrl || "";
       mostraPosterAllegato(ev.locandinaUrl);document.getElementById("ev-locandina").value = posterAllegato?"":ev.locandinaUrl || "";
-      document.getElementById("ev-in-evidenza").checked = ev.inEvidenza !== false;
+      const evidenza=document.getElementById("ev-in-evidenza");
+      evidenza.disabled=!!fromSegnalazioneId&&CsfQuick.channel(cacheSegnalazioni[fromSegnalazioneId]||ev)==="editoriale";
+      evidenza.checked=fromSegnalazioneId?false:ev.inEvidenza!==false;
 
       document.getElementById("form-evento-title").textContent = editId ? "Modifica Contenuto" : "Approva Segnalazione";
       document.getElementById("btn-salva-evento").textContent = editId ? "Salva Modifiche" : "Approva e Pubblica";
@@ -1052,7 +1067,10 @@
         await auth.currentUser.getIdToken(true);
         const editId = document.getElementById("ev-edit-id").value;
         const fromSegId = document.getElementById("ev-from-segnalazione-id").value;
-        const rapida=cacheSegnalazioni[fromSegId]?.tipoSegnalazione==="Segnalazione rapida";
+        const segOrigine=cacheSegnalazioni[fromSegId];
+        const rapida=segOrigine?.tipoSegnalazione==="Segnalazione rapida";
+        if(fromSegId&&!segOrigine)throw Error("Segnalazione non più disponibile.");
+        if(segOrigine&&segnaliSegnalazione(segOrigine,fromSegId).duplicatePublished)throw Error("Evento già presente: modifica quello esistente.");
         if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine","ev-data-testo","ev-descrizione"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
         if(rapida&&(!posterAllegato&&!/^https:\/\//i.test(document.getElementById("ev-locandina").value.trim())))throw Error("Serve una locandina autentica prima di pubblicare.");
         if(rapida&&(!/\b(?:[01]\d|2[0-3]):[0-5]\d\b/.test(document.getElementById("ev-data-testo").value)||document.getElementById("ev-data-inizio").value<getOggiISO()||document.getElementById("ev-data-fine").value<document.getElementById("ev-data-inizio").value))throw Error("Controlla data e orario dell’evento.");
@@ -1073,7 +1091,7 @@
           costo: document.getElementById("ev-costo").value.trim(),
           fonteUrl: document.getElementById("ev-fonte").value.trim(),
           locandinaUrl: document.getElementById("ev-locandina").value.trim()||posterAllegato,
-          inEvidenza: document.getElementById("ev-in-evidenza").checked
+          inEvidenza: (!fromSegId||CsfQuick.channel(segOrigine)==="professionale-dichiarato") && document.getElementById("ev-in-evidenza").checked
         };
 
         if (editId) {
