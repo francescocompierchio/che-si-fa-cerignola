@@ -260,6 +260,9 @@ jobs:
           assert.ok(files["eventi/cerignola-2026-11-28-il-sabato-di-ade.html"].includes('property="og:image" content="https://example.test/poster.jpg"'));
           NODE
 
+      - name: Verifica separazione canali e antielusione
+        run: node tests/commercial-reports.cjs
+
       - name: Test contatori Firebase simulati
         run: node tests/contatori.cjs
 

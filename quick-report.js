@@ -166,5 +166,11 @@
   if(requiresScreenshot(source))return "Il link di condivisione non identifica direttamente l’annuncio. Copia il link diretto oppure allega uno screenshot.";
   return "";
  }
- root.CsfQuick={publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,isDirectStory,imageError,sendError,evidenceError,draft,missing,fields,resolveLink,linkError,MAX_DATA,MAX_FILE};
+ function normBusiness(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+ function sameVenue(a,b){const city=normBusiness(a?.citta),venue=normBusiness(a?.luogo);return !!city&&venue.length>=3&&city===normBusiness(b?.citta)&&venue===normBusiness(b?.luogo);}
+ function sourceKey(s){const p=publicUrl(s);if(!p)return "";try{const u=new URL(p);u.hash="";for(const k of [...u.searchParams.keys()])if(/^utm_|^(igsh|fbclid|igshid)$/i.test(k))u.searchParams.delete(k);return u.href.replace(/\/$/,"");}catch(_){return "";}}
+ function sameEvent(a,b){if(!a?.dataInizio||a.dataInizio!==b?.dataInizio||!sameVenue(a,b))return false;const t=normBusiness(a.titolo),s=sourceKey(a.fonteUrl);return (t.length>=4&&t===normBusiness(b.titolo))||!!s&&s===sourceKey(b.fonteUrl);}
+ function channel(seg){return seg?.tipoSegnalazione==="Segnalazione rapida"||!String(seg?.contatto||"").trim()||seg.contatto==="Segnalazione da fonte pubblica"?"editoriale":"professionale-dichiarato";}
+ function reviewSignals(seg,others=[],published=[]){const pending=others.filter(x=>x&&x!==seg),live=published.filter(Boolean);const related=[...pending,...live].filter(x=>sameVenue(seg,x)&&!sameEvent(seg,x));const dates=new Set(related.map(x=>x.dataInizio).filter(Boolean));return {channel:channel(seg),duplicatePending:pending.some(x=>sameEvent(seg,x)),duplicatePublished:live.some(x=>sameEvent(seg,x)),recurring:dates.size>=2,relatedDates:dates.size};}
+ root.CsfQuick={sameVenue,sameEvent,channel,reviewSignals,publicUrl,linkFromText,safeImage,payload,compress,requiresScreenshot,isDirectStory,imageError,sendError,evidenceError,draft,missing,fields,resolveLink,linkError,MAX_DATA,MAX_FILE};
 })(typeof window!=="undefined"?window:globalThis);
