@@ -2878,13 +2878,19 @@ def render_calendario_pubblico(session, url, html_text, dominio, tipo):
                     return "", "navigazione non riuscita"
                 if re.search(r"just a moment|access denied|attention required|captcha|verify you are human",page.title(),re.I):
                     return "", "blocco esplicito"
-                selettore = {
-                    "nightz": 'a[href*="/eventi/"]',
-                    "ticketsms": 'a[href*="/event/"]',
-                    "ticketsms-scheda": "h1",
-                }[tipo]
                 try:
-                    page.wait_for_selector(selettore, state="visible", timeout=10000)
+                    if tipo == "ticketsms":
+                        # Il footer compare prima del calendario e contiene anche URL
+                        # provvisori. Attendi un permalink con una data in programma.
+                        page.wait_for_function(r"""oggi => Array.from(document.links).some(link => {
+                            const url = new URL(link.href);
+                            const m = url.pathname.match(/^\/(?:it\/)?event\/[^/]+-(\d{2})-(\d{2})-(20\d{2})\/?$/i);
+                            return /^(?:www\.)?ticketsms\.it$/i.test(url.hostname)
+                                && m && [m[3], m[2], m[1]].join("-") >= oggi;
+                        })""", arg=oggi_iso(), timeout=10000)
+                    else:
+                        selettore = "h1" if tipo == "ticketsms-scheda" else 'a[href*="/eventi/"]'
+                        page.wait_for_selector(selettore, state="visible", timeout=10000)
                 except PlaywrightTimeout:
                     pass
                 rendered = page.content()
