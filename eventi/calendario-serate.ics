@@ -347,6 +347,26 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:bisceglie-2026-12-04-bisceglie-juke-box-live-con-adriano@chesifacerigno
+ la
+DTSTAMP:20261128T000000Z
+DTSTART;VALUE=DATE:20261204
+DTEND;VALUE=DATE:20261205
+SUMMARY:Bisceglie | JUKE BOX live con Adriano – Bisceglie
+LOCATION:da Sergio e Davide\, Panoramica umberto paternostro\, 273\, Bisceg
+ lie
+DESCRIPTION:Ven 04 Dic 2026\nVenerdì 4 DICEMBRE\, ore 21:00 pronti per una
+  bellissima serata come l'ultima che avete trascorso in un villaggio vacan
+ ze? In compagnia di Adriano\, performer e intrattenitore nei più conosciu
+ ti villaggi vacanze potrete vi\nAccesso: Ingresso libero\nVerifica variazi
+ oni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/
+ che-si-fa-cerignola/eventi/bisceglie-2026-12-04-bisceglie-juke-box-live-co
+ n-adriano.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
+ glie-2026-12-04-bisceglie-juke-box-live-con-adriano.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:trani-2026-12-04-trani-gadjos-live-feel-the-music-festival@chesifacerig
  nola
 DTSTAMP:20261128T000000Z
