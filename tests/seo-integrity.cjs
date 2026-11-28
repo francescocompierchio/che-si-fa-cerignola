@@ -62,6 +62,19 @@ assert.ok(files["eventi/calendari.html"].includes("webcal://"));
 assert.ok(files["sitemap.xml"].includes("eventi/calendari.html"));
 assert.ok(!files["sitemap.xml"].includes(".ics"));
 assert.ok(!files["eventi/weekend.html"].includes("utm_medium=referral"));
+// La risposta "stasera" non deve confondere appuntamenti diurni o continuativi con serate documentate.
+const tonightLocal={...ev,titolo:"DJ set locale",dataTesto:"Ore 22:00"};
+const tonightNear={...tonightLocal,titolo:"DJ set vicino",citta:"Foggia"};
+const lunch={...tonightLocal,titolo:"Pranzo di prova",dataTesto:"Ore 12:30"};
+const range={...tonightLocal,titolo:"Rassegna continuativa",dataFine:"2026-12-10"};
+const tonightPages=genera([tonightLocal,tonightNear,lunch,range,second],[],"2026-11-28");
+const localPage=tonightPages["eventi/cerignola.html"];
+const tonightSection=localPage.match(/<h2>Cosa fare stasera a Cerignola<\/h2>[\s\S]*?<\/section>/)[0];
+assert.ok(tonightSection.includes("DJ set locale"));
+assert.ok(!tonightSection.includes("Pranzo di prova")&&!tonightSection.includes("Rassegna continuativa"));
+assert.ok(localPage.match(/<h2>Serate di oggi nei dintorni di Cerignola<\/h2>[\s\S]*?<\/section>/)[0].includes("DJ set vicino"));
+assert.ok(localPage.includes('href="'+base+'eventi/hub-serate.html"'));
+assert.ok(!genera([ev],[],"2026-11-24")["eventi/cerignola.html"].includes('href="'+base+'eventi/hub-serate.html"'));
 const ny=[{...ev,titolo:"Cenone di San Silvestro",citta:"Manfredonia",dataInizio:"2026-12-31",dataFine:"2026-12-31"},
  {...ev,titolo:"Pranzo di Capodanno",citta:"Foggia",dataInizio:"2027-01-01",dataFine:"2027-01-01"},
  {...ev,titolo:"Concerto di Capodanno dopo le feste",dataInizio:"2027-01-03",dataFine:"2027-01-03"},
