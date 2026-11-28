@@ -62,6 +62,25 @@ assert.ok(files["eventi/calendari.html"].includes("webcal://"));
 assert.ok(files["sitemap.xml"].includes("eventi/calendari.html"));
 assert.ok(!files["sitemap.xml"].includes(".ics"));
 assert.ok(!files["eventi/weekend.html"].includes("utm_medium=referral"));
+const ny=[{...ev,titolo:"Cenone di San Silvestro",citta:"Manfredonia",dataInizio:"2026-12-31",dataFine:"2026-12-31"},
+ {...ev,titolo:"Pranzo di Capodanno",citta:"Foggia",dataInizio:"2027-01-01",dataFine:"2027-01-01"},
+ {...ev,titolo:"Concerto di Capodanno dopo le feste",dataInizio:"2027-01-03",dataFine:"2027-01-03"},
+ {...ev,titolo:"Serata generica",dataInizio:"2026-12-31",dataFine:"2026-12-31"},
+ {...ev,titolo:"Vecchio veglione",dataInizio:"2025-12-31",dataFine:"2025-12-31"}];
+const nyPath="eventi/hub-capodanno.html";
+const nyPages=genera(ny,[],"2026-11-28");
+assert.ok(nyPages[nyPath].includes("Capodanno 2027"));
+assert.ok(nyPages[nyPath].includes("Cenone di San Silvestro"));
+assert.ok(nyPages[nyPath].includes("Pranzo di Capodanno"));
+assert.ok(nyPages[nyPath].includes("non risultano appuntamenti pubblicati per Capodanno in città"));
+for(const x of ["Concerto di Capodanno dopo le feste","Serata generica","Vecchio veglione"])assert.ok(!nyPages[nyPath].includes(x),x);
+assert.ok(nyPages["sitemap.xml"].includes(nyPath));
+assert.ok(nyPages["eventi/index.html"].includes(nyPath));
+assert.ok(!genera(ny.slice(0,1),[],"2026-11-28")["sitemap.xml"].includes(nyPath));
+const dopo=genera(ny,[],"2027-01-02",["hub-capodanno.html"]);
+assert.ok(dopo[nyPath].includes('content="noindex,follow"'));
+assert.ok(!dopo["sitemap.xml"].includes(nyPath));
+assert.ok(!dopo[nyPath].includes("Pranzo di Capodanno"));
 const empty=genera([],[],"2026-11-24",["hub-serate.html"]);
 assert.ok(empty["eventi/hub-serate.html"].includes('content="noindex,follow"'));
 assert.ok(!empty["sitemap.xml"].includes("hub-serate.html"));
