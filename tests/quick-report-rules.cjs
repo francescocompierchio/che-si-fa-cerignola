@@ -12,6 +12,12 @@ const fragment=require("../docs/segnalazioni-validation.fragment.json");
   await assertFails(get(r("valid")));
   for(const key of ["titolo","luogo","citta","dataInizio","dataFine","dataTesto","inviatoIl"]){const x={...base};delete x[key];await assertFails(set(r("missing-"+key),x));}
   await assertFails(set(r("blank"),{...base,titolo:"   "}));
+  for(const [i,blank] of ["\t\n","\u00a0","\u2003"].entries()){
+   for(const key of ["titolo","luogo","citta"])await assertFails(set(r("blank-"+i+"-"+key),{...base,[key]:blank.repeat(3)}));
+  }
+  await assertSucceeds(set(r("accented"),{...base,titolo:"È già festa",luogo:"Caffè",citta:"Cerignola"}));
+  await assertFails(set(r("url-space"),{...base,fonteUrl:"https://example.org/a b"}));
+  await assertFails(set(r("url-tab"),{...base,fonteUrl:"https://example.org/a\tb"}));
   await assertFails(set(r("bad-time"),{...base,dataTesto:"Ore 25:00"}));
   await assertFails(set(r("bad-date"),{...base,dataInizio:"2027-13-40"}));
   await assertFails(set(r("no-source"),{...base,fonteUrl:""}));
