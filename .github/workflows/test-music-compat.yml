@@ -1,0 +1,29 @@
+name: Collaudo audio iOS e Android
+on:
+  pull_request:
+    paths:
+      - 'event-page.js'
+      - 'tests/music-compat.cjs'
+      - 'audio/**'
+      - '.github/workflows/test-music-compat.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  music:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+      - run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/chesifa-http.log 2>&1 &
+          for i in 1 2 3 4 5; do curl -fsS http://127.0.0.1:8765/tests/music-fixture.html >/dev/null && break || sleep 1; done
+          node tests/music-compat.cjs

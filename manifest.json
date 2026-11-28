@@ -30,6 +30,19 @@
       "url": "/che-si-fa-cerignola/eventi/weekend.html"
     }
   ],
+  "share_target": {
+    "action": "/che-si-fa-cerignola/index.html?ricevi-social=1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "titolo",
+      "text": "testo",
+      "url": "fonte",
+      "files": [
+        { "name": "foto", "accept": ["image/jpeg", "image/png", "image/webp"] }
+      ]
+    }
+  },
   "id": "/che-si-fa-cerignola/",
   "lang": "it"
 }

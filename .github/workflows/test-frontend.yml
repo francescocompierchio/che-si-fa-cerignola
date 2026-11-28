@@ -130,8 +130,10 @@ jobs:
           const cacheVersion=sw.match(/const CACHE_NAME = "chesifa-shell-v(\d+)"/)?.[1];
           const shareVersion=html.match(/event-page\.js\?v=(\d+)/)?.[1];
           assert.ok(Number(cacheVersion)>=57, "Versione cache service worker non aggiornata");
-          assert.equal(cacheVersion,shareVersion,"Versione script e cache non allineate");
+          assert.ok(Number(shareVersion) <= Number(cacheVersion), "La cache è precedente allo script condivisione");
           assert.ok(sw.includes("event-page.js?v="+shareVersion),"Script condivisione assente dalla cache");
+          const extrasVersion=html.match(/app-extras\.js\?v=(\d+)/)?.[1];
+          assert.ok(extrasVersion && sw.includes("app-extras.js?v="+extrasVersion), "Script del modulo assente dalla cache");
           const shareScript=fs.readFileSync("event-page.js","utf8");
           assert.ok(shareScript.includes("https://www.instagram.com/direct/inbox/"));
           assert.ok(shareScript.includes("https://www.messenger.com/"));
@@ -145,6 +147,17 @@ jobs:
           const ade = editoriali.find(ev => ev.titolo === "Il Sabato di ADE");
           assert.ok(ade && ade.inEvidenza && ade.dataInizio === "2026-11-28" && ade.dataFine === "2026-11-28", "Evento ADE in evidenza assente o errato");
           assert.ok(ade.locandinaUrl.endsWith("/locandine/ade-2026-11-28.avif"), "Locandina ADE non collegata");
+          // Verifica che le locandine fornite dal proprietario siano realmente nel repository.
+          for (const [file, hash] of [
+            ["carlitos-locandina.webp", "8e056a9d94f5cbcd612d339dabeb0f01a9c34583186d503e990a82c740772abc"],
+            ["natale-quattro-vie-locandina.webp", "cd5acd6370445f0bafe4674d53b000abeab0f619f2aeb8aee3a8e532de1d61aa"]
+          ]) {
+            const bytes = fs.readFileSync("locandine/"+file);
+            assert.equal(bytes.toString("ascii",0,4),"RIFF","Formato WebP non valido");
+            assert.equal(bytes.toString("ascii",8,12),"WEBP","Formato WebP non valido");
+            assert.equal(require("node:crypto").createHash("sha256").update(bytes).digest("hex"),hash,"Locandina diversa dal ritaglio originale: "+file);
+            assert.ok(html.includes("/locandine/"+file),"Locandina non collegata: "+file);
+          }
           const posterFile = fs.readFileSync("locandine/ade-2026-11-28.avif");
           assert.equal(posterFile.toString("ascii", 8, 12), "avif", "Formato locandina non valido");
           assert.ok(posterFile.length > 5000 && posterFile.length < 100000, "Dimensioni locandina non valide");
@@ -247,6 +260,9 @@ jobs:
           assert.ok(files["eventi/cerignola-2026-11-28-il-sabato-di-ade.html"].includes('property="og:image" content="https://example.test/poster.jpg"'));
           NODE
 
+      - name: Verifica separazione canali e antielusione
+        run: node tests/commercial-reports.cjs
+
       - name: Test contatori Firebase simulati
         run: node tests/contatori.cjs
 
@@ -262,7 +278,7 @@ jobs:
           assert.ok(!html.includes('src="https://www.googletagmanager.com/gtag/js'));
           assert.ok(metrics.includes('choice==="yes"'));
           assert.ok(html.includes('window.CsfMetrics?.aggregateAllowed()'));
-          assert.ok(html.includes('src="metrics.js?v=31"'));
+          assert.ok(html.includes('src="metrics.js?v=34"'));
           assert.ok(metrics.includes("public-views.js?v=31"));
           assert.ok(!html.includes("visualizzazioni (incl. storico)"));
           assert.ok(!html.includes('id="visits-pill"'));

@@ -9,6 +9,57 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_rassegna_apulia_suona_non_comporta_eventi_ogni_giorno(self):
+        rassegna = {"fonteUrl":"https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788",
+                    "citta":"Barletta", "dataInizio":"2026-11-08", "dataFine":"2026-11-29"}
+        self.assertTrue(crawler.intervallo_editoriale_sostituito(rassegna))
+        self.assertFalse(crawler.intervallo_editoriale_sostituito(dict(rassegna, dataInizio="2026-11-29")))
+
+    def test_partenza_locale_non_attribuisce_un_concerto_al_comune(self):
+        day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
+        raw = {"dataInizio":day, "dataFine":day, "luogo":"Piazza Catuma",
+               "citta":"Andria", "descrizione":"Appuntamento per un concerto di musica pop.",
+               "fonteUrl":"https://buzzeventmap.com/event/trasferta-di-prova"}
+        self.assertIsNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Bus Concerto Cremonini Bologna – Partenze dalla Puglia"), fonte_curata_eventi=True))
+        self.assertIsNotNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Concerto di musica pop in piazza"), fonte_curata_eventi=True))
+
+    def test_agenda_scartati_i_workshop_informativi_e_ammessi_quelli_ricreativi(self):
+        day = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
+        raw = {"dataInizio":day, "dataFine":day, "luogo":"Biblioteca di Comunità",
+               "citta":"Cerignola", "descrizione":"Laboratorio creativo con attività per famiglie.",
+               "fonteUrl":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/laboratorio/"}
+        self.assertIsNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Workshop: Disinformazione e Fake news"), fonte_curata_eventi=True))
+        self.assertIsNotNone(crawler.normalizza_e_valida_evento(
+            dict(raw, titolo="Workshop di pittura per famiglie"), fonte_curata_eventi=True))
+
+    def test_calendario_luma_rispetta_il_blocco_robots(self):
+        fonte = next(f for f in crawler.FONTI_PORTALI if f["nome"] == "Xceed Luma Club Barletta")
+        session = Mock()
+        with patch.object(crawler.fonti_editori, "scheda_da_origini_note", return_value=None) as scarica:
+            self.assertEqual(crawler.raccogli_da_portale_generico(session, fonte), [])
+        scarica.assert_called_once_with(session, fonte["url"], {"xceed.me"})
+        session.get.assert_not_called()
+
+    def test_rettifiche_documentate_novembre_2026(self):
+        from datetime import datetime
+        ref = datetime(2026,11,26,12)
+        raw = {"titolo":"Cenerentola 301","citta":"Manfredonia","luogo":"Teatro Comunale Lucio Dalla","dataInizio":"2026-11-22","dataFine":"2027-01-06","fonteUrl":"https://iltaccodibacco.it/puglia/eventi/335513.html"}
+        ev = crawler.normalizza_e_valida_evento(raw, ref, True)
+        self.assertIsNotNone(ev)
+        self.assertEqual((ev["dataInizio"],ev["dataFine"]),("2026-12-06","2026-12-06"))
+        self.assertEqual(ev["citta"],"Manfredonia")
+        raw = {"titolo":"Menù di Capodanno – Posta Bassi","citta":"Manfredonia","luogo":"Agriturismo Posta Bassi","indirizzoMappa":"Via Manfredonia km 196+200","dataInizio":"2027-01-01","dataFine":"2027-01-01","fonteUrl":"https://www.postabassi.it/eventi-speciali/"}
+        a = crawler.normalizza_e_valida_evento(raw, ref, True)
+        b = crawler.normalizza_e_valida_evento(dict(raw,citta="Foggia",luogo="Posta Bassi",titolo="Pranzo di Capodanno – Posta Bassi"),ref,True)
+        self.assertIsNotNone(a)
+        self.assertEqual(a,b)
+        self.assertEqual(a["citta"],"Foggia")
+        self.assertEqual(a["costo"],"55 € a persona")
+        self.assertEqual(crawler.classifica_categoria("Gheghè Christmas Bakery: laboratorio natalizio per bambini | Party con Gheghè"),"Famiglie & Bambini")
+
     def test_radar_organizzatori_non_alias_sede(self):
         from discovery_locale import fonti_organizzatori_movida
         from urllib.parse import parse_qs, urlparse
@@ -62,7 +113,8 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
         self.assertFalse(crawler.calendario_ha_link_movida('<a href="/eventi/">Eventi</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
         self.assertFalse(crawler.calendario_ha_link_movida('<a href="https://example.org/eventi/around-us/">Around Us</a>', "https://nightz.it/eventi/", "nightz.it", "nightz"))
-        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/it/event/Golden-28-11-2026">Golden</a>', "https://www.ticketsms.it/it/location/Idol-Club", "ticketsms.it", "ticketsms"))
+        with patch.object(crawler, "oggi_iso", return_value="2026-11-27"):
+            self.assertTrue(crawler.calendario_ha_link_movida('<a href="/it/event/Golden-28-11-2026">Golden</a>', "https://www.ticketsms.it/location/Idol-Club", "ticketsms.it", "ticketsms"))
     def test_browser_non_aggira_blocchi(self):
         self.assertEqual(crawler.render_calendario_pubblico(None,"https://nightz.it/eventi/","<title>Just a moment...</title>","nightz.it","nightz"),("","blocco esplicito"))
 
@@ -95,6 +147,12 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(ev[0]["citta"],"Bisceglie")
         self.assertEqual(crawler.analizza_nightz(html.replace("Bisceglie","Bari"),url),[])
         self.assertEqual(crawler.analizza_nightz(html,"https://nightz.it/eventi/"),[])
+        nuovo = "https://nightoutz.it/eventi/around-us/"
+        self.assertEqual(len(crawler.analizza_nightz(html,nuovo)),1)
+        self.assertTrue(crawler._fonte_appartiene_a_raccolta_automatica(nuovo))
+        self.assertEqual(crawler.analizza_nightz(html,"https://nightoutz.it.evil.test/eventi/around-us/"),[])
+        self.assertEqual(crawler.analizza_nightz(html.replace("Bisceglie","Bari"),nuovo),[])
+        self.assertTrue(crawler.calendario_ha_link_movida('<a href="/eventi/around-us/">Around Us</a>', "https://nightoutz.it/eventi/", "nightoutz.it", "nightz"))
     def test_diagnostica_markup_pubblico(self):
         self.assertEqual(crawler.diagnostica_scheda_movida("<h1>Serata</h1><p>Location</p>","https://example.org")["h1"],"Serata")
 
@@ -106,6 +164,68 @@ class QualitaEventiTests(unittest.TestCase):
         self.assertEqual(len(crawler.analizza_ticketsms(html,url,"Bisceglie","Idol Club")),1)
         self.assertEqual(crawler.analizza_ticketsms(html,url,"Trani","Idol Club"),[])
         self.assertEqual(crawler.analizza_ticketsms(html.replace("22:00",""),url,"Bisceglie","Idol Club"),[])
+    def test_ticketsms_verifica_renderizzato_e_salta_eventi_passati(self):
+        today = crawler.datetime(2026, 11, 27, 12)
+        fonte = next(f for f in crawler.FONTI_PORTALI if f.get("ticketsms"))
+        url = "https://www.ticketsms.it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
+        shell = "<html><head><title>TicketSms</title></head><body><div id='root'></div></body></html>"
+        indice = (
+            '<a href="/event/Altro-21-11-2026">Passato</a>'
+            '<a href="/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026">Golden</a>'
+        )
+        scheda = (
+            "<h4>Sabato 28 novembre 2026 / 23:00</h4>"
+            "<h1>Golden - Opening Party at Vyon Club</h1><h4>IDOL CLUB / BISCEGLIE</h4>"
+        )
+        with patch.object(crawler, "oggi_dt", return_value=today):
+            self.assertFalse(crawler.calendario_ha_link_movida(
+                '<a href="/event/Ara-10-10-2026">Ara</a>', fonte["url"], fonte["dominio"], "ticketsms"
+            ))
+            self.assertEqual(crawler.analizza_ticketsms(shell, url, "Bisceglie", "Idol Club"), [])
+            self.assertEqual(crawler.analizza_ticketsms(
+                scheda+"<h3>Evento annullato</h3>", url, "Bisceglie", "Idol Club"
+            ), [])
+            session = Mock()
+            session.get.return_value = SimpleNamespace(status_code=200, text=shell, apparent_encoding="utf-8")
+            with patch.object(crawler, "render_calendario_pubblico", side_effect=[(indice, "ok"), (scheda, "ok")]) as render:
+                eventi = crawler.raccogli_da_portale_generico(session, fonte)
+        self.assertEqual([arg.args[0] for arg in session.get.call_args_list], [fonte["url"], url])
+        self.assertEqual([arg.args[-1] for arg in render.call_args_list], ["ticketsms", "ticketsms-scheda"])
+        self.assertEqual(len(eventi), 1)
+        self.assertEqual(eventi[0]["fonteUrl"], url)
+        self.assertEqual(eventi[0]["luogo"], "Idol Club")
+        self.assertIn("23:00", eventi[0]["dataTesto"])
+
+    def test_ticketsms_usa_la_card_solo_se_data_sede_e_titolo_concordano(self):
+        fonte = next(f for f in crawler.FONTI_PORTALI if f.get("ticketsms"))
+        percorso = "/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
+        titolo = "Golden - Opening Party at Vyon Club"
+        card = (
+            f'<a href="{percorso}" title="{titolo} - BISCEGLIE - IDOL CLUB - 28/11/2026 - TicketSms">'
+            '<img alt="Golden al Vyon Club"></a>'
+            f'<a href="{percorso}"><div>sabato 28 novembre / 23:00</div><h5>{titolo}</h5><div>IDOL CLUB</div></a>'
+        )
+        session = Mock()
+        shell = "<title>TicketSms</title><div id='root'></div>"
+        session.get.return_value = SimpleNamespace(status_code=200, text=shell, apparent_encoding="utf-8")
+        with patch.object(crawler, "oggi_dt", return_value=crawler.datetime(2026, 11, 27, 12)):
+            casi = [
+                (card, shell, "nessuna scheda dopo rendering", 1),
+                (card.replace("28 novembre", "29 novembre"), shell, "nessuna scheda dopo rendering", 0),
+                (card.replace("BISCEGLIE", "TRANI"), shell, "nessuna scheda dopo rendering", 0),
+                (card, "<h2>Evento annullato</h2>", "nessuna scheda dopo rendering", 0),
+                (card, "", "blocco esplicito", 0),
+            ]
+            for elenco, dettaglio, esito, attesi in casi:
+                with self.subTest(esito=esito, dettaglio=dettaglio, elenco=elenco), patch.object(
+                    crawler, "render_calendario_pubblico", side_effect=[(elenco, "ok"), (dettaglio, esito)]
+                ):
+                    eventi = crawler.raccogli_da_portale_generico(session, fonte)
+                    self.assertEqual(len(eventi), attesi)
+                    if eventi:
+                        self.assertEqual(eventi[0]["titolo"], titolo)
+                        self.assertIn("23:00", eventi[0]["dataTesto"])
+
     def test_sede_riservata_non_attribuita_a_comune(self):
         self.assertTrue(crawler.evento_sede_riservata({"titolo":"ECHOES Opening Winter Season with Stefano Andriezzi","dataInizio":"2026-11-28"}))
         self.assertFalse(crawler.evento_sede_riservata({"titolo":"Habibi","dataInizio":"2026-11-28"}))

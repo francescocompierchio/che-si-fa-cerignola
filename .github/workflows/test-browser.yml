@@ -11,6 +11,7 @@ on:
       - "manifest.json"
       - "event-page.js"
       - "tests/browser-smoke.cjs"
+      - "tests/social-share-browser.cjs"
       - ".github/workflows/test-browser.yml"
   pull_request:
     branches: [main]
@@ -20,6 +21,7 @@ on:
       - 'app-extras.js'
       - 'metrics.js'
       - 'tests/browser-smoke.cjs'
+      - 'tests/social-share-browser.cjs'
       - '.github/workflows/test-browser.yml'
   workflow_dispatch:
 permissions:
@@ -42,3 +44,5 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/chesifa-http.log 2>&1 &
           for i in 1 2 3 4 5; do curl -fsS http://127.0.0.1:8765/index.html >/dev/null && break || sleep 1; done
           node tests/browser-smoke.cjs
+          node tests/social-share-browser.cjs
+          node tests/event-stats-browser.cjs

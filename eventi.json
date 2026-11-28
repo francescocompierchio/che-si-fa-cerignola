@@ -1,19 +1,5 @@
 [
   {
-    "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Teatro & Spettacoli",
-    "titolo": "Cenerentola 301",
-    "dataTesto": "Dal 22 Nov al 06 Gen 2027",
-    "dataInizio": "2026-11-22",
-    "dataFine": "2027-01-06",
-    "luogo": "Teatro Comunale Lucio Dalla",
-    "indirizzoMappa": "Teatro Comunale Lucio Dalla prosegue, Via della Crocie, Manfredonia",
-    "costo": "A pagamento",
-    "descrizione": "Manfredonia (Foggia) Teatro Comunale Lucio Dalla Via della Crocie ore 18:00 ingresso a pagamento età consigliata per i bambini: dai 6 anni in su Info. 0884 532829 (clicca per ingrandire )",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
-  },
-  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337004_20261118_082336.jpg",
     "tipoContenuto": "evento",
     "citta": "Foggia",
@@ -27,49 +13,6 @@
     "costo": "Ingresso libero",
     "descrizione": "Dal 24 al 28 novembre 2026 torna a Foggia l’undicesima edizione del Foggia Festival Sport Story, dedicata quest’anno al tema «Il pallone è uguale per tutti». La manifestazione propone incontri e riflessioni sul rapporto",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337004.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Sagre & Food",
-    "titolo": "Vito Losciale and Friends – cena di beneficenza",
-    "dataTesto": "25/11/2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Villa Torre Quarto",
-    "indirizzoMappa": "Villa Torre Quarto, Cerignola",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Cena di beneficenza con 17 professionisti della cucina. Verificare disponibilità e condizioni di accesso con l'organizzatore.",
-    "fonteUrl": "https://www.identitagolose.it/sito/it/112/47348/news/in-puglia-una-serata-di-cucina-per-aiutare-le-donne-che-vivono-situazioni-di-violenza.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Canosa di Puglia",
-    "categoria": "Attività diurne",
-    "titolo": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Piazza della Repubblica",
-    "indirizzoMappa": "Piazza della Repubblica, Canosa di Puglia",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Il 25 novembre a Canosa una marcia contro la violenza sulle donne presso Piazza della Repubblica (Canosa di Puglia).",
-    "fonteUrl": "https://www.canosaviva.it/notizie/il-25-novembre-a-canosa-una-marcia-contro-la-violenza-sulle-donne/"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337262_20261120_152325.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Foggia",
-    "categoria": "Attività diurne",
-    "titolo": "Foggia | La Fondazione per il 25 novembre con Lorenzo Sepalone e Alfredo Traiano",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "indirizzoMappa": "Sala “Rosa del Vento” della Fondazione dei Monti Uniti Foggia",
-    "costo": "Ingresso libero",
-    "descrizione": "In occasione della Giornata internazionale per l'eliminazione della violenza contro le donne, la Fondazione dei Monti Uniti di Foggia propone una serata di memoria, riflessione e sensibilizzazione sul tema della violenza",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337262.html"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336684_20261114_185323.jpg",
@@ -87,79 +30,6 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336684.html"
   },
   {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336725_20261115_162150.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Trani",
-    "categoria": "Attività diurne",
-    "titolo": "Trani | Progetto BOTTEGA DELLE PAROLE. OFFICINA DI SCRITTURA CREATIVA",
-    "dataTesto": "Mer 25 Nov 2026",
-    "dataInizio": "2026-11-25",
-    "dataFine": "2026-11-25",
-    "luogo": "Biblioteca Comunale \"G. Bovio\"",
-    "indirizzoMappa": "Biblioteca Comunale \"G. Bovio\", Piazzetta San Francesco, n. 1, Trani",
-    "costo": "Ingresso libero",
-    "descrizione": "La poesia come spazio di espressione, scoperta e condivisione. È questo lo spirito che anima BOTTEGA DELLE PAROLE – Officina di scrittura creativa, il progetto promosso dal Comune di Trani e dall’associazione culturale I",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336725.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Cerignola",
-    "categoria": "Attività diurne",
-    "titolo": "Le storie del Giovedì – Biblioteca di Comunità",
-    "dataTesto": "Gio 26 Nov 2026",
-    "dataInizio": "2026-11-26",
-    "dataFine": "2026-11-26",
-    "luogo": "Biblioteca di Comunità",
-    "indirizzoMappa": "Biblioteca di Comunità, Via Cesare Battisti n. 13 - 71042 Cerignola FG",
-    "costo": "Gratuito",
-    "descrizione": "dal 26 Novembre 2026 alle 17:00 al 26 Novembre 2026 alle 18:00",
-    "fonteUrl": "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/"
-  },
-  {
-    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/52c4fb7b952ecc1f0fd55f688abe4f58fcbfb37d-1672x941.png?w=1200&h=630&fit=crop&q=80",
-    "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Locali & Serate",
-    "titolo": "Gheghè Christmas Bakery: laboratorio natalizio per bambini | Party con Gheghè",
-    "dataTesto": "Gio 26 Nov 2026",
-    "dataInizio": "2026-11-26",
-    "dataFine": "2026-11-26",
-    "luogo": "PartyconGheghè",
-    "indirizzoMappa": "PartyconGheghè, Via Calle del Porto Torre b, 71043 Manfredonia (FG), FG",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Giovedì 26 novembre 2026, dalle ore 17:00 alle 20:00, 𝗣𝗮𝗿𝘁𝘆 𝗰𝗼𝗻 𝗚𝗵𝗲𝗴𝗵𝗲̀ propone 𝗚𝗵𝗲𝗴𝗵𝗲̀ 𝗖𝗵𝗿𝗶𝘀𝘁𝗺𝗮𝘀 𝗕𝗮𝗸𝗲𝗿𝘆, un appuntamento dedicato ai bambini e all'atmosfera delle festività natalizie. L'iniziativa richiama il mondo dell",
-    "fonteUrl": "https://www.manfredoniaeventi.com/evento/gheghe-christmas-bakery-laboratorio-natalizio-per-bambini-party-con-gheghe-manfredonia-26-novembre-2026/"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/335415_20261122_181402.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Trani",
-    "categoria": "Locali & Serate",
-    "titolo": "Trani | Hendrix Birthday Eve JAM al Santo Graal",
-    "dataTesto": "Gio 26 Nov 2026",
-    "dataInizio": "2026-11-26",
-    "dataFine": "2026-11-26",
-    "luogo": "Santo Graal",
-    "indirizzoMappa": "Santo Graal, via San Giorgio, Trani",
-    "costo": "Ingresso libero",
-    "descrizione": "Basta suonare davanti allo specchio, è ora di salire sul palco! 🎸🔥 Giovedì 26 novembre torna la JAM Session al Santo Graal di Trani! Festeggeremo in anticipo il compleanno del leggendario Jimi Hendrix (27 novembre) suona",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335415.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Trinitapoli",
-    "categoria": "Sagre & Food",
-    "titolo": "Sagra del Carciofo Violetto di Trinitapoli",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Viale Vittorio Veneto",
-    "indirizzoMappa": "Viale Vittorio Veneto, 76015, Trinitapoli, BT",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "La Sagra del Carciofo Violetto di Trinitapoli è la grande festa d'autunno che celebra il prodotto simbolo del territorio: il pregiato carcio...",
-    "fonteUrl": "https://buzzeventmap.com/event/eb3a9956-b25c-4b15-9f98-c56c79de3e93"
-  },
-  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/331468_20260925_171546.jpg",
     "tipoContenuto": "evento",
     "citta": "Barletta",
@@ -173,65 +43,6 @@
     "costo": "A pagamento",
     "descrizione": "People, Places and Things, tratto dal testo di Duncan Macmillan, è diretto da Pierfrancesco Favino e interpretato da Anna Ferzetti, Betti Pedrazzi, Totò Onnis e Thomas Trabacchi. La vicenda di Emma, un’attrice che perde",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331468.html"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337667_20261123_175920.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Barletta",
-    "categoria": "Musica & Concerti",
-    "titolo": "Barletta | Rainbow Bridge plays Hendrix",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Via Boccaccio 42/44, Barletta",
-    "indirizzoMappa": "Via Boccaccio 42/44, Barletta",
-    "costo": "Ingresso libero",
-    "descrizione": "I RAINBOW BRIDGE CELEBRANO JIMI HENDRIX AL BOHEMIEN DI BARLETTA Venerdì 27 novembre – Una serata rock-blues dedicata al chitarrista statunitense BARLETTA – Venerdì 27 novembre, in occasione dell'anniversario della nascit",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337667.html"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337373_20261121_134520.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Bisceglie",
-    "categoria": "Locali & Serate",
-    "titolo": "Bisceglie | FRANCO CALIFANO live tribute con la \"CALIFFO BAND\"",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "da Sergio e Davide",
-    "indirizzoMappa": "da Sergio e Davide, Panoramica umberto paternostro, 273, Bisceglie",
-    "costo": "Ingresso libero",
-    "descrizione": "VENERDI’ 27 NOVEMBRE, dalle 21:00, serata dedicata ad uno dei più amati cantautori italiani, il grande “Califfo”, Franco Califano. Amanti della canzone italiana d’autore, Amanti e basta, Amanti del Califfo italiano, prep",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337373.html"
-  },
-  {
-    "tipoContenuto": "evento",
-    "citta": "Andria",
-    "categoria": "Musica & Concerti",
-    "titolo": "Istituto Comprensivo “Verdi-Cafaro” di Andria: concerto \"Fiori d'inverno\"",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "via Stradella 1",
-    "indirizzoMappa": "via Stradella 1, Andria",
-    "costo": "Non specificato nella fonte",
-    "descrizione": "Venerdì 27 novembre, alle ore 18:30, alla Scuola secondaria di I grado “Pasquale Cafaro”. La musica e l'arte danno voce alla libertà e al rispetto delle donne",
-    "fonteUrl": "https://www.andriaviva.it/notizie/istituto-comprensivo-verdi-cafaro-di-andria-concerto-fiori-d-inverno/"
-  },
-  {
-    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/336732_20261115_182257.jpg",
-    "tipoContenuto": "evento",
-    "citta": "Trani",
-    "categoria": "Locali & Serate",
-    "titolo": "Trani | Impromptu Jazz Quartet live Feel the Music Festival",
-    "dataTesto": "Ven 27 Nov 2026",
-    "dataInizio": "2026-11-27",
-    "dataFine": "2026-11-27",
-    "luogo": "Santo Graal",
-    "indirizzoMappa": "Santo Graal, via San Giorgio, Trani",
-    "costo": "Ingresso libero",
-    "descrizione": "Venerdì 27 Novembre: Impromptu Jazz Quartet Un viaggio tra le diverse sfumature del jazz: dagli standard americani alle contaminazioni con la canzone d'autore, fino a quei brani italiani che, pur nascendo altrove, sembra",
-    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336732.html"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/334751_20261026_121226.jpg",
@@ -264,6 +75,21 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337823.html"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/338121_20261126_095159.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Musica & Concerti",
+    "titolo": "Barletta | CTRL+Z in concerto",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Caffè Letterario",
+    "indirizzoMappa": "Caffè Letterario, Via Geremia di Scanno, 94, Barletta",
+    "costo": "Ingresso libero",
+    "descrizione": "Sabato 28 novembre 2026 alle ore 21:30, i CTRL+Z saranno in concerto al Caffè Letterario di Barletta, in Via Geremia Di Scanno 94/96. Ingresso gratuito. La band alternative rock barese presenterà dal vivo i brani dell’EP",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338121.html"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337025_20261118_145724.jpg",
     "tipoContenuto": "evento",
     "citta": "Bisceglie",
@@ -277,6 +103,21 @@
     "costo": "A pagamento",
     "descrizione": "ALAMAR SYMPHONIC CONCERT Un viaggio musicale attraverso l'America Latina Bisceglie in Musica 2026/2027 28 novembre ore 21.00 Teatro Garibaldi, Bisceglie Ana Carla Maza violoncello Jose Miguel Rodilla direttore Orchestra",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337025.html"
+  },
+  {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/338089_20261126_083108.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Bisceglie | Around Us con Salomé Le Chat, Skizzo, Innocent Soul e White Soxx",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Divinae Follie",
+    "indirizzoMappa": "Divinae Follie, Viale Ponte Lama, 3, Bisceglie",
+    "costo": "A pagamento",
+    "descrizione": "Sabato 28 novembre 2026, al Divine di Bisceglie, si terrà il party “Around Us”, evento musicale con la partecipazione dell’ospite internazionale Salomé Le Chat. Per l’occasione, il club si trasformerà anche in uno spazio",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338089.html"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/330801_20260918_165730.jpg",
@@ -294,6 +135,21 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330801.html"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/326867_20260808_103235.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Attività diurne",
+    "titolo": "Bisceglie | SUR - Tra bolero, flamenco, canción latinoamericana, folklore e improvvis",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Palazzo Vives Frisari",
+    "indirizzoMappa": "Palazzo Vives Frisari, Via Ottavio Tupputi, 13, Bisceglie",
+    "costo": "15€",
+    "descrizione": "🎶 SUR 🎶 Tra bolero, flamenco, canción latinoamericana, folklore e improvvisazione Dal calore del bolero all'energia del flamenco, passando per la canción latinoamericana e le sonorità della tradizione popolare, SUR è un",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/326867.html"
+  },
+  {
     "locandinaUrl": "https://images.xceed.me/events/banners/classic-saturday-habibi-with-olive-f-sabato-28-novemvre-2026-barletta-xceed-square-6578.jpg?w=1920&h=1080&ar=16:9&fm=auto",
     "tipoContenuto": "evento",
     "citta": "Barletta",
@@ -307,6 +163,20 @@
     "costo": "Consulta la biglietteria",
     "descrizione": "Serata in club. CLASSIC SATURDAY × HABIBI ✨ Un sabato tutto da vivere, tra groove irresistibili, sonorità pop, funky e le hit del momento. In console OLIVE F per un viaggio musicale tra grandi classici, nuove vibes e r",
     "fonteUrl": "https://xceed.me/it/barletta/event/classic-saturday-habibi-with-olive-f-sabato-28-novembre-2026/253326"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Golden - Opening Party at Vyon Club",
+    "dataTesto": "Sab 28 Nov 2026 · Ore 23:00",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Idol Club",
+    "indirizzoMappa": "Idol Club, Bisceglie",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.",
+    "fonteUrl": "https://www.ticketsms.it/event/Golden-Opening-Party-At-Vyon-Club-Bisceglie-Idol-Club-28-11-2026"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/habibi-2811-aphelion-club-trani-xceed-square-27bb.png?w=1920&h=1080&ar=16:9&fm=auto",
@@ -337,6 +207,20 @@
     "costo": "A pagamento",
     "descrizione": "Operazione Cicogna è una commedia irresistibile che racconta, con ironia e ritmo serrato, il delicato (e spesso esilarante) tema della genitorialità. Gli Arteteca, amatissimi dal pubblico televisivo e teatrale, portano i",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330009.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Andria",
+    "categoria": "Attività diurne",
+    "titolo": "Nichi Vendola ad Andria con “Il vizio della ferocia”: il Festival della Disperazione ",
+    "dataTesto": "Sab 28 Nov 2026",
+    "dataInizio": "2026-11-28",
+    "dataFine": "2026-11-28",
+    "luogo": "Chiostro di San Francesco",
+    "indirizzoMappa": "Chiostro di San Francesco, Andria",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Appuntamento sabato 28 novembre, alle ore 18:30, al Food Policy Hub. A dialogare con l'autore sarà Anna Puricella, giornalista de la Repubblica",
+    "fonteUrl": "https://www.andriaviva.it/notizie/nichi-vendola-ad-andria-con-il-vizio-della-ferocia-il-festival-della-disperazione-inaugura-verso-la-fine-la-sua-programmazione-invernale/"
   },
   {
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/1bf2b8bd6f12cab630d17f05f292d54f9e6ed195-1672x941.png?w=1200&h=630&fit=crop&q=80",
@@ -398,6 +282,20 @@
     "fonteUrl": "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
   },
   {
+    "tipoContenuto": "evento",
+    "citta": "Minervino Murge",
+    "categoria": "Natura & Escursioni",
+    "titolo": "A Minervino un trekking tra paesaggi, masserie e sapori locali",
+    "dataTesto": "Dom 29 Nov 2026",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Caserma",
+    "indirizzoMappa": "Caserma, Minervino Murge",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Iniziativa in programma domenica 29 novembre",
+    "fonteUrl": "https://www.minervinoviva.it/notizie/a-minervino-un-trekking-tra-paesaggi-masserie-e-sapori-locali/"
+  },
+  {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/337792_20261124_091458.jpg",
     "tipoContenuto": "evento",
     "citta": "Barletta",
@@ -411,6 +309,21 @@
     "costo": "A pagamento",
     "descrizione": "SPEDIZIONI DON CHISCIOTTE Torna sul palco del Teatro Fantàsia “Spedizioni Don Chisciotte”, una commedia brillante, ironica e sorprendente! 🗣️ Sinossi: Quando le giornate lavorative diventano pesanti, il luogo di lavoro p",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337792.html"
+  },
+  {
+    "locandinaUrl": "https://api-gw.ect.regione.puglia.it/t/turismo.puglia.local/vip-api/1.0.0/immagine/preview/30530",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Musica & Concerti",
+    "titolo": "Contemporary Sound L'Elefante E La Zanzara. Contrasti Sonori Dal Settecento Al Novece",
+    "dataTesto": "Dom 29 Nov 2026",
+    "dataInizio": "2026-11-29",
+    "dataFine": "2026-11-29",
+    "luogo": "Auditorium GOS",
+    "indirizzoMappa": "Auditorium GOS, Viale Marconi, 41, 76121, Barletta, BT",
+    "costo": "Ingresso gratuito",
+    "descrizione": "Un concerto brillante e sorprendente, tra virtuosismo, ironia e fantasia musicale. Christian Pio Nese, Massimiliano Nese e Francesco Ricci danno vita a un originale dialogo tra ottavino, trombone e pianoforte, in un suss",
+    "fonteUrl": "https://buzzeventmap.com/event/57f6defb-f79f-47a1-8a94-9e43804619fa"
   },
   {
     "locandinaUrl": "https://images.xceed.me/events/banners/domenica-29-novembre-kayma-at-atrio22-barletta-xceed-square-b782.png?w=1920&h=1080&ar=16:9&fm=auto",
@@ -500,6 +413,7 @@
     "fonteUrl": "https://buzzeventmap.com/event/456318e1-763d-4d98-8068-3cbc3b4629c4"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/336619_20261113_204637.jpg",
     "tipoContenuto": "evento",
     "citta": "Lucera",
     "categoria": "Attività diurne",
@@ -512,6 +426,21 @@
     "costo": "A pagamento",
     "descrizione": "Il Festival della Letteratura Mediterranea torna a Lucera con la sua XIX edizione, in programma dal 4 al 6 dicembre 2026. Il tema scelto per questa edizione è “Guarirsi”, una parola attraverso cui la manifestazione inten",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/336619.html"
+  },
+  {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/338617_20261127_190715.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Trani",
+    "categoria": "Locali & Serate",
+    "titolo": "Trani | Gadjos live Feel the Music Festival",
+    "dataTesto": "Ven 04 Dic 2026",
+    "dataInizio": "2026-12-04",
+    "dataFine": "2026-12-04",
+    "luogo": "Santo Graal",
+    "indirizzoMappa": "Santo Graal, via San Giorgio, Trani",
+    "costo": "Ingresso libero",
+    "descrizione": "🎸 Venerdì 4 dicembre la rassegna di musica indipendente torna al Santo Graal! ⚡ Sul palco salgono i Gadjos per un live fuori dagli schemi: un viaggio sonoro che attraversa decenni di musica italiana e internazionale, dal",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338617.html"
   },
   {
     "tipoContenuto": "evento",
@@ -554,6 +483,50 @@
     "costo": "A pagamento",
     "descrizione": "La gatta con gli stivali è il secondo appuntamento di Merende da Favola. Lo spettacolo è scritto da Michele Ciuffreda e diretto da M. Ciuffreda e Maggie Salice. La produzione del Teatro dei Limoni propone al pubblico del",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/332948.html"
+  },
+  {
+    "locandinaUrl": "https://images.xceed.me/events/banners/luma-club-presents-una-noche-de-perreo-barletta-xceed-square-77f2.png?w=1920&h=1080&ar=16:9&fm=auto",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "Luma Club presents UNA NOCHE DE PERREO",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 23:59",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Luma Club",
+    "indirizzoMappa": "Viale Regina Elena 100, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/luma-club-presents-una-noche-de-perreo/254347"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Bisceglie",
+    "categoria": "Locali & Serate",
+    "titolo": "Mirito · Act I con Solto",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 23:00",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Divine Club",
+    "indirizzoMappa": "Divine Club, Bisceglie, BT, Italia",
+    "costo": "Consulta la fonte",
+    "descrizione": "Serata pubblicata sul calendario Nightz. Verifica condizioni di ingresso e disponibilità con il locale.",
+    "fonteUrl": "https://nightoutz.it/eventi/mirito-%c2%b7-act-i-con-solto/"
+  },
+  {
+    "locandinaUrl": "https://images.xceed.me/events/banners/the-peak-w-inkaari-barletta-xceed-square-ac25.png?w=1920&h=1080&ar=16:9&fm=auto",
+    "tipoContenuto": "evento",
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "The peak w/INKAARI",
+    "dataTesto": "Sab 05 Dic 2026 · Ore 23:59",
+    "dataInizio": "2026-12-05",
+    "dataFine": "2026-12-05",
+    "luogo": "Luma Club",
+    "indirizzoMappa": "Viale Regina Elena 100, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/the-peak-w-inkaari/254347"
   },
   {
     "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/331608_20260928_111241.jpg",
@@ -656,6 +629,21 @@
     "fonteUrl": "https://www.minervinoviva.it/notizie/in-viaggio-verso-christmas-wonderland-al-castello-di-barletta/"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/335502_20261103_164919.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Teatro & Spettacoli",
+    "titolo": "Manfredonia | Cenerentola 301",
+    "dataTesto": "Dom 06 Dic 2026 · Ore 18:00",
+    "dataInizio": "2026-12-06",
+    "dataFine": "2026-12-06",
+    "luogo": "Teatro Comunale Lucio Dalla",
+    "indirizzoMappa": "Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+    "costo": "A pagamento",
+    "descrizione": "Spettacolo della Compagnia Burambò per famiglie e bambini dai 6 anni. Data confermata dal calendario ufficiale del teatro.",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335513.html"
+  },
+  {
     "tipoContenuto": "evento",
     "citta": "Monticchio",
     "categoria": "Natura & Escursioni",
@@ -699,6 +687,35 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/337966.html"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/12/338102_20261126_085625.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Natura & Escursioni",
+    "titolo": "Foggia | Fogia Regalis: Imperialis Inclita Sedes Friderici II - Tertia Editio",
+    "dataTesto": "Mar 08 Dic 2026",
+    "dataInizio": "2026-12-08",
+    "dataFine": "2026-12-08",
+    "luogo": "Cattedrale di Santa Maria Foggia",
+    "indirizzoMappa": "Cattedrale di Santa Maria Foggia",
+    "costo": "Gratuito",
+    "descrizione": "Martedì 8 dicembre 2026 torna a Foggia “Fogia Regalis: Imperialis Inclita Sedes Friderici II - Tertia Editio”, un percorso tra visita guidata, ricostruzione storica, musica e poesia per riscoprire la città scelta da Fede",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338102.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Natura & Escursioni",
+    "titolo": "Martedì 8 dicembre 2026 il ritorno nella Foggia di Federico II: visita guidata nel ce",
+    "dataTesto": "Mar 08 Dic 2026",
+    "dataInizio": "2026-12-08",
+    "dataFine": "2026-12-08",
+    "luogo": "centro storico e",
+    "indirizzoMappa": "centro storico e, Foggia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Martedì 8 dicembre 2026 il ritorno nella Foggia di Federico II: visita guidata nel centro storico e (ri)scoperta della Cripta della Cattedrale presso centro storico e (Foggia).",
+    "fonteUrl": "https://www.lucera.it/eventi/martedi-8-dicembre-2026-il-ritorno-nella-foggia-di-federico-ii-visita-guidata-nel-centro-storico-e-riscoperta-della-cripta-della-cattedrale/"
+  },
+  {
     "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
@@ -726,6 +743,20 @@
     "costo": "A pagamento",
     "descrizione": "Paladini di Francia. Spada avete voi, spada avete io! del Teatro Koreja è uno spettacolo tragicomico dedicato ai paladini di Carlo Magno. Giochi di bambini, guerra, pupi e lo spirito di Pasolini si incontrano in una prop",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335514.html"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Ven 11 Dic 2026",
+    "dataInizio": "2026-12-11",
+    "dataFine": "2026-12-11",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
   },
   {
     "locandinaUrl": "https://glnbdtlftdlvofuhqmjo.supabase.co/storage/v1/object/public/il-borghista-backend/events/06a75296-b65c-488e-8b95-c097d35f4bba.webp",
@@ -774,6 +805,20 @@
   },
   {
     "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Sab 12 Dic 2026",
+    "dataInizio": "2026-12-12",
+    "dataFine": "2026-12-12",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
+  },
+  {
+    "tipoContenuto": "evento",
     "citta": "Cerignola",
     "categoria": "Attività diurne",
     "titolo": "Antiquariando – Mercatino dell'antiquariato e dell'usato",
@@ -799,6 +844,35 @@
     "costo": "Non specificato nella fonte",
     "descrizione": "Mercatini straordinari del consorzio La Cicogna, dalle 07:00 alle 14:30 lungo il perimetro della Villa Comunale.",
     "fonteUrl": "https://puglia.piazzainfesta.it/cerignola/mercatini-straordinari-de-la-cicogna-137665"
+  },
+  {
+    "tipoContenuto": "evento",
+    "citta": "Canosa di Puglia",
+    "categoria": "Famiglie & Bambini",
+    "titolo": "Domani l'accensione dell'Albero e delle luminarie natalizie in P.zza Vittorio Veneto",
+    "dataTesto": "Dom 13 Dic 2026",
+    "dataInizio": "2026-12-13",
+    "dataFine": "2026-12-13",
+    "luogo": "Villa Comunale e delle luminarie",
+    "indirizzoMappa": "Villa Comunale e delle luminarie, Canosa di Puglia",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Tutto pronto a Canosa di Puglia per l'inizio ufficiale delle festività natalizie",
+    "fonteUrl": "https://www.canosaviva.it/notizie/domani-l-accensione-dell-albero-e-delle-luminarie-natalizie-in-p-zza-vittorio-veneto/"
+  },
+  {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/10/330201_20260915_083447.jpg",
+    "tipoContenuto": "evento",
+    "citta": "Foggia",
+    "categoria": "Musica & Concerti",
+    "titolo": "Foggia | Christmas Vocal Harmony – SeiOttavi",
+    "dataTesto": "Mar 15 Dic 2026",
+    "dataInizio": "2026-12-15",
+    "dataFine": "2026-12-15",
+    "luogo": "Teatro Umberto Giordano",
+    "indirizzoMappa": "Teatro Umberto Giordano, Piazza Cesare Battisti, Foggia",
+    "costo": "A pagamento",
+    "descrizione": "La chiusura del secondo atto è affidata ai SeiOttavi – Orchestra a cappella con il progetto natalizio “Christmas Vocal Harmony”. Il concerto accompagnerà il pubblico in un viaggio nel pop internazionale e nelle atmosfere",
+    "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/330209.html"
   },
   {
     "tipoContenuto": "evento",
@@ -887,6 +961,36 @@
     "fonteUrl": "https://www.csvfoggia.it/capitanata-escursioni-con-daunia-tur-aps/"
   },
   {
+    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/c46077385db521eca45b9ce479edbba682bdc885-1600x900.png?w=1200&h=630&fit=crop&q=80",
+    "tipoContenuto": "evento",
+    "citta": "Troia",
+    "categoria": "Locali & Serate",
+    "titolo": "Christmas Party 2026 – Caribe Dance Academy & Universo Manfredonia",
+    "dataTesto": "Sab 19 Dic 2026 · Ore 21:00",
+    "dataInizio": "2026-12-19",
+    "dataFine": "2026-12-19",
+    "luogo": "Il cielo in una stanza",
+    "indirizzoMappa": "Il cielo in una stanza, Località Conte di Troia, 71043 Manfredonia FG, Manfredonia, FG",
+    "costo": "Non specificato nella fonte",
+    "descrizione": "Sabato 19 dicembre 2026, a partire dalle ore 20:30, Il Cielo in una Stanza, in località Conte di Troia a Manfredonia, ospita il Christmas Party 2026, organizzato da Caribe Dance Academy e ASD Universo Manfredonia. Una se",
+    "fonteUrl": "https://www.manfredoniaeventi.com/evento/christmas-party-2026-caribe-dance-academy-universo-manfredonia-manfredonia-19-dicembre-2026/"
+  },
+  {
+    "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/8b2046e7a2723a8127b3ec9bf5741654ac36330d-1672x941.png?w=1200&h=630&fit=crop&q=80",
+    "tipoContenuto": "evento",
+    "citta": "Manfredonia",
+    "categoria": "Locali & Serate",
+    "titolo": "Marechià Xmas Night 2026 – DJ set con Ambro e Cyrox",
+    "dataTesto": "Sab 19 Dic 2026 · Ore 22:00",
+    "dataInizio": "2026-12-19",
+    "dataFine": "2026-12-19",
+    "luogo": "Vetus Vallum",
+    "indirizzoMappa": "Vetus Vallum, Via Antico Ospedale Orsini, 85, 71043 Manfredonia FG, Manfredonia, FG",
+    "costo": "15€",
+    "descrizione": "Sabato 19 dicembre 2026 torna a Manfredonia 𝗠𝗮𝗿𝗲𝗰𝗵𝗶𝗮̀, con 𝗫𝗺𝗮𝘀 𝗡𝗶𝗴𝗵𝘁, una serata dedicata alla musica e al divertimento in occasione delle festività natalizie. L'appuntamento è al 𝗩𝗲𝘁𝘂𝘀 𝗩𝗮𝗹𝗹𝘂𝗺, presso l'Antico Ospedale",
+    "fonteUrl": "https://www.manfredoniaeventi.com/evento/marechia-xmas-night-2026-dj-set-con-ambro-e-cyrox-manfredonia-19-dicembre-2026/"
+  },
+  {
     "tipoContenuto": "evento",
     "citta": "Foggia",
     "categoria": "Musica & Concerti",
@@ -967,7 +1071,7 @@
     "dataFine": "2026-12-31",
     "luogo": "Teatro Curci",
     "indirizzoMappa": "Teatro Curci, Corso Vittorio Emanuele II, 72, Barletta",
-    "costo": "Ingresso libero",
+    "costo": "A pagamento",
     "descrizione": "Capodanno al Curci riunisce musica, comicità e spettacolo in una serata speciale. Il programma prevede lo spettacolo comico Il ripetente di Dado, seguito da Mezzanotte d’autore con Angelo Mellone e Andrea Perroni, per la",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/331492.html"
   },
@@ -1000,18 +1104,19 @@
     "fonteUrl": "https://regiohotel.it/it/promo/cenone-di-san-silvestro-e-pranzo-di-capodanno"
   },
   {
+    "locandinaUrl": "https://images.xceed.me/events/banners/new-years-eve-45-barletta-xceed-square-ce88.png?w=1920&h=1080&ar=16:9&fm=auto",
     "tipoContenuto": "evento",
-    "citta": "Manfredonia",
-    "categoria": "Attività diurne",
-    "titolo": "Menù di Capodanno – Posta Bassi",
-    "dataTesto": "Ven 01 Gen 2027",
-    "dataInizio": "2027-01-01",
-    "dataFine": "2027-01-01",
-    "luogo": "Agriturismo Posta Bassi",
-    "indirizzoMappa": "Via Manfredonia km 196+200",
-    "costo": "55 € a persona",
-    "descrizione": "Menù speciale del primo gennaio annunciato dall'agriturismo. Il sito ufficiale contiene il menu e la richiesta di prenotazione. Info 0881 700155.",
-    "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
+    "citta": "Barletta",
+    "categoria": "Locali & Serate",
+    "titolo": "LUMA - NEW YEAR'S EVE",
+    "dataTesto": "Gio 31 Dic 2026 · Ore 23:59",
+    "dataInizio": "2026-12-31",
+    "dataFine": "2026-12-31",
+    "luogo": "Luma Club",
+    "indirizzoMappa": "Viale Regina Elena 100, Barletta",
+    "costo": "Consulta la biglietteria",
+    "descrizione": "Serata in club.",
+    "fonteUrl": "https://xceed.me/it/barletta/event/luma-new-years-eve/254346"
   },
   {
     "tipoContenuto": "evento",
@@ -1022,9 +1127,9 @@
     "dataInizio": "2027-01-01",
     "dataFine": "2027-01-01",
     "luogo": "Posta Bassi",
-    "indirizzoMappa": "Posta Bassi, Foggia",
-    "costo": "Consulta menu e prezzi nella fonte",
-    "descrizione": "Festivita & Occasioni Speciali Eventi Speciali Scopri i nostri menu dedicati per le festivita e le occasioni speciali. Scarica il PDF, scegli il tuo menu preferito e prenota il tuo posto. Menù pranzo Immacolata 08 Dicemb",
+    "indirizzoMappa": "Posta Bassi, Via Manfredonia Km 196+200, 71121 Foggia (FG)",
+    "costo": "55 € a persona",
+    "descrizione": "Pranzo di Capodanno del 1 gennaio 2027. Menù e prenotazioni sul sito ufficiale dell'agriturismo.",
     "fonteUrl": "https://www.postabassi.it/eventi-speciali/"
   },
   {
@@ -1101,10 +1206,11 @@
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/335517.html"
   },
   {
+    "locandinaUrl": "https://iltaccodibacco.it/img_eventi/2026/11/335502_20261103_164919.jpg",
     "tipoContenuto": "evento",
     "citta": "Manfredonia",
     "categoria": "Teatro & Spettacoli",
-    "titolo": "Lisistrata – Lella Costa",
+    "titolo": "Manfredonia | Lisistrata – Lella Costa",
     "dataTesto": "Ven 15 Gen 2027 · Ore 21:00",
     "dataInizio": "2027-01-15",
     "dataFine": "2027-01-15",

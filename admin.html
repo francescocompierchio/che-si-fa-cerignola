@@ -582,12 +582,13 @@
             <div class="field">
               <label for="ev-locandina">URL immagine locandina (opzionale)</label>
               <input type="url" id="ev-locandina" placeholder="https://..." />
+              <div id="ev-locandina-allegata" hidden><p>Foto allegata: sarà resa pubblica con l’evento. Verifica che sia pertinente e priva di dati privati.</p><img id="ev-locandina-preview" alt="Locandina da approvare" style="max-width:100%;max-height:360px;object-fit:contain" /><button type="button" class="btn btn-sm" id="ev-locandina-rimuovi">Rimuovi foto allegata</button></div>
               <small>Incolla il link diretto dell'immagine locandina (.jpg, .png, .webp) se vuoi mostrarla nella scheda.</small>
             </div>
 
             <div class="check-row">
               <input type="checkbox" id="ev-in-evidenza" checked />
-              <label for="ev-in-evidenza">★ Metti IN EVIDENZA in cima all'app</label>
+              <label for="ev-in-evidenza">★ Metti IN EVIDENZA in cima all'app (scelta amministratore)</label>
             </div>
 
             <div class="item-actions">
@@ -658,6 +659,8 @@
   <div id="toast" class="toast"></div>
 
   <!-- Firebase SDK -->
+  <script src="app-extras.js?v=3"></script>
+  <script src="quick-report.js?v=6"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -793,7 +796,7 @@
 
       db.ref("eventiManuali").on("value", s => {
         cacheEventi = s.val() || {};
-        renderEventiAdmin();
+        renderEventiAdmin();renderSegnalazioni();
       });
 
       db.ref("localiCerignola").on("value", s => {
@@ -815,6 +818,17 @@
       return "Locali & Serate";
     }
 
+    function segnaliSegnalazione(seg,id){
+      return CsfQuick.reviewSignals(seg,Object.entries(cacheSegnalazioni).filter(([k])=>k!==id).map(([,v])=>v),Object.values(cacheEventi));
+    }
+    function notaCanale(seg,id){
+      const s=segnaliSegnalazione(seg,id),note=document.createElement("p");note.className="item-meta";
+      const msgs=[s.channel==="editoriale"?"Editoriale · ordinario, promuovibile solo per scelta admin":"Professionale dichiarato · identità da verificare"];
+      if(s.duplicatePublished)msgs.push("Evento già presente tra i manuali: controlla prima di pubblicare.");
+      if(s.duplicatePending)msgs.push("Possibile duplicato in coda.");
+      if(s.recurring)msgs.push("Locale ricorrente: "+s.relatedDates+" altre date. Verifica eventuale uso commerciale; non è una prova.");
+      note.textContent=msgs.join(" · ");return note;
+    }
     function renderSegnalazioni() {
       const box = document.getElementById("lista-segnalazioni");
       const entries = Object.entries(cacheSegnalazioni);
@@ -827,6 +841,7 @@
       }
 
       entries.forEach(([id, seg]) => {
+        if(seg.tipoSegnalazione==="Segnalazione rapida"){renderRapida(box,id,seg);return;}
         const div = document.createElement("div");
         div.className = "item-card";
 
@@ -865,6 +880,20 @@
 
         const actions = document.createElement("div");
         actions.className = "item-actions";
+        if (seg.fonteUrl) {
+          try {
+            const fonte = new URL(seg.fonteUrl);
+            if (["https:", "http:"].includes(fonte.protocol) && !fonte.username && !fonte.password) {
+              const link = document.createElement("a");
+              link.className = "btn btn-sm";
+              link.href = fonte.href;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = "Apri fonte originale";
+              actions.appendChild(link);
+            }
+          } catch (_) {}
+        }
 
         const btnOk = document.createElement("button");
         btnOk.type = "button";
@@ -873,6 +902,7 @@
         btnOk.addEventListener("click", async () => {
           try {
             if (auth.currentUser) await auth.currentUser.getIdToken(true);
+            if(segnaliSegnalazione(seg,id).duplicatePublished)throw Error("Evento già presente: modifica quello esistente.");
             const nuovoEvento = {
               titolo: seg.titolo || "",
               citta: seg.citta || "Cerignola",
@@ -922,17 +952,68 @@
         });
 
         actions.append(btnOk, btnEdit, btnDel);
-        div.append(top, meta, desc, actions);
+        div.append(top, meta, notaCanale(seg,id), desc, actions);
         box.appendChild(div);
       });
     }
 
+    function renderRapida(box,id,seg){
+      const div=document.createElement("div");div.className="item-card";
+      const title=document.createElement("p");title.className="item-title";title.textContent=seg.titolo?"Segnalazione rapida · "+seg.titolo:"Segnalazione rapida · da verificare";
+      const desc=document.createElement("p");desc.className="item-desc";desc.style.whiteSpace="pre-wrap";desc.textContent=[seg.dataInizio,seg.dataTesto,seg.luogo,seg.citta,seg.descrizione,seg.notaRapida].filter(v=>typeof v==="string"&&v).join("\n").slice(0,4500);
+      div.append(title,notaCanale(seg,id),desc);
+      const source=CsfQuick.publicUrl(seg.fonteUrl);
+      if(source){const a=document.createElement("a");a.href=source;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Apri annuncio originale";a.className="btn btn-sm";div.append(a);}
+      const image=CsfQuick.safeImage(seg.screenshot)?seg.screenshot:"";
+      if(CsfQuick.isDirectStory(source)&&!image){const note=document.createElement("p");note.className="item-desc";note.textContent="Storia Instagram senza screenshot: verifica appena possibile. Il link potrebbe scadere o richiedere accesso. Non pubblicare se i dati dell’evento non sono verificabili.";div.append(note);}
+      if(image){
+        const img=document.createElement("img");img.src=image;img.alt="Screenshot ricevuto, non pubblicato";img.style.cssText="display:block;max-width:100%;max-height:440px;object-fit:contain;margin:12px 0;border-radius:8px";img.loading="lazy";div.append(img);
+        const a=document.createElement("a");a.href=image;a.download="segnalazione.jpg";a.textContent="Scarica screenshot";a.className="btn btn-sm";div.append(a);
+      }
+      const actions=document.createElement("div");actions.className="item-actions";
+      const edit=document.createElement("button");edit.type="button";edit.className="btn btn-primary btn-sm";edit.textContent=image&&seg.titolo?"Verifica e approva":image?"Leggi screenshot e rivedi":"Rivedi e pubblica";
+      edit.onclick=async()=>{
+        const parsed=CsfExtras.parsePoster(typeof seg.descrizione==="string"?seg.descrizione:"");
+        const draft={tipoSegnalazione:"Segnalazione rapida",titolo:seg.titolo||parsed.title,citta:seg.citta||parsed.city,luogo:seg.luogo||parsed.venue,dataInizio:seg.dataInizio||parsed.date,dataFine:seg.dataFine||parsed.date,dataTesto:seg.dataTesto||parsed.time,costo:seg.costo||parsed.price,fonteUrl:source,descrizione:seg.descrizione||parsed.text.slice(0,1000),locandinaUrl:image};
+        caricaEventoNelForm("",draft,id);attivaTab("tab-eventi");
+        if(!image||seg.titolo)return;
+        const stillEditing=()=>document.getElementById("ev-from-segnalazione-id").value===id;
+        let worker=null;
+        try{
+          showToast("Lettura screenshot in corso. Controlla sempre i dati.");
+          if(!window.Tesseract)await new Promise((resolve,reject)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js";const timer=setTimeout(()=>{s.remove();reject(Error("timeout"));},25000);s.onload=()=>{clearTimeout(timer);resolve();};s.onerror=()=>{clearTimeout(timer);reject(Error("OCR"));};document.head.appendChild(s);});
+          worker=await window.Tesseract.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});
+          const result=await worker.recognize(image);
+          if(!stillEditing())return;
+          const p=CsfExtras.parsePoster(result.data.text);
+          for(const [field,value] of [["ev-titolo",p.title],["ev-citta",p.city],["ev-luogo",p.venue],["ev-data-inizio",p.date],["ev-data-fine",p.date],["ev-data-testo",p.time],["ev-costo",p.price],["ev-descrizione",p.text.slice(0,1000)]]){
+            const el=document.getElementById(field);if(value&&!el.value.trim())el.value=value;
+          }
+          showToast("Testo letto. Verifica e completa i dati prima di pubblicare.");
+        }catch(_){if(stillEditing())showToast("OCR non disponibile. Puoi consultare lo screenshot e completare i dati.");}
+        finally{if(worker)try{await worker.terminate();}catch(_){}}
+      };
+      const del=document.createElement("button");del.type="button";del.className="btn btn-red btn-sm";del.textContent="Scarta";
+      del.onclick=async()=>{if(confirm("Eliminare questa segnalazione?"))try{if(auth.currentUser)await auth.currentUser.getIdToken(true);await db.ref("segnalazioniDaApprovare/"+id).remove();showToast("Segnalazione eliminata.");}catch(_){showToast("Eliminazione non riuscita.");}};
+      actions.append(edit,del);div.append(actions);box.append(div);
+    }
+
+    let posterAllegato="";
+    function mostraPosterAllegato(value){
+      posterAllegato=CsfQuick.safeImage(value)?value:"";
+      const img=document.getElementById("ev-locandina-preview");
+      document.getElementById("ev-locandina-allegata").hidden=!posterAllegato;
+      if(posterAllegato)img.src=posterAllegato;else img.removeAttribute("src");
+    }
+    document.getElementById("ev-locandina-rimuovi").addEventListener("click",()=>mostraPosterAllegato(""));
     function resetFormEvento() {
+      mostraPosterAllegato("");
       document.getElementById("form-evento").reset();
       showBoxError("evento-error", "");
       document.getElementById("ev-edit-id").value = "";
       document.getElementById("ev-from-segnalazione-id").value = "";
       document.getElementById("ev-citta").value = "Cerignola";
+      document.getElementById("ev-in-evidenza").disabled=false;
       document.getElementById("ev-in-evidenza").checked = true;
       document.getElementById("form-evento-title").textContent = "Nuovo Evento / Serata / Attività";
       document.getElementById("btn-salva-evento").textContent = "Pubblica";
@@ -943,19 +1024,22 @@
       showBoxError("evento-error", "");
       document.getElementById("ev-edit-id").value = editId;
       document.getElementById("ev-from-segnalazione-id").value = fromSegnalazioneId;
+      const rapida=ev.tipoSegnalazione==="Segnalazione rapida";
       document.getElementById("ev-titolo").value = ev.titolo || "";
-      document.getElementById("ev-citta").value = ev.citta || "Cerignola";
+      document.getElementById("ev-citta").value = ev.citta || (rapida?"":"Cerignola");
       document.getElementById("ev-categoria").value = mappaCategoriaDaSegnalazione(ev);
-      document.getElementById("ev-data-inizio").value = ev.dataInizio || getOggiISO();
-      document.getElementById("ev-data-fine").value = ev.dataFine || ev.dataInizio || getOggiISO();
+      document.getElementById("ev-data-inizio").value = ev.dataInizio || (rapida?"":getOggiISO());
+      document.getElementById("ev-data-fine").value = ev.dataFine || ev.dataInizio || (rapida?"":getOggiISO());
       document.getElementById("ev-data-testo").value = ev.dataTesto || "";
       document.getElementById("ev-luogo").value = ev.luogo || "";
       document.getElementById("ev-indirizzo").value = ev.indirizzoMappa || "";
       document.getElementById("ev-descrizione").value = ev.descrizione || "";
       document.getElementById("ev-costo").value = ev.costo || "";
       document.getElementById("ev-fonte").value = ev.fonteUrl || "";
-      document.getElementById("ev-locandina").value = ev.locandinaUrl || "";
-      document.getElementById("ev-in-evidenza").checked = ev.inEvidenza !== false;
+      mostraPosterAllegato(ev.locandinaUrl);document.getElementById("ev-locandina").value = posterAllegato?"":ev.locandinaUrl || "";
+      const evidenza=document.getElementById("ev-in-evidenza");
+      evidenza.disabled=false;
+      evidenza.checked=fromSegnalazioneId?false:ev.inEvidenza!==false;
 
       document.getElementById("form-evento-title").textContent = editId ? "Modifica Contenuto" : "Approva Segnalazione";
       document.getElementById("btn-salva-evento").textContent = editId ? "Salva Modifiche" : "Approva e Pubblica";
@@ -983,6 +1067,13 @@
         await auth.currentUser.getIdToken(true);
         const editId = document.getElementById("ev-edit-id").value;
         const fromSegId = document.getElementById("ev-from-segnalazione-id").value;
+        const segOrigine=cacheSegnalazioni[fromSegId];
+        const rapida=segOrigine?.tipoSegnalazione==="Segnalazione rapida";
+        if(fromSegId&&!segOrigine)throw Error("Segnalazione non più disponibile.");
+        if(segOrigine&&segnaliSegnalazione(segOrigine,fromSegId).duplicatePublished)throw Error("Evento già presente: modifica quello esistente.");
+        if(rapida&&["ev-titolo","ev-citta","ev-luogo","ev-data-inizio","ev-data-fine","ev-data-testo","ev-descrizione"].some(id=>!document.getElementById(id).value.trim()))throw Error("Completa i dati verificati prima di pubblicare.");
+        if(rapida&&(!posterAllegato&&!/^https:\/\//i.test(document.getElementById("ev-locandina").value.trim())))throw Error("Serve una locandina autentica prima di pubblicare.");
+        if(rapida&&(!/\b(?:[01]\d|2[0-3]):[0-5]\d\b/.test(document.getElementById("ev-data-testo").value)||document.getElementById("ev-data-inizio").value<getOggiISO()||document.getElementById("ev-data-fine").value<document.getElementById("ev-data-inizio").value))throw Error("Controlla data e orario dell’evento.");
         const cittaVal = document.getElementById("ev-citta").value.trim() || "Cerignola";
         const luogoVal = document.getElementById("ev-luogo").value.trim();
         const indVal = document.getElementById("ev-indirizzo").value.trim();
@@ -999,7 +1090,7 @@
           descrizione: document.getElementById("ev-descrizione").value.trim(),
           costo: document.getElementById("ev-costo").value.trim(),
           fonteUrl: document.getElementById("ev-fonte").value.trim(),
-          locandinaUrl: document.getElementById("ev-locandina").value.trim(),
+          locandinaUrl: document.getElementById("ev-locandina").value.trim()||posterAllegato,
           inEvidenza: document.getElementById("ev-in-evidenza").checked
         };
 

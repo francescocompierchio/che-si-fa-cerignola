@@ -1,0 +1,99 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "settings": {
+      "open": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true"
+      }
+    },
+    "moderators": {
+      "$uid": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && auth.uid == $uid) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)"
+      }
+    },
+    "bans": {
+      "$uid": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && auth.uid == $uid) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".validate": "newData.val() == true"
+      }
+    },
+    "submissions": {
+      ".indexOn": [
+        "state"
+      ],
+      ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) && query.orderByChild == 'state' && query.equalTo == 'pending' && query.limitToFirst != null && query.limitToFirst <= 40",
+      "$uid": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && auth.uid == $uid) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) || (((auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('settings/open').val() == true && root.child('bans').child(auth.uid).val() != true) && auth.uid == $uid) && newData.exists() && newData.child('state').val() == 'pending' && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now && newData.child('createdAt').val() >= now - 10000 && (!data.exists() || (data.child('state').val() != 'pending' && now >= data.child('createdAt').val() + 30000)))",
+        ".validate": "newData.hasChildren(['nick','text','createdAt','state'])",
+        "nick": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 24"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "state": {
+          ".validate": "newData.val() == 'pending' || newData.val() == 'approved' || newData.val() == 'rejected'"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "published": {
+      ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('settings/open').val() == true && root.child('bans').child(auth.uid).val() != true) && query.orderByKey == true && query.limitToLast != null && query.limitToLast <= 40",
+      "$id": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) && (!newData.exists() || !data.exists())",
+        ".validate": "newData.hasChildren(['nick','text','createdAt'])",
+        "nick": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 24"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "authors": {
+      "$id": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".validate": "newData.isString() && newData.val().length <= 128"
+      }
+    },
+    "reports": {
+      ".indexOn": [
+        "state"
+      ],
+      ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) && query.orderByChild == 'state' && query.equalTo == 'pending' && query.limitToFirst != null && query.limitToFirst <= 40",
+      "$uid": {
+        ".read": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && auth.uid == $uid) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true)",
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('moderators').child(auth.uid).val() == true) || (((auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.token.email_verified == true && root.child('settings/open').val() == true && root.child('bans').child(auth.uid).val() != true) && auth.uid == $uid) && newData.exists() && newData.child('state').val() == 'pending' && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now && newData.child('createdAt').val() >= now - 10000 && newData.child('messageId').isString() && root.child('published').child(newData.child('messageId').val()).exists() && (!data.exists() || (data.child('state').val() != 'pending' && now >= data.child('createdAt').val() + 30000)))",
+        ".validate": "newData.hasChildren(['messageId','createdAt','state'])",
+        "messageId": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{20}$/)"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "state": {
+          ".validate": "newData.val() == 'pending' || newData.val() == 'resolved'"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}

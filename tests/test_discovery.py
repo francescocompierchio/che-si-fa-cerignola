@@ -866,16 +866,16 @@ class ProtezioneManualiERetryHttpTests(unittest.TestCase):
         self.assertEqual(automatici, [])
         self.assertEqual(scaduti, 1)
 
-    def test_sessione_http_ha_retry_su_rate_limit_e_errori_transitori(self):
+    def test_sessione_http_riprova_solo_errori_transitori(self):
         session = motore.crea_session_raccolta()
         try:
             adapter = session.get_adapter("https://")
             retry = adapter.max_retries
-            self.assertEqual(retry.total, 3)
-            self.assertIn(429, retry.status_forcelist)
-            self.assertIn(503, retry.status_forcelist)
+            self.assertEqual(retry.total, 1)
+            self.assertNotIn(429, retry.status_forcelist)
+            self.assertIn(502, retry.status_forcelist)
             self.assertIn("GET", retry.allowed_methods)
-            self.assertTrue(retry.respect_retry_after_header)
+            self.assertFalse(retry.respect_retry_after_header)
         finally:
             session.close()
 
@@ -906,12 +906,13 @@ class ComuneHomepageEIndirizziTests(unittest.TestCase):
           <p>Gratuito. E' necessaria prenotazione.</p>
         </main></body></html>
         """
-        eventi = motore.analizza_pagina_evento(
-            html,
-            "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
-            citta_default="Cerignola",
-            fonte_curata_eventi=True,
-        )
+        with patch.object(motore, "oggi_dt", return_value=datetime(2026, 11, 24)):
+            eventi = motore.analizza_pagina_evento(
+                html,
+                "https://comune.cerignola.fg.it/vivere-il-comune/eventi/le-storie-del-giovedi-biblioteca-di-comunita-31/",
+                citta_default="Cerignola",
+                fonte_curata_eventi=True,
+            )
         self.assertEqual(len(eventi), 1)
         self.assertEqual(eventi[0]["dataInizio"], "2026-11-26")
         self.assertEqual(eventi[0]["luogo"], "Biblioteca di Comunità")

@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/guardiano.yml"
+      - "scripts/guardiano.py"
+      - "scripts/test_guardiano.py"
   push:
     branches: [main]
     paths:
@@ -30,6 +36,7 @@ jobs:
       - name: Test del recupero controllato
         run: python -m unittest discover -s scripts -p test_guardiano.py -v
       - name: Verifica archivio e raccolta
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/guardiano.py

@@ -1,0 +1,83 @@
+name: Community - moderazione automatica
+on:
+  schedule:
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/community-moderazione.yml'
+      - 'scripts/community_moderator.py'
+      - 'community-database.rules.json'
+  pull_request:
+    paths:
+      - 'scripts/community_moderator.py'
+      - '.github/workflows/community-moderazione.yml'
+      - 'community.js'
+permissions:
+  contents: read
+concurrency:
+  group: community-moderazione-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/community_moderator.py self-test
+      - name: Installa modello CPU
+        run: |
+          pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.51.3 safetensors==0.5.3 lingua-language-detector==2.1.0
+      - name: Collaudo IA su esempi inventati
+        run: python scripts/community_moderator.py model-test
+  moderate:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.COMMUNITY_AUTOMOD_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python scripts/community_moderator.py self-test
+          pip install google-auth==2.40.3 requests==2.32.5
+      - name: Verifica coda ogni 60 secondi senza mostrare dati
+        id: probe
+        env:
+          COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$COMMUNITY_FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::Secret COMMUNITY_FIREBASE_SERVICE_ACCOUNT non configurato."
+            exit 1
+          fi
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            result="$(python scripts/community_moderator.py watch)"
+          else
+            result="$(python scripts/community_moderator.py probe)"
+          fi
+          case "$result" in
+            pending=yes|pending=no) printf "%s\n" "$result" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::Risposta del controllo non valida."; exit 1 ;;
+          esac
+          echo "Collegamento Firebase Community verificato in lettura. Nessun contenuto nei log."
+      - name: Installa modello CPU solo se necessario
+        if: steps.probe.outputs.pending == 'yes'
+        run: |
+          pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.51.3 safetensors==0.5.3 lingua-language-detector==2.1.0
+      - name: Moderazione preventiva
+        if: steps.probe.outputs.pending == 'yes'
+        env:
+          COMMUNITY_FIREBASE_SERVICE_ACCOUNT: ${{ secrets.COMMUNITY_FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/community_moderator.py run

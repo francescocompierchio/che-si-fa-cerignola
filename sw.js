@@ -1,18 +1,21 @@
-const CACHE_NAME = "chesifa-shell-v59";
+const CACHE_NAME = "chesifa-shell-v80";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
   new URL("index.html", self.registration.scope).href,
   new URL("manifest.json", self.registration.scope).href,
   new URL("event-tools.js", self.registration.scope).href,
-  new URL("event-tools.js?v=42", self.registration.scope).href,
+  new URL("event-tools.js?v=44", self.registration.scope).href,
   new URL("metrics.js", self.registration.scope).href,
-  new URL("metrics.js?v=31", self.registration.scope).href,
+  new URL("metrics.js?v=34", self.registration.scope).href,
   new URL("public-views.js", self.registration.scope).href,
   new URL("public-views.js?v=31", self.registration.scope).href,
   new URL("event-page.js", self.registration.scope).href,
-  new URL("event-page.js?v=59", self.registration.scope).href,
+  new URL("event-page.js?v=69", self.registration.scope).href,
   new URL("app-extras.js", self.registration.scope).href,
+  new URL("app-extras.js?v=3", self.registration.scope).href,
+  new URL("side-panels.js?v=4", self.registration.scope).href,
+  new URL("quick-report.js?v=6", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 
@@ -128,11 +131,69 @@ self.addEventListener("notificationclick", event => {
   })());
 });
 
+const SHARE_CACHE = "chesifa-social-local-v1";
+const SHARE_MAX = 32 * 1024 * 1024;
+const SHARE_TTL = 30 * 60 * 1000;
+
+async function riceviCondivisione(request) {
+  const home = new URL("index.html", self.registration.scope);
+  home.searchParams.set("segnalaSocial", "1");
+  try {
+    const type = request.headers.get("content-type") || "";
+    if (!/^multipart\/form-data;/i.test(type) || !request.body) return Response.redirect(home, 303);
+    const reader = request.body.getReader();
+    const chunks = [];
+    let size = 0;
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > SHARE_MAX + 64 * 1024) {
+        await reader.cancel();
+        return Response.redirect(home, 303);
+      }
+      chunks.push(value);
+    }
+    const input = await new Response(new Blob(chunks), {headers:{"Content-Type":type}}).formData();
+    const draft = new FormData();
+    for (const [field, limit] of [["titolo",150],["testo",10000],["fonte",1800]]) {
+      const value = input.get(field);
+      if (typeof value === "string" && value.trim()) draft.set(field, value.trim().slice(0, limit));
+    }
+    const image = input.get("foto");
+    if (image instanceof Blob && image.size > 0 && image.size <= SHARE_MAX &&
+        ["image/jpeg", "image/png", "image/webp"].includes(image.type)) {
+      draft.set("foto", image, "locandina."+({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[image.type]));
+    }
+    if ([...draft.keys()].length === 0) return Response.redirect(home, 303);
+    const cache = await caches.open(SHARE_CACHE);
+    const now = Date.now();
+    const keys = await cache.keys();
+    await Promise.all(keys.slice(0, Math.max(0,keys.length-2)).map(key=>cache.delete(key)));
+    for (const key of keys.slice(-2)) {
+      const ts = Number(new URL(key.url).searchParams.get("t"));
+      if (!ts || now-ts > SHARE_TTL) await cache.delete(key);
+    }
+    const id = crypto.randomUUID();
+    const key = new URL("__bozza-social/"+id+"?t="+now, self.registration.scope);
+    await cache.put(key, new Response(draft));
+    home.searchParams.set("bozza", id);
+    home.searchParams.set("t", String(now));
+  } catch (_) {
+    // Il modulo manuale rimane disponibile anche con memoria locale esaurita.
+  }
+  return Response.redirect(home, 303);
+}
+
 self.addEventListener("fetch", event => {
   const request = event.request;
-  if (request.method !== "GET") return;
-
   const url = new URL(request.url);
+  if (request.method === "POST" && request.mode === "navigate" && url.origin === self.location.origin &&
+      url.pathname === BASE_PATH+"index.html" && url.search === "?ricevi-social=1") {
+    event.respondWith(riceviCondivisione(request));
+    return;
+  }
+  if (request.method !== "GET") return;
   // Non intercettare Firebase, Analytics, font, immagini o altri servizi esterni.
   if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE_PATH)) return;
   // L'APK è un download separato: non occupare inutilmente la cache della PWA.
@@ -143,7 +204,7 @@ self.addEventListener("fetch", event => {
   const isPage = request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === BASE_PATH;
 
   // I contatori devono usare codice coerente con la pagina appena pubblicata.
-  const isMetrics = [`${BASE_PATH}metrics.js`, `${BASE_PATH}public-views.js`].includes(url.pathname);
+  const isMetrics = [`${BASE_PATH}metrics.js`, `${BASE_PATH}public-views.js`, `${BASE_PATH}event-page.js`].includes(url.pathname);
   event.respondWith(
     isData || isPage || isMetrics
       ? retePrima(request, key)

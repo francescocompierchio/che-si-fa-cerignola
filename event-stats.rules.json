@@ -1,0 +1,32 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "statisticheEventi": {
+      "$id": {
+        ".read": true,
+        "enabled": {
+          ".write": false,
+          ".validate": "newData.isBoolean()"
+        },
+        "$metric": {
+          ".write": "$id.matches(/^[a-z0-9-]{1,180}$/) && ($metric == 'open' || $metric == 'share' || ($metric == 'poster' && root.child('statisticheEventi').child($id).child('posterEnabled').val() == true)) && root.child('statisticheEventi').child($id).child('enabled').val() == true && newData.exists() && newData.hasChildren(['count','at']) && newData.child('count').isNumber() && newData.child('count').val() <= 1000000000 && newData.child('count').val() == (data.exists() ? data.child('count').val() + 1 : 1) && newData.child('at').val() == now && (!data.exists() || data.child('at').val() <= now - 2000)",
+          ".validate": "newData.hasChildren(['count','at'])",
+          "count": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000000000"
+          },
+          "at": {
+            ".validate": "newData.isNumber() && newData.val() == now"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "posterEnabled": {
+          ".write": false,
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    }
+  }
+}

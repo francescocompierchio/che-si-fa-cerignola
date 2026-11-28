@@ -25,6 +25,9 @@ import apprendimento
 import radar_natura
 import radar_food
 import radar_movida
+import telegram_eventi
+import radar_territorio
+import fonti_editori
 
 GIORNI_ANTICIPO_MAX = 180
 
@@ -36,6 +39,7 @@ HEADERS = {
 
 DOMINI_AUTO = (
     "comune.trinitapoli.bt.it", "sagradelcarciofotrinitapoli.it", "eventivicino.it", "ilborghista.it", "lovojo.it",
+    "comune.stornara.fg.it", "comune.canosa.bt.it",
     "visitmonticchio.it", "caifoggia.it", "parcoofanto.it", "dauniatur.it", "csvfoggia.it", "oasilagosalso.it", "parcoaltamurgia.it", "pugliarte.it", "coopcommargherita.wixsite.com",
     "canosaweb.it", "minervinoviva.it", "volontariperminervino.it", "andiamoinpuglia.it",
     "news.google.com", "iltaccodibacco.it", "viaggiareinpuglia.it",
@@ -49,7 +53,7 @@ DOMINI_AUTO = (
     "happyticket.com", "pugliaculture.it", "ciaotickets.com", "virgilio.it",
     "buzzeventmap.com", "paesionline.it", "2d2web.com", "piazzainfesta.it",
     "masseriapavoni.com", "agriturismomoschella.com", "instagram.com", "facebook.com",
-    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it", "regiohotel.it", "postabassi.it", "uvulesce.com", "lavolpeeluvarestaurant.it", "anticaenotria.it", "cantineparadiso.it", "hermesclub.it", "capodannofoggia.com", "capodanno31.com", "cenonecapodanno.com"
+    "aivents.it", "experience-app.com", "comune.cerignola.fg.it", "foggiareporter.it", "cosedicasa.live", "manfredoniaeventi.com", "linea.live", "xceed.me", "ticketsms.it", "nightz.it", "nightoutz.it", "lineupatlas.com", "villabautier.com", "villademetra.it", "villatorrequarto.it", "ricevimentilavenere.it", "masseriabelvedereeventi.it", "agriturismomasseriacafora.it", "lucera.it", "identitagolose.it", "lucianopignataro.it", "gustoh24.it", "garganofm.com", "kodocollective.it", "bottegadegliapocrifi.it", "regiohotel.it", "postabassi.it", "uvulesce.com", "lavolpeeluvarestaurant.it", "anticaenotria.it", "cantineparadiso.it", "hermesclub.it", "capodannofoggia.com", "capodanno31.com", "cenonecapodanno.com"
 )
 
 FONTI_VIVA = [
@@ -80,14 +84,16 @@ FONTI_PORTALI = [
     {"nome":"Lucera.it eventi Cerignola","url":"https://www.lucera.it/eventi/","dominio":"lucera.it","citta_default":"","curata": False,"max_schede":10,"notizie_locali": True,"prefisso_schede":"/eventi/"},
     {"nome":"CanosaWeb eventi locali","url":"https://canosaweb.it/eventi/","dominio":"canosaweb.it","citta_default":"Canosa di Puglia","curata":False,"notizie_locali":True,"prefisso_schede":"/notizie/","max_schede":12},
     {"nome":"Comune Cerignola agenda ufficiale","url":"https://comune.cerignola.fg.it/vivere-il-comune/eventi/","dominio":"comune.cerignola.fg.it","citta_default":"Cerignola","curata":True,"prefisso_schede":"/vivere-il-comune/eventi/","max_schede":20},
+    {"nome":"Comune Stornara agenda pubblica","url":"https://comune.stornara.fg.it/it/events","dominio":"comune.stornara.fg.it","citta_default":"Stornara","curata":False,"prefisso_schede":"/it/events/","robots_obbligatorio":True,"max_schede":6},
+    {"nome":"Comune Canosa agenda pubblica","url":"https://www.comune.canosa.bt.it/it/eventi","dominio":"comune.canosa.bt.it","citta_default":"Canosa di Puglia","curata":False,"prefisso_schede":"/it/eventi/","robots_obbligatorio":True,"max_schede":6},
     {"nome":"Volontari per Minervino - iniziative","url":"https://volontariperminervino.it/","dominio":"volontariperminervino.it","citta_default":"Minervino Murge","curata":False,"notizie_locali":True,"max_schede":8},
     {"nome":"Tacco di Bacco concerti Barletta","url":"https://iltaccodibacco.it/barletta/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
     {"nome":"Tacco di Bacco concerti Bisceglie","url":"https://iltaccodibacco.it/bisceglie/concerti/","dominio":"iltaccodibacco.it","citta_default":"","curata":True,"prefisso_schede":"/puglia/eventi/","nightlife":True,"max_schede":12},
-    {"nome": "Nightz eventi", "url": "https://nightz.it/eventi/", "browser_pubblico": True, "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
-    {"nome": "Nightz Divine Club", "url": "https://nightz.it/locali/divine-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome": "Nightz Aphelion Club", "url": "https://nightz.it/locali/aphelion-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome": "Nightz Vyon Club", "url": "https://nightz.it/locali/vyon-club/", "dominio": "nightz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
-    {"nome":"TicketSms Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
+    {"nome": "Nightz eventi", "url": "https://nightoutz.it/eventi/", "browser_pubblico": True, "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 20},
+    {"nome": "Nightz Divine Club", "url": "https://nightoutz.it/locali/divine-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Aphelion Club", "url": "https://nightoutz.it/locali/aphelion-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome": "Nightz Vyon Club", "url": "https://nightoutz.it/locali/vyon-club/", "dominio": "nightoutz.it", "citta_default": "", "curata": True, "nightlife": True, "nightz": True, "max_schede": 10},
+    {"nome":"TicketSms calendario Idol Club Bisceglie","browser_pubblico": True,"url":"https://www.ticketsms.it/location/Idol-Club","dominio":"ticketsms.it","citta_default":"Bisceglie","curata": True,"nightlife": True,"ticketsms": True,"luogo_atteso":"Idol Club","max_schede":12},
     {"nome":"Xceed promoter Aphelion","url":"https://xceed.me/it/organizer/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":12},
     {"nome":"ManfredoniaEventi categoria Nightlife","url":"https://www.manfredoniaeventi.com/categoria/nightlife/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
     {"nome":"ManfredoniaEventi Minami","url":"https://manfredoniaeventi.com/luogo/minami-restaurant-lounge/","dominio":"manfredoniaeventi.com","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/evento/","data_nel_link": True,"max_schede":12},
@@ -97,6 +103,7 @@ FONTI_PORTALI = [
     {"nome":"Xceed Barletta","url":"https://xceed.me/it/barletta/events","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
     {"nome":"Xceed Trani","url":"https://xceed.me/it/trani/events","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Xceed Atrio22","url":"https://xceed.me/it/barletta/venue/atrio22","dominio":"xceed.me","citta_default":"Barletta","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/barletta/event/","max_schede":15},
+    {"nome":"Xceed Luma Club Barletta","url":"https://xceed.me/it/organizer/luma-club","dominio":"xceed.me","citta_default":"Barletta","curata":True,"nightlife":True,"xceed":True,"prefisso_schede":"/it/barletta/event/","robots_obbligatorio":True,"max_schede":8},
     {"nome":"Xceed Aphelion Club","url":"https://xceed.me/it/trani/venue/aphelion-club-1","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Xceed Baia Nha","url":"https://xceed.me/it/trani/venue/baia-nha","dominio":"xceed.me","citta_default":"Trani","curata": True,"nightlife": True,"xceed": True,"prefisso_schede":"/it/trani/event/","max_schede":15},
     {"nome":"Tacco di Bacco Nightlife Cerignola","url":"https://iltaccodibacco.it/cerignola/nightlife/","dominio":"iltaccodibacco.it","citta_default":"","curata": True,"nightlife": True,"prefisso_schede":"/puglia/eventi/","max_schede":14},
@@ -124,6 +131,7 @@ FONTI_PORTALI = [
     {"nome": "Tacco di Bacco BAT", "url": "https://iltaccodibacco.it/barletta/", "dominio": "iltaccodibacco.it", "citta_default": "", "curata": True},
     {"nome": "Tacco di Bacco Foggia", "url": "https://iltaccodibacco.it/foggia/", "dominio": "iltaccodibacco.it", "citta_default": "", "curata": True},
     {"nome": "BuzzEventMap Cerignola", "url": "https://buzzeventmap.com/eventi/foggia/cerignola", "dominio": "buzzeventmap.com", "citta_default": "Cerignola", "curata": True},
+    {"nome":"BuzzEventMap Trinitapoli e Reali Siti","url":"https://buzzeventmap.com/eventi/barletta-andria-trani/trinitapoli","dominio":"buzzeventmap.com","citta_default":"","curata":False,"prefisso_schede":"/event/","robots_obbligatorio":True,"max_schede":8},
     {"nome": "PaesiOnline Cerignola", "url": "https://www.paesionline.it/italia/eventi-cerignola", "dominio": "paesionline.it", "citta_default": "Cerignola", "curata": True},
     {"nome": "2D2Web Sagre Feste Cerignola", "url": "https://www.2d2web.com/sagre-feste/cerignola", "dominio": "2d2web.com", "citta_default": "Cerignola", "curata": True},
     {"nome": "Aivents Provincia Foggia", "url": "https://www.aivents.it/it/eventi-per-provincia/foggia", "dominio": "aivents.it", "citta_default": "", "curata": True},
@@ -151,7 +159,7 @@ FONTI_SOCIAL_RSS = [
     {"nome":"Resident Advisor costa","url":"https://news.google.com/rss/search?q=site%3Ara.co%2Fevents%20(Trani%20OR%20Barletta%20OR%20Manfredonia%20OR%20Foggia)%20(club%20OR%20DJ%20OR%20party)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"KODO promoter Puglia nord","url":"https://news.google.com/rss/search?q=site%3Akodocollective.it%20(Barletta%20OR%20Trani%20OR%20Foggia)%20(DJ%20OR%20party%20OR%20club)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Club e promoter Capitanata","url":"https://news.google.com/rss/search?q=(Foggia%20OR%20Manfredonia%20OR%20Cerignola%20OR%20%22Margherita%20di%20Savoia%22%20OR%20Zapponeta)%20(discoteca%20OR%20%22dj%20set%22%20OR%20%22club%20night%22%20OR%20%22opening%20party%22%20OR%20%22dinner%20show%22)%20when%3A14d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
-    {"nome":"Nightz Puglia nord","url":"https://news.google.com/rss/search?q=site%3Anightz.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(DJ%20OR%20club%20OR%20serata)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
+    {"nome":"Nightz Puglia nord","url":"https://news.google.com/rss/search?q=site%3Anightoutz.it%20(Barletta%20OR%20Trani%20OR%20Manfredonia%20OR%20Foggia%20OR%20Cerignola)%20(DJ%20OR%20club%20OR%20serata)%20when%3A30d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True,"solo_scoperta": True},
     {"nome":"Movida Trani DJ e discoteche","url":"https://news.google.com/rss/search?q=Trani%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Barletta DJ e discoteche","url":"https://news.google.com/rss/search?q=Barletta%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
     {"nome":"Movida Manfredonia DJ e discoteche","url":"https://news.google.com/rss/search?q=Manfredonia%20(%22dj%20set%22%20OR%20discoteca%20OR%20karaoke%20OR%20%22dinner%20show%22%20OR%20%22club%20night%22%20OR%20%22musica%20dal%20vivo%22%20OR%20%22serata%20latina%22%20OR%20%22opening%20party%22)%20when%3A21d&hl=it&gl=IT&ceid=IT%3Ait","citta_default":"","nightlife": True},
@@ -293,6 +301,19 @@ PAROLE_SCARTO = [
 ]
 
 REGEX_SCARTO = re.compile(r"\b(?:" + "|".join(re.escape(w) for w in PAROLE_SCARTO) + r")\b", re.I)
+TITOLO_TRASPORTO_SPETTACOLO = re.compile(
+    r"^\s*(?:bus|pullman|navetta)\s+(?:(?:per|al|alla)\s+)?(?:(?:il|lo|la)\s+)?(?:concerto|festival|spettacolo)\b", re.I
+)
+
+
+def evento_informativo_comunale(titolo, url):
+    if not _host_appartiene(url, "comune.cerignola.fg.it") or not urlparse(url).path.startswith("/vivere-il-comune/eventi/"):
+        return False
+    return bool(re.match(
+        r"\s*(?:workshop\b.*\b(?:disinformazione|fake news|finanza)\b|"
+        r"(?:giornata|incontro)\s+informativ[oa]\b|laboratorio\s+di\s+europrogettazione\b)",
+        titolo, re.I,
+    ))
 
 ESCLUSIONI_PATH_VIVA = (
     "/cronaca/", "/politica/", "/sport/", "/necrologi/", "/meteo/",
@@ -325,16 +346,16 @@ def registra_statistica_fonte(nome, **dati):
 
 
 def crea_session_raccolta():
-    """Sessione HTTP con retry controllati per errori transitori e rate limit."""
+    """Sessione HTTP con retry limitati per errori transitori."""
     retry = Retry(
-        total=3,
-        connect=2,
-        read=2,
-        status=3,
+        total=1,
+        connect=1,
+        read=1,
+        status=1,
         backoff_factor=0.7,
-        status_forcelist=(429, 500, 502, 503, 504),
+        status_forcelist=(500, 502, 504),
         allowed_methods=frozenset({"GET"}),
-        respect_retry_after_header=True,
+        respect_retry_after_header=False,
         raise_on_status=False,
     )
     adapter = HTTPAdapter(
@@ -661,6 +682,10 @@ def classifica_categoria(testo, luogo="", fonte_url=""):
     sede = (luogo or "").casefold()
     url = (fonte_url or "").casefold()
 
+    # Un laboratorio rivolto ai bambini resta familiare anche quando il locale
+    # usa "Party" nel nome commerciale.
+    if re.search(r"\blaborator\w*\b.{0,100}\b(?:per\s+)?(?:bambin\w*|ragazz\w*|famigli\w*)\b", t):
+        return "Famiglie & Bambini"
     if re.search(r"\b(?:capodanno|san silvestro)\b", t) and re.search(r"\b(?:cenon[ei]|veglion[ei]|party|dj set|cena)\b", t):
         return "Locali & Serate"
     if _host_appartiene(fonte_url, "kodocollective.it") and re.search(r"\b(?:serata|dj[\s-]*set)\b", t):
@@ -1128,6 +1153,31 @@ def estrai_costo_jsonld(evento, testo_pagina=None):
     return "Non specificato nella fonte"
 
 
+def dettagli_evento_strutturato(evento, url):
+    persone = evento.get("performer") or []
+    if not isinstance(persone, list):
+        persone = [persone]
+    artisti = []
+    for persona in persone[:12]:
+        nome = persona.get("name") if isinstance(persona, dict) else persona
+        if isinstance(nome, str):
+            nome = re.sub(r"\s+", " ", nome).strip()
+            if 2 <= len(nome) <= 80 and nome not in artisti:
+                artisti.append(nome)
+    offerte = evento.get("offers") or []
+    if not isinstance(offerte, list):
+        offerte = [offerte]
+    prenotazioni = ""
+    for offerta in offerte[:10]:
+        link = offerta.get("url") if isinstance(offerta, dict) else None
+        if isinstance(link, str) and link:
+            completo = urljoin(url, link)
+            if radar_territorio.host_pubblico(completo):
+                prenotazioni = completo
+                break
+    return {"artisti": artisti, "prenotazioniUrl": prenotazioni}
+
+
 def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
     # Un articolo del febbraio 2026 non può documentare il Carnevale 2027.
     if (raw.get("fonteUrl") or "").rstrip("/") == "https://www.cerignolaviva.it/notizie/il-carnevale-ortese-2026-e-pronto-a-colorare-le-strade-di-orta-nova":
@@ -1158,6 +1208,26 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
                    indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
                    fonteUrl="https://www.bottegadegliapocrifi.it/stagione/lisistrata/",
                    descrizione="Lisistrata di Aristofane con Lella Costa, regia di Serena Sinigaglia. Data verificata sul calendario ufficiale del teatro.")
+    # Rettifiche documentate: limitate alla singola edizione, non a future repliche.
+    if (raw.get("fonteUrl") == "https://iltaccodibacco.it/puglia/eventi/335513.html"
+            and "cenerentola 301" in str(raw.get("titolo") or "").casefold()):
+        raw = dict(raw, citta="Manfredonia", categoria="Teatro & Spettacoli",
+                   dataInizio="2026-12-06", dataFine="2026-12-06",
+                   dataTesto="Dom 06 Dic 2026 · Ore 18:00",
+                   luogo="Teatro Comunale Lucio Dalla",
+                   indirizzoMappa="Teatro Comunale Lucio Dalla, Via della Croce, Manfredonia",
+                   descrizione="Spettacolo della Compagnia Burambò per famiglie e bambini dai 6 anni. Data confermata dal calendario ufficiale del teatro.")
+    posta_bassi = (_host_appartiene(raw.get("fonteUrl") or "", "postabassi.it")
+                   and raw.get("dataInizio") == "2027-01-01"
+                   and "capodanno" in str(raw.get("titolo") or "").casefold())
+    if posta_bassi:
+        # Sito ufficiale: Capodanno 01/01/2027, 55 euro, Via Manfredonia a Foggia.
+        raw = dict(raw, citta="Foggia", titolo="Pranzo di Capodanno – Posta Bassi",
+                   dataFine="2027-01-01", dataTesto="Ven 01 Gen 2027",
+                   luogo="Posta Bassi", indirizzoMappa="Posta Bassi, Via Manfredonia Km 196+200, 71121 Foggia (FG)",
+                   costo="55 € a persona",
+                   descrizione="Pranzo di Capodanno del 1 gennaio 2027. Menù e prenotazioni sul sito ufficiale dell'agriturismo.",
+                   fonteUrl="https://www.postabassi.it/eventi-speciali/")
     ref = ref_dt or oggi_dt()
     oggi = ref.strftime("%Y-%m-%d")
     limite_max = (ref + timedelta(days=GIORNI_ANTICIPO_MAX)).strftime("%Y-%m-%d")
@@ -1201,7 +1271,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
             return None
 
     testo_check = f"{titolo} {descrizione} {luogo}"
-    if REGEX_SCARTO.search(testo_check):
+    if REGEX_SCARTO.search(testo_check) or TITOLO_TRASPORTO_SPETTACOLO.match(titolo) or evento_informativo_comunale(titolo, url):
         return None
     if not fonte_curata_eventi and not REGEX_TEMA_COERENTE.search(testo_check):
         return None
@@ -1213,7 +1283,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         "luogo": luogo,
         "indirizzoMappa": indirizzo_grezzo,
     })
-    citta = risolvi_comune_50km(raw_pulito)
+    citta = "Foggia" if posta_bassi else risolvi_comune_50km(raw_pulito)
     if not citta:
         return None
 
@@ -1246,7 +1316,7 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
         cat="Locali & Serate"
     if str(raw.get("categoria") or "").strip() == "Teatro & Spettacoli":
         cat = "Teatro & Spettacoli"
-    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","lineupatlas.com")):
+    elif str(raw.get("categoria") or "").strip() == "Locali & Serate" and any(_host_appartiene(url,d) for d in ("xceed.me","ticketsms.it","nightz.it","nightoutz.it","lineupatlas.com")):
         cat = "Locali & Serate"
 
     if not d_txt:
@@ -1260,10 +1330,24 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
             "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
         )
 
+    dettagli = {}
+    artisti = raw.get("artisti")
+    if isinstance(artisti, list):
+        verificati = [nome for nome in artisti[:12] if isinstance(nome, str) and 2 <= len(nome) <= 80]
+        if verificati:
+            dettagli["artisti"] = verificati
+    prenotazioni = raw.get("prenotazioniUrl")
+    if isinstance(prenotazioni, str) and len(prenotazioni) <= 400 and radar_territorio.host_pubblico(prenotazioni):
+        dettagli["prenotazioniUrl"] = prenotazioni
+    contatto = str(raw.get("contattoPrenotazioni") or "")
+    if contatto and discovery_locale.testo_prenotazione("Prenotazioni: " + contatto) == contatto:
+        dettagli["contattoPrenotazioni"] = contatto
     poster = str(raw.get("locandinaUrl") or "").strip()
     poster_ok = urlparse(poster).scheme in ("http", "https") and bool(urlparse(poster).hostname)
     return {
+        **dettagli,
         **({"locandinaUrl": poster} if poster_ok else {}),
+        **({"raccoltaAutomatica": True} if raw.get("raccoltaAutomatica") is True else {}),
         "tipoContenuto": "evento",
         "citta": citta,
         "categoria": cat,
@@ -1325,30 +1409,35 @@ def ricontrolla_eventi_imminenti(eventi, massimo=10):
     Un errore o un blocco HTTP non autorizza mai una cancellazione."""
     oggi = oggi_iso()
     limite = (oggi_dt() + timedelta(days=7)).strftime("%Y-%m-%d")
-    scelti = []
+    candidati = []
     visti = set()
     for ev in sorted(eventi, key=lambda e: (priorita_km(e.get("citta", "")), e.get("dataInizio", ""))):
         url = ev.get("fonteUrl", "")
-        if not (oggi <= ev.get("dataInizio", "") <= limite) or not _fonte_appartiene_a_raccolta_automatica(url):
+        citta = ev.get("citta", "")
+        giorno = ev.get("dataInizio", "")
+        if citta not in COMUNI_50KM.values() or not (oggi <= giorno <= limite) or not _fonte_appartiene_a_raccolta_automatica(url):
             continue
         if url in visti or _host_appartiene(url, "news.google.com") or _host_appartiene(url, "instagram.com") or _host_appartiene(url, "facebook.com"):
             continue
         visti.add(url)
-        scelti.append(url)
-        if len(scelti) >= massimo:
-            break
+        candidati.append((priorita_km(citta), giorno, url))
+    scelti = radar_territorio.scegli_schede_imminenti(candidati, massimo, int(time.time() // 1800))
+    per_fascia = {nome: {"selezionate": 0, "lette": 0} for nome in radar_territorio.FASCE}
     letti = 0
     with requests.Session() as session:
         session.headers.update(HEADERS)
-        for url in scelti:
+        for fascia, url in scelti:
+            dati_fascia = per_fascia[radar_territorio.FASCE[fascia]]
+            dati_fascia["selezionate"] += 1
             try:
                 r = session.get(url, timeout=(3, 5), allow_redirects=False)
                 if r.status_code == 200 and "html" in r.headers.get("Content-Type", "text/html").lower():
                     registra_stati_negativi(r.text, url)
                     letti += 1
+                    dati_fascia["lette"] += 1
             except requests.RequestException:
                 pass
-    return {"schedeSelezionate": len(scelti), "schedeLette": letti}
+    return {"schedeSelezionate": len(scelti), "schedeLette": letti, "perFascia": per_fascia}
 
 
 def immagine_evento_strutturata(evento, url):
@@ -1427,6 +1516,8 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             url_evento = page_url
 
         ev_ok = normalizza_e_valida_evento({
+            **dettagli_evento_strutturato(ev_ld, url_evento),
+            "contattoPrenotazioni": discovery_locale.testo_prenotazione(desc),
             "citta": localita or citta_default,
             "titolo": titolo,
             "dataInizio": d1,
@@ -1533,6 +1624,7 @@ def analizza_pagina_evento(html_text, page_url, citta_default="", fonte_curata_e
             else f"{luogo}, {citta}"
         ),
         "costo": costo,
+        "contattoPrenotazioni": discovery_locale.testo_prenotazione(testo_visibile),
         "descrizione": descrizione or f"{titolo} presso {luogo} ({citta}).",
         "fonteUrl": page_url
     }
@@ -1631,16 +1723,29 @@ def raccogli_da_portale_viva(session, fonte):
 
 
 
+NAMESPACE_MEDIA_RSS = "http://search.yahoo.com/mrss/"
+NAMESPACE_ATOM = "http://www.w3.org/2005/Atom"
+
+
+def estrai_url_locandine_feed(item, base_url):
+    """Riconosce Media RSS anche quando il parser XML omette il prefisso."""
+    immagini = []
+    for tag in item.find_all(["enclosure", "content", "thumbnail"]):
+        media_rss = tag.namespace == NAMESPACE_MEDIA_RSS and tag.name in {"content", "thumbnail"}
+        rss_enclosure = tag.name == "enclosure" and tag.namespace is None
+        if not (media_rss or rss_enclosure):
+            continue
+        indirizzo = (tag.get("url") or tag.get("href") or "").strip()
+        if indirizzo:
+            url = urljoin(base_url, indirizzo)
+            if url.startswith(("http://", "https://")):
+                immagini.append(url)
+    return immagini
+
+
 def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url="", singole=False):
     """Estrae testo da locandine pubbliche usando OCR locale, se Tesseract è installato."""
-    immagini = []
-    if item_feed is not None:
-        for tag in item_feed.find_all(["enclosure", "media:content", "media:thumbnail"]):
-            url_immagine = (tag.get("url") or tag.get("href") or "").strip()
-            if url_immagine:
-                url_immagine = urljoin(base_url, url_immagine)
-                if url_immagine.startswith(("http://", "https://")):
-                    immagini.append(url_immagine)
+    immagini = estrai_url_locandine_feed(item_feed, base_url) if item_feed is not None else []
     if html_pagina:
         soup = BeautifulSoup(html_pagina, "html.parser")
         for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
@@ -1708,11 +1813,22 @@ def eventi_da_locandina(testo,poster,titolo,url):
         return []
     if not discovery_locale.titolo_locandina_compatibile(titolo,testo):
         return []
+    date_locandina = discovery_locale.date_complete(testo)
+    if len(date_locandina) != 1:
+        confermate = date_locandina & discovery_locale.date_complete(titolo)
+        if len(confermate) != 1:
+            return []
+        date_locandina = confermate
     html="<html><body><h1>"+escape(titolo)+"</h1><main><p>"+escape(testo)+"</p></main></body></html>"
     out=[]
     for ev in analizza_pagina_evento(html,url,citta_default="",fonte_curata_eventi=False):
-        if ev["dataInizio"]==ev["dataFine"] and discovery_locale.data_evento_documentata(testo,ev["dataInizio"]) and _comune_nel_testo(testo)==ev["citta"]:
-            out.append(dict(ev,locandinaUrl=poster))
+        if ev["dataInizio"] == ev["dataFine"] and ev["dataInizio"] in date_locandina and _comune_nel_testo(testo) == ev["citta"]:
+            if poster:
+                ev["locandinaUrl"] = poster
+            orario = discovery_locale.orario_locandina(testo)
+            if orario and f"Ore {orario}" not in ev["dataTesto"]:
+                ev["dataTesto"] += f" · Ore {orario}"
+            out.append(ev)
     return out
 
 
@@ -1962,24 +2078,44 @@ def raccogli_da_feed_social(session, fonte):
     eventi = []
     candidati = 0
     scaricate = 0
+    scarti = Counter()
+    ritardi = {}
     try:
-        risposta = session.get(fonte["url"], timeout=(6, 12))
+        policy = None
+        if fonte.get("feed_autoscoperto"):
+            policy = fonti_editori.robots(session, fonte["url"])
+            if policy is None or not policy.can_fetch(fonti_editori.BOT, fonte["url"]):
+                registra_statistica_fonte(nome, stato="robots non consente o non verificabile")
+                return []
+        opzioni = {"allow_redirects": False, "headers": fonti_editori.HEADERS} if policy is not None else {}
+        risposta = session.get(fonte["url"], timeout=(6, 12), **opzioni)
         if risposta.status_code != 200:
-            registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
+            retry_after = (getattr(risposta, "headers", {}) or {}).get("Retry-After", "")
+            registra_statistica_fonte(nome, stato=f"HTTP {risposta.status_code}", linkCandidati=0,
+                                      pagineScaricate=0, eventiEstratti=0,
+                                      riprovaDopoSecondi=min(int(retry_after), 86400) if retry_after.isascii() and retry_after.isdigit() and len(retry_after) < 10 else 0)
             print(f"{nome}: HTTP {risposta.status_code}")
             return []
         # RSS è XML: il parser HTML tratta <link> come tag vuoto e perde gli URL.
         feed = BeautifulSoup(risposta.content, "xml")
-        items = feed.find_all("item")
+        items = feed.find_all(["item", "entry"])
         candidati = len(items)
         tentativi_scheda = 0
         classificati = []
         for item in items[:100]:
             titolo_el = item.find("title")
             link_el = item.find("link")
-            desc_el = item.find("description")
+            desc_el = item.find(
+                lambda tag: tag.name in {"description", "summary", "content"}
+                and tag.namespace in {None, NAMESPACE_ATOM},
+                recursive=False,
+            )
             titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
+            if item.name == "entry":
+                link = next((el["href"] for el in item.find_all("link", href=True) if el.get("rel", "alternate") == "alternate"), "")
+            if policy is not None:
+                link = urljoin(fonte["url"], link) if link else ""
             descrizione = BeautifulSoup(desc_el.get_text(" ", strip=True) if desc_el else "", "html.parser").get_text(" ", strip=True)
             testo_candidato=titolo+" "+descrizione
             punteggio = priorita_candidato_rss(titolo, descrizione)
@@ -2012,8 +2148,14 @@ def raccogli_da_feed_social(session, fonte):
             if fonte.get("ricorrenze_annuali") and ricorrenze.tema(titolo+" "+descrizione,fonte["ricorrenze_annuali"]) and ricorrenze.FORMATO.search(titolo+" "+descrizione) and not REGEX_SCARTO.search(titolo):
                 punteggio=max(punteggio,10)
             if fonte.get("radar_movida") and radar_movida.pertinente(testo_candidato) and not REGEX_SCARTO.search(titolo):
-                if _comune_nel_testo(testo_candidato)==fonte.get("comune_radar") or radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[])):
+                comune_radar=fonte.get("comune_radar")
+                comune_candidato=_comune_nel_testo(testo_candidato)
+                alias_radar=radar_movida.alias_corrispondente(testo_candidato,fonte.get("alias_movida",[]))
+                if (comune_radar and comune_candidato==comune_radar) or alias_radar:
                     punteggio=max(punteggio,13 if locale_esplicito else 8)
+                if fonte.get("promoter_mirato") and comune_candidato:
+                    punteggio=max(punteggio,8)+4
+                    if alias_radar:punteggio+=3
             if fonte.get("food"):
                 if not radar_food.pertinente(testo_candidato):
                     continue
@@ -2035,10 +2177,16 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             classificati.append((punteggio, item, titolo, link, descrizione))
         # Ordina tutti i candidati: il budget di rete resta invariato.
-        classificati.sort(key=lambda x: -x[0])
+        # A parità di pertinenza, le pubblicazioni più recenti dei promoter
+        # hanno precedenza: la data del feed non diventa la data dell'evento.
+        def ordine_rss(x):
+            pub=x[1].find(["pubDate", "published"])
+            data=discovery_locale.data_pubblicazione(pub.get_text(strip=True) if pub else "")
+            return (-x[0],-data.toordinal() if data and fonte.get("promoter_mirato") else 0)
+        classificati.sort(key=ordine_rss)
         # Il publisher RSS è solo un indizio di discovery, mai una prova di un evento.
         domini_candidati=[]
-        if fonte.get("solo_cerignola"):
+        if fonte.get("solo_cerignola") or fonte.get("origini_note") or fonte.get("solo_scoperta"):
             for _,item,_,link,_ in classificati[:30]:
                 pub=item.find("source")
                 u=(pub.get("url") or "") if pub else link
@@ -2057,15 +2205,27 @@ def raccogli_da_feed_social(session, fonte):
                 continue
             visti_link.add(link)
             tentativi_scheda += 1
-            pub_el=item.find("pubDate")
-            pubblicazione=discovery_locale.data_pubblicazione(pub_el.get_text(strip=True) if pub_el else "")
+            pub_el=item.find(["pubDate", "published"])
+            pubblicazione_raw = pub_el.get_text(strip=True) if pub_el else ""
+            pubblicazione=discovery_locale.data_pubblicazione(pubblicazione_raw)
             if fonte.get("feed_editore") and pubblicazione and pubblicazione < oggi_dt().date()-timedelta(days=60):
+                scarti["pubblicazione datata"] += 1
                 continue
             url_finale = link
             html_pagina = ""
             try:
-                pagina = session.get(link, timeout=(5, 9), allow_redirects=True)
-                if pagina.status_code == 200 and "html" in pagina.headers.get("Content-Type", "text/html").lower():
+                if policy is not None:
+                    if (not radar_territorio.host_pubblico(link) or urlparse(link).netloc != urlparse(fonte["url"]).netloc
+                        or not policy.can_fetch(fonti_editori.BOT, link)):
+                        continue
+                    pagina = session.get(link, timeout=(5, 9), **opzioni)
+                elif fonte.get("origini_note"):
+                    # Le query generate autonomamente apprendono dai publisher
+                    # dichiarati, con acquisizione limitata alle origini configurate.
+                    pagina = fonti_editori.scheda_da_origini_note(session, link, set(DOMINI_AUTO) - {"instagram.com", "facebook.com"})
+                else:
+                    pagina = session.get(link, timeout=(5, 9), allow_redirects=True)
+                if pagina is not None and pagina.status_code == 200 and "html" in pagina.headers.get("Content-Type", "text/html").lower():
                     scaricate += 1
                     url_finale = pagina.url or link
                     pagina.encoding = pagina.apparent_encoding or "utf-8"
@@ -2076,14 +2236,25 @@ def raccogli_da_feed_social(session, fonte):
             if _host_appartiene(url_finale, "news.google.com"):
                 html_pagina = ""
             if fonte.get("feed_editore") and not _host_appartiene(url_finale,fonte["dominio"]):
+                scarti["origine non coerente"] += 1
+                continue
+            if not html_pagina:
+                scarti["scheda originale non leggibile"] += 1
                 continue
             if fonte.get("anno_capodanno") or fonte.get("anno_festivita") or fonte.get("ricorrenze_annuali"):
                 # Non pubblicare da snippet Google News senza fonte primaria leggibile.
-                if html_pagina:
-                    eventi.extend(analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte))
+                estratti = analizza_capodanno_pubblico(session, html_pagina, url_finale, fonte)
+                eventi.extend(estratti)
+                if not estratti:
+                    scarti["scheda stagionale senza evento verificato"] += 1
                 continue
-            estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
-            if not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
+            # Usa i parser specializzati dei calendari pubblici anche quando la
+            # scheda viene scoperta dal radar gratuito, non solo dal loro indice.
+            if html_pagina and any(_host_appartiene(url_finale,d) for d in ("nightz.it","nightoutz.it")):
+                estratti = analizza_nightz(html_pagina,url_finale)
+            else:
+                estratti = analizza_pagina_evento(html_pagina, url_finale, citta_default="", fonte_curata_eventi=False) if html_pagina else []
+            if policy is None and not fonte.get("origini_note") and not estratti and html_pagina and not registra_stati_negativi(html_pagina, url_finale):
                 # Una locandina alla volta: non combinare date e sedi di immagini o snippet differenti.
                 for poster,testo in estrai_testo_locandine(session,html_pagina,item_feed=item,max_immagini=2,base_url=url_finale,singole=True):
                     estratti.extend(eventi_da_locandina(testo,poster,titolo,url_finale))
@@ -2093,7 +2264,7 @@ def raccogli_da_feed_social(session, fonte):
                 estratti=[dict(e,categoria="Natura & Escursioni") for e in estratti if radar_natura.evento_documentato(e)]
             if fonte.get("nightlife"):
                 estratti = [dict(e,categoria="Locali & Serate") if radar_movida.live_in_locale(e["titolo"],e.get("descrizione",""),e.get("luogo","")) else e for e in estratti if evento_movida_documentato(e)]
-            if fonte.get("radar_movida") and fonte.get("comune_radar"):
+            if fonte.get("comune_radar"):
                 estratti=[e for e in estratti if e.get("citta")==fonte["comune_radar"]]
             if fonte.get("cene_show"):
                 estratti = [e for e in estratti if discovery_locale.CENE_SHOW.search(e["titolo"]+" "+e.get("descrizione","")) and discovery_locale.data_coerente_pubblicazione(e,pubblicazione)]
@@ -2104,8 +2275,15 @@ def raccogli_da_feed_social(session, fonte):
                 estratti=[e for e in estratti if e["dataInizio"]==e["dataFine"] and discovery_locale.data_evento_documentata(testo_pagina,e["dataInizio"]) and discovery_locale.SETTIMANA.search(e["titolo"]+" "+e["descrizione"])]
             if fonte.get("solo_cerignola"):
                 estratti = [e for e in estratti if e.get("citta") == "Cerignola"]
+            if estratti:
+                origine_rss = pubblicazione_raw if fonte.get("feed_editore") else ""
+                ritardi.update(discovery_locale.misura_ritardo(BeautifulSoup(html_pagina, "html.parser"), url_finale, oggi_dt(), origine_rss))
+            else:
+                scarti["scheda letta senza evento verificato"] += 1
             eventi.extend(estratti)
-        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, candidatiPertinenti=len(classificati), schedeInterrogate=tentativi_scheda, pagineScaricate=scaricate, eventiEstratti=len(eventi))
+        registra_statistica_fonte(nome, stato="ok", linkCandidati=candidati, candidatiPertinenti=len(classificati),
+                                  schedeInterrogate=tentativi_scheda, pagineScaricate=scaricate, eventiEstratti=len(eventi),
+                                  scartiSchede=dict(scarti), ritardoSchedeMinuti=ritardi)
         print(f"{nome}: {len(eventi)} eventi estratti da {candidati} risultati indicizzati; {tentativi_scheda} schede interrogate, {scaricate} lette")
     except Exception as exc:
         registra_statistica_fonte(nome, stato="errore", errore=str(exc)[:120], linkCandidati=candidati, pagineScaricate=scaricate, eventiEstratti=len(eventi))
@@ -2380,22 +2558,43 @@ def analizza_xceed(html_text, url, citta):
 
 
 
+def data_scheda_ticketsms(url):
+    path = urlparse(url).path
+    match = re.fullmatch(r"/(?:it/)?event/[^/]+-(\d{2})-(\d{2})-(20\d{2})/?", path, re.I)
+    if not match:
+        return None
+    giorno, mese, anno = (int(v) for v in match.groups())
+    return _costruisci_data_sicura(giorno, mese, anno)
+
+
+def ticketsms_non_attivo(soup):
+    return any(re.search(r"\b(?:event[oa] (?:annullat[oa]|rimandat[oa]|riprogrammat[oa])|evento cancellato|event cancell?ed|event postponed)\b",
+                         el.get_text(" ", strip=True), re.I)
+               for el in soup.select("h1,h2,h3,h4,h5,[role=alert]"))
+
+
+def evento_ticketsms(titolo, url, citta, luogo, data, orario):
+    ev = normalizza_e_valida_evento({
+        "titolo": titolo, "citta": citta, "luogo": luogo, "indirizzoMappa": f"{luogo}, {citta}",
+        "dataInizio": data, "dataFine": data, "dataTesto": f"{formatta_data_italiano(data, data)} · Ore {orario}",
+        "descrizione": "Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.",
+        "costo": "Consulta la biglietteria", "fonteUrl": url,
+    }, fonte_curata_eventi=True)
+    return [dict(ev, categoria="Locali & Serate")] if ev and not evento_non_attivo(ev) else []
+
+
 def analizza_ticketsms(html_text, url, citta, luogo):
     """Solo schede TicketSms di club noto: data del permalink e data visibile concordanti."""
     if not _host_appartiene(url, "ticketsms.it"):
         return []
-    path = urlparse(url).path
-    m = re.search(r"-(\d{2})-(\d{2})-(20\d{2})/?$", path)
-    if not re.match(r"^/(?:it/)?event/[^/]+/?$", path, re.I) or not m:
-        return []
-    dt = _costruisci_data_sicura(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    dt = data_scheda_ticketsms(url)
     if not dt or dt.strftime("%Y-%m-%d") < oggi_iso():
         return []
     soup = BeautifulSoup(html_text, "html.parser")
     if registra_stati_negativi(html_text, url):
         return []
     h1 = soup.find("h1")
-    if not h1:
+    if not h1 or ticketsms_non_attivo(soup):
         return []
     titolo = h1.get_text(" ", strip=True)
     testo = soup.get_text(" ", strip=True)
@@ -2405,17 +2604,37 @@ def analizza_ticketsms(html_text, url, citta, luogo):
         return []
     if not re.search(rf"{re.escape(luogo)}\s*/\s*{re.escape(citta)}\b", testo, re.I):
         return []
-    data = dt.strftime("%Y-%m-%d")
-    ev = normalizza_e_valida_evento({"titolo":titolo, "citta":citta, "luogo":luogo, "indirizzoMappa":f"{luogo}, {citta}", "dataInizio":data, "dataFine":data, "dataTesto":formatta_data_italiano(data,data)+" · Ore "+data_testo.group(4)+":"+data_testo.group(5), "descrizione":"Serata in discoteca pubblicata in biglietteria. Verifica disponibilità e condizioni di ingresso.", "costo":"Consulta la biglietteria", "fonteUrl":url}, fonte_curata_eventi=True)
-    if not ev:
+    return evento_ticketsms(titolo, url, citta, luogo, dt.strftime("%Y-%m-%d"), f"{data_testo[4]}:{data_testo[5]}")
+
+
+def analizza_card_ticketsms(soup, calendario, url, citta, luogo):
+    """Incrocia le due parti della card pubblica dello stesso permalink."""
+    dt = data_scheda_ticketsms(url)
+    if not dt or dt.strftime("%Y-%m-%d") < oggi_iso() or not _host_appartiene(url, "ticketsms.it"):
         return []
-    ev["categoria"] = "Locali & Serate"
-    return [ev]
+    chiave = chiave_stato_evento(url, dt.strftime("%Y-%m-%d"))
+    parti = [a for a in soup.select("a[href]") if
+             chiave_stato_evento(urljoin(calendario, a["href"]), dt.strftime("%Y-%m-%d")) == chiave]
+    mesi = "|".join(MESI_IT)
+    suffisso = f" - {citta} - {luogo} - {dt:%d/%m/%Y} - TicketSms".casefold()
+    for link in parti:
+        titolo_card = link.find("h5")
+        if not titolo_card or ticketsms_non_attivo(link):
+            continue
+        titolo = titolo_card.get_text(" ", strip=True)
+        if not any(a.get("title", "").strip().casefold() == titolo.casefold() + suffisso for a in parti):
+            continue
+        if not any(t.casefold() == luogo.casefold() for t in link.stripped_strings):
+            continue
+        data_card = re.search(rf"\b(\d{{1,2}})\s+({mesi})\s*/\s*([01]\d|2[0-3]):([0-5]\d)\b", link.get_text(" ", strip=True), re.I)
+        if data_card and (int(data_card[1]), MESI_IT[data_card[2].lower()]) == (dt.day, dt.month):
+            return evento_ticketsms(titolo, url, citta, luogo, dt.strftime("%Y-%m-%d"), f"{data_card[3]}:{data_card[4]}")
+    return []
 
 
 def analizza_nightz(html_text, url):
     """Scheda individuale Nightz, con data e località dichiarate esplicitamente."""
-    if not _host_appartiene(url, "nightz.it") or not re.fullmatch(r"/eventi/[^/]+/?", urlparse(url).path):
+    if not any(_host_appartiene(url,d) for d in ("nightz.it","nightoutz.it")) or not re.fullmatch(r"/eventi/[^/]+/?", urlparse(url).path):
         return []
     if registra_stati_negativi(html_text, url):
         return []
@@ -2671,12 +2890,23 @@ def esplora_lineup_atlas(session, fonte):
 
 def calendario_ha_link_movida(html_text, url, dominio, tipo):
     soup = BeautifulSoup(html_text,"html.parser")
-    pattern = r"^/eventi/[^/]+/?$" if tipo == "nightz" else r"^/(?:it/)?event/[^/]+/?$"
-    return any(_host_appartiene(urljoin(url,a["href"]),dominio) and re.fullmatch(pattern,urlparse(urljoin(url,a["href"])).path,re.I) for a in soup.find_all("a",href=True))
+    if tipo == "ticketsms-scheda":
+        return soup.find("h1") is not None
+    for a in soup.find_all("a", href=True):
+        link = urljoin(url, a["href"])
+        if not _host_appartiene(link, dominio):
+            continue
+        if tipo == "nightz" and re.fullmatch(r"/eventi/[^/]+/?", urlparse(link).path, re.I):
+            return True
+        if tipo == "ticketsms":
+            data = data_scheda_ticketsms(link)
+            if data and data.strftime("%Y-%m-%d") >= oggi_iso():
+                return True
+    return False
 
 
 def render_calendario_pubblico(session, url, html_text, dominio, tipo):
-    """Fallback browser normale per calendari con contenuti JS.
+    """Fallback browser normale per calendari e schede TicketSms con contenuti JS.
     Non usa login, proxy, stealth, CAPTCHA o accessi a endpoint privati.
     Rispetta robots.txt e non riprova pagine che mostrano un blocco esplicito."""
     from urllib.robotparser import RobotFileParser
@@ -2702,20 +2932,30 @@ def render_calendario_pubblico(session, url, html_text, dominio, tipo):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(channel="chrome",headless=True)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale="it-IT", timezone_id="Europe/Rome")
                 page.route("**/*",lambda route: route.abort() if route.request.resource_type in {"image","media","font"} else route.continue_())
                 response = page.goto(url,wait_until="domcontentloaded",timeout=12000)
                 if not response or response.status != 200 or not _host_appartiene(page.url,dominio):
                     return "", "navigazione non riuscita"
                 if re.search(r"just a moment|access denied|attention required|captcha|verify you are human",page.title(),re.I):
                     return "", "blocco esplicito"
-                selettore = 'a[href*="/eventi/"]' if tipo=="nightz" else 'a[href*="/event/"]'
                 try:
-                    page.wait_for_selector(selettore,state="attached",timeout=7000)
+                    if tipo == "ticketsms":
+                        # Il footer compare prima del calendario e contiene anche URL
+                        # provvisori. Attendi un permalink con una data in programma.
+                        page.wait_for_function(r"""oggi => Array.from(document.links).some(link => {
+                            const url = new URL(link.href);
+                            const m = url.pathname.match(/^\/(?:it\/)?event\/[^/]+-(\d{2})-(\d{2})-(20\d{2})\/?$/i);
+                            return /^(?:www\.)?ticketsms\.it$/i.test(url.hostname)
+                                && m && [m[3], m[2], m[1]].join("-") >= oggi;
+                        })""", arg=oggi_iso(), timeout=10000)
+                    else:
+                        selettore = "h1" if tipo == "ticketsms-scheda" else 'a[href*="/eventi/"]'
+                        page.wait_for_selector(selettore, state="visible", timeout=10000)
                 except PlaywrightTimeout:
                     pass
                 rendered = page.content()
-                return rendered, "ok" if calendario_ha_link_movida(rendered,url,dominio,tipo) else "nessuna scheda dopo rendering"
+                return rendered, "ok" if calendario_ha_link_movida(rendered, url, dominio, tipo) else "nessuna scheda dopo rendering"
             finally:
                 browser.close()
     except Exception as exc:
@@ -2729,9 +2969,15 @@ def raccogli_da_portale_generico(session, fonte):
     dominio = fonte["dominio"]
     c_def = fonte.get("citta_default", "")
     curata = fonte.get("curata", True)
+    host_ammessi = {dominio.removeprefix("www.")} if fonte.get("robots_obbligatorio") else set()
 
     try:
-        r = session.get(url, timeout=(6, 10))
+        r = (fonti_editori.scheda_da_origini_note(session, url, host_ammessi)
+             if host_ammessi else session.get(url, timeout=(6, 10)))
+        if r is None:
+            registra_statistica_fonte(nome, stato="robots non consente o non verificabile",
+                                      linkCandidati=0, pagineScaricate=0, eventiEstratti=0)
+            return []
         if r.status_code != 200:
             registra_statistica_fonte(
                 nome, stato=f"HTTP {r.status_code}", linkCandidati=0,
@@ -2752,6 +2998,8 @@ def raccogli_da_portale_generico(session, fonte):
                 if rendered:
                     html_calendario = rendered
         soup = BeautifulSoup(html_calendario, "html.parser")
+        if dominio in DOMINI_AUTO and c_def and fonte.get("curata"):
+            registra_statistica_fonte(nome, feedDichiarati=fonti_editori.dichiarati(soup, getattr(r, "url", "") or url), cittaDichiarataFeed=c_def)
 
         if fonte.get("scheda_diretta"):
             eventi = analizza_pagina_evento(r.text, url, citta_default=c_def, fonte_curata_eventi=curata)
@@ -2794,7 +3042,8 @@ def raccogli_da_portale_generico(session, fonte):
                 if not re.fullmatch(r"/eventi/[^/]+/?", p_low):
                     continue
             elif fonte.get("ticketsms"):
-                if not re.match(r"^/(?:it/)?event/[^/]+/?$", p_low) or not re.search(r"-\d{2}-\d{2}-20\d{2}/?$", p_low):
+                data_ticket = data_scheda_ticketsms(full)
+                if not data_ticket or data_ticket.strftime("%Y-%m-%d") < oggi_iso():
                     continue
             elif parametro_scheda:
                 # Alcuni calendari ufficiali pubblicano le schede come query
@@ -2823,10 +3072,15 @@ def raccogli_da_portale_generico(session, fonte):
 
         scaricate = 0
         diagnostica = []
+        rendering_schede = Counter()
+        eventi_da_calendario = 0
+        if fonte.get("ticketsms"):
+            links.sort(key=data_scheda_ticketsms)
         for link in links[:int(fonte.get("max_schede", 12))]:
             try:
-                rp = session.get(link, timeout=(4, 7))
-                if rp.status_code != 200:
+                rp = (fonti_editori.scheda_da_origini_note(session, link, host_ammessi)
+                      if host_ammessi else session.get(link, timeout=(4, 7)))
+                if rp is None or rp.status_code != 200:
                     continue
                 scaricate += 1
                 rp.encoding = rp.apparent_encoding or "utf-8"
@@ -2836,6 +3090,17 @@ def raccogli_da_portale_generico(session, fonte):
                     estratti = analizza_nightz(rp.text, link)
                 elif fonte.get("ticketsms"):
                     estratti = analizza_ticketsms(rp.text, link, c_def, fonte["luogo_atteso"])
+                    if (not estratti and fonte.get("browser_pubblico")
+                        and sum(rendering_schede.values()) < 2
+                        and not calendario_ha_link_movida(rp.text, link, dominio, "ticketsms-scheda")):
+                        html_scheda, esito = render_calendario_pubblico(session, link, rp.text, dominio, "ticketsms-scheda")
+                        rendering_schede[esito] += 1
+                        if html_scheda:
+                            estratti = analizza_ticketsms(html_scheda, link, c_def, fonte["luogo_atteso"])
+                        if (esito == "nessuna scheda dopo rendering"
+                            and not ticketsms_non_attivo(BeautifulSoup(rp.text + html_scheda, "html.parser"))):
+                            estratti = analizza_card_ticketsms(soup, url, link, c_def, fonte["luogo_atteso"])
+                            eventi_da_calendario += len(estratti)
                 elif fonte.get("xceed"):
                     if registra_stati_negativi(rp.text, link):
                         continue
@@ -2882,7 +3147,9 @@ def raccogli_da_portale_generico(session, fonte):
 
         registra_statistica_fonte(
             nome, stato="ok", linkCandidati=len(links),
-            pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica
+            pagineScaricate=scaricate, eventiEstratti=len(eventi), schedeNonEstratte=diagnostica,
+            renderingSchede=dict(rendering_schede),
+            **({"eventiDaCalendario": eventi_da_calendario} if fonte.get("ticketsms") else {})
         )
         print(f"{nome}: {len(eventi)} eventi estratti (da {scaricate} pagine)")
     except Exception as e:
@@ -2908,6 +3175,32 @@ def _titolo_base_duplicato(titolo):
     return re.sub(r"\s+", " ", testo).strip()
 
 
+def _sede_movida_nota(ev):
+    sede = str(ev.get("luogo") or "").casefold()
+    locali = registro_locali_movida().get(ev.get("citta"), [])
+    return next((r.get("nome") for r in locali if any(
+        re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
+        for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
+
+
+def integra_dettagli_serata(evento, duplicato):
+    """Conserva dettagli già documentati per una serata riconosciuta in due fonti."""
+    if evento.get("categoria") != "Locali & Serate" or duplicato.get("categoria") != "Locali & Serate":
+        return evento
+    if not all(evento.get(k) == duplicato.get(k) for k in ("citta", "dataInizio", "dataFine")):
+        return evento
+    sede = _sede_movida_nota(evento)
+    if not sede or sede != _sede_movida_nota(duplicato):
+        return evento
+    dettagli = {}
+    if not evento.get("locandinaUrl") and duplicato.get("locandinaUrl"):
+        dettagli["locandinaUrl"] = duplicato["locandinaUrl"]
+    orario = r"\b(?:[01]?\d|2[0-3])[:.][0-5]\d\b"
+    if not re.search(orario, evento.get("dataTesto") or "") and re.search(orario, duplicato.get("dataTesto") or ""):
+        dettagli["dataTesto"] = duplicato["dataTesto"]
+    return dict(evento, **dettagli) if dettagli else evento
+
+
 def sono_duplicati(a, b):
     if str(a.get("citta", "")).casefold() != str(b.get("citta", "")).casefold():
         return False
@@ -2929,17 +3222,13 @@ def sono_duplicati(a, b):
         return False
 
     # Due serate omonime in club distinti non devono annullarsi a vicenda.
+    stessa_sede_nota = False
     if a.get("categoria") == b.get("categoria") == "Locali & Serate":
-        registro = registro_locali_movida()
-        locali = registro.get(a.get("citta"), [])
-        def sede_nota(ev):
-            sede = str(ev.get("luogo") or "").casefold()
-            return next((r.get("nome") for r in locali if any(
-                re.search(r"(?<!\w)" + re.escape(alias.casefold()) + r"(?!\w)", sede)
-                for alias in [r.get("nome", "")] + r.get("alias", []) if len(alias) >= 5)), None)
-        sa, sb = sede_nota(a), sede_nota(b)
-        if sa and sb and sa != sb:
-            return False
+        sa, sb = _sede_movida_nota(a), _sede_movida_nota(b)
+        if sa and sb:
+            if sa != sb:
+                return False
+            stessa_sede_nota = True
 
     if capodanno.TEMA.search(str(a.get("titolo") or "")) and capodanno.TEMA.search(str(b.get("titolo") or "")):
         # Due cenoni in sale diverse non sono duplicati, anche con titoli identici.
@@ -2962,7 +3251,7 @@ def sono_duplicati(a, b):
         generiche = {"teatro", "comunale", "piazza", "palazzo", "centro", "parco", "chiesa", "cinema", "ristorante", "cerignola", "foggia", "barletta", "andria", "trani", "manfredonia"}
         comune = {x for x in la & lb if len(x) >= 5 and x not in generiche}
         breve, lungo = sorted((ta, tb), key=len)
-        if comune and len(breve) >= 9 and f" {breve} " in f" {lungo} ":
+        if (comune or stessa_sede_nota) and len(breve) >= 9 and f" {breve} " in f" {lungo} ":
             return True
 
     # Le fonti ufficiali e gli aggregatori spesso usano sottotitoli diversi
@@ -3029,7 +3318,9 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             continue
 
         url = str(item.get("fonteUrl") or "").strip()
-        is_manuale = bool(item.get("manuale")) or not _fonte_appartiene_a_raccolta_automatica(url)
+        is_manuale = bool(item.get("manuale")) or not (
+            item.get("raccoltaAutomatica") is True or _fonte_appartiene_a_raccolta_automatica(url)
+        )
         # I record manuali sono sempre protetti, anche se la data è passata:
         # la loro rimozione deve essere una scelta editoriale, non del crawler.
         if is_manuale:
@@ -3049,6 +3340,17 @@ def carica_esistenti_protetti(percorso_json="eventi.json"):
             )
             if evento_pulito:
                 auto_validi.append(evento_pulito)
+            elif (
+                not _url_pagina_elenco(url)
+                and not _url_tacco_generica(url)
+                and _data_iso_valida(item.get("dataInizio"))
+                and item["dataInizio"] <= d_fin
+                and item.get("citta") in COMUNI_50KM.values()
+                and _luogo_utilizzabile(item.get("luogo"))
+            ):
+                # Un cambiamento al parser non revoca una scheda già pubblicata.
+                auto_validi.append(item)
+                print("Evento esistente conservato dopo riconvalida inconcludente.")
             else:
                 print(f"Evento automatico scartato in riconvalida: {titolo[:70]}")
         else:
@@ -3085,8 +3387,13 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI, risultati_per
     def raccogli_gruppo(gruppo):
         risultati = []
         with crea_session_raccolta() as session:
+            limitato = False
             for indice, raccoglitore, fonte in gruppo:
                 nome = fonte["nome"]
+                if limitato:
+                    registra_statistica_fonte(nome, stato="pausa", motivoPausa="HTTP 429 sul dominio")
+                    risultati.append((indice, []))
+                    continue
                 inizio = time.monotonic()
                 session._csf_ocr_budget = {"rimanenti": MAX_OCR_PER_FONTE}
                 try:
@@ -3098,6 +3405,8 @@ def raccogli_fonti_parallele(compiti, max_worker=MAX_WORKER_FONTI, risultati_per
                 registra_statistica_fonte(nome, durataSecondi=round(time.monotonic() - inizio, 2),
                                           tentativiOCR=MAX_OCR_PER_FONTE - session._csf_ocr_budget["rimanenti"])
                 print(f"{nome}: completata in {time.monotonic() - inizio:.1f}s", flush=True)
+                with _LOCK_STATISTICHE:
+                    limitato = STATISTICHE_FONTI.get(nome, {}).get("stato") == "HTTP 429"
                 risultati.append((indice, eventi))
         return risultati
 
@@ -3145,10 +3454,11 @@ def evento_sede_riservata(ev):
 def intervallo_editoriale_sostituito(ev):
     """Un programma su date discontinue già pubblicato come singoli appuntamenti.
     Escludi solo la scheda aggregata errata, non le date realmente confermate."""
-    return (ev.get("fonteUrl") == "https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html"
-            and ev.get("citta") == "Cerignola"
-            and ev.get("dataInizio") == "2026-11-21"
-            and ev.get("dataFine") == "2026-12-06")
+    chiave = (ev.get("fonteUrl"), ev.get("citta"), ev.get("dataInizio"), ev.get("dataFine"))
+    return chiave in (
+        ("https://www.foggiareporter.it/a-cerignola-si-accende-il-natale-nelle-quattro-vie-dal-21-novembre-al-6-dicembre.html", "Cerignola", "2026-11-21", "2026-12-06"),
+        ("https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788", "Barletta", "2026-11-08", "2026-11-29"),
+    )
 
 
 def prossimo_weekend_movida(ev):
@@ -3221,6 +3531,16 @@ def esegui_aggiornamento():
         "Gli eventi admin Firebase sono gestiti separatamente e non vengono modificati da questo workflow."
     )
 
+    # Registro Telegram separato e atomico: le modifiche/cancellazioni valgono solo per gli annunci del bot.
+    telegram_state, telegram_report = telegram_eventi.collect(oggi_dt().date(), lambda raw: normalizza_e_valida_evento(raw, fonte_curata_eventi=False))
+    manuali_admin = [e for e in manuali_admin if not e.get("telegramImportato")]
+    precedenti_auto = [e for e in precedenti_auto if not e.get("telegramImportato")]
+    automatici_iniziali = len(precedenti_auto)
+    precedenti_auto = [e for e in precedenti_auto if not evento_informativo_comunale(e.get("titolo", ""), e.get("fonteUrl", ""))]
+    scartati_informativi_comunali = automatici_iniziali - len(precedenti_auto)
+    automatici_iniziali = len(precedenti_auto)
+    precedenti_auto = [e for e in precedenti_auto if not TITOLO_TRASPORTO_SPETTACOLO.match(e.get("titolo") or "")]
+    scartati_trasporti = automatici_iniziali - len(precedenti_auto)
     STATISTICHE_FONTI.clear()
     STATI_EVENTI_NEGATIVI.clear()
     editoriali_statici=apprendimento.editoriali()
@@ -3246,7 +3566,7 @@ def esegui_aggiornamento():
         dirette_annuali=[f for f in dirette_annuali if f["url"] not in {x["url"] for x in dirette_capodanno}]
     dirette_natura, rss_natura = radar_natura.fonti()
     dirette_food, rss_food = radar_food.fonti()
-    dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola())
+    dirette_movida, rss_movida = radar_movida.fonti(registro_locali_movida(),registro_cerignola(),oggi_stagionale)
     rss_movida += discovery_locale.fonti_organizzatori_movida(registro_locali_movida())
     esistenti={f["url"] for f in FONTI_PORTALI+calendari_registro_cerignola()}
     dirette_movida=[f for f in dirette_movida if f["url"] not in esistenti]
@@ -3269,10 +3589,27 @@ def esegui_aggiornamento():
     memoria = stato_raccolta.carica(percorso_stato)
     now = int(time.time())
     copertura_iniziale = apprendimento.copertura_unita(manuali_admin+precedenti_auto,editoriali_statici,sono_duplicati)
-    # Budget separati: 3 ricerche locali ordinarie, al massimo 3 radar e 1 esplorazione.
-    fonti_adattive = (apprendimento.fonti(memoria,copertura_iniziale,oggi_stagionale)
+    comuni = set(COMUNI_50KM.values())
+    approvati = []
+    feedback = memoria.setdefault("territorio", {}).setdefault("feedbackApprovati", {})
+    intervallo = 6 * 3600 if feedback.get("esito") == "ok" else 3600
+    if os.environ.get("CSF_FEEDBACK_APPROVATI") == "1" and now - feedback.get("ultimoTentativo", 0) >= intervallo:
+        approvati, esito_approvati = radar_territorio.leggi_approvati(
+            lambda record: radar_territorio.leggi_evento_editoriale(record, comuni, oggi_stagionale), oggi_stagionale
+        )
+        feedback.update(ultimoTentativo=now, esito=esito_approvati)
+        if esito_approvati == "ok":
+            feedback.update(campione=len(approvati), senzaRiscontroAutomatico=sum(
+                not any(sono_duplicati(e, x) for x in precedenti_auto) for e in approvati
+            ))
+    radar_territorio.aggiorna_registro(memoria, copertura_iniziale, approvati, oggi_stagionale, now)
+    copertura_ricerca = apprendimento.copertura_unita(copertura_iniziale, approvati, sono_duplicati)
+    ricerche_territoriali = radar_territorio.ricerche(memoria, copertura_ricerca, oggi_stagionale, priorita_km, comuni, registro_cerignola())
+    fonti_adattive = (ricerche_territoriali
                       + apprendimento.fonti_adattive_weekend(memoria,copertura_iniziale,oggi_stagionale)
-                      + apprendimento.esplora_candidati(memoria,oggi_stagionale))
+                      + apprendimento.esplora_candidati(memoria,oggi_stagionale)
+                      + fonti_editori.scegli(memoria, now, set(DOMINI_AUTO),
+                                           (f["url"] for _, f in compiti if f.get("feed_editore"))))
     compiti += [(raccogli_da_feed_social, fonte) for fonte in fonti_adattive]
     for _, fonte in compiti:
         # Mantiene i filtri di estrazione originali: focus_serate è solo priorità operativa.
@@ -3280,20 +3617,37 @@ def esegui_aggiornamento():
             fonte["focus_serate"]=True
         if fonte["nome"]=="Tacco di Bacco Nightlife Cerignola":
             fonte["prioritaria"]=True
-    compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1")
+    compiti, pause = stato_raccolta.pianifica(compiti, memoria, now, os.environ.get("CSF_FORZA_FONTI") == "1", priorita_km)
     for nome in pause:
         registra_statistica_fonte(nome, stato="pausa", eventiEstratti=0)
-    for _, fonte in compiti:
-        registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte), focus_serate=stato_raccolta.fonte_serale(fonte))
+    for raccoglitore, fonte in compiti:
+        tipologia = "calendario pubblico"
+        if raccoglitore == raccogli_da_feed_social:
+            tipologia = "feed editore" if fonte.get("feed_editore") else "ricerca indicizzata"
+        elif raccoglitore == esplora_lineup_atlas:
+            tipologia = "API pubblica"
+        comune = fonte.get("comune_radar") or fonte.get("comune_capodanno") or fonte.get("citta_default") or ""
+        registra_statistica_fonte(fonte["nome"], prioritaria=stato_raccolta.fonte_locale(fonte),
+                                  focus_serate=stato_raccolta.fonte_serale(fonte), dominio=stato_raccolta.dominio(fonte),
+                                  tipologia=tipologia, comuneFonte=comune)
     print(f"Raccolta parallela: {len(compiti)} fonti, {len(pause)} in pausa per blocchi ripetuti", flush=True)
     risultati_per_fonte={}
     nuovi_raccolti = raccogli_fonti_parallele(compiti, risultati_per_fonte=risultati_per_fonte)
-    eventi_apify = []
-    if os.path.isfile("apify-eventi.json"):
-        with open("apify-eventi.json", encoding="utf-8") as file_apify:
-            eventi_apify = json.load(file_apify)
-        nuovi_raccolti.extend(eventi_apify)
-        risultati_per_fonte["Apify social pubblici"] = eventi_apify
+    meta_report = {"stato": "non_configurato"}
+    if os.path.isfile("meta-rapporto.json"):
+        with open("meta-rapporto.json", encoding="utf-8") as file_rapporto:
+            meta_report = json.load(file_rapporto)
+    meta_path = "meta-eventi.json"
+    if os.path.isfile(meta_path):
+        with open(meta_path, encoding="utf-8") as file_meta:
+            eventi_meta = json.load(file_meta)
+        nuovi_raccolti.extend(eventi_meta)
+        risultati_per_fonte["Meta API ufficiale"] = eventi_meta
+        registra_statistica_fonte("Meta API ufficiale", stato=meta_report.get("stato", "n/d"),
+                                  eventiEstratti=len(eventi_meta))
+    eventi_telegram = list(telegram_state["events"].values())
+    nuovi_raccolti.extend(eventi_telegram)
+    registra_statistica_fonte("Telegram: annunci autorizzati", **telegram_report, eventiEstratti=len(eventi_telegram))
     controllo_stato = ricontrolla_eventi_imminenti(precedenti_auto + nuovi_raccolti)
     prima = len(precedenti_auto) + len(nuovi_raccolti)
     precedenti_auto = [e for e in precedenti_auto if not evento_non_attivo(e) and not evento_sede_riservata(e) and not intervallo_editoriale_sostituito(e)]
@@ -3301,24 +3655,37 @@ def esegui_aggiornamento():
     esclusi_stato = prima - len(precedenti_auto) - len(nuovi_raccolti)
 
     nuovi_unici = []
+    duplicati_evitati = 0
     # Biglietteria diretta prima dell’aggregatore, anche quando la fonte primaria è già in archivio.
     nuovi_raccolti.sort(key=lambda e: (_host_appartiene(e.get("fonteUrl"), "lineupatlas.com"), not bool(e.get("locandinaUrl"))))
     for ev in nuovi_raccolti:
         if _host_appartiene(ev.get("fonteUrl"), "lineupatlas.com") and any(sono_duplicati(x,ev) and not _host_appartiene(x.get("fonteUrl"),"lineupatlas.com") for x in precedenti_auto):
+            duplicati_evitati += 1
             continue
-        if not any(sono_duplicati(x, ev) for x in nuovi_unici):
+        indice = next((i for i, x in enumerate(nuovi_unici) if sono_duplicati(x, ev)), None)
+        if indice is not None:
+            nuovi_unici[indice] = integra_dettagli_serata(nuovi_unici[indice], ev)
+            duplicati_evitati += 1
+        else:
             nuovi_unici.append(ev)
 
     consolidati = list(manuali_admin)
     aggiunti_nuovi = 0
     ritrovati = 0
     for ev in nuovi_unici:
-        if not any(sono_duplicati(x, ev) for x in consolidati):
+        pubblicato = any(sono_duplicati(x, ev) for x in consolidati)
+        esterno = any(ev.get("dataInizio") == x.get("dataInizio") and ev.get("dataFine") == x.get("dataFine")
+                      and sono_duplicati(x, ev) for x in approvati)
+        if pubblicato or esterno:
+            duplicati_evitati += 1
+        else:
             # Conserva una locandina già verificata soltanto per la stessa fonte, sede e data.
             if not ev.get("locandinaUrl"):
                 precedente=next((x for x in precedenti_auto if x.get("locandinaUrl") and all(x.get(k)==ev.get(k) for k in ("fonteUrl","luogo","dataInizio","dataFine"))),None)
                 if precedente:
                     ev=dict(ev,locandinaUrl=precedente["locandinaUrl"])
+            if not _fonte_appartiene_a_raccolta_automatica(ev.get("fonteUrl")) and not ev.get("telegramImportato"):
+                ev = dict(ev, raccoltaAutomatica=True)
             consolidati.append(ev)
             if any(sono_duplicati(x, ev) for x in precedenti_auto):
                 ritrovati += 1
@@ -3326,8 +3693,11 @@ def esegui_aggiornamento():
                 aggiunti_nuovi += 1
 
     for ev_old in precedenti_auto:
-        if not any(sono_duplicati(x, ev_old) for x in consolidati):
+        indice = next((i for i, x in enumerate(consolidati) if sono_duplicati(x, ev_old)), None)
+        if indice is None:
             consolidati.append(ev_old)
+        elif indice >= len(manuali_admin):
+            consolidati[indice] = integra_dettagli_serata(consolidati[indice], ev_old)
 
     lista_finale = sorted(
         consolidati,
@@ -3342,27 +3712,49 @@ def esegui_aggiornamento():
     if not isinstance(lista_finale, list) or any(not isinstance(e, dict) for e in lista_finale):
         raise RuntimeError("Controllo integrità fallito: archivio eventi non valido")
     _scrivi_json_atomico("eventi.json", lista_finale)
-    for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto,lista_finale,sono_duplicati).items():
+    _scrivi_json_atomico(str(telegram_eventi.STATE), telegram_state)
+    for nome,dati in apprendimento.misura(risultati_per_fonte,manuali_admin+precedenti_auto+editoriali_statici+approvati,lista_finale,sono_duplicati).items():
         registra_statistica_fonte(nome,**dati)
     memoria=stato_raccolta.aggiorna(memoria,STATISTICHE_FONTI,now)
     copertura_visibile=apprendimento.copertura_unita(lista_finale,editoriali_statici,sono_duplicati)
     stato_apprendimento=apprendimento.aggiorna(memoria,copertura_visibile,oggi_stagionale,now)
-    domini_candidati=apprendimento.candidati_fonti(memoria,STATISTICHE_FONTI,set(DOMINI_AUTO),now)
+    scoperta = dict(STATISTICHE_FONTI)
+    host_approvati = sorted({radar_territorio.host_pubblico(e.get("fonteUrl")) for e in approvati} - {""})
+    if host_approvati:
+        scoperta["Appuntamenti approvati"] = {"stato": "ok", "dominiCandidati": host_approvati}
+    domini_candidati=apprendimento.candidati_fonti(memoria,scoperta,set(DOMINI_AUTO),now)
+    nuovi_feed = fonti_editori.registrati(memoria, STATISTICHE_FONTI, now)
+    territorio = radar_territorio.aggiorna_registro(memoria, copertura_visibile, approvati, oggi_stagionale, now)
+    piano_territoriale = radar_territorio.registra_ricerche(memoria, ricerche_territoriali, STATISTICHE_FONTI, now)
+    riferimenti = apprendimento.copertura_unita(manuali_admin + approvati, editoriali_statici, sono_duplicati)
+    visibili_con_approvati = apprendimento.copertura_unita(copertura_visibile, approvati, sono_duplicati)
+    fasce = radar_territorio.misura_fasce(visibili_con_approvati, nuovi_unici + precedenti_auto, riferimenti,
+                                        oggi_stagionale, comuni, priorita_km, sono_duplicati)
+    territorio["ultimaVerificaCopertura"] = {"timestamp": now, "fasce": fasce}
     fasce_apprese=sum(bool(d.get("fasce")) for d in memoria.get("fonti",{}).values())
     os.makedirs(".csf-state",exist_ok=True)
-    _scrivi_json_atomico(percorso_stato,memoria)
 
     eventi_per_fonte = Counter(
         (urlparse(str(e.get("fonteUrl") or "")).hostname or "fonte non specificata").lower()
         for e in lista_finale
     )
     concordanze = evidenze_fonti(nuovi_raccolti, lista_finale)
+    qualita = apprendimento.qualita_ciclo(memoria, STATISTICHE_FONTI, copertura_visibile, oggi_stagionale, now,
+                                       nuovi=aggiunti_nuovi, duplicati=duplicati_evitati, concordanti=len(concordanze))
+    _scrivi_json_atomico(percorso_stato,memoria)
     report = {
-        "apifyIntegrati": [e["fonteUrl"] for e in eventi_apify
-                           if any(sono_duplicati(e, f) for f in lista_finale)],
-        "apifyNuovi": [e["fonteUrl"] for e in eventi_apify
-                       if any(sono_duplicati(e, f) for f in lista_finale)
-                       and not any(sono_duplicati(e, p) for p in manuali_admin + precedenti_auto + editoriali_statici)],
+        "misureCiclo": qualita,
+        "coperturaPerFascia": {
+            "orizzonteGiorni": 14, "fasce": fasce, "ricerche": piano_territoriale,
+            "approvatiFirebaseInclusi": len(approvati),
+            "campioneFirebaseRiletto": feedback.get("ultimoTentativo") == now and feedback.get("esito") == "ok",
+        },
+        "scartatiInformativiComunali": scartati_informativi_comunali,
+        "scartatiTrasportiPerSpettacoli": scartati_trasporti,
+        "meta": meta_report,
+        "telegram": {**telegram_report, "eventiAttivi": len(eventi_telegram)},
+        "apifyIntegrati": [],
+        "apifyNuovi": [],
         "concordanzeFonti": concordanze,
         "eventiConcordanti": len(concordanze),
         "locandineInArchivio": sum(bool(e.get("locandinaUrl")) for e in lista_finale),
@@ -3374,6 +3766,12 @@ def esegui_aggiornamento():
         "saluteFonti": stato_raccolta.riepilogo(memoria, pause),
         "apprendimento": {"cicli":stato_apprendimento["cicli"],"lacune14Giorni":stato_apprendimento["lacune14Giorni"],"coperturaIncludeEditoriali":True,"firebaseIncluso":False},
         "coperturaVisibileStatica": {"totale":sum(e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"cerignola":sum(e.get("citta")=="Cerignola" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile),"serateCerignola":sum(e.get("citta")=="Cerignola" and e.get("categoria")=="Locali & Serate" and e.get("dataFine","")>=oggi_iso() for e in copertura_visibile)},
+        "registroTerritoriale": {
+            "organizzatoriOsservati": len(territorio["organizzatori"]),
+            "organizzatoriPerComune": dict(Counter(v["citta"] for v in territorio["organizzatori"].values())),
+            "feedEditori": len(memoria["feedEditori"]), "nuoviFeed": nuovi_feed,
+            "feedbackApprovati": feedback,
+        },
         "segnaliQualita":apprendimento.segnali(copertura_visibile,concordanze,set(DOMINI_AUTO)),
         "autodiagnosi":apprendimento.autodiagnosi(copertura_visibile,STATISTICHE_FONTI,concordanze,oggi_stagionale),
         "intelligenceTerritoriale":{"fontiConProfiloTemporale":fasce_apprese,"fascia":apprendimento.fascia(now),"dominiDaVerificare":domini_candidati,"criterio":"novita osservate per fascia di raccolta; candidati da verificare, non fonti approvate"},

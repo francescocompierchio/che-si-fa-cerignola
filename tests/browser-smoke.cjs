@@ -9,6 +9,123 @@ const assert = require("node:assert/strict");
     await page.clock.setFixedTime(new Date("2026-11-24T18:00:00+01:00"));
     await page.goto("http://127.0.0.1:8765/index.html");
     await page.locator("#events-container details").first().waitFor();
+    // Dock: stesso gradiente dei filtri, contrasto e dimensioni anche in tema scuro.
+    for(const theme of ["light","dark"]){
+      await page.evaluate(t=>document.documentElement.dataset.csfTheme=t,theme);
+      for(const width of [320,360,393,430]){
+        await page.setViewportSize({width,height:852});
+        const dock=await page.locator(".mobile-dock").evaluate(el=>{
+          const active=el.querySelector(".dock-btn.active"),items=[...el.querySelectorAll(".dock-btn")];
+          const bounds=el.getBoundingClientRect();
+          return {dockBg:getComputedStyle(el).backgroundImage,dockBorder:getComputedStyle(el).borderTopColor,dockShadow:getComputedStyle(el).boxShadow,activeColor:getComputedStyle(active).color,activeBg:getComputedStyle(active).backgroundImage,quickBg:getComputedStyle(document.getElementById("quick-all")).backgroundImage,items:items.map(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return {left:r.left,right:r.right,height:r.height,color:s.color,bg:s.backgroundImage,shadow:s.boxShadow};}),left:bounds.left,right:bounds.right};
+        });
+        assert.ok(dock.dockBg.includes(theme==="dark"?"rgb(11, 28, 62)":"rgb(16, 43, 97)"),"Dock blu profondo distinto dalla pagina");
+        assert.equal(dock.dockBorder,theme==="dark"?"rgb(191, 161, 84)":"rgb(228, 189, 91)","Bordo dorato");
+        assert.ok(dock.dockShadow!=="none","Ombra dock");
+        assert.equal(dock.activeColor,"rgb(255, 255, 255)");
+        assert.equal(dock.activeBg,dock.quickBg,"Gradiente uguale al comando rapido attivo");
+        assert.ok(dock.items.length===4&&dock.items.every(b=>b.height>=44&&b.left>=dock.left&&b.right<=dock.right&&b.bg.includes("linear-gradient")&&b.shadow!=="none"),"Dock leggibile e in rilievo: "+theme+" "+width);
+      }
+    }
+    await page.evaluate(()=>document.documentElement.dataset.csfTheme="light");
+    await page.setViewportSize({width:393,height:852});
+    await page.locator("#dock-weekend").click();
+    assert.ok(await page.locator("#dock-weekend").evaluate(el=>el.classList.contains("active")));
+    await page.locator("#dock-saved").click();
+    assert.ok(await page.locator("#dock-saved").evaluate(el=>el.classList.contains("active")));
+    await page.locator("#dock-home").click();
+    assert.ok(await page.locator("#dock-home").evaluate(el=>el.classList.contains("active")));
+    console.log("OK dock: contrasto, gradiente, rilievo, temi e navigazione mobile.");
+    // Pannelli laterali: chiusi per default, accesso alternativo, swipe e funzioni reali.
+    const leftPanel=page.locator('dialog.csf-side-dialog[data-side="left"]'),rightPanel=page.locator('dialog.csf-side-dialog[data-side="right"]');
+    assert.equal(await leftPanel.isVisible(),false);assert.equal(await rightPanel.isVisible(),false);
+    await page.locator("#csf-open-left").click();
+    await leftPanel.waitFor({state:"visible"});
+    await leftPanel.locator('[data-side-action="city"]').click();
+    await leftPanel.getByRole("combobox",{name:"Scegli comune"}).waitFor();
+    await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await page.locator("#csf-open-right").click();
+    await rightPanel.waitFor({state:"visible"});
+    await rightPanel.locator('[data-side-action="recent"]').click();
+    await rightPanel.getByRole("button",{name:"Cancella cronologia"}).click();
+    await page.keyboard.press("Escape");await rightPanel.waitFor({state:"hidden"});
+    await page.evaluate(()=>window.scrollTo(0,0));
+    const swipe=async(x,y,dx,dy)=>page.evaluate(({x,y,dx,dy})=>{
+      const target=document.body;
+      const event=(type,a,b)=>{const t=new Touch({identifier:1,target,clientX:a,clientY:b});target.dispatchEvent(new TouchEvent(type,{bubbles:true,touches:type==="touchstart"?[t]:[],changedTouches:[t]}));};
+      event("touchstart",x,y);event("touchend",x+dx,y+dy);
+    },{x,y,dx,dy});
+    await swipe(25,300,12,140);assert.equal(await leftPanel.isVisible(),false);
+    await swipe(25,300,140,5);await leftPanel.waitFor({state:"visible"});
+    await swipe(150,300,-130,0);await leftPanel.waitFor({state:"hidden"});
+    // No attesa artificiale: il close deve liberare subito il lato opposto.
+    await swipe(368,300,-140,5);await rightPanel.waitFor({state:"visible"});
+    await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    assert.equal(await page.locator("html").evaluate(n=>n.classList.contains("csf-side-open")),false);
+    // Touch reali via protocollo Chromium, con più movimenti e hit-testing del browser.
+    const cdp=await page.context().newCDPSession(page);
+    const realSwipe=async(x,y,dx,dy)=>{
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y}]});
+      for(let j=1;j<=6;j++)await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+dx*j/6,y:y+dy*j/6}]});
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    };
+    await page.evaluate(()=>window.scrollTo(0,0));
+    // Le linguette hanno un'etichetta accessibile e sono apribili anche senza swipe.
+    for(const [side,panel] of [["left",leftPanel],["right",rightPanel]]){
+      const tab=page.locator('.csf-side-swipe[data-side="'+side+'"]');
+      await tab.waitFor({state:"visible"});assert.ok((await tab.boundingBox()).width>=44);
+      await tab.tap();await panel.waitFor({state:"visible"});
+      await panel.getByRole("button",{name:"Chiudi pannello"}).click();
+      await panel.waitFor({state:"hidden"});
+      assert.equal(await tab.evaluate(n=>document.activeElement===n),false,"Nessun focus touch residuo");
+      assert.equal(await tab.evaluate(n=>getComputedStyle(n).outlineStyle),"none");
+      assert.equal(await tab.evaluate(n=>n.querySelector(".csf-side-grip").getBoundingClientRect().width),9);
+      assert.equal(await tab.evaluate(n=>getComputedStyle(n.querySelector(".csf-side-grip")).backgroundColor),"rgba(0, 0, 0, 0)");
+    }
+    const areaL=await page.locator('.csf-side-swipe[data-side="left"]').boundingBox();
+    const areaR=await page.locator('.csf-side-swipe[data-side="right"]').boundingBox();
+    assert.ok(areaL&&areaR,"Fasce touch presenti sullo schermo");
+    // Verifica che il pannello inizi a seguire il dito PRIMA del rilascio.
+    const x=areaL.x+areaL.width/2,y=areaL.y+30;
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y}]});
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+12,y}]});
+    await page.locator(".csf-side-preview").waitFor({state:"visible"});
+    const p1=await page.locator(".csf-side-preview").evaluate(n=>n.getBoundingClientRect().right);
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+25,y}]});
+    const p2=await page.locator(".csf-side-preview").evaluate(n=>n.getBoundingClientRect().right);
+    assert.ok(p2>p1,"Anteprima segue il dito");
+    await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    await leftPanel.waitFor({state:"visible"});
+    assert.equal(await page.locator(".csf-side-preview").count(),0);
+    await leftPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await realSwipe(areaR.x+areaR.width/2,areaR.y+30,-25,2);await rightPanel.waitFor({state:"visible"});
+    await rightPanel.getByRole("button",{name:"Chiudi pannello"}).click();
+    await realSwipe(areaL.x+areaL.width/2,areaL.y+30,3,100);assert.equal(await leftPanel.isVisible(),false);
+    await cdp.detach();
+    console.log("OK pannelli laterali: scomparsa, swipe, touch Chromium reale, accesso alternativo, comuni e cronologia.");
+    // Community: il dock non deve coprire accesso o chiusura, anche su schermi piccoli.
+    for(const [width,height] of [[320,568],[393,852],[430,740]]){
+      await page.setViewportSize({width,height});
+      const tab=await page.locator("#csfc-toggle").boundingBox();
+      assert.ok(tab&&tab.x>=0&&tab.x+tab.width<=width-5&&tab.width>=43&&tab.height>=95,"Linguetta interamente dentro lo schermo e leggibile");
+      assert.equal(await page.locator("#csfc-toggle").evaluate(el=>getComputedStyle(el).writingMode),"horizontal-tb","Testo normale ruotato, senza layout verticale nativo");
+      assert.ok(tab&&tab.y>=0&&tab.y+tab.height<=height*.42,"Linguetta Community più in alto, fuori dai filtri rapidi");
+      await page.locator("#csfc-toggle").click();
+      const panel=page.locator("#csfc-panel");
+      await panel.waitFor({state:"visible"});
+      const login=panel.getByRole("button",{name:"Accedi con Google"});
+      assert.equal(await panel.locator("#csfc-consent").count(),0,"Nessuna casella obbligatoria");
+      assert.equal(await panel.locator("#csfc-share-email").count(),0,"Nessuna scelta nickname o email");
+      assert.ok(await panel.locator("#csfc-email-notice").isVisible(),"Visibilità indirizzo comunicata prima della partecipazione");
+      assert.ok(await panel.locator("#csfc-rules-notice a").isVisible(),"Informativa accessibile");
+      await login.click({trial:true});
+      const bounds=await panel.evaluate(el=>{const p=el.getBoundingClientRect(),d=document.querySelector(".mobile-dock").getBoundingClientRect();return {top:p.top,bottom:p.bottom,left:p.left,right:p.right,dock:d.top,width:document.documentElement.clientWidth};});
+      assert.ok(bounds.top>=0&&bounds.left>=0&&bounds.right<=bounds.width+1&&bounds.bottom<=bounds.dock,"Community sopra il dock: "+JSON.stringify(bounds));
+      await panel.getByRole("button",{name:"Chiudi community"}).click();
+      assert.ok(await panel.isHidden());
+    }
+    await page.setViewportSize({width:393,height:852});
+
     const acq=page.locator("#events-container details").filter({hasText:"Acquolina in Cena Spettacolo"});
     assert.equal(await acq.count(),1,"Acquolina deve essere presente");
     assert.ok(await acq.evaluate(el=>el.classList.contains("is-featured")),"Acquolina in evidenza");
@@ -38,11 +155,17 @@ const assert = require("node:assert/strict");
     await page.locator("#close-install-drawer").click();
     assert.ok(await page.locator("#btn-apk-alternativo").isVisible(),"APK sempre recuperabile anche da WebView");
     assert.equal(await page.locator("#btn-apk-alternativo").getAttribute("href"),"app-release.apk");
+    // La presenza reale continua a essere rilevata: il badge compare solo da tre connessioni.
+    for(const n of [null,0,1,2,3,7,2,null]){
+      await page.evaluate(v=>mostraOnline(v),n);
+      assert.equal(await page.locator("#live-pill").isVisible(),Number.isInteger(n)&&n>=3,"Soglia online "+n);
+      if(n>=3)assert.equal(await page.locator("#online-users-count").textContent(),String(n));
+    }
     // Simula valori pubblici senza contattare Firebase: tutti i badge devono stare sulla stessa riga.
     const conteggioOriginale = await page.locator("#event-counter").textContent();
     await page.evaluate(()=>{
       document.getElementById("event-counter").textContent="89 eventi";
-      document.getElementById("online-users-count").textContent="2";
+      mostraOnline(3);
       document.getElementById("total-views-count").textContent="1381";
       for(const id of ["live-pill","views-pill"])document.getElementById(id).style.display="inline-flex";
     });
@@ -68,6 +191,30 @@ const assert = require("node:assert/strict");
     assert.match(await page.locator("#author-signature").textContent(),/Francesco Compierchio/);
     assert.equal(await page.locator("#btn-author-ig").getAttribute("href"),"https://www.instagram.com/francesco_c_92/");
     assert.equal(await page.locator(".footer-links a").count(),5);
+    // Stasera e città devono comporsi in entrambi gli ordini, senza modificare la grafica.
+    const tonightButton=page.locator('[data-smart-filter="TONIGHT"]');
+    const cityButton=page.locator("#filters .filter-btn").filter({hasText:/^Cerignola$/});
+    const allFilter=page.locator("#filters .filter-btn").filter({hasText:/^Tutti$/});
+    await page.evaluate(()=>{
+      tuttiEventiAttivi.push({tipoContenuto:"evento",titolo:"Test filtro serale",citta:"Cerignola",categoria:"Locali & Serate",dataInizio:oggi,dataFine:oggi,dataTesto:"Ore 21:00",luogo:"Locale test",descrizione:"DJ set di prova",fonteUrl:"https://example.test/serata"});
+      renderEventi();
+    });
+    for(const order of [[tonightButton,cityButton],[cityButton,tonightButton]]){
+      await allFilter.click();
+      for(const button of order)await button.click();
+      assert.equal(await tonightButton.getAttribute("aria-pressed"),"true");
+      assert.ok(await cityButton.evaluate(el=>el.classList.contains("active")));
+      assert.equal(await page.locator("#events-container details").filter({hasText:"Test filtro serale"}).count(),1);
+      assert.ok(await page.evaluate(()=>{
+        const map=new Map(tuttiEventiAttivi.map(ev=>[chiaveEvento(ev),ev]));
+        return [...document.querySelectorAll("#events-container details")].every(el=>{
+          const ev=map.get(el.dataset.eventKey);
+          return ev&&ev.citta==="Cerignola"&&CsfEventTools.tonight(ev,oggi);
+        });
+      }));
+    }
+    await allFilter.click();
+    await page.evaluate(()=>{const i=tuttiEventiAttivi.findIndex(ev=>ev.titolo==="Test filtro serale");if(i>=0)tuttiEventiAttivi.splice(i,1);renderEventi();});
     // Una data oltre la settimana deve essere consultabile e mostrare solo eventi di quel giorno.
     await page.locator("#agenda-future-date").fill("2026-12-31");
     assert.ok(await page.locator("#events-container details").filter({hasText:"Capodanno in Piazza"}).count(),"Evento futuro già presente");
@@ -131,7 +278,42 @@ const assert = require("node:assert/strict");
     assert.ok(await page.locator("#events-container details").filter({hasText:"Il Sabato di ADE"}).count());
     await page.locator("#btn-segnala-evento").click();
     assert.ok(await page.locator("#modal-segnala").isVisible());
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
+    await page.locator("#seg-gestore").click();
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isVisible());
+    assert.ok(await page.locator("#seg-dati-evento").isHidden(),"Prima scelta: locandina, non modulo lungo");
+    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).overscrollBehaviorY),"none");
+    assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector("#modal-segnala .modal-box")).overscrollBehaviorY),"none");
+    assert.ok(await page.locator("#seg-contatto").evaluate(el=>el.required));
+    await page.locator("#btn-invia-segnalazione").click();
+    assert.match(await page.locator("#seg-invio-esito").textContent(),/Nome dell’evento/);
+    assert.match(await page.locator("#seg-invio-esito").textContent(),/Dichiarazione/);
+    assert.equal(await page.locator("#seg-titolo").getAttribute("aria-invalid"),"true");
+    assert.ok(await page.locator("#seg-social-testo").isVisible(),"Anche il gestore può importare i dati del post");
+    await page.locator("#seg-indietro").click();
+    await page.locator("#seg-social").click();
+    assert.ok(await page.locator("#seg-rapida").isVisible());
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
+    await page.locator("#quick-invia").click();
+    assert.match(await page.locator("#quick-esito").textContent(),/Manca la prova/);
+    await page.locator("#quick-indietro").click();
+    await page.locator("#seg-gestore").click();
+    assert.ok(await page.locator("#seg-contatto").evaluate(el=>el.required));
+    assert.equal(await page.locator("#seg-descrizione").evaluate(el=>el.required),false);
+    assert.ok(await page.locator("#seg-autorizzato").evaluate(el=>el.required&&!el.checked));
+    assert.ok(await page.locator("#seg-descrizione").isHidden());
+    await page.locator("#seg-altri-dati summary").click();
+    assert.ok(await page.locator("#seg-descrizione").isVisible());
+    await page.locator("#seg-altri-dati summary").click();
+    await page.locator("#modal-segnala .modal-box").evaluate(el=>el.scrollTop=el.scrollHeight);
+    await page.locator("#btn-chiudi-modale").click({trial:true});
     await page.locator("#btn-chiudi-modale").click();
+    await page.locator("#btn-segnala-evento").click();
+    assert.ok(await page.locator("#form-segnalazione-pubblica").isHidden());
+    await page.locator("#seg-community").click();
+    assert.ok(await page.locator("#modal-segnala").isHidden());
+    assert.equal(await page.locator("#csfc-toggle").getAttribute("aria-expanded"),"true");
+    await page.locator("#csfc-panel").getByRole("button",{name:"Chiudi community"}).click();
     assert.ok(await page.locator("#csf-consent").isHidden(), "Nessuna richiesta automatica di consenso");
     assert.equal(await page.evaluate(()=>window.CsfMetrics.allowed()),false);
     await page.locator("#csf-consent-settings").click();
@@ -186,8 +368,11 @@ const assert = require("node:assert/strict");
     await shareMenu.waitFor({state:"visible"});
     assert.match(await shareMenu.getByRole("link",{name:"WhatsApp",exact:true}).getAttribute("href"),/^https:\/\/wa\.me\//);
     assert.match(await shareMenu.getByRole("link",{name:"Telegram",exact:true}).getAttribute("href"),/^https:\/\/t\.me\/share\/url/);
-    assert.match(await shareMenu.getByRole("link",{name:"Facebook",exact:true}).getAttribute("href"),/^https:\/\/www\.facebook\.com\/sharer/);
-    assert.ok(await shareMenu.getByRole("button",{name:"Instagram · copia link"}).isVisible());
+    assert.match(await shareMenu.getByRole("link",{name:"Apri Messenger",exact:true}).getAttribute("href"),/^https:\/\/www\.messenger\.com\//);
+    assert.ok(await shareMenu.getByRole("button",{name:"Messenger · copia messaggio",exact:true}).isVisible());
+    assert.equal(await shareMenu.locator('a[href*="facebook.com/sharer"]').count(),0,"Nessun post pubblico Facebook al posto di Messenger");
+    assert.ok(await shareMenu.getByRole("button",{name:"Instagram Direct · copia messaggio",exact:true}).isVisible());
+    assert.match(await shareMenu.getByRole("link",{name:"Apri Direct",exact:true}).getAttribute("href"),/^https:\/\/www\.instagram\.com\/direct\/inbox\//);
     await shareMenu.getByRole("button",{name:"Chiudi"}).click();
     await chrome.locator("#btn-add-home").click();
     assert.ok(await chrome.locator("#install-guide").isVisible());
@@ -207,6 +392,15 @@ const assert = require("node:assert/strict");
     const searchTop=await chrome.locator("#search-input").evaluate(el=>el.getBoundingClientRect().top);
     await chrome.locator("#btn-open-venues").click();
     assert.ok(await chrome.locator("#venues-drawer").evaluate(el=>el.classList.contains("open")));
+    for(const [name,handle] of [["Hermes Club","hermesclub2024"],["Alfredo Pizza e Cucina","alfredo_pizzaecucina"],["Saint Patrick","saint_patrick_barletta"],["Santo Graal","santograaltrani"],["Minami Restaurant & Lounge","minamilounge"]]){
+      const venue=chrome.locator("#venues-list .venue-card").filter({has:chrome.locator(".venue-name",{hasText:name})});
+      assert.equal(await venue.count(),1,"Scheda locale unica: "+name);
+      assert.equal(await venue.getByRole("link",{name:"Instagram",exact:true}).getAttribute("href"),"https://www.instagram.com/"+handle+"/");
+    }
+    await chrome.locator("#venues-search").fill("Trani");
+    assert.ok(await chrome.locator("#venues-list .venue-card").filter({hasText:"Santo Graal"}).count());
+    await chrome.locator("#venues-search").fill("");
+
     assert.equal(await chrome.locator("#search-input").evaluate(el=>el.getBoundingClientRect().top),searchTop,"Il pannello non deve spostare la homepage");
     await chrome.locator("#btn-close-venues").click();
     assert.equal(await chrome.locator("#btn-open-venues").getAttribute("aria-expanded"),"false");
