@@ -28,4 +28,4 @@ const fs=require("node:fs");
   await assertFails(set(r(event+"/share"),v()));
   console.log("OK regole: sola lettura pubblica e incrementi validati su eventi abilitati");
  }finally{await env.cleanup();}
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().then(()=>{require("node:child_process").execFileSync(process.execPath,[require("node:path").join(__dirname,"quick-report-rules.cjs")],{stdio:"inherit",timeout:120000});}).catch(e=>{console.error(e);process.exitCode=1;});
