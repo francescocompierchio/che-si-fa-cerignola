@@ -559,6 +559,14 @@ def risolvi_comune_50km(testo_o_ev):
                 indirizzo,
                 flags=re.I,
             )
+        # Un segmento con il solo comune e un eventuale CAP o sigla
+        # provinciale è più informativo di un comune citato nel nome di una via.
+        for segmento in reversed(indirizzo.split(",")):
+            localita = re.sub(r"^\d{5}\s+", "", segmento.strip())
+            localita = re.sub(r"\s+(?:\([A-Z]{2,3}\)|FG|BT|BAT|BA|PZ|AV)$", "", localita, flags=re.I)
+            comune = COMUNI_50KM.get(localita.casefold())
+            if comune:
+                return comune
         for testo in (indirizzo, testo_o_ev.get("luogo"), testo_o_ev.get("titolo"), testo_o_ev.get("descrizione")):
             comune = _comune_nel_testo(testo)
             if comune:
@@ -1324,10 +1332,14 @@ def normalizza_e_valida_evento(raw, ref_dt=None, fonte_curata_eventi=False):
 
     costo = str(raw.get("costo") or "").strip() or "Non specificato nella fonte"
     desc_finale = rimuovi_riferimenti_pubblicazione(descrizione) if descrizione else ""
-    if len(desc_finale) < 15:
+    indicazione_fonte = "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+    citta_precedente = raw.get("citta")
+    luogo_precedente = raw_pulito["luogo"]
+    descrizione_generata = f"{titolo} presso {luogo_precedente} ({citta_precedente}). {indicazione_fonte}"[:220]
+    if len(desc_finale) < 15 or (citta_precedente != citta and descrizione == descrizione_generata):
         desc_finale = (
             f"{titolo} presso {luogo} ({citta}). "
-            "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+            + indicazione_fonte
         )
 
     dettagli = {}
@@ -1723,16 +1735,29 @@ def raccogli_da_portale_viva(session, fonte):
 
 
 
+NAMESPACE_MEDIA_RSS = "http://search.yahoo.com/mrss/"
+NAMESPACE_ATOM = "http://www.w3.org/2005/Atom"
+
+
+def estrai_url_locandine_feed(item, base_url):
+    """Riconosce Media RSS anche quando il parser XML omette il prefisso."""
+    immagini = []
+    for tag in item.find_all(["enclosure", "content", "thumbnail"]):
+        media_rss = tag.namespace == NAMESPACE_MEDIA_RSS and tag.name in {"content", "thumbnail"}
+        rss_enclosure = tag.name == "enclosure" and tag.namespace is None
+        if not (media_rss or rss_enclosure):
+            continue
+        indirizzo = (tag.get("url") or tag.get("href") or "").strip()
+        if indirizzo:
+            url = urljoin(base_url, indirizzo)
+            if url.startswith(("http://", "https://")):
+                immagini.append(url)
+    return immagini
+
+
 def estrai_testo_locandine(session, html_pagina="", item_feed=None, max_immagini=3, base_url="", singole=False):
     """Estrae testo da locandine pubbliche usando OCR locale, se Tesseract è installato."""
-    immagini = []
-    if item_feed is not None:
-        for tag in item_feed.find_all(["enclosure", "media:content", "media:thumbnail"]):
-            url_immagine = (tag.get("url") or tag.get("href") or "").strip()
-            if url_immagine:
-                url_immagine = urljoin(base_url, url_immagine)
-                if url_immagine.startswith(("http://", "https://")):
-                    immagini.append(url_immagine)
+    immagini = estrai_url_locandine_feed(item_feed, base_url) if item_feed is not None else []
     if html_pagina:
         soup = BeautifulSoup(html_pagina, "html.parser")
         for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
@@ -2092,7 +2117,11 @@ def raccogli_da_feed_social(session, fonte):
         for item in items[:100]:
             titolo_el = item.find("title")
             link_el = item.find("link")
-            desc_el = item.find(["description", "summary", "content"])
+            desc_el = item.find(
+                lambda tag: tag.name in {"description", "summary", "content"}
+                and tag.namespace in {None, NAMESPACE_ATOM},
+                recursive=False,
+            )
             titolo = re.sub(r"\s+", " ", titolo_el.get_text(" ", strip=True) if titolo_el else "").strip()
             link = (link_el.get_text(" ", strip=True) if link_el else "").strip()
             if item.name == "entry":

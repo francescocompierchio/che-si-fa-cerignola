@@ -41,7 +41,7 @@ jobs:
               'test_aggiorna_eventi.py', 'test_discovery_locale.py',
               'test_stato_raccolta.py', 'test_apprendimento.py',
               'test_capodanno.py', 'test_festivita.py', 'test_ricorrenze.py',
-              'test_fonti_cerignola.py'
+              'test_fonti_cerignola.py', 'tests/test_rss.py'
           }
           changed = Path('/tmp/agente-files.txt').read_text().splitlines()
           forbidden = set(changed) - allowed

@@ -63,8 +63,10 @@ def aggiorna(memoria, diagnostica, now):
         host = dati.get("dominio")
         if stato == "HTTP 429" and host:
             limiti[host] = max(limiti.get(host, 0), now + max(3600, dati.get("riprovaDopoSecondi", 0)))
-        # Non confondere un sito senza eventi con un sito irraggiungibile.
-        vuoti = prima.get("cicliVuoti", 0) + 1 if dati.get("stato") == "ok" and not dati.get("eventiEstratti", 0) else 0
+        # Conta gli eventi riscontrati nell'archivio quando la misura è disponibile.
+        # Le diagnostiche senza misura conservano il comportamento precedente.
+        utili = int(dati.get("eventiUtili", dati.get("eventiEstratti", 0)))
+        vuoti = prima.get("cicliVuoti", 0) + 1 if stato == "ok" and not utili else 0
         # Primo blocco: nuova prova al ciclo successivo. Poi 1, 2, 4, max 6 ore.
         pausa = min(21600, 3600 * 2 ** min(serie - 2, 3)) if serie >= 2 else 0
         if errori >= 2:
@@ -73,7 +75,6 @@ def aggiorna(memoria, diagnostica, now):
         # Dopo 8 cicli senza eventi: 1h, poi 2h, massimo 4h; mai per Cerignola prioritaria.
         if not pausa and not dati.get("prioritaria") and vuoti >= 8:
             pausa = min(3600 if dati.get("focus_serate") else 14400, 3600 * 2 ** min((vuoti-8)//4,2))
-        utili = int(dati.get("eventiEstratti", 0))
         media = round(0.7 * prima.get("produttivita", utili) + 0.3 * utili, 2)
         # Il punteggio premia novità effettivamente pubblicate e copertura locale.
         valore = min(20, 0.15*dati.get("eventiUtili",0)+dati.get("novitaUtili",0)+2*dati.get("novitaCerignola",0)+2*dati.get("nuoveSerate",0)+4*dati.get("nuoveSerateCerignola",0))

@@ -1,4 +1,4 @@
-const CACHE_NAME = "chesifa-shell-v75";
+const CACHE_NAME = "chesifa-shell-v80";
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const SHELL_FILES = [
   new URL("", self.registration.scope).href,
@@ -15,7 +15,7 @@ const SHELL_FILES = [
   new URL("app-extras.js", self.registration.scope).href,
   new URL("app-extras.js?v=3", self.registration.scope).href,
   new URL("side-panels.js?v=4", self.registration.scope).href,
-  new URL("quick-report.js?v=3", self.registration.scope).href,
+  new URL("quick-report.js?v=6", self.registration.scope).href,
   new URL("1795175413227~4.jpg", self.registration.scope).href
 ];
 
@@ -132,7 +132,7 @@ self.addEventListener("notificationclick", event => {
 });
 
 const SHARE_CACHE = "chesifa-social-local-v1";
-const SHARE_MAX = 8 * 1024 * 1024;
+const SHARE_MAX = 32 * 1024 * 1024;
 const SHARE_TTL = 30 * 60 * 1000;
 
 async function riceviCondivisione(request) {

@@ -16,7 +16,7 @@
     window.csfFeedIniziale = Promise.all([window.csfFeedPubblico("eventi.json"),window.csfFeedPubblico("esperienze.json")]);
   </script>
   <script src="app-extras.js?v=3"></script>
-  <script src="quick-report.js?v=3"></script>
+  <script src="quick-report.js?v=6"></script>
   <script src="event-page.js?v=69" defer></script>
   <script src="metrics.js?v=34"></script>
 
@@ -87,6 +87,10 @@
     }
 
     * { box-sizing: border-box; }
+    html, body { overscroll-behavior-y: none; }
+    #modal-segnala { overflow: hidden; overscroll-behavior: none; }
+    html:has(#modal-segnala.open) body { overflow: hidden; }
+    #modal-segnala .modal-box { overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; -webkit-overflow-scrolling: touch; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -843,7 +847,7 @@
       margin-bottom: 10px;
     }
 
-    #modal-segnala .modal-box { box-sizing:border-box; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); margin:auto; overscroll-behavior:contain; }
+    #modal-segnala .modal-box { box-sizing:border-box; max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); margin:auto; overscroll-behavior:none; }
     #modal-segnala .modal-head { position:sticky; top:-18px; background:var(--card); z-index:2; padding:8px 0; }
     #modal-segnala .modal-close { min-height:44px; min-width:44px; }
     #modal-segnala .seg-intro { font-size:.83rem; color:var(--muted); line-height:1.4; margin:0 0 8px; }
@@ -856,6 +860,10 @@
     #seg-rapida .quick-photo:focus-within{outline:2px solid var(--accent);outline-offset:2px}
     #seg-rapida .quick-photo input{position:absolute;width:1px;height:1px;opacity:0}
     #seg-rapida .quick-preview{max-height:140px;max-width:100%;object-fit:contain;display:block;margin:8px auto;border-radius:9px}
+    #modal-segnala .report-result:not([hidden]),#modal-segnala .report-error{white-space:pre-line;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:.85rem;line-height:1.45;overflow-wrap:anywhere;margin:8px 0}
+    #modal-segnala .report-error{border-color:#b85a40;color:var(--text);background:var(--card)}
+    #modal-segnala [aria-invalid="true"]{outline:2px solid #b85a40;outline-offset:1px}
+    #modal-segnala .report-field-error{display:block;color:var(--text);font-size:.77rem;line-height:1.4;margin-top:4px}
     #seg-rapida .quick-status{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere;line-height:1.4;margin:8px 0}
     #seg-rapida .quick-note{font-size:.75rem;color:var(--muted);line-height:1.45;margin:10px 0}
     #seg-rapida .quick-share-help{font-size:.78rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
@@ -1444,61 +1452,58 @@ html.csf-side-open{overflow:hidden}
         <button type="button" class="modal-close" id="btn-chiudi-modale" aria-label="Chiudi">✕</button>
       </div>
       <div id="seg-scelta">
-        <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Invio gratuito, pubblicazione dopo verifica.</p>
+        <p class="seg-intro">Eventi a Cerignola e dintorni (50 km). Pubblicazione dopo verifica.</p>
         <button type="button" class="btn btn-map seg-full" id="seg-gestore">Pubblica il mio evento</button>
-        <p class="seg-choice-note">Per gestori e organizzatori. Puoi usare la locandina o compilare i dati.</p>
+        <p class="seg-choice-note">Sei il gestore o organizzi l’evento? Usa questa modalità per chiedere visibilità promozionale e fornire il contatto ufficiale. Basta la locandina e la conferma dei dati.</p>
         <button type="button" class="btn btn-soft seg-full" id="seg-social">Segnala un evento in pochi secondi</button>
-        <p class="seg-choice-note">Hai visto una storia o una locandina? Foto o link, con i dati essenziali dell’evento.</p>
+        <p class="seg-choice-note">Solo per chi segnala spontaneamente eventi altrui: nessun diritto alla pubblicazione, priorità, promozione o gestione dell’evento. Le richieste commerciali vanno nella prima modalità.</p>
+        <p class="seg-intro">L’amministratore verifica eventuali usi commerciali impropri e decide liberamente quali eventi mettere in evidenza.</p>
         <div class="seg-other"><button type="button" class="seg-link" id="seg-community">Parlane nella Community</button></div>
       </div>
       <form id="seg-rapida" hidden>
         <button type="button" class="seg-link" id="quick-indietro">‹ Indietro</button>
-        <p class="seg-intro">Hai visto un evento? Invia la locandina leggibile o il link diretto all’annuncio originale.</p>
+        <p class="seg-intro">Hai visto un evento? Invia la locandina, uno screenshot oppure il link diretto all’annuncio pubblico. Non usare questa modalità per promuovere un evento che organizzi o rappresenti. Non dà diritto a pubblicazione, promozione o priorità; l’amministratore può comunque scegliere eventi meritevoli.</p>
         <label class="quick-photo"><input type="file" id="quick-foto" accept="image/jpeg,image/png,image/webp" />📷 Scegli screenshot o locandina</label>
         <img id="quick-preview" class="quick-preview" alt="Anteprima dello screenshot scelto" hidden />
         <button type="button" class="seg-link" id="quick-remove" hidden>Rimuovi foto</button>
         <p id="quick-foto-stato" class="quick-status" role="status" aria-live="polite"></p>
         <div class="m-field">
-          <label for="quick-link">Oppure incolla il link diretto all’evento</label>
-          <textarea id="quick-link" rows="2" maxlength="4000" placeholder="https://… (post, reel o pagina dell’evento)"></textarea>
+          <label for="quick-link">Oppure incolla il link diretto all’annuncio</label>
+          <input id="quick-link" type="text" inputmode="url" autocomplete="off" maxlength="1800" placeholder="https://www.instagram.com/p/…" />
+          <p class="quick-share-help" id="quick-link-help" role="status">Se il link non è leggibile automaticamente, ti chiederemo lo screenshot.</p>
         </div>
-        <div id="quick-details" hidden>
-          <p class="seg-intro">Controlla i dati letti dalla locandina e completa solo quelli mancanti.</p>
-          <div class="m-field"><label for="quick-title">Nome e tipo di evento *</label><input id="quick-title" maxlength="150" placeholder="Es. Serataccia – DJ set" /></div>
-          <div class="m-field"><label for="quick-venue">Locale o luogo *</label><input id="quick-venue" maxlength="200" placeholder="Es. Teatro Mercadante" /></div>
-          <div class="m-field"><label for="quick-city">Comune *</label><input id="quick-city" maxlength="80" placeholder="Es. Cerignola" /></div>
-          <div class="m-field"><label for="quick-date">Data *</label><input id="quick-date" type="date" /></div>
-          <div class="m-field"><label for="quick-time">Ora di inizio *</label><input id="quick-time" type="time" /></div>
-        </div>
+        <div class="m-field" id="quick-details" hidden><p id="quick-draft-summary" class="quick-share-help" role="status"></p><button type="button" class="seg-link" id="quick-edit-draft">Modifica dati riconosciuti</button><div id="quick-fields"></div></div>
         <details class="m-field"><summary>Aggiungi una nota (facoltativa)</summary><textarea id="quick-nota" maxlength="500" rows="2" aria-label="Nota facoltativa" placeholder="Es. È a Cerignola"></textarea></details>
-        <p class="quick-note">Sono obbligatori nome e tipo di evento, luogo, comune, data e orario. Il prezzo, se noto, può essere aggiunto nella nota. Il solo testo non basta. Invia solo annunci destinati al pubblico. Ritaglia eventuali dati privati. Foto e testo saranno visibili soltanto al gestore dell’app per la verifica, non pubblicati automaticamente.</p>
-        <button type="submit" class="btn btn-map seg-full" id="quick-invia" disabled>Invia segnalazione</button>
+        <p class="quick-note">Invia solo annunci pubblici senza dati privati. Le immagini fino a 32 MB vengono ridimensionate e compresse automaticamente sul telefono. Il link è sufficiente solo se riusciamo a recuperare la locandina. Controlla che l’immagine non contenga informazioni private.</p>
+        <button type="submit" class="btn btn-map seg-full" id="quick-invia">Verifica e invia</button>
         <p id="quick-esito" class="quick-status" role="status" aria-live="polite"></p>
         <button type="button" class="seg-link" id="quick-wa" hidden>Invia invece via WhatsApp</button>
         <p class="quick-share-help">Su Android, se Che Si Fa è installata e compare tra le app di condivisione, puoi usare Condividi direttamente da Instagram. Altrimenti usa lo screenshot.</p>
       </form>
-      <form id="form-segnalazione-pubblica" hidden>
+      <form id="form-segnalazione-pubblica" novalidate hidden>
         <button type="button" class="seg-link" id="seg-indietro">‹ Cambia modalità</button>
         <p class="seg-intro" id="seg-istruzioni">Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.</p>
-        <div class="m-field">
+        <details class="m-field"><summary>Link all’annuncio (facoltativo)</summary>
           <label for="seg-fonte" id="seg-fonte-label">Link del post o del sito</label>
           <input type="url" id="seg-fonte" maxlength="1800" placeholder="https://www.instagram.com/..." />
-        </div>
+        </details>
         <details class="m-field" id="seg-social-testo" hidden>
           <summary>Compila dal testo del post</summary>
           <textarea id="seg-social-incolla" maxlength="10000" aria-label="Testo del post" placeholder="Incolla la descrizione dell’annuncio"></textarea>
           <button type="button" class="btn btn-soft" id="seg-social-applica">Usa i dati del testo</button>
         </details>
         <p id="seg-social-stato" role="status" aria-live="polite" hidden></p>
-        <details class="m-field" id="seg-poster-tools">
-          <summary>Hai una locandina? Compila dalla foto</summary>
-          <p class="seg-intro">Scegli una foto JPG/PNG/WebP (max 8 MB). La lettura avviene sul dispositivo e non carica la foto. Per inviare anche la locandina, allegala nella chat WhatsApp.</p>
-          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" />
-          <button type="button" class="btn btn-soft" id="seg-poster-read">Leggi locandina</button>
+        <div class="m-field" id="seg-poster-tools">
+          <label class="btn btn-map seg-full" for="seg-poster-file">📷 Carica locandina e compila automaticamente</label>
+          <p class="seg-intro">Scegli una foto JPG/PNG/WebP (fino a 32 MB): lettura e compressione automatiche sul dispositivo. La locandina compressa sarà allegata alla richiesta; controlla i dati e il contatto prima di inviare.</p>
+          <input type="file" id="seg-poster-file" accept="image/jpeg,image/png,image/webp" style="position:absolute;width:1px;height:1px;opacity:0" /><img id="seg-poster-preview" alt="Locandina allegata" hidden style="display:block;max-height:120px;max-width:100%;object-fit:contain;margin:8px auto;border-radius:9px" />
+          <button type="button" class="seg-link" id="seg-poster-read" hidden>Rileggi locandina</button>
           <p id="seg-poster-status" role="status" aria-live="polite"></p>
           <textarea id="seg-poster-text" aria-label="Testo estratto dalla locandina" hidden></textarea>
           <button type="button" class="btn btn-soft" id="seg-poster-apply" hidden>Usa testo e dati riconosciuti</button>
-        </details>
+        </div>
+        <p id="seg-dati-riepilogo" class="seg-intro" role="status" hidden></p>
+        <button type="button" class="seg-link" id="seg-dati-toggle" aria-expanded="false">Non ho una locandina · inserisci i dati</button>
         <select id="seg-tipo" hidden aria-hidden="true" tabindex="-1">
           <option value="Evento / Serata">Evento / Serata</option>
           <option value="Attività serale">Attività serale</option>
@@ -1506,6 +1511,7 @@ html.csf-side-open{overflow:hidden}
           <option value="Escursione / Esperienza">Escursione / Esperienza</option>
           <option value="Attività diurna">Attività diurna</option>
         </select>
+        <div id="seg-dati-evento" hidden>
         <div class="m-field">
           <label for="seg-titolo" id="lbl-seg-titolo">Nome dell'evento *</label>
           <input type="text" id="seg-titolo" required maxlength="150" placeholder="Es. Sabato con DJ Set" />
@@ -1516,7 +1522,7 @@ html.csf-side-open{overflow:hidden}
         </div>
         <div class="m-field">
           <label for="seg-citta">Comune *</label>
-          <input type="text" id="seg-citta" required maxlength="80" value="Cerignola" />
+          <input type="text" id="seg-citta" required maxlength="80" placeholder="Es. Cerignola" />
         </div>
         <div class="m-row">
           <div class="m-field">
@@ -1527,6 +1533,7 @@ html.csf-side-open{overflow:hidden}
             <label for="seg-ora" id="lbl-seg-ora">Orario *</label>
             <input type="text" id="seg-ora" required maxlength="40" placeholder="Es. 22:30" />
           </div>
+        </div>
         </div>
         <div class="m-field" id="seg-contatto-wrap">
           <label for="seg-contatto">Instagram o WhatsApp del locale *</label>
@@ -1563,7 +1570,8 @@ html.csf-side-open{overflow:hidden}
           </div>
         </details>
         <label class="seg-dichiarazione"><input type="checkbox" id="seg-autorizzato" required /> <span id="seg-autorizzato-testo">Dichiaro di essere il gestore o un organizzatore autorizzato.</span></label>
-        <button type="submit" class="btn btn-map seg-full" id="btn-invia-segnalazione">Invia evento gratis</button>
+        <p id="seg-invio-esito" class="report-result" role="status" aria-live="polite" hidden></p>
+        <button type="submit" class="btn btn-map seg-full" id="btn-invia-segnalazione">Invia evento</button>
         <button type="button" class="btn btn-wa seg-full" id="btn-segnala-wa-diretto" style="margin-top:8px;">Invia locandina via WhatsApp</button>
         <p class="seg-intro" style="margin-top:5px;">Puoi inviare direttamente la foto allegandola nella conversazione WhatsApp, senza compilare tutto il modulo.</p>
       </form>
@@ -1650,7 +1658,7 @@ html.csf-side-open{overflow:hidden}
     }
 
     function apriSegnalazioneWhatsApp() {
-      if(!document.getElementById("seg-autorizzato")?.checked){mostraToast("Conferma di essere autorizzato a proporre l’evento.");return;}
+      if(!document.getElementById("seg-autorizzato")?.checked){reportMessage(segEsito,"Manca la dichiarazione di autorizzazione. Spunta la casella prima di inviare via WhatsApp.",true);return;}
       const campo=id=>document.getElementById(id)?.value.trim()||"";
       const testoSegnalazione=encodeURIComponent([
         modalitaSocial ? "Ciao, vorrei segnalare questo annuncio pubblico a Che Si Fa Cerignola:" : "Ciao, sono un gestore o organizzatore autorizzato e vorrei pubblicare il mio evento su Che Si Fa Cerignola:",
@@ -3051,7 +3059,7 @@ html.csf-side-open{overflow:hidden}
 
     let ocrInCorso=false;
     let modalitaSocial=false;
-    let posterCondiviso=null;
+    let posterCondiviso=null,posterProfessionale="",posterAutoValues={};
     const segFonte=document.getElementById("seg-fonte");
     const segContatto=document.getElementById("seg-contatto");
     const segCitta=document.getElementById("seg-citta");
@@ -3062,6 +3070,19 @@ html.csf-side-open{overflow:hidden}
     const posterStatus=document.getElementById("seg-poster-status");
     const posterText=document.getElementById("seg-poster-text");
     const posterApply=document.getElementById("seg-poster-apply");
+    const segDatiBox=document.getElementById("seg-dati-evento"),segDatiToggle=document.getElementById("seg-dati-toggle"),segRiepilogo=document.getElementById("seg-dati-riepilogo");
+    const segEssential=["seg-titolo","seg-luogo","seg-citta","seg-data","seg-ora"];
+    function segShowFields(mode){
+      const ids=segEssential.filter(id=>!document.getElementById(id).value.trim()||(id==="seg-data"&&segDataInput.value<oggi));
+      segDatiBox.dataset.mode=mode;segDatiBox.hidden=mode==="closed";
+      for(const id of segEssential){const el=document.getElementById(id);el.closest(".m-field").hidden=mode==="missing"&&!ids.includes(id);}
+      segDatiToggle.setAttribute("aria-expanded",String(!segDatiBox.hidden));
+      segDatiToggle.textContent=mode==="all"?"Riduci i campi":mode==="closed"&&!posterProfessionale?"Non ho una locandina · inserisci i dati":"Controlla o modifica tutti i dati";
+      const vals=segEssential.map(id=>document.getElementById(id).value.trim()).filter(Boolean);
+      segRiepilogo.hidden=!vals.length||mode==="all";
+      segRiepilogo.textContent=vals.length?"Dati rilevati: "+vals.join(" · ")+(ids.length?" — completa quelli mancanti.":" — verifica prima di inviare."):"";
+    }
+    segDatiToggle.addEventListener("click",()=>segShowFields(segDatiBox.dataset.mode==="all"?(posterProfessionale?"missing":"closed"):"all"));
     function caricaOCR(){
       if(window.Tesseract)return Promise.resolve(window.Tesseract);
       return new Promise((resolve,reject)=>{
@@ -3074,33 +3095,37 @@ html.csf-side-open{overflow:hidden}
     posterRead.addEventListener("click",async()=>{
       if(ocrInCorso)return;
       const file=posterFileInput.files[0]||posterCondiviso;
-      if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>8*1024*1024){posterStatus.textContent="Scegli un'immagine JPG, PNG o WebP di massimo 8 MB.";return;}
+      if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>CsfQuick.MAX_FILE){posterStatus.textContent="Scegli un’immagine JPG, PNG o WebP fino a 32 MB.";return;}
+      posterProfessionale="";posterFileInput.disabled=true;
       ocrInCorso=true;posterRead.disabled=true;posterApply.hidden=true;posterText.hidden=true;posterText.value="";
       posterStatus.textContent="Preparazione lettura. Al primo utilizzo vengono scaricati i componenti OCR.";
       let worker=null;
       try{
+        posterProfessionale=await CsfQuick.compress(file);const preview=document.getElementById("seg-poster-preview");preview.src=posterProfessionale;preview.hidden=false;
         const engine=await caricaOCR();
         worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js",logger:m=>{if(m.status==="recognizing text")posterStatus.textContent="Lettura testo: "+Math.round(m.progress*100)+"%";}});
-        const result=await worker.recognize(file);
+        const result=await worker.recognize(posterProfessionale);
         posterText.value=String(result.data.text||"").trim().slice(0,10000);
-        posterText.hidden=!posterText.value;posterApply.hidden=!posterText.value;
-        posterStatus.textContent=posterText.value?"Verifica e correggi il testo. Solo data con anno esplicito e orario chiaramente indicato vengono proposti.":"Nessun testo riconosciuto: compila il modulo manualmente.";
-      }catch(error){posterStatus.textContent="Lettura non disponibile su questo dispositivo. Puoi compilare il modulo manualmente.";}
-      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;}
+        posterText.hidden=true;posterApply.hidden=true;
+        if(posterText.value){applicaDatiSegnalazione(posterText.value,posterStatus);posterStatus.textContent="Locandina allegata. Controlla il riepilogo e completa soltanto ciò che manca.";}else posterStatus.textContent="Locandina allegata. Nessun testo riconosciuto: completa i dati manualmente.";
+      }catch(error){posterStatus.textContent=posterProfessionale?"Locandina allegata; lettura non disponibile. Completa i dati manualmente.":"Foto non allegata: "+CsfQuick.imageError(error)+" Puoi scegliere un’altra foto."; }
+      finally{if(worker)try{await worker.terminate();}catch(_){}ocrInCorso=false;posterRead.disabled=false;posterFileInput.disabled=false;posterRead.hidden=!posterProfessionale;segShowFields("missing");}
     });
-    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;});
+    posterFileInput.addEventListener("change",()=>{posterCondiviso=null;posterProfessionale="";document.getElementById("seg-poster-preview").hidden=true;document.getElementById("seg-poster-preview").removeAttribute("src");for(const [id,value] of Object.entries(posterAutoValues)){const field=document.getElementById(id);if(field.value===value)field.value="";}posterAutoValues={};if(posterFileInput.files.length)posterRead.click();else segShowFields("all");});
     function applicaDatiSegnalazione(testo,stato){
       const result=CsfExtras.parsePoster(testo);
+      const recognised=CsfQuick.draft(testo,oggi,quickCities);
       const campi=[
         ["seg-titolo",result.title],["seg-luogo",result.venue],
-        ["seg-citta",result.city],["seg-ora",result.time],["seg-costo",result.price],
+        ["seg-citta",recognised.citta||result.city],["seg-ora",result.time],["seg-costo",result.price],
         ["seg-descrizione",result.text.slice(0,1000)]
       ];
       for(const [id,valore] of campi){
         const campo=document.getElementById(id);
-        if(valore&&(!campo.value.trim()||(id==="seg-citta"&&!modalitaSocial&&campo.value==="Cerignola")))campo.value=valore;
+        if(valore&&!campo.value.trim()){campo.value=valore;posterAutoValues[id]=valore;}
       }
-      if(result.date&&result.date>=oggi&&(!segDataInput.value||(!modalitaSocial&&segDataInput.value===oggi)))segDataInput.value=result.date;
+      if(result.date&&result.date>=oggi&&!segDataInput.value){segDataInput.value=result.date;posterAutoValues["seg-data"]=result.date;}
+      segShowFields("missing");
       stato.hidden=false;
       stato.textContent=result.ambiguousDate||result.ambiguousTime
         ?"Il testo contiene più date o orari. Scegli quelli dell’evento e verifica i dati prima di inviare."
@@ -3139,76 +3164,135 @@ html.csf-side-open{overflow:hidden}
     const quickSend=document.getElementById("quick-invia");
     const quickRemove=document.getElementById("quick-remove");
     const quickWA=document.getElementById("quick-wa");
-    let quickImage="",quickBusy=false,quickSending=false,quickSequence=0,quickPosterText="";
-    const quickFields=Object.fromEntries(["title","venue","city","date","time"].map(k=>[k,document.getElementById("quick-"+k)]));
-    function quickDetails(){return Object.fromEntries(Object.entries(quickFields).map(([k,el])=>[k,el.value]));}
-    function quickPrefill(text){
-      const p=CsfExtras.parsePoster(text);
-      for(const [k,v] of Object.entries({title:p.title,venue:p.venue,city:p.city,date:p.date,time:p.time.replace(/^Ore /,"")}))if(v&&!quickFields[k].value)quickFields[k].value=v;
-      quickUpdate();
+    const segEsito=document.getElementById("seg-invio-esito");
+    function reportMessage(el,message,error=false){
+      el.hidden=!message;el.textContent=message;
+      el.classList.toggle("report-error",error);
+      if(error&&message)el.scrollIntoView({block:"nearest"});
     }
-    Object.values(quickFields).forEach(el=>el.addEventListener("input",quickUpdate));
+    function clearFieldError(field){
+      field.removeAttribute("aria-invalid");
+      const note=document.getElementById(field.id+"-report-error");
+      if(note){const ids=(field.getAttribute("aria-describedby")||"").split(/\s+/).filter(x=>x&&x!==note.id);if(ids.length)field.setAttribute("aria-describedby",ids.join(" "));else field.removeAttribute("aria-describedby");note.remove();}
+    }
+    function fieldError(field,message){
+      clearFieldError(field);field.setAttribute("aria-invalid","true");
+      const note=document.createElement("small");note.id=field.id+"-report-error";note.className="report-field-error";note.textContent=message;
+      field.insertAdjacentElement("afterend",note);
+      field.setAttribute("aria-describedby",[field.getAttribute("aria-describedby"),note.id].filter(Boolean).join(" "));
+    }
+    for(const field of segForm.querySelectorAll("input,textarea,select")){field.addEventListener("input",()=>clearFieldError(field));field.addEventListener("change",()=>clearFieldError(field));}
+    let quickImage="",quickBusy=false,quickSending=false,quickSequence=0,quickDraft={},quickShowAll=false;
+    const quickFields=document.getElementById("quick-fields"),quickDetails=document.getElementById("quick-details");
+    const quickCities=["Cerignola",...[...CINTURA_25_KM,...CINTURA_50_KM].map(c=>c.replace(/\b\w/g,x=>x.toUpperCase()))];
+    const validQuickCity=c=>getFasciaCerchioCerignola(c)<3;
+    const quickMissing=()=>CsfQuick.missing(quickDraft,getDataLocaleOggi(),validQuickCity);
+    for(const [key,label,max] of CsfQuick.fields){
+      const wrap=document.createElement("div");wrap.className="m-field";wrap.dataset.quickField=key;
+      const l=document.createElement("label");l.textContent=label;l.htmlFor="quick-data-"+key;
+      const f=document.createElement(key==="descrizione"?"textarea":"input");f.id=l.htmlFor;f.maxLength=max;
+      if(key==="dataInizio"){f.type="date";f.min=getDataLocaleOggi();}
+      if(key==="dataTesto")f.type="time";
+      if(key==="citta"){f.setAttribute("list","quick-cities");}
+      f.addEventListener("input",()=>{quickDraft[key]=f.value;});
+      wrap.append(l,f);quickFields.append(wrap);
+    }
+    const quickCityList=document.createElement("datalist");quickCityList.id="quick-cities";
+    for(const c of quickCities){const o=document.createElement("option");o.value=c;quickCityList.append(o);}quickFields.append(quickCityList);
+    function showQuickDraft(){
+      if(!quickImage){quickDetails.hidden=true;return;}
+      quickDetails.hidden=false;const missing=quickMissing();
+      const names=CsfQuick.fields.filter(([k])=>missing.includes(k)).map(([,label])=>label);
+      document.getElementById("quick-draft-summary").textContent=missing.length?"Completa soltanto: "+names.join(", ")+".":"Dati rilevati: "+[quickDraft.titolo,quickDraft.luogo,quickDraft.citta,quickDraft.dataInizio,quickDraft.dataTesto].join(" · ")+". Controlla i dati prima dell’invio.";
+      for(const [key] of CsfQuick.fields){const f=document.getElementById("quick-data-"+key);f.value=quickDraft[key]||"";f.parentElement.hidden=!quickShowAll&&!missing.includes(key);}
+    }
+    document.getElementById("quick-edit-draft").addEventListener("click",()=>{quickShowAll=!quickShowAll;showQuickDraft();});
+    async function readQuickImage(image,seq){
+      let worker=null,timer,expired=false;
+      try{
+        const engine=await caricaOCR();
+        const work=async()=>{worker=await engine.createWorker("ita",1,{workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js"});if(expired||seq!==quickSequence){await worker.terminate();worker=null;throw Error("stale");}return worker.recognize(image);};
+        const result=await Promise.race([work(),new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;reject(Error("timeout"));},45000);})]);
+        return CsfQuick.draft(result.data.text,getDataLocaleOggi(),quickCities);
+      }finally{expired=true;clearTimeout(timer);if(worker)try{await worker.terminate();}catch(_){}}
+    }
     function quickUpdate(){
-      const hasInput=quickImage||CsfQuick.publicUrl(quickInput.value)||CsfQuick.linkFromText(quickInput.value);
-      document.getElementById("quick-details").hidden=!hasInput;
-      quickSend.disabled=quickBusy||quickSending||!hasInput||!CsfQuick.essentials(quickDetails());
+      const source=CsfQuick.publicUrl(quickInput.value);
+      const help=document.getElementById("quick-link-help");
+      help.textContent=source&&CsfExtras.socialUrl(source)?"Per i link social, il recupero può non essere consentito. Lo screenshot permette la lettura automatica.":quickInput.value.trim()&&!source?"Inserisci un link diretto HTTPS, non testo o un profilo.":"Se il link non è leggibile automaticamente, ti chiederemo lo screenshot.";
+      quickSend.disabled=quickBusy||quickSending;
     }
     function quickClearPhoto(){
-      quickSequence++;quickBusy=false;quickImage="";quickPosterText="";quickFile.value="";
-      quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;quickPhotoStatus.textContent="";quickUpdate();
+      quickSequence++;quickBusy=false;quickImage="";quickDraft={};quickShowAll=false;quickDetails.hidden=true;quickFile.value="";
+      quickPreview.removeAttribute("src");quickPreview.hidden=true;quickRemove.hidden=true;reportMessage(quickPhotoStatus,"");quickUpdate();
     }
     function quickReset(){
-      quickForm.reset();quickClearPhoto();quickStatus.textContent="";quickWA.hidden=true;
+      quickForm.reset();quickClearPhoto();reportMessage(quickStatus,"");quickWA.hidden=true;
     }
     function apriRapida(){
       segForm.hidden=true;segScelta.hidden=true;quickForm.hidden=false;
       modalSegnala.querySelector(".modal-box").scrollTop=0;quickUpdate();
     }
-    async function quickLoadPhoto(file){
+    async function quickLoadPhoto(file,knownData=null){
       quickClearPhoto();if(!file)return;
       const seq=++quickSequence;quickBusy=true;quickPhotoStatus.textContent="Preparo la foto…";quickUpdate();
       try{
         const data=await CsfQuick.compress(file);
         if(seq!==quickSequence)return;
         quickImage=data;quickPreview.src=data;quickPreview.hidden=false;quickRemove.hidden=false;
-        quickPhotoStatus.textContent="Foto pronta. Lettura automatica in corso…";
-        CsfQuick.readPoster(data).then(text=>{
-          if(seq!==quickSequence)return;
-          quickPosterText=text;quickPrefill(text);
-          quickPhotoStatus.textContent="Foto letta. Controlla e completa i dati essenziali.";
-        }).catch(()=>{if(seq===quickSequence)quickPhotoStatus.textContent="Foto pronta. Compila i dati essenziali se non rilevati."});
-      }catch(_){if(seq===quickSequence){quickPhotoStatus.textContent="Foto non leggibile o troppo grande. Scegli un JPG, PNG o WebP fino a 8 MB.";quickFile.value="";}}
+        reportMessage(quickPhotoStatus,"Leggo automaticamente la locandina…");
+        let parsed={};
+        try{parsed=await readQuickImage(data,seq);}catch(_){if(seq===quickSequence)reportMessage(quickPhotoStatus,"Lettura automatica non riuscita. Compila solo i dati che mancano.");}
+        if(seq!==quickSequence)return;
+        quickDraft={...parsed,...Object.fromEntries(Object.entries(knownData||{}).filter(([,v])=>v))};
+        showQuickDraft();if(!quickMissing().length)reportMessage(quickPhotoStatus,"Locandina e dati pronti. Controlla e invia.");else if(Object.values(parsed).some(Boolean))reportMessage(quickPhotoStatus,"Locandina letta. Completa solo le informazioni mancanti.");
+      }catch(err){if(seq===quickSequence){reportMessage(quickPhotoStatus,CsfQuick.imageError(err),true);quickFile.value="";}}
       finally{if(seq===quickSequence){quickBusy=false;quickUpdate();}}
     }
     quickFile.addEventListener("change",()=>quickLoadPhoto(quickFile.files[0]));
     quickRemove.addEventListener("click",quickClearPhoto);
-    quickInput.addEventListener("input",()=>{if(quickImage||CsfQuick.publicUrl(quickInput.value)||CsfQuick.linkFromText(quickInput.value))quickPrefill(quickInput.value);else quickUpdate();});
+    quickInput.addEventListener("input",()=>{clearFieldError(quickInput);if(!quickSending)reportMessage(quickStatus,"");quickUpdate();});
     document.getElementById("quick-indietro").addEventListener("click",()=>{
       quickForm.hidden=true;segScelta.hidden=false;modalSegnala.querySelector(".modal-box").scrollTop=0;
     });
     quickWA.addEventListener("click",()=>{
-      const msg=["Ciao, segnalo un evento a Che Si Fa Cerignola.",quickInput.value.trim(),Object.values(quickDetails()).join(" · "),quickNote.value.trim(),quickImage?"Allego lo screenshot nella chat.":""].filter(Boolean).join("\n");
+      const msg=["Ciao, segnalo un evento a Che Si Fa Cerignola.",quickInput.value.trim(),quickNote.value.trim(),quickImage?"Allego lo screenshot nella chat.":""].filter(Boolean).join("\n");
       const a=document.createElement("a");a.href="https://wa.me/393474181072?text="+encodeURIComponent(msg);a.target="_blank";a.rel="noopener noreferrer";document.body.appendChild(a);a.click();a.remove();
     });
     quickForm.addEventListener("submit",async e=>{
       e.preventDefault();if(quickBusy||quickSending||quickForm.hidden)return;
-      const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString(),quickDetails(),quickPosterText);
-      if(!item){quickStatus.textContent="Aggiungi una locandina o un link valido e completa tutti i dati essenziali.";return;}
-      if(!dbGlobal){quickStatus.textContent="Invio non disponibile. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;return;}
-      quickSending=true;quickUpdate();quickStatus.textContent="Invio in corso…";quickWA.hidden=true;
+      if(!quickImage){
+        const source=CsfQuick.publicUrl(quickInput.value);
+        if(!source){reportMessage(quickStatus,CsfQuick.evidenceError(quickInput.value,""),true);return;}
+        quickSending=true;quickUpdate();reportMessage(quickStatus,"Verifico il link e cerco la locandina…");
+        const seq=quickSequence;
+        try{
+          const resolved=await CsfQuick.resolveLink(source);
+          if(seq!==quickSequence||quickForm.hidden)return;
+          await quickLoadPhoto(resolved.file,resolved.data);
+        }catch(err){if(seq===quickSequence)reportMessage(quickStatus,CsfQuick.linkError(err),true);}
+        finally{quickSending=false;quickUpdate();}
+        if(!quickImage)return;
+      }
+      const item=CsfQuick.payload(quickInput.value,quickNote.value,quickImage,new Date().toISOString(),quickDraft,getDataLocaleOggi(),validQuickCity);
+      if(!item){showQuickDraft();reportMessage(quickStatus,"Completa i dati mancanti o non validi indicati sopra (data futura o odierna, orario e comune entro 50 km).",true);return;}
+      if(tuttiEventiAttivi.some(ev=>CsfQuick.sameEvent(ev,item))){reportMessage(quickStatus,"Questo evento è già nell’agenda. Non occorre inviarlo nuovamente.",true);return;}
+      if(navigator.onLine===false){reportMessage(quickStatus,CsfQuick.sendError(null,false),true);return;}
+      if(!dbGlobal){reportMessage(quickStatus,"Il servizio di invio non è disponibile o non si è caricato. Controlla Internet e riprova, oppure usa WhatsApp e allega lì la foto.",true);quickWA.hidden=false;return;}
+      quickSending=true;quickUpdate();reportMessage(quickStatus,"Invio in corso…");quickWA.hidden=true;
+      const timer=setTimeout(()=>reportMessage(quickStatus,"Il servizio non ha ancora confermato la ricezione. Controlla Internet e lascia aperta questa pagina: non inviare di nuovo per evitare duplicati."),12000);
       try{
         await dbGlobal.ref("segnalazioniDaApprovare").push(item);
-        window.CsfMetrics?.action?.("csf_report_sent");
-        quickReset();quickStatus.textContent="Grazie! Segnalazione ricevuta, sarà verificata prima della pubblicazione.";
-      }catch(_){quickStatus.textContent="Invio non riuscito. Riprova o usa WhatsApp; allega lì la foto.";quickWA.hidden=false;}
-      finally{quickSending=false;quickUpdate();}
+        try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
+        quickReset();reportMessage(quickStatus,"Grazie! Evento completo e locandina ricevuti. Saranno verificati prima della pubblicazione.");
+      }catch(err){reportMessage(quickStatus,CsfQuick.sendError(err,navigator.onLine!==false)+" Se usi WhatsApp, allega lì la foto.",true);quickWA.hidden=false;}
+      finally{clearTimeout(timer);quickSending=false;quickUpdate();}
     });
     function apriModuloSegnalazione(social){
       if(social!==modalitaSocial){
         if(social&&segDataInput.value===oggi)segDataInput.value="";
         if(social&&segCitta.value==="Cerignola")segCitta.value="";
-        if(!social&&!segDataInput.value)segDataInput.value=oggi;
-        if(!social&&!segCitta.value)segCitta.value="Cerignola";
+
       }
       modalitaSocial=social;
       quickForm.hidden=true;segScelta.hidden=true;segForm.hidden=false;
@@ -3224,7 +3308,8 @@ html.csf-side-open{overflow:hidden}
       document.getElementById("seg-autorizzato").checked=false;
       document.getElementById("seg-istruzioni").textContent=social
         ?"Incolla il link all’annuncio. Puoi ricavare i dati dal testo o dalla locandina. La segnalazione sarà verificata prima della pubblicazione."
-        :"Compila i dati essenziali. Verificheremo il tuo evento prima di pubblicarlo.";
+        :"Carica la locandina, conferma i dati riconosciuti e inserisci il contatto ufficiale. Ti chiediamo solo ciò che manca.";
+      segShowFields(posterProfessionale?"missing":"closed");
       modalSegnala.querySelector(".modal-box").scrollTop=0;
       document.getElementById("seg-indietro").focus({preventScroll:true});
     }
@@ -3252,8 +3337,7 @@ html.csf-side-open{overflow:hidden}
         const testo=String(draft.get("testo")||"");
         const titolo=String(draft.get("titolo")||"");
         const fonte=CsfQuick.publicUrl(draft.get("fonte"))||CsfQuick.linkFromText(testo);
-        if(!quickInput.value)quickInput.value=[fonte,titolo,testo].filter(Boolean).join("\n").slice(0,4000);
-        quickPrefill(testo);
+        if(!quickInput.value)quickInput.value=fonte;
         const foto=draft.get("foto");
         if(foto instanceof File)await quickLoadPhoto(foto);
         quickUpdate();
@@ -3270,7 +3354,6 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("btn-segnala-evento").addEventListener("click", () => {
       window.CsfMetrics?.action?.("csf_report_open");
-      if (!modalitaSocial&&!segDataInput.value) segDataInput.value = oggi;
       aggiornaCampiTipoSegnalazione();
       segScelta.hidden=false;segForm.hidden=true;quickForm.hidden=true;
       document.getElementById("seg-autorizzato").checked=false;
@@ -3291,13 +3374,25 @@ html.csf-side-open{overflow:hidden}
 
     document.getElementById("form-segnalazione-pubblica").addEventListener("submit", async e => {
       e.preventDefault();
-      if(segForm.hidden||!document.getElementById("seg-autorizzato").checked){mostraToast("Conferma la dichiarazione prima di inviare.");return;}
+      if(segForm.hidden||document.getElementById("btn-invia-segnalazione").disabled)return;
+      reportMessage(segEsito,"");
+      const problems=[];
+      for(const field of segForm.querySelectorAll("input,textarea,select"))clearFieldError(field);
+      const requiredFields=[["seg-titolo","Nome dell’evento","Inserisci il nome dell’evento."],["seg-luogo","Locale e indirizzo","Indica il locale e l’indirizzo."],["seg-citta","Comune","Scrivi il comune in cui si svolge l’evento."],["seg-data","Data","Seleziona la data dell’evento."],["seg-ora","Orario","Inserisci l’orario, ad esempio 22:30."]];
+      if(!modalitaSocial)requiredFields.push(["seg-contatto","Contatto","Inserisci il profilo Instagram o il numero WhatsApp del locale."]);
+      const add=(id,label,msg)=>{const f=document.getElementById(id);fieldError(f,msg);problems.push(label+": "+msg);};
+      for(const [id,label,msg] of requiredFields)if(!document.getElementById(id).value.trim())add(id,label,msg);
+      if(segDataInput.value&&segDataInput.value<oggi)add("seg-data","Data","La data è già trascorsa. Scegli oggi o una data futura.");
+      if(segCitta.value.trim()&&!validQuickCity(segCitta.value.trim()))add("seg-citta","Comune","Indica un comune entro 50 km da Cerignola.");
+      for(const id of ["seg-fonte","seg-locandina"]){const f=document.getElementById(id);if(!f.closest("[hidden]")&&f.value.trim()&&!isSafeHttpUrl(f.value.trim())){if(id==="seg-locandina")document.getElementById("seg-altri-dati").open=true;add(id,id==="seg-fonte"?"Link annuncio":"Link locandina","Incolla un indirizzo HTTP o HTTPS valido oppure lascia il campo vuoto.");}}
+      if(!document.getElementById("seg-autorizzato").checked)add("seg-autorizzato","Dichiarazione","Spunta la dichiarazione di autorizzazione prima di inviare.");
+      if(problems.length){segShowFields("all");for(const f of segForm.querySelectorAll("[aria-invalid=true]")){const detail=f.closest("details");if(detail)detail.open=true;}reportMessage(segEsito,"Correggi questi dati:\n"+problems.join("\n"),true);return;}
       const fonteVal=modalitaSocial?CsfExtras.socialUrl(segFonte.value):segFonte.value.trim();
-      if(modalitaSocial&&!fonteVal){mostraToast("Inserisci il link pubblico al post o alla Storia.");segFonte.focus();return;}
-      if(ocrInCorso){posterStatus.textContent="Lettura in corso. Riprova quando termina.";return;}
+      if(modalitaSocial&&!fonteVal){reportMessage(segEsito,"Il link non identifica un annuncio pubblico. Copia il link diretto al post.",true);return;}
+      if(ocrInCorso){reportMessage(segEsito,"La lettura della locandina è ancora in corso. Attendi che termini, verifica i dati e riprova.",true);return;}
+      if(navigator.onLine===false){reportMessage(segEsito,CsfQuick.sendError(null,false),true);return;}
       if (!dbGlobal) {
-        if(modalitaSocial)mostraToast("Invio al momento indisponibile. Riprova o usa il pulsante WhatsApp.");
-        else apriSegnalazioneWhatsApp();
+        reportMessage(segEsito,"Il servizio di invio non si è caricato. Controlla Internet e riprova oppure usa il pulsante WhatsApp.",true);
         return;
       }
 
@@ -3312,9 +3407,6 @@ html.csf-side-open{overflow:hidden}
       const luogoVal = document.getElementById("seg-luogo").value.trim();
       const cittaVal = segCitta.value.trim() || (modalitaSocial?"":"Cerignola");
 
-      if (dataScelta < oggi || !luogoVal || !cittaVal || !document.getElementById("seg-titolo").value.trim() || (!modalitaSocial&&!segContatto.value.trim()) || !oraScelta) {
-        alert("Controlla titolo, locale, comune, data, orario e contatto."); btn.disabled=false;btn.textContent="Invia evento gratis";return;
-      }
       const dataTestoFinale = isLuogoFisso
         ? (oraScelta || "Sempre visitabile")
         : (oraScelta ? `${dataScelta} · ${oraScelta}` : dataScelta);
@@ -3333,28 +3425,32 @@ html.csf-side-open{overflow:hidden}
         costo: document.getElementById("seg-costo").value.trim(),
         contatto: modalitaSocial ? "Segnalazione da fonte pubblica" : segContatto.value.trim(),
         fonteUrl: fonteVal,
-        locandinaUrl: !modalitaSocial && isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "",
+        locandinaUrl: !modalitaSocial ? (posterProfessionale || (isSafeHttpUrl(document.getElementById("seg-locandina").value) ? document.getElementById("seg-locandina").value.trim() : "")) : "",
         inviatoIl: new Date().toISOString()
       };
 
       if(modalitaSocial&&tuttiEventiAttivi.some(ev=>sonoEventiDuplicatiClient(ev,segnalazione))){
-        mostraToast("Questo evento è già nell’agenda.");
-        btn.disabled=false;btn.textContent="Invia evento gratis";
+        reportMessage(segEsito,"Questo evento è già nell’agenda. Non occorre inviarlo di nuovo; usa WhatsApp se devi comunicare una modifica.",true);
+        btn.disabled=false;btn.textContent="Invia evento";
         return;
       }
+      reportMessage(segEsito,"Invio in corso…");
+      const timer=setTimeout(()=>reportMessage(segEsito,"Il servizio non ha ancora confermato la ricezione. Controlla Internet e lascia aperta questa pagina; non inviare di nuovo per evitare duplicati."),12000);
       try {
         await dbGlobal.ref("segnalazioniDaApprovare").push(segnalazione);
-        window.CsfMetrics?.action?.("csf_report_sent");
-        e.target.reset();posterCondiviso=null;segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
-        document.getElementById("seg-citta").value = "Cerignola";
+        try{window.CsfMetrics?.action?.("csf_report_sent");}catch(_){}
+        reportMessage(segEsito,"");
+        e.target.reset();posterCondiviso=null;posterProfessionale="";posterAutoValues={};posterRead.hidden=true;document.getElementById("seg-poster-preview").hidden=true;document.getElementById("seg-poster-preview").removeAttribute("src");segStatus.hidden=true;posterText.value="";posterText.hidden=true;posterApply.hidden=true;posterStatus.textContent="";
+        segShowFields("closed");
         aggiornaCampiTipoSegnalazione();
         modalSegnala.classList.remove("open");
-        alert("Richiesta ricevuta! L’evento sarà pubblicato gratuitamente dopo verifica.");
+        alert("Richiesta professionale ricevuta. Pubblicazione e promozione sono soggette a verifica.");
       } catch (err) {
-        alert("Errore durante l'invio. Puoi comunque inviarla su WhatsApp.");
+        reportMessage(segEsito,CsfQuick.sendError(err,navigator.onLine!==false),true);
       } finally {
+        clearTimeout(timer);
         btn.disabled = false;
-        btn.textContent = "Invia evento gratis";
+        btn.textContent = "Invia evento";
       }
     });
 
@@ -3605,7 +3701,7 @@ html.csf-side-open{overflow:hidden}
         const body = document.createElement("div");
         body.className = "details-body";
 
-        if (isSafeHttpUrl(ev.locandinaUrl)) {
+        if (isSafeHttpUrl(ev.locandinaUrl)||CsfQuick.safeImage(ev.locandinaUrl)) {
           const poster = document.createElement("img");
           poster.className = ev.inEvidenza ? "event-poster event-poster-full" : "event-poster";
           poster.alt = "Locandina: " + ev.titolo;
