@@ -102,6 +102,29 @@ function genera(eventi, editoriali, oggi, precedenti = []) {
  const local=rows.filter(x=>x.ev.citta.toLowerCase()==="cerignola");
  const [ven,dom]=CsfEventTools.weekend(oggi);
  const weekend=rows.filter(x=>CsfEventTools.overlaps(x.ev,oggi>ven?oggi:ven,dom));
+ // Una sola pagina stagionale stabile, alimentata dai dati reali dell'archivio.
+ const mese=Number(oggi.slice(5,7)),anno=Number(oggi.slice(0,4));
+ const inStagione=mese>=10||(mese===1&&oggi.slice(8)==="01");
+ const annoNuovo=mese===1?anno:anno+1;
+ const fineAnno=(annoNuovo-1)+"-12-31",primoAnno=annoNuovo+"-01-01";
+ const capodanno= inStagione?rows.filter(({ev})=>
+   ev.dataInizio>=fineAnno&&ev.dataInizio<=primoAnno&&ev.dataFine<=primoAnno&&
+   /\b(?:capodanno|cenon[ei]|veglion[ei]|san\s+silvestro|new\s+year(?:['’]s)?\s+eve)\b/i.test(ev.titolo)
+ ): [];
+ const capPath="eventi/hub-capodanno.html",capUrl=base+capPath;
+ const capIndex=capodanno.length>=2;
+ if(capIndex||oldHubs.has("hub-capodanno.html")){
+   const titolo="Capodanno "+annoNuovo+" a Cerignola e dintorni";
+   const locali=capodanno.filter(x=>slug(x.ev.citta)==="cerignola");
+   const dintorni=capodanno.filter(x=>slug(x.ev.citta)!=="cerignola");
+   const ordine=(a,b)=>a.ev.dataInizio.localeCompare(b.ev.dataInizio)||a.ev.citta.localeCompare(b.ev.citta,"it");
+   const body="<h1>"+esc(titolo)+"</h1><p>Cenoni, veglioni, feste e pranzi del 31 dicembre e 1 gennaio: solo appuntamenti presenti nell'archivio pubblico con una fonte consultabile. Verifica prezzi, disponibilità e prenotazioni con l'organizzatore.</p>"+
+     "<h2>Capodanno a Cerignola</h2>"+(locali.length?lista(locali.sort(ordine)):"<p>Al momento non risultano appuntamenti pubblicati per Capodanno in città. L'agenda non comprende necessariamente tutte le iniziative.</p>")+
+     "<h2>Capodanno nei dintorni</h2>"+(dintorni.length?lista(dintorni.sort(ordine)):"<p>Al momento non risultano appuntamenti pubblicati nei dintorni.</p>")+
+     '<p><a href="'+base+'eventi/">Consulta tutti gli eventi</a> · <a href="'+base+'?installa=1" data-csf-install>Installa l’app</a></p>';
+   files[capPath]=layout(titolo,"Cenoni, veglioni, feste e pranzi di Capodanno "+annoNuovo+" a Cerignola e nei comuni vicini: date, luoghi e fonti degli appuntamenti pubblicati.",capUrl,body,breadcrumbs([...crumbsAgenda,["Capodanno",capUrl]])+(capodanno.length?itemList(capodanno):""),"",capIndex);
+   if(capIndex)hubs.push({url:capUrl,label:"Capodanno "+annoNuovo+" · cenoni, feste e pranzi"});
+ }
  const nav=`<p><a href="${base}eventi/cerignola.html">Eventi a Cerignola</a> · <a href="${base}eventi/weekend.html">Cosa fare nel weekend</a></p>`;
  const navHub=hubs.length?`<section aria-label="Esplora per argomento o comune"><h2>Esplora gli eventi per argomento e comune</h2><ul>${hubs.map(h=>`<li><a href="${esc(h.url)}">${esc(h.label)}</a></li>`).join("")}</ul></section>`:"";
  const localBody="<h1>Eventi a Cerignola: cosa fare in città</h1><p>Agenda locale con appuntamenti pubblicati e verificabili tramite le rispettive fonti. Gli eventi di oggi e dei prossimi giorni sono elencati con luogo e data.</p>"+oggiBox(local,"Cosa fare oggi a Cerignola","Non risultano eventi pubblicati in città per oggi. L'agenda potrebbe non comprendere tutte le iniziative locali.")+oggiBox(local.filter(x=>CsfEventTools.evening(x.ev)),"Cosa fare stasera a Cerignola","Non risultano serate pubblicate in città per oggi. Consulta le prossime date e gli eventi nei dintorni.")+prossimiBox(local,"Prossimi appuntamenti in città")+"<h2>Calendario degli eventi di Cerignola</h2>"+(local.length?lista(local):"<p>Non risultano appuntamenti locali nel calendario pubblico. Consulta l'agenda completa o segnala un evento dall'app.</p>")+nav;
