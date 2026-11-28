@@ -90,7 +90,10 @@ def fonti_organizzatori_movida(registro):
     # https://cerignola.halleyweb.it/zf/index.php/trasparenza/index/detail/categoria/63/page/60/serial/114838/serial-beneficiario/23075/tipo/3
     # https://www.scienzesociali.unifg.it/sites/scienzesociali/files/2025-04/14-16%20Dicembre%202024_Programma-Generale%20Heritage%20of%20the%20Apulian%20Experience.pdf
     # https://www.andreaordinemusic.it/
-    nomi_per_comune={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi","Andrea Ordine","Antonio Depalma","Nicola Lomuscio","Christian Antonacci"]}
+    # Cosimo Mancino / New Top Music: programmi pubblici 2023 e 2025.
+    # https://www.cerignolaviva.it/notizie/sagra-della-castagna-presso-la-parrocchia-di-san-trifone-martire-a-cerignola/
+    # https://www.cerignolaviva.it/notizie/sagra-della-castagna-2025-a-cerignola-l-evento-della-parrocchia-san-trifone-martire-di-cerignola/
+    nomi_per_comune={"Cerignola":["Neverland Cerignola","Ideando Eventi","Luigi Sgaramella Eventi","Sgaramella Eventi","Andrea Ordine","Antonio Depalma","Nicola Lomuscio","Christian Antonacci","Cosimo Mancino","New Top Music"]}
     tema='("dj set" OR deejay OR karaoke OR "musica dal vivo" OR "cena spettacolo" OR party OR "serata" OR apericena)'
     for comune,locali in registro.items():
         for locale in locali:

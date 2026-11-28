@@ -963,7 +963,7 @@
   {
     "locandinaUrl": "https://cdn.sanity.io/images/pz4xml6g/production/c46077385db521eca45b9ce479edbba682bdc885-1600x900.png?w=1200&h=630&fit=crop&q=80",
     "tipoContenuto": "evento",
-    "citta": "Troia",
+    "citta": "Manfredonia",
     "categoria": "Locali & Serate",
     "titolo": "Christmas Party 2026 – Caribe Dance Academy & Universo Manfredonia",
     "dataTesto": "Sab 19 Dic 2026 · Ore 21:00",
@@ -1401,16 +1401,16 @@
   {
     "locandinaUrl": "https://iltaccodibacco.it/",
     "tipoContenuto": "evento",
-    "citta": "Trani",
+    "citta": "Andria",
     "categoria": "Attività diurne",
     "titolo": "Andria | Eleazaro Rossi - KAMIKAZE",
     "dataTesto": "Dom 16 Mag 2027",
     "dataInizio": "2027-05-16",
     "dataFine": "2027-05-16",
     "luogo": "Spazio Duende",
-    "indirizzoMappa": "Spazio Duende, Via Trani, km 2, 76123 Andria BT, Italia",
+    "indirizzoMappa": "Spazio Duende, Via Trani, km 2, 76123 Andria BT, Italia, Andria",
     "costo": "A pagamento",
-    "descrizione": "Andria | Eleazaro Rossi - KAMIKAZE presso Spazio Duende (Trani). Verifica orari e modalità di accesso nella fonte dell'organizzatore.",
+    "descrizione": "Andria | Eleazaro Rossi - KAMIKAZE presso Spazio Duende (Andria). Verifica orari e modalità di accesso nella fonte dell'organizzatore.",
     "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338059.html"
   }
 ]
