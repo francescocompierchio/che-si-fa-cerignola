@@ -9,7 +9,7 @@ REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
 UID:cerignola-2026-11-28-il-sabato-di-ade@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Il Sabato di ADE – Cerignola
@@ -28,7 +28,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-11-29-natale-nelle-quattro-vie-un-mondo-di-auguri-tra-le
  -vie-del-cuore@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Natale nelle Quattro Vie – Un Mondo di Auguri tra le Vie del Cuor
@@ -48,7 +48,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-05-dinner-show-hermes-club@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
 SUMMARY:Dinner Show – Hermes Club – Cerignola
@@ -66,7 +66,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-natale-nelle-quattro-vie-il-rintocco-delle-campane
  @chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Natale nelle Quattro Vie – Il Rintocco delle Campane – Cerignol
@@ -86,7 +86,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-11-29-babbo-natale-va-in-pensione-teatro-eidos@chesiface
  rignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Babbo Natale va in pensione – Teatro Eidos – Cerignola
@@ -103,7 +103,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-01-natale-in-piazza@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261201
 DTEND;VALUE=DATE:20261202
 SUMMARY:Natale in Piazza – Cerignola
@@ -121,7 +121,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-04-iva-zanicchi-e-samuel-peron-viva-la-mamma@chesifac
  erignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261204
 DTEND;VALUE=DATE:20261205
 SUMMARY:Iva Zanicchi E Samuel Peron "viva La Mamma" – Cerignola
@@ -139,7 +139,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-cerignola-breaking-brecht-sing-n-song-cabaret@ches
  ifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Cerignola | Breaking Brecht – Sing’n’Song Cabaret – Cerigno
@@ -158,7 +158,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-06-corricerignola@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:CorriCerignola – Cerignola
@@ -175,7 +175,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-13-mercatini-straordinari-la-cicogna@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261213
 DTEND;VALUE=DATE:20261214
 SUMMARY:Mercatini straordinari La Cicogna – Cerignola
@@ -194,7 +194,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-13-antiquariando-mercatino-dell-antiquariato-e-dell-u
  sato@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261213
 DTEND;VALUE=DATE:20261214
 SUMMARY:Antiquariando – mercatino dell'antiquariato e dell'usato – Ceri
@@ -216,7 +216,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-17-biagio-izzo-finche-giudice-non-ci-separi@chesiface
  rignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261217
 DTEND;VALUE=DATE:20261218
 SUMMARY:Biagio Izzo "finche Giudice Non Ci Separi" – Cerignola
@@ -234,7 +234,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2026-12-20-mercatini-straordinari-la-cicogna@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261220
 DTEND;VALUE=DATE:20261221
 SUMMARY:Mercatini straordinari La Cicogna – Cerignola
@@ -253,7 +253,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-03-ico-suoni-del-sud-gran-gala-di-capodanno@chesiface
  rignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270103
 DTEND;VALUE=DATE:20270104
 SUMMARY:Ico Suoni Del Sud "gran Gala Di Capodanno" – Cerignola
@@ -270,7 +270,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-20-cerignola-basta-un-filo-di-rossetto-barbara-foria@
  chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270120
 DTEND;VALUE=DATE:20270121
 SUMMARY:Cerignola | Basta un filo di rossetto – Barbara Foria – Cerigno
@@ -290,7 +290,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-01-29-cerignola-mio-sempre-mio-andrea-sergio-rubini@ches
  ifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270129
 DTEND;VALUE=DATE:20270130
 SUMMARY:Cerignola | Mio\, sempre\, mio Andrea – Sergio Rubini – Cerigno
@@ -310,7 +310,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-02-02-cerignola-c-era-una-volta-l-africa-bottega-degli-a
  pocrifi@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270202
 DTEND;VALUE=DATE:20270203
 SUMMARY:Cerignola | C’era una volta l’Africa – Bottega degli Apocrifi
@@ -331,7 +331,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-02-23-cerignola-la-mandragola-massimo-venturiello-e-maur
  izio-micheli@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270223
 DTEND;VALUE=DATE:20270224
 SUMMARY:Cerignola | La Mandragola – Massimo Venturiello e Maurizio Michel
@@ -352,7 +352,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-03-05-cerignola-l-arrago-storia-di-una-baby-gang-teatri-
  di-bari@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270305
 DTEND;VALUE=DATE:20270306
 SUMMARY:Cerignola | L’Arrago. Storia di una baby gang – Teatri di Bari 
@@ -373,7 +373,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-03-16-cerignola-malinconico-moderatamente-felice-massimi
  liano-gallo@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270316
 DTEND;VALUE=DATE:20270317
 SUMMARY:Cerignola | Malinconico. Moderatamente felice – Massimiliano Gall
@@ -394,7 +394,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-02-cerignola-ripetizioni-d-amore-ditemi-se-ho-capito-
  bene-angelo-mellone@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270402
 DTEND;VALUE=DATE:20270403
 SUMMARY:Cerignola | Ripetizioni d’amore: ditemi se ho capito bene! – An
@@ -415,7 +415,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-14-cerignola-come-il-brutto-anatroccolo-crest@chesifa
  cerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270414
 DTEND;VALUE=DATE:20270415
 SUMMARY:Cerignola | Come il brutto anatroccolo – Crest – Cerignola
@@ -434,7 +434,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-04-17-cerignola-kaos-la-vita-e-quantica-luca-perri@chesi
  facerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270417
 DTEND;VALUE=DATE:20270418
 SUMMARY:Cerignola | Kaos. La vita è quantica – Luca Perri – Cerignola
@@ -453,7 +453,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cerignola-2027-05-06-cerignola-l-uomo-dal-fiore-in-bocca-gianni-ciardo-
  e-franco-ferrante@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270506
 DTEND;VALUE=DATE:20270507
 SUMMARY:Cerignola | L’uomo dal fiore in bocca – Gianni Ciardo e Franco 
@@ -472,24 +472,8 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/cerig
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:foggia-2026-11-27-karaoke-di-venerdi-lion-s@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Karaoke di venerdì – Lion's – Foggia
-LOCATION:Via Gentile 79/81\, Foggia
-DESCRIPTION:Ven 27 Nov 2026 · Ore 21:00\nKaraoke con Antonio Acquaviva dal
- le ore 21:00. Info e prenotazioni tavoli: 0881 021913.\nAccesso: Non indic
- ato · Contattare il locale\nVerifica variazioni\, orari e fonte nella sch
- eda.\nhttps://francescocompierchio.github.io/che-si-fa-cerignola/eventi/fo
- ggia-2026-11-27-karaoke-di-venerdi-lion-s.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
- a-2026-11-27-karaoke-di-venerdi-lion-s.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:foggia-2026-11-28-la-notte-della-musica-carlito-s@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:La Notte della Musica – Carlito's – Foggia
@@ -505,7 +489,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-11-28-love-generation-90-domus-disco@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Love Generation 90 – Domus Disco – Foggia
@@ -525,7 +509,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-11-28-acquolina-in-cena-spettacolo@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Acquolina in Cena Spettacolo – Foggia
@@ -546,7 +530,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-11-24-foggia-festival-sport-story-il-pallone-e-uguale-per-t
  utti@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261124
 DTEND;VALUE=DATE:20261129
 SUMMARY:Foggia | Festival Sport Story – Il pallone è uguale per tutti 
@@ -566,7 +550,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-11-25-foggia-mario-schifano-e-gli-altri@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261125
 DTEND;VALUE=DATE:20270108
 SUMMARY:Foggia | Mario Schifano e gli altri – Foggia
@@ -583,44 +567,9 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:barletta-2026-11-27-shake-it-with-haivai-b@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Shake IT with HAIVAI B – Barletta
-LOCATION:Via Leonardo da Vinci 15\, Barletta
-DESCRIPTION:Ven 27 Nov 2026 · Club dalle 22:00\nLa prevendita e il calenda
- rio Atrio22 indicano il 27 novembre\; una descrizione promozionale riporta
-  invece il 6 novembre. Controlla la data con il locale prima di partire.\n
- Accesso: Consulta biglietteria e condizioni di ingresso\nVerifica variazio
- ni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/c
- he-si-fa-cerignola/eventi/barletta-2026-11-27-shake-it-with-haivai-b.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
- tta-2026-11-27-shake-it-with-haivai-b.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:trinitapoli-2026-11-27-sagra-del-carciofo-violetto-di-trinitapoli@chesi
- facerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Sagra del Carciofo Violetto di Trinitapoli – Trinitapoli
-LOCATION:Viale Vittorio Veneto\, 76015\, Trinitapoli\, BT
-DESCRIPTION:Ven 27 Nov 2026\nLa Sagra del Carciofo Violetto di Trinitapoli 
- è la grande festa d'autunno che celebra il prodotto simbolo del territori
- o: il pregiato carcio...\nAccesso: Non specificato nella fonte\nVerifica v
- ariazioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.gith
- ub.io/che-si-fa-cerignola/eventi/trinitapoli-2026-11-27-sagra-del-carciofo
- -violetto-di-trinitapoli.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/trini
- tapoli-2026-11-27-sagra-del-carciofo-violetto-di-trinitapoli.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:barletta-2026-11-27-barletta-people-places-and-things-anna-ferzetti@che
  sifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261127
 DTEND;VALUE=DATE:20261130
 SUMMARY:Barletta | People\, Places and Things – Anna Ferzetti – Barlett
@@ -638,110 +587,9 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:barletta-2026-11-27-barletta-rainbow-bridge-plays-hendrix@chesifacerign
- ola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Barletta | Rainbow Bridge plays Hendrix – Barletta
-LOCATION:Via Boccaccio 42/44\, Barletta
-DESCRIPTION:Ven 27 Nov 2026\nI RAINBOW BRIDGE CELEBRANO JIMI HENDRIX AL BOH
- EMIEN DI BARLETTA Venerdì 27 novembre – Una serata rock-blues dedicata 
- al chitarrista statunitense BARLETTA – Venerdì 27 novembre\, in occasio
- ne dell'anniversario della nascit\nAccesso: Ingresso libero\nVerifica vari
- azioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.
- io/che-si-fa-cerignola/eventi/barletta-2026-11-27-barletta-rainbow-bridge-
- plays-hendrix.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
- tta-2026-11-27-barletta-rainbow-bridge-plays-hendrix.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:bisceglie-2026-11-27-bisceglie-franco-califano-live-tribute-con-la-cali
- ffo-band@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Bisceglie | FRANCO CALIFANO live tribute con la "CALIFFO BAND" – 
- Bisceglie
-LOCATION:da Sergio e Davide\, Panoramica umberto paternostro\, 273\, Bisceg
- lie
-DESCRIPTION:Ven 27 Nov 2026\nVENERDI’ 27 NOVEMBRE\, dalle 21:00\, serata 
- dedicata ad uno dei più amati cantautori italiani\, il grande “Califfo
- ”\, Franco Califano. Amanti della canzone italiana d’autore\, Amanti e
-  basta\, Amanti del Califfo italiano\, prep\nAccesso: Ingresso libero\nVer
- ifica variazioni\, orari e fonte nella scheda.\nhttps://francescocompierch
- io.github.io/che-si-fa-cerignola/eventi/bisceglie-2026-11-27-bisceglie-fra
- nco-califano-live-tribute-con-la-califfo-band.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/bisce
- glie-2026-11-27-bisceglie-franco-califano-live-tribute-con-la-califfo-band
- .html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:andria-2026-11-27-istituto-comprensivo-verdi-cafaro-di-andria-concerto-
- fiori-d-inverno@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Istituto Comprensivo “Verdi-Cafaro” di Andria: concerto "Fiori 
- d'inverno" – Andria
-LOCATION:via Stradella 1\, Andria
-DESCRIPTION:Ven 27 Nov 2026\nVenerdì 27 novembre\, alle ore 18:30\, alla S
- cuola secondaria di I grado “Pasquale Cafaro”. La musica e l'arte dann
- o voce alla libertà e al rispetto delle donne\nAccesso: Non specificato n
- ella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://fra
- ncescocompierchio.github.io/che-si-fa-cerignola/eventi/andria-2026-11-27-i
- stituto-comprensivo-verdi-cafaro-di-andria-concerto-fiori-d-inverno.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/andri
- a-2026-11-27-istituto-comprensivo-verdi-cafaro-di-andria-concerto-fiori-d-
- inverno.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:manfredonia-2026-11-27-sapori-e-musica-saxmoods-live-quota-7@chesifacer
- ignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Sapori e Musica – Saxmoods Live | Quota 7 – Manfredonia
-LOCATION:Quota 7\, Lungomare Nazario Sauro\, 14/C\, 71043 Manfredonia (FG)\
- , FG
-DESCRIPTION:Ven 27 Nov 2026 · Ore 21:00\nVenerdì 27 novembre 2026\, Quota
- 7 – Ristobistrò Cocktail & Dreams\, sul Lungomare Nazario Sauro di Manf
- redonia\, propone un nuovo appuntamento con Sapori e Musica\, il format ch
- e unisce il piacere della buona tavola alla mus\nAccesso: Non specificato 
- nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\nhttps://fr
- ancescocompierchio.github.io/che-si-fa-cerignola/eventi/manfredonia-2026-1
- 1-27-sapori-e-musica-saxmoods-live-quota-7.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
- edonia-2026-11-27-sapori-e-musica-saxmoods-live-quota-7.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:trani-2026-11-27-trani-impromptu-jazz-quartet-live-feel-the-music-festi
- val@chesifacerignola
-DTSTAMP:20261127T000000Z
-DTSTART;VALUE=DATE:20261127
-DTEND;VALUE=DATE:20261128
-SUMMARY:Trani | Impromptu Jazz Quartet live Feel the Music Festival – Tra
- ni
-LOCATION:Santo Graal\, via San Giorgio\, Trani
-DESCRIPTION:Ven 27 Nov 2026\nVenerdì 27 Novembre: Impromptu Jazz Quartet U
- n viaggio tra le diverse sfumature del jazz: dagli standard americani alle
-  contaminazioni con la canzone d'autore\, fino a quei brani italiani che\,
-  pur nascendo altrove\, sembra\nAccesso: Ingresso libero\nVerifica variazi
- oni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/
- che-si-fa-cerignola/eventi/trani-2026-11-27-trani-impromptu-jazz-quartet-l
- ive-feel-the-music-festival.html
-URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/trani
- -2026-11-27-trani-impromptu-jazz-quartet-live-feel-the-music-festival.html
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:barletta-2026-11-28-classic-saturday-habibi-with-olive-f@chesifacerigno
  la
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Classic Saturday & Habibi with OLIVE F – Barletta
@@ -758,7 +606,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-28-golden-opening-party-at-vyon-club@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Golden – Opening Party at Vyon Club – Bisceglie
@@ -774,7 +622,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:trani-2026-11-28-habibi-28-11-aphelion-club@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:HABIBI · 28.11 · APHELION CLUB – Trani
@@ -791,7 +639,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-11-28-vinyl-di-wine-al-cafe-des-artistes@chesifacerign
  ola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Vinyl di Wine al Café des Artistes – Manfredonia
@@ -809,7 +657,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-11-28-piatto-divino-cena-d-autunno-e-musica-dal-vivo@c
  hesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Piatto diVino – Cena d’autunno e musica dal vivo – Manfredoni
@@ -826,7 +674,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-28-around-us-salome-le-chat@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Around Us – Salomé Le Chat – Bisceglie
@@ -844,7 +692,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-11-28-luci-di-casa-canosa-accende-il-natale@chesi
  facerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Luci di Casa – Canosa accende il Natale – Canosa di Puglia
@@ -862,7 +710,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:minervino-murge-2026-11-28-sagra-della-cima-di-rapa-di-minervino-murge@
  chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261130
 SUMMARY:Sagra della Cima di Rapa di Minervino Murge – Minervino Murge
@@ -879,7 +727,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:andria-2026-11-28-andria-sentiti-a-casa-da-leonetti-store@chesifacerign
  ola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Andria | Sentiti a casa da Leonetti Store – Andria
@@ -897,7 +745,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-11-28-barletta-ctrl-z-in-concerto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Barletta | CTRL+Z in concerto – Barletta
@@ -916,7 +764,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-28-bisceglie-alamar-symphonic-concert-ana-carla-maza-
  l-orchestra-ico-della-magna-gre@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Bisceglie | ALAMAR SYMPHONIC CONCERT Ana Carla Maza & l'Orchestra I
@@ -937,7 +785,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-28-bisceglie-breakfast-supertramp-musica-e-racconti@c
  hesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Bisceglie | Breakfast Supertramp - Musica e Racconti – Bisceglie
@@ -956,7 +804,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-28-bisceglie-sur-tra-bolero-flamenco-cancion-latinoam
  ericana-folklore-e-improvvis@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Bisceglie | SUR - Tra bolero\, flamenco\, canción latinoamericana\
@@ -976,7 +824,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucera-2026-11-28-lucera-arteteca-operazione-cicogna@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Lucera | Arteteca - Operazione Cicogna – Lucera
@@ -995,7 +843,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:andria-2026-11-28-nichi-vendola-ad-andria-con-il-vizio-della-ferocia-il
  -festival-della-disperazione@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:Nichi Vendola ad Andria con “Il vizio della ferocia”: il Festiv
@@ -1014,7 +862,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-11-28-the-peak-w-danny-roma@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
 SUMMARY:The peak w/DANNY ROMA – Barletta
@@ -1029,7 +877,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-11-29-kayma-at-atrio22@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:KAYMA at ATRIO22 – Barletta
@@ -1047,7 +895,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:minervino-murge-2026-11-29-a-minervino-un-trekking-tra-paesaggi-masseri
  e-e-sapori-locali@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:A Minervino un trekking tra paesaggi\, masserie e sapori locali –
@@ -1066,7 +914,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-11-29-barletta-spettacolo-teatrale-spedizioni-don-chiscio
  tte@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Barletta | Spettacolo teatrale: Spedizioni Don Chisciotte – Barle
@@ -1086,7 +934,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-11-29-contemporary-sound-l-elefante-e-la-zanzara-contrast
  i-sonori-dal-settecento-al-novece@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261129
 DTEND;VALUE=DATE:20261130
 SUMMARY:Contemporary Sound L'Elefante E La Zanzara. Contrasti Sonori Dal Se
@@ -1107,7 +955,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-11-30-l-illustratore-marco-petrella-e-l-ultimo-ospite-di
  -novembre-alle-vecchie-segherie-mas@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261130
 DTEND;VALUE=DATE:20261201
 SUMMARY:L’illustratore Marco Petrella è l’ultimo ospite di novembre al
@@ -1127,7 +975,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-11-30-manfredonia-l-universo-e-un-materasso@chesifacer
  ignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261130
 DTEND;VALUE=DATE:20261201
 SUMMARY:Manfredonia | L’universo è un materasso – Manfredonia
@@ -1146,7 +994,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-01-foggia-forever-amadeus-orchestra-sinfonica-131-della-
  basilicata@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261201
 DTEND;VALUE=DATE:20261202
 SUMMARY:Foggia | Forever Amadeus – Orchestra Sinfonica 131 della Basilica
@@ -1167,7 +1015,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-03-panettone-lab-laboratorio-e-aperitivo@chesifacer
  ignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261203
 DTEND;VALUE=DATE:20261204
 SUMMARY:Panettone Lab – laboratorio e aperitivo – Manfredonia
@@ -1185,7 +1033,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:lucera-2026-12-04-lucera-festival-della-letteratura-mediterranea-guarir
  si@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261204
 DTEND;VALUE=DATE:20261207
 SUMMARY:Lucera | Festival della Letteratura Mediterranea – Guarirsi – L
@@ -1203,8 +1051,27 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/lucer
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:trani-2026-12-04-trani-gadjos-live-feel-the-music-festival@chesifacerig
+ nola
+DTSTAMP:20261128T000000Z
+DTSTART;VALUE=DATE:20261204
+DTEND;VALUE=DATE:20261205
+SUMMARY:Trani | Gadjos live Feel the Music Festival – Trani
+LOCATION:Santo Graal\, via San Giorgio\, Trani
+DESCRIPTION:Ven 04 Dic 2026\n🎸 Venerdì 4 dicembre la rassegna di musica
+  indipendente torna al Santo Graal! ⚡ Sul palco salgono i Gadjos per un 
+ live fuori dagli schemi: un viaggio sonoro che attraversa decenni di music
+ a italiana e internazionale\, dal\nAccesso: Ingresso libero\nVerifica vari
+ azioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.
+ io/che-si-fa-cerignola/eventi/trani-2026-12-04-trani-gadjos-live-feel-the-
+ music-festival.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/trani
+ -2026-12-04-trani-gadjos-live-feel-the-music-festival.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:bisceglie-2026-12-05-mirito-presents-solto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
 SUMMARY:Mirito presents: Solto – Bisceglie
@@ -1221,7 +1088,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-12-05-mercatini-di-natale-la-citta-del-natale@che
  sifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261209
 SUMMARY:Mercatini di Natale – La Città del Natale – Canosa di Puglia
@@ -1240,7 +1107,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-05-arriva-babbo-natale-gelsomino-home@chesifacerign
  ola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
 SUMMARY:Arriva Babbo Natale| Gelsomino Home – Manfredonia
@@ -1258,7 +1125,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-05-foggia-la-gatta-con-gli-stivali@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261209
 SUMMARY:Foggia | La gatta con gli stivali – Foggia
@@ -1275,8 +1142,24 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:barletta-2026-12-05-luma-club-presents-una-noche-de-perreo@chesifacerig
+ nola
+DTSTAMP:20261128T000000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:Luma Club presents UNA NOCHE DE PERREO – Barletta
+LOCATION:Viale Regina Elena 100\, Barletta
+DESCRIPTION:Sab 05 Dic 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
+ a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
+ s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
+ 6-12-05-luma-club-presents-una-noche-de-perreo.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
+ tta-2026-12-05-luma-club-presents-una-noche-de-perreo.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:bisceglie-2026-12-05-mirito-act-i-con-solto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
 SUMMARY:Mirito · Act I con Solto – Bisceglie
@@ -1292,7 +1175,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-05-the-peak-w-inkaari@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
 SUMMARY:The peak w/INKAARI – Barletta
@@ -1308,7 +1191,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-06-christmas-wonderland-si-aprono-le-porte-del-villagg
  io-al-castello-di-barletta@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:"Christmas Wonderland"\, si aprono le porte del villaggio al Castel
@@ -1328,7 +1211,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-06-agroarcheotrekking-4-0-a-canne-della-battaglia-un-c
  ammino-inclusivo-tra-natura-cult@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:AgroArcheoTrekking 4.0 a Canne della Battaglia: un cammino inclusiv
@@ -1346,7 +1229,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:andria-2026-12-06-andria-mercatino-di-natale@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Andria | mercatino di Natale – Andria
@@ -1366,7 +1249,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-06-in-viaggio-verso-christmas-wonderland-al-castello-d
  i-barletta@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20270108
 SUMMARY:In viaggio verso "Christmas Wonderland" al Castello di Barletta –
@@ -1384,7 +1267,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-06-manfredonia-cenerentola-301@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Manfredonia | Cenerentola 301 – Manfredonia
@@ -1401,7 +1284,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:monticchio-2026-12-06-wild-water-river-trekking-sull-ofanto@chesifaceri
  gnola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261206
 DTEND;VALUE=DATE:20261207
 SUMMARY:Wild & Water – river trekking sull’Ofanto – Monticchio
@@ -1419,7 +1302,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:bisceglie-2026-12-07-que-pasa-noche-sinfonica@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261207
 DTEND;VALUE=DATE:20261208
 SUMMARY:Que Pasa Noche Sinfonica – Bisceglie
@@ -1435,7 +1318,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:trani-2026-12-07-trani-15-happy-birthday-billie-hard@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261207
 DTEND;VALUE=DATE:20261208
 SUMMARY:Trani | 15 Happy Birthday Billie Hard – Trani
@@ -1454,7 +1337,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-08-foggia-fogia-regalis-imperialis-inclita-sedes-frideri
  ci-ii-tertia-editio@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261208
 DTEND;VALUE=DATE:20261209
 SUMMARY:Foggia | Fogia Regalis: Imperialis Inclita Sedes Friderici II - Ter
@@ -1473,9 +1356,30 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:foggia-2026-12-08-martedi-8-dicembre-2026-il-ritorno-nella-foggia-di-fe
+ derico-ii-visita-guidata-nel-ce@chesifacerignola
+DTSTAMP:20261128T000000Z
+DTSTART;VALUE=DATE:20261208
+DTEND;VALUE=DATE:20261209
+SUMMARY:Martedì 8 dicembre 2026 il ritorno nella Foggia di Federico II: vi
+ sita guidata nel ce – Foggia
+LOCATION:centro storico e\, Foggia
+DESCRIPTION:Mar 08 Dic 2026\nMartedì 8 dicembre 2026 il ritorno nella Fogg
+ ia di Federico II: visita guidata nel centro storico e (ri)scoperta della 
+ Cripta della Cattedrale presso centro storico e (Foggia).\nAccesso: Non sp
+ ecificato nella fonte\nVerifica variazioni\, orari e fonte nella scheda.\n
+ https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggia-2
+ 026-12-08-martedi-8-dicembre-2026-il-ritorno-nella-foggia-di-federico-ii-v
+ isita-guidata-nel-ce.html
+URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/foggi
+ a-2026-12-08-martedi-8-dicembre-2026-il-ritorno-nella-foggia-di-federico-i
+ i-visita-guidata-nel-ce.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:foggia-2026-12-09-macy-gray-live-al-teatro-giordano-l-icona-mondiale-de
  l-soul-e-dell-r-b-in-concerto-a@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261209
 DTEND;VALUE=DATE:20261210
 SUMMARY:Macy Gray live al Teatro Giordano: l'icona mondiale del soul e dell
@@ -1497,7 +1401,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-10-manfredonia-paladini-di-francia-spada-avete-voi-
  spada-avete-io-teatro-koreja@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261210
 DTEND;VALUE=DATE:20261211
 SUMMARY:Manfredonia | Paladini di Francia. Spada avete voi\, spada avete io
@@ -1517,7 +1421,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-11-habibi-with-octave-one-live@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261211
 DTEND;VALUE=DATE:20261212
 SUMMARY:Habibi with OCTAVE ONE live – Barletta
@@ -1535,7 +1439,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-12-11-domani-l-accensione-dell-albero-e-delle-lum
  inarie-natalizie-in-p-zza-vittorio-veneto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261211
 DTEND;VALUE=DATE:20261212
 SUMMARY:Domani l'accensione dell'Albero e delle luminarie natalizie in P.zz
@@ -1555,7 +1459,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-12-11-sagra-della-sfogliatella-3-edizione@chesifa
  cerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261211
 DTEND;VALUE=DATE:20261214
 SUMMARY:Sagra della Sfogliatella – 3ª edizione – Canosa di Puglia
@@ -1573,7 +1477,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-11-manfredonia-paladini-di-francia-spada-avete-voi-
  spada-avete-io@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261211
 DTEND;VALUE=DATE:20261212
 SUMMARY:Manfredonia | Paladini di Francia. Spada avete voi\, spada avete io
@@ -1594,7 +1498,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-12-12-domani-l-accensione-dell-albero-e-delle-lum
  inarie-natalizie-in-p-zza-vittorio-veneto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261212
 DTEND;VALUE=DATE:20261213
 SUMMARY:Domani l'accensione dell'Albero e delle luminarie natalizie in P.zz
@@ -1614,7 +1518,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:canosa-di-puglia-2026-12-13-domani-l-accensione-dell-albero-e-delle-lum
  inarie-natalizie-in-p-zza-vittorio-veneto@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261213
 DTEND;VALUE=DATE:20261214
 SUMMARY:Domani l'accensione dell'Albero e delle luminarie natalizie in P.zz
@@ -1634,7 +1538,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-15-foggia-christmas-vocal-harmony-seiottavi@chesifacerig
  nola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261215
 DTEND;VALUE=DATE:20261216
 SUMMARY:Foggia | Christmas Vocal Harmony – SeiOttavi – Foggia
@@ -1653,7 +1557,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-16-barletta-il-lago-dei-cigni-e-l-incantesimo-delle-pi
  ume@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261216
 DTEND;VALUE=DATE:20261217
 SUMMARY:Barletta | Il lago dei cigni e l’incantesimo delle piume – Barl
@@ -1672,7 +1576,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-18-habibi-with-benja@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261218
 DTEND;VALUE=DATE:20261219
 SUMMARY:Habibi with BENJA – Barletta
@@ -1690,7 +1594,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-18-foggia-victoria-station-con-gianmarco-saurino-e-rober
  to-galano@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261218
 DTEND;VALUE=DATE:20261221
 SUMMARY:Foggia | Victoria Station con Gianmarco Saurino e Roberto Galano 
@@ -1710,7 +1614,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:zapponeta-2026-12-19-presepe-vivente-di-zapponeta@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261219
 DTEND;VALUE=DATE:20261220
 SUMMARY:Presepe Vivente di Zapponeta – Zapponeta
@@ -1728,7 +1632,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-19-anello-di-siponto-itinerario-archeologico-e-degu
  stazione@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261219
 DTEND;VALUE=DATE:20261220
 SUMMARY:Anello di Siponto – itinerario archeologico e degustazione – Ma
@@ -1749,7 +1653,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:troia-2026-12-19-christmas-party-2026-caribe-dance-academy-universo-man
  fredonia@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261219
 DTEND;VALUE=DATE:20261220
 SUMMARY:Christmas Party 2026 – Caribe Dance Academy & Universo Manfredoni
@@ -1771,7 +1675,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-19-marechia-xmas-night-2026-dj-set-con-ambro-e-cyro
  x@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261219
 DTEND;VALUE=DATE:20261220
 SUMMARY:Marechià Xmas Night 2026 – DJ set con Ambro e Cyrox – Manfredo
@@ -1793,7 +1697,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-19-riccardo-cocciante-live-al-teatro-umberto-giordano@ch
  esifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261219
 DTEND;VALUE=DATE:20261220
 SUMMARY:Riccardo Cocciante live al Teatro Umberto Giordano – Foggia
@@ -1812,7 +1716,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-25-deeza-dj-set@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261225
 DTEND;VALUE=DATE:20261226
 SUMMARY:Deeza DJ Set – Barletta
@@ -1828,7 +1732,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2026-12-26-foggia-i-fantasmi-di-dickens@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261226
 DTEND;VALUE=DATE:20261231
 SUMMARY:Foggia | I fantasmi di Dickens – Foggia
@@ -1847,7 +1751,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:san-ferdinando-di-puglia-2026-12-31-capodanno-in-piazza@chesifacerignol
  a
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261231
 DTEND;VALUE=DATE:20270101
 SUMMARY:Capodanno in Piazza – San Ferdinando di Puglia
@@ -1865,7 +1769,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2026-12-31-barletta-capodanno-al-curci-dado-angelo-mellone-e-a
  ndrea-perroni@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261231
 DTEND;VALUE=DATE:20270101
 SUMMARY:Barletta | Capodanno al Curci – Dado\, Angelo Mellone e Andrea Pe
@@ -1874,10 +1778,10 @@ LOCATION:Teatro Curci\, Corso Vittorio Emanuele II\, 72\, Barletta
 DESCRIPTION:Gio 31 Dic 2026\nCapodanno al Curci riunisce musica\, comicità
   e spettacolo in una serata speciale. Il programma prevede lo spettacolo c
  omico Il ripetente di Dado\, seguito da Mezzanotte d’autore con Angelo M
- ellone e Andrea Perroni\, per la\nAccesso: Ingresso libero\nVerifica varia
- zioni\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.i
- o/che-si-fa-cerignola/eventi/barletta-2026-12-31-barletta-capodanno-al-cur
- ci-dado-angelo-mellone-e-andrea-perroni.html
+ ellone e Andrea Perroni\, per la\nAccesso: A pagamento\nVerifica variazion
+ i\, orari e fonte nella scheda.\nhttps://francescocompierchio.github.io/ch
+ e-si-fa-cerignola/eventi/barletta-2026-12-31-barletta-capodanno-al-curci-d
+ ado-angelo-mellone-e-andrea-perroni.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
  tta-2026-12-31-barletta-capodanno-al-curci-dado-angelo-mellone-e-andrea-pe
  rroni.html
@@ -1886,7 +1790,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-31-cenone-veglione-di-capodanno-regiohotel-manfredi
  @chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261231
 DTEND;VALUE=DATE:20270101
 SUMMARY:Cenone / veglione di Capodanno – Regiohotel Manfredi – Manfredo
@@ -1906,7 +1810,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2026-12-31-gran-gala-di-san-silvestro-regiohotel-manfredi@c
  hesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261231
 DTEND;VALUE=DATE:20270101
 SUMMARY:Gran Galà di San Silvestro – Regiohotel Manfredi – Manfredonia
@@ -1922,23 +1826,23 @@ URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/manfr
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
-UID:barletta-2026-12-31-new-year-s-eve@chesifacerignola
-DTSTAMP:20261127T000000Z
+UID:barletta-2026-12-31-luma-new-year-s-eve@chesifacerignola
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20261231
 DTEND;VALUE=DATE:20270101
-SUMMARY:NEW YEAR'S EVE – Barletta
+SUMMARY:LUMA - NEW YEAR'S EVE – Barletta
 LOCATION:Viale Regina Elena 100\, Barletta
 DESCRIPTION:Gio 31 Dic 2026 · Ore 23:59\nSerata in club.\nAccesso: Consult
  a la biglietteria\nVerifica variazioni\, orari e fonte nella scheda.\nhttp
  s://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barletta-202
- 6-12-31-new-year-s-eve.html
+ 6-12-31-luma-new-year-s-eve.html
 URL:https://francescocompierchio.github.io/che-si-fa-cerignola/eventi/barle
- tta-2026-12-31-new-year-s-eve.html
+ tta-2026-12-31-luma-new-year-s-eve.html
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2027-01-01-pranzo-di-capodanno-posta-bassi@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270101
 DTEND;VALUE=DATE:20270102
 SUMMARY:Pranzo di Capodanno – Posta Bassi – Foggia
@@ -1955,7 +1859,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2027-01-01-pranzo-di-capodanno-regiohotel-manfredi@chesifac
  erignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270101
 DTEND;VALUE=DATE:20270102
 SUMMARY:Pranzo di Capodanno – Regiohotel Manfredi – Manfredonia
@@ -1973,7 +1877,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:foggia-2027-01-05-foggia-tombolata-musicale-valerio-lundini-i-vazzanikk
  i@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270105
 DTEND;VALUE=DATE:20270106
 SUMMARY:Foggia | Tombolata musicale – Valerio Lundini & I Vazzanikki – 
@@ -1993,7 +1897,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2027-01-08-manfredonia-lu-baciu-santu-mors-resextensa@chesi
  facerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270108
 DTEND;VALUE=DATE:20270109
 SUMMARY:Manfredonia | Lu baciu Santu/Mors – ResExtensa – Manfredonia
@@ -2012,7 +1916,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2027-01-13-manfredonia-la-bambola-e-la-bambina@chesifacerig
  nola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270113
 DTEND;VALUE=DATE:20270114
 SUMMARY:Manfredonia | La bambola e la bambina – Manfredonia
@@ -2031,7 +1935,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:manfredonia-2027-01-15-manfredonia-lisistrata-lella-costa@chesifacerign
  ola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270115
 DTEND;VALUE=DATE:20270116
 SUMMARY:Manfredonia | Lisistrata – Lella Costa – Manfredonia
@@ -2047,7 +1951,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:barletta-2027-01-30-barletta-arvo-part-vs-david-bowie@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270130
 DTEND;VALUE=DATE:20270131
 SUMMARY:Barletta | Arvo Pärt vs David Bowie – Barletta
@@ -2065,7 +1969,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:andria-2027-04-23-579-fiera-d-aprile@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270423
 DTEND;VALUE=DATE:20270426
 SUMMARY:579^ Fiera d'Aprile – Andria
@@ -2080,7 +1984,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:trani-2027-05-16-andria-eleazaro-rossi-kamikaze@chesifacerignola
-DTSTAMP:20261127T000000Z
+DTSTAMP:20261128T000000Z
 DTSTART;VALUE=DATE:20270516
 DTEND;VALUE=DATE:20270517
 SUMMARY:Andria | Eleazaro Rossi - KAMIKAZE – Trani
