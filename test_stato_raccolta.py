@@ -33,6 +33,26 @@ class StatoFontiTests(unittest.TestCase):
         self.assertEqual(s.pianifica(task,m,12)[0],[task[1]])
         self.assertEqual(len(s.pianifica(task,m,12,True)[0]),2)
 
+    def test_la_pausa_dipende_dai_riscontri_pubblicati_e_rispetta_la_priorita_locale(self):
+        memoria = {"fonti": {}}
+        estrazioni_scartate = {"stato": "ok", "eventiEstratti": 20, "eventiUtili": 0}
+        for ora in range(8):
+            s.aggiorna(memoria, {
+                "rumore": estrazioni_scartate,
+                "cerignola": dict(estrazioni_scartate, prioritaria=True),
+                "conferme": dict(estrazioni_scartate, eventiUtili=2),
+            }, ora)
+        compiti = [
+            (None, {"nome": "rumore"}),
+            (None, {"nome": "cerignola", "prioritaria": True}),
+            (None, {"nome": "conferme"}),
+        ]
+        attivi, pause = s.pianifica(compiti, memoria, 8)
+        self.assertEqual(pause, ["rumore"])
+        self.assertEqual(attivi, compiti[1:])
+        self.assertEqual(memoria["fonti"]["rumore"]["produttivita"], 0)
+        self.assertEqual(memoria["fonti"]["conferme"]["produttivita"], 2)
+
     def test_movida_prima_senza_ignorare_blocchi(self):
         t=[(None,{"nome":"cultura","solo_cerignola":True}),(None,{"nome":"foggia","nightlife":True}),(None,{"nome":"cerignola","focus_serate":True,"solo_cerignola":True}),(None,{"nome":"altro"})]
         m={"fonti":{"cultura":{"valoreAppreso":20}}}
