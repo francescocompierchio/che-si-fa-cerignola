@@ -9,6 +9,42 @@ import aggiorna_eventi as crawler
 
 
 class QualitaEventiTests(unittest.TestCase):
+    def test_comune_postale_prevale_sul_nome_della_strada(self):
+        for indirizzo in (
+            "Spazio Duende, Via Trani, km 2, 76123 Andria BT, Italia",
+            "Spazio Duende, Via Trani, Andria (BT), Trani",
+        ):
+            with self.subTest(indirizzo=indirizzo):
+                self.assertEqual(crawler.risolvi_comune_50km({
+                    "citta": "Trani",
+                    "indirizzoMappa": indirizzo,
+                }), "Andria")
+        self.assertEqual(crawler.risolvi_comune_50km({
+            "citta": "Troia",
+            "indirizzoMappa": "Il cielo in una stanza, Località Conte di Troia, 71043 Manfredonia FG, Manfredonia, FG",
+        }), "Manfredonia")
+
+    def test_riconvalida_aggiorna_solo_la_descrizione_generata_col_comune_errato(self):
+        titolo = "Andria | Eleazaro Rossi - KAMIKAZE"
+        data = (crawler.oggi_dt() + crawler.timedelta(days=3)).date().isoformat()
+        record = {
+            "titolo": titolo, "citta": "Trani", "luogo": "Spazio Duende", "dataInizio": data,
+            "indirizzoMappa": "Spazio Duende, Via Trani, km 2, 76123 Andria BT, Italia",
+            "fonteUrl": "https://iltaccodibacco.it/puglia/eventi/338059.html",
+            "descrizione": (
+                f"{titolo} presso Spazio Duende (Trani). "
+                "Verifica orari e modalità di accesso nella fonte dell'organizzatore."
+            ),
+        }
+        evento = crawler.normalizza_e_valida_evento(record, fonte_curata_eventi=True)
+        self.assertEqual(evento["citta"], "Andria")
+        self.assertIn("Spazio Duende (Andria)", evento["descrizione"])
+        descrizione = "Spettacolo comico di Eleazaro Rossi al teatro."
+        evento = crawler.normalizza_e_valida_evento(
+            dict(record, descrizione=descrizione), fonte_curata_eventi=True
+        )
+        self.assertEqual(evento["descrizione"], descrizione)
+
     def test_rassegna_apulia_suona_non_comporta_eventi_ogni_giorno(self):
         rassegna = {"fonteUrl":"https://buzzeventmap.com/event/15ed4d5f-1613-46bb-945a-51449ccf3788",
                     "citta":"Barletta", "dataInizio":"2026-11-08", "dataFine":"2026-11-29"}
